@@ -1,0 +1,169 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id                  BigInt               @id @default(autoincrement()) @db.UnsignedBigInt
+  username            String               @unique @db.VarChar(64)
+  passwordHash        String               @map("password_hash") @db.VarChar(255)
+  displayName         String               @map("display_name") @db.VarChar(100)
+  role                String               @db.VarChar(32)
+  status              String               @db.VarChar(32)
+  createdAt           DateTime             @default(now()) @map("created_at") @db.DateTime(0)
+  updatedAt           DateTime             @updatedAt @map("updated_at") @db.DateTime(0)
+  learningProgresses  LearningProgress[]
+  verificationRecords VerificationRecord[]
+  labRunRecords       LabRunRecord[]
+
+  @@map("users")
+}
+
+model LabCategory {
+  id          BigInt    @id @default(autoincrement()) @db.UnsignedBigInt
+  code        String    @unique @db.VarChar(64)
+  name        String    @db.VarChar(100)
+  description String    @db.VarChar(255)
+  sortOrder   Int       @default(0) @map("sort_order")
+  createdAt   DateTime  @default(now()) @map("created_at") @db.DateTime(0)
+  updatedAt   DateTime  @updatedAt @map("updated_at") @db.DateTime(0)
+  labs        Lab[]
+
+  @@map("lab_categories")
+}
+
+model Lab {
+  id                  BigInt               @id @default(autoincrement()) @db.UnsignedBigInt
+  labKey              String               @unique @map("lab_key") @db.VarChar(128)
+  slug                String               @unique @db.VarChar(128)
+  title               String               @db.VarChar(255)
+  categoryId          BigInt               @map("category_id") @db.UnsignedBigInt
+  subcategoryCode     String               @map("subcategory_code") @db.VarChar(128)
+  mode                String               @db.VarChar(32)
+  severity            String               @db.VarChar(32)
+  difficulty          String               @db.VarChar(32)
+  summary             String               @db.VarChar(500)
+  status              String               @db.VarChar(32)
+  phase               String               @db.VarChar(32)
+  sortOrder           Int                  @default(0) @map("sort_order")
+  estimatedMinutes    Int                  @default(0) @map("estimated_minutes")
+  metaVersion         Int                  @default(1) @map("meta_version")
+  metaPath            String               @map("meta_path") @db.VarChar(255)
+  readmePath          String               @map("readme_path") @db.VarChar(255)
+  rootPath            String               @map("root_path") @db.VarChar(255)
+  isEnabled           Boolean              @default(true) @map("is_enabled")
+  createdAt           DateTime             @default(now()) @map("created_at") @db.DateTime(0)
+  updatedAt           DateTime             @updatedAt @map("updated_at") @db.DateTime(0)
+  category            LabCategory          @relation(fields: [categoryId], references: [id], onUpdate: Cascade)
+  variants            LabVariant[]
+  tagRelations        LabTagRelation[]
+  learningProgresses  LearningProgress[]
+  verificationRecords VerificationRecord[]
+  labRunRecords       LabRunRecord[]
+
+  @@index([categoryId, sortOrder])
+  @@index([status, isEnabled])
+  @@map("labs")
+}
+
+model LabVariant {
+  id                 BigInt   @id @default(autoincrement()) @db.UnsignedBigInt
+  labId              BigInt   @map("lab_id") @db.UnsignedBigInt
+  variantKey         String   @map("variant_key") @db.VarChar(32)
+  title              String   @db.VarChar(100)
+  description        String   @db.VarChar(255)
+  entryKey           String   @map("entry_key") @db.VarChar(100)
+  expectedOutcome    String   @map("expected_outcome") @db.VarChar(255)
+  supportsAutomation Boolean  @default(false) @map("supports_automation")
+  isEnabled          Boolean  @default(true) @map("is_enabled")
+  createdAt          DateTime @default(now()) @map("created_at") @db.DateTime(0)
+  updatedAt          DateTime @updatedAt @map("updated_at") @db.DateTime(0)
+  lab                Lab      @relation(fields: [labId], references: [id], onUpdate: Cascade)
+
+  @@unique([labId, variantKey])
+  @@map("lab_variants")
+}
+
+model LabTag {
+  id           BigInt           @id @default(autoincrement()) @db.UnsignedBigInt
+  tagCode      String           @unique @map("tag_code") @db.VarChar(64)
+  tagName      String           @map("tag_name") @db.VarChar(100)
+  createdAt    DateTime         @default(now()) @map("created_at") @db.DateTime(0)
+  tagRelations LabTagRelation[]
+
+  @@map("lab_tags")
+}
+
+model LabTagRelation {
+  id        BigInt   @id @default(autoincrement()) @db.UnsignedBigInt
+  labId     BigInt   @map("lab_id") @db.UnsignedBigInt
+  tagId     BigInt   @map("tag_id") @db.UnsignedBigInt
+  createdAt DateTime @default(now()) @map("created_at") @db.DateTime(0)
+  lab       Lab      @relation(fields: [labId], references: [id], onUpdate: Cascade)
+  tag       LabTag   @relation(fields: [tagId], references: [id], onUpdate: Cascade)
+
+  @@unique([labId, tagId])
+  @@map("lab_tag_relations")
+}
+
+model LearningProgress {
+  id                BigInt    @id @default(autoincrement()) @db.UnsignedBigInt
+  userId            BigInt    @map("user_id") @db.UnsignedBigInt
+  labId             BigInt    @map("lab_id") @db.UnsignedBigInt
+  currentVariantKey String    @map("current_variant_key") @db.VarChar(32)
+  status            String    @db.VarChar(32)
+  startedAt         DateTime? @map("started_at") @db.DateTime(0)
+  lastViewedAt      DateTime? @map("last_viewed_at") @db.DateTime(0)
+  completedAt       DateTime? @map("completed_at") @db.DateTime(0)
+  notes             String?   @db.Text
+  createdAt         DateTime  @default(now()) @map("created_at") @db.DateTime(0)
+  updatedAt         DateTime  @updatedAt @map("updated_at") @db.DateTime(0)
+  user              User      @relation(fields: [userId], references: [id], onUpdate: Cascade)
+  lab               Lab       @relation(fields: [labId], references: [id], onUpdate: Cascade)
+
+  @@unique([userId, labId])
+  @@index([userId, status])
+  @@map("learning_progress")
+}
+
+model VerificationRecord {
+  id               BigInt    @id @default(autoincrement()) @db.UnsignedBigInt
+  userId           BigInt?   @map("user_id") @db.UnsignedBigInt
+  labId            BigInt    @map("lab_id") @db.UnsignedBigInt
+  variantKey       String    @map("variant_key") @db.VarChar(32)
+  verificationType String    @map("verification_type") @db.VarChar(32)
+  result           String    @db.VarChar(32)
+  summary          String    @db.VarChar(255)
+  detailsJson      Json?     @map("details_json")
+  triggeredBy      String    @map("triggered_by") @db.VarChar(32)
+  createdAt        DateTime  @default(now()) @map("created_at") @db.DateTime(0)
+  user             User?     @relation(fields: [userId], references: [id], onUpdate: Cascade)
+  lab              Lab       @relation(fields: [labId], references: [id], onUpdate: Cascade)
+
+  @@index([labId, variantKey, verificationType, createdAt])
+  @@index([userId, createdAt])
+  @@map("verification_records")
+}
+
+model LabRunRecord {
+  id         BigInt    @id @default(autoincrement()) @db.UnsignedBigInt
+  userId     BigInt?   @map("user_id") @db.UnsignedBigInt
+  labId      BigInt    @map("lab_id") @db.UnsignedBigInt
+  variantKey String    @map("variant_key") @db.VarChar(32)
+  runType    String    @map("run_type") @db.VarChar(32)
+  entryKey   String    @map("entry_key") @db.VarChar(100)
+  status     String    @db.VarChar(32)
+  startedAt  DateTime? @map("started_at") @db.DateTime(0)
+  endedAt    DateTime? @map("ended_at") @db.DateTime(0)
+  extraJson  Json?     @map("extra_json")
+  createdAt  DateTime  @default(now()) @map("created_at") @db.DateTime(0)
+  user       User?     @relation(fields: [userId], references: [id], onUpdate: Cascade)
+  lab        Lab       @relation(fields: [labId], references: [id], onUpdate: Cascade)
+
+  @@index([labId, createdAt])
+  @@map("lab_run_records")
+}
