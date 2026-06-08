@@ -1,0 +1,96 @@
+﻿{
+    "id":  "web.path-traversal",
+    "slug":  "path-traversal",
+    "title":  "目录遍历",
+    "category":  "web",
+    "subcategory":  "path-traversal",
+    "mode":  "interactive",
+    "severity":  "high",
+    "difficulty":  "intermediate",
+    "summary":  "目录遍历实验占位。",
+    "status":  "planned",
+    "phase":  "phase-1",
+    "tags":  [
+                 "web",
+                 "path-traversal"
+             ],
+    "knowledgePoints":  [
+
+                        ],
+    "variants":  [
+                     {
+                         "key":  "vuln",
+                         "title":  "漏洞版",
+                         "enabled":  true,
+                         "description":  "一期占位，后续补充漏洞实现。",
+                         "entryKey":  "vuln-entry",
+                         "expectedOutcome":  "后续补充。",
+                         "supportsAutomation":  false
+                     },
+                     {
+                         "key":  "fixed",
+                         "title":  "修复版",
+                         "enabled":  true,
+                         "description":  "一期占位，后续补充修复实现。",
+                         "entryKey":  "fixed-entry",
+                         "expectedOutcome":  "后续补充。",
+                         "supportsAutomation":  false
+                     }
+                 ],
+    "entrypoints":  {
+                        "web":  [
+
+                                ],
+                        "api":  [
+
+                                ],
+                        "scripts":  [
+
+                                    ],
+                        "docs":  [
+                                     {
+                                         "key":  "overview",
+                                         "path":  "labs/web/path-traversal/README.md",
+                                         "description":  "实验总说明"
+                                     }
+                                 ]
+                    },
+    "verification":  {
+                         "manual":  {
+                                        "supported":  true,
+                                        "stepsDocPath":  "labs/web/path-traversal/docs/.gitkeep",
+                                        "expectedSignals":  [
+                                                                "后续补充。"
+                                                            ]
+                                    },
+                         "automation":  {
+                                            "supported":  false,
+                                            "playwright":  {
+                                                               "enabled":  false,
+                                                               "specPath":  ""
+                                                           },
+                                            "apiTest":  {
+                                                            "enabled":  false,
+                                                            "specPath":  ""
+                                                        },
+                                            "scriptVerification":  {
+                                                                       "enabled":  false,
+                                                                       "scriptKeys":  [
+
+                                                                                      ]
+                                                                   }
+                                        }
+                     },
+    "prerequisites":  [
+
+                      ],
+    "paths":  {
+                  "root":  "labs/web/path-traversal",
+                  "readme":  "labs/web/path-traversal/README.md",
+                  "vuln":  "labs/web/path-traversal/vuln",
+                  "fixed":  "labs/web/path-traversal/fixed",
+                  "mock":  "labs/web/path-traversal/mock",
+                  "docs":  "labs/web/path-traversal/docs",
+                  "scripts":  "tools/lab-scripts/web/path-traversal"
+              }
+}

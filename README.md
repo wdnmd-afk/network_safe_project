@@ -1,6 +1,6 @@
 # network_safe_project
 
-一个面向个人学习的网络安全训练平台规划仓库。
+一个面向个人学习的网络安全训练平台仓库。
 
 项目目标是在 Windows 本机环境下，使用 `Node.js + MySQL + Vue` 构建一个覆盖常见网络安全问题的学习系统，并通过“漏洞版 / 修复版”对照模式支持实验、验证和后续自动化测试。
 
@@ -62,38 +62,49 @@
 - 自动化测试复用
 - 样本与产物管理
 
-## 4. 建议目录结构
+## 4. 当前目录结构
 
 ```text
 network-safe-project/
 ├─ apps/
 │  ├─ web/
-│  ├─ server/
-│  └─ lab-gateway/
+│  └─ server/
 ├─ packages/
 │  ├─ shared/
-│  ├─ lab-schema/
-│  └─ security-content/
+│  ├─ configs/
+│  └─ testing/
 ├─ labs/
 │  ├─ web/
 │  ├─ auth/
 │  ├─ network/
-│  └─ social/
+│  ├─ social/
+│  ├─ client/
+│  ├─ ai/
+│  ├─ malware/
+│  ├─ supply-chain/
+│  └─ infrastructure/
 ├─ tools/
 │  └─ lab-scripts/
 ├─ docs/
 │  ├─ execution/
-│  ├─ design/
-│  ├─ labs/
-│  └─ testing/
+│  └─ design/
 ├─ database/
 │  ├─ schema/
 │  ├─ seeds/
-│  └─ fixtures/
+│  └─ migrations/
 ├─ nginx/
-│  └─ conf/
 └─ pnpm-workspace.yaml
 ```
+
+当前仓库已经完成：
+
+- 文档体系
+- monorepo 根配置
+- `apps/web` 与 `apps/server` 基础占位
+- `packages/shared`、`packages/configs`、`packages/testing` 基础占位
+- `database/`、`nginx/` 基础目录
+- 一期 15 个实验的目录骨架与 `meta.json` 占位
+- 对应脚本目录骨架
 
 ## 5. 实验目录规范
 
@@ -182,24 +193,34 @@ tools/lab-scripts/<category>/<scene>/
 
 ## 9. 当前状态
 
-当前仓库处于规划阶段，尚未开始代码实现。
+当前仓库处于：**实施规划完成，工程骨架已落地，真实业务实现尚未开始**
 
 当前已完成：
 
 - 项目目标与约束确认
 - 总体架构划分
-- 目录结构草案
+- 文档体系闭环
+- monorepo 根配置
 - 实验目录规范
 - 实验脚本目录规范
-- 项目级文档落地
+- 一期实验目录骨架
+- 一期脚本目录骨架
+
+当前尚未完成：
+
+- 前后端可运行应用初始化
+- 元数据扫描与实验注册
+- 平台核心数据库 schema 实现
+- `web/xss` 样板实验真实业务逻辑
+- 自动化测试落地
 
 ## 10. 下一步
 
-在开始实现前，建议先完成以下事项：
+当前最直接的下一步如下：
 
-1. 细化技术栈与版本策略文档
-2. 定义实验元数据结构
-3. 列出一期实验清单
-4. 设计数据库基础表
-5. 规划自动化测试体系
-6. 再开始搭建 monorepo 骨架
+1. 初始化 `apps/web` 为可运行的 Vue + Vite 应用
+2. 初始化 `apps/server` 为可运行的 Node + Express 应用
+3. 建立 `packages/shared` 中的实验元数据类型与校验
+4. 实现实验扫描、注册与实验列表接口
+5. 落地平台核心数据库 schema
+6. 开始 `web/xss` 样板实验

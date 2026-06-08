@@ -1,0 +1,96 @@
+﻿{
+    "id":  "auth.idor",
+    "slug":  "idor",
+    "title":  "IDOR",
+    "category":  "auth",
+    "subcategory":  "idor",
+    "mode":  "interactive",
+    "severity":  "high",
+    "difficulty":  "intermediate",
+    "summary":  "IDOR 实验占位。",
+    "status":  "planned",
+    "phase":  "phase-1",
+    "tags":  [
+                 "auth",
+                 "idor"
+             ],
+    "knowledgePoints":  [
+
+                        ],
+    "variants":  [
+                     {
+                         "key":  "vuln",
+                         "title":  "漏洞版",
+                         "enabled":  true,
+                         "description":  "一期占位，后续补充漏洞实现。",
+                         "entryKey":  "vuln-entry",
+                         "expectedOutcome":  "后续补充。",
+                         "supportsAutomation":  false
+                     },
+                     {
+                         "key":  "fixed",
+                         "title":  "修复版",
+                         "enabled":  true,
+                         "description":  "一期占位，后续补充修复实现。",
+                         "entryKey":  "fixed-entry",
+                         "expectedOutcome":  "后续补充。",
+                         "supportsAutomation":  false
+                     }
+                 ],
+    "entrypoints":  {
+                        "web":  [
+
+                                ],
+                        "api":  [
+
+                                ],
+                        "scripts":  [
+
+                                    ],
+                        "docs":  [
+                                     {
+                                         "key":  "overview",
+                                         "path":  "labs/auth/idor/README.md",
+                                         "description":  "实验总说明"
+                                     }
+                                 ]
+                    },
+    "verification":  {
+                         "manual":  {
+                                        "supported":  true,
+                                        "stepsDocPath":  "labs/auth/idor/docs/.gitkeep",
+                                        "expectedSignals":  [
+                                                                "后续补充。"
+                                                            ]
+                                    },
+                         "automation":  {
+                                            "supported":  false,
+                                            "playwright":  {
+                                                               "enabled":  false,
+                                                               "specPath":  ""
+                                                           },
+                                            "apiTest":  {
+                                                            "enabled":  false,
+                                                            "specPath":  ""
+                                                        },
+                                            "scriptVerification":  {
+                                                                       "enabled":  false,
+                                                                       "scriptKeys":  [
+
+                                                                                      ]
+                                                                   }
+                                        }
+                     },
+    "prerequisites":  [
+
+                      ],
+    "paths":  {
+                  "root":  "labs/auth/idor",
+                  "readme":  "labs/auth/idor/README.md",
+                  "vuln":  "labs/auth/idor/vuln",
+                  "fixed":  "labs/auth/idor/fixed",
+                  "mock":  "labs/auth/idor/mock",
+                  "docs":  "labs/auth/idor/docs",
+                  "scripts":  "tools/lab-scripts/auth/idor"
+              }
+}

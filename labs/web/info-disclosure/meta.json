@@ -1,0 +1,96 @@
+﻿{
+    "id":  "web.info-disclosure",
+    "slug":  "info-disclosure",
+    "title":  "信息泄露",
+    "category":  "web",
+    "subcategory":  "info-disclosure",
+    "mode":  "interactive",
+    "severity":  "medium",
+    "difficulty":  "beginner",
+    "summary":  "信息泄露实验占位。",
+    "status":  "planned",
+    "phase":  "phase-1",
+    "tags":  [
+                 "web",
+                 "info-disclosure"
+             ],
+    "knowledgePoints":  [
+
+                        ],
+    "variants":  [
+                     {
+                         "key":  "vuln",
+                         "title":  "漏洞版",
+                         "enabled":  true,
+                         "description":  "一期占位，后续补充漏洞实现。",
+                         "entryKey":  "vuln-entry",
+                         "expectedOutcome":  "后续补充。",
+                         "supportsAutomation":  false
+                     },
+                     {
+                         "key":  "fixed",
+                         "title":  "修复版",
+                         "enabled":  true,
+                         "description":  "一期占位，后续补充修复实现。",
+                         "entryKey":  "fixed-entry",
+                         "expectedOutcome":  "后续补充。",
+                         "supportsAutomation":  false
+                     }
+                 ],
+    "entrypoints":  {
+                        "web":  [
+
+                                ],
+                        "api":  [
+
+                                ],
+                        "scripts":  [
+
+                                    ],
+                        "docs":  [
+                                     {
+                                         "key":  "overview",
+                                         "path":  "labs/web/info-disclosure/README.md",
+                                         "description":  "实验总说明"
+                                     }
+                                 ]
+                    },
+    "verification":  {
+                         "manual":  {
+                                        "supported":  true,
+                                        "stepsDocPath":  "labs/web/info-disclosure/docs/.gitkeep",
+                                        "expectedSignals":  [
+                                                                "后续补充。"
+                                                            ]
+                                    },
+                         "automation":  {
+                                            "supported":  false,
+                                            "playwright":  {
+                                                               "enabled":  false,
+                                                               "specPath":  ""
+                                                           },
+                                            "apiTest":  {
+                                                            "enabled":  false,
+                                                            "specPath":  ""
+                                                        },
+                                            "scriptVerification":  {
+                                                                       "enabled":  false,
+                                                                       "scriptKeys":  [
+
+                                                                                      ]
+                                                                   }
+                                        }
+                     },
+    "prerequisites":  [
+
+                      ],
+    "paths":  {
+                  "root":  "labs/web/info-disclosure",
+                  "readme":  "labs/web/info-disclosure/README.md",
+                  "vuln":  "labs/web/info-disclosure/vuln",
+                  "fixed":  "labs/web/info-disclosure/fixed",
+                  "mock":  "labs/web/info-disclosure/mock",
+                  "docs":  "labs/web/info-disclosure/docs",
+                  "scripts":  "tools/lab-scripts/web/info-disclosure"
+              }
+}

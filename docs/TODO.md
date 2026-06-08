@@ -24,9 +24,9 @@
 
 ### 2.1 当前阶段
 
-当前处于：**规划与文档阶段**
+当前处于：**实施规划阶段**
 
-目标是先把项目范围、规则、阶段拆分、内容覆盖方式和进度跟踪文档建立完整，再进入工程实现。
+目标是把已完成的范围、规则、元数据、数据库与一期实验设计收束为可执行实施顺序，然后进入工程骨架实现。
 
 ### 2.2 已完成
 
@@ -40,31 +40,36 @@
 - [x] 落地执行文档
 - [x] 落地项目范围与安全内容清单文档
 - [x] 落地当前 TODO 进度文档
+- [x] 落地一期落地实施计划文档
+- [x] 落地平台最小运行约定文档
+- [x] 落地 `web/xss` 样板实验规格文档
 
 ### 2.3 进行中
 
-- [ ] 统一文档体系，确保后续实现前文档口径一致
+- [ ] 以 `web/xss` 为第一条纵向样板实验开始实现真实业务逻辑
+- [ ] 建立元数据扫描、实验注册与列表接口
 
 ### 2.4 待办清单
 
 #### 文档与设计
 
-- [ ] 补充技术选型与版本策略文档
-- [ ] 补充实验元数据结构文档
-- [ ] 补充数据库基础表设计文档
-- [ ] 补充自动化测试规划文档
-- [ ] 补充一期实验清单文档
+- [x] 补充技术选型与版本策略文档
+- [x] 补充实验元数据结构文档
+- [x] 补充数据库基础表设计文档
+- [x] 补充自动化测试规划文档
+- [x] 补充一期落地实施计划文档
+- [x] 补充一期实验清单文档
 
 #### 工程骨架
 
-- [ ] 初始化 monorepo 基础目录
-- [ ] 建立 `apps/web`
-- [ ] 建立 `apps/server`
-- [ ] 建立 `packages/shared`
-- [ ] 建立 `labs/` 目录骨架
-- [ ] 建立 `tools/lab-scripts/` 目录骨架
-- [ ] 建立 `database/` 目录骨架
-- [ ] 建立 `nginx/` 目录骨架
+- [x] 初始化 monorepo 基础目录
+- [x] 建立 `apps/web`
+- [x] 建立 `apps/server`
+- [x] 建立 `packages/shared`
+- [x] 建立 `labs/` 目录骨架
+- [x] 建立 `tools/lab-scripts/` 目录骨架
+- [x] 建立 `database/` 目录骨架
+- [x] 建立 `nginx/` 目录骨架
 
 #### 一期实验重点
 
@@ -83,46 +88,44 @@
 - `当前落点`：当前已经落地的文档或进度位置
 - `未来代码位置`：后续计划落到哪个目录
 
----
-
 ## 4. Web 层
 
 | 内容 | 状态 | 落地方式 | 当前落点 | 未来代码位置 |
 |---|---|---|---|---|
-| XSS | 规划中 | 真实交互靶场 | `docs/design/project-scope-and-security-content.md` | `labs/web/xss/` |
-| CSRF | 规划中 | 真实交互靶场 | `docs/design/project-scope-and-security-content.md` | `labs/web/csrf/` |
+| XSS | 进行中 | 真实交互靶场 | `labs/web/xss/`、`tools/lab-scripts/web/xss/` | `labs/web/xss/` |
+| CSRF | 进行中 | 真实交互靶场 | `labs/web/csrf/`、`tools/lab-scripts/web/csrf/` | `labs/web/csrf/` |
 | 点击劫持 | 规划中 | 真实交互靶场 | `docs/design/project-scope-and-security-content.md` | `labs/web/clickjacking/` |
-| SSRF | 规划中 | 真实交互靶场 / 脚本实验 | `docs/design/project-scope-and-security-content.md` | `labs/web/ssrf/` |
+| SSRF | 进行中 | 真实交互靶场 / 脚本实验 | `labs/web/ssrf/`、`tools/lab-scripts/web/ssrf/` | `labs/web/ssrf/` |
 | 开放重定向 | 规划中 | 真实交互靶场 | `docs/design/project-scope-and-security-content.md` | `labs/web/open-redirect/` |
-| 文件上传漏洞 | 规划中 | 真实交互靶场 | `docs/design/project-scope-and-security-content.md` | `labs/web/file-upload/` |
-| 目录遍历 | 规划中 | 真实交互靶场 | `docs/design/project-scope-and-security-content.md` | `labs/web/path-traversal/` |
-| 信息泄露 | 规划中 | 真实交互靶场 / 案例化演示 | `docs/design/project-scope-and-security-content.md` | `labs/web/info-disclosure/` |
+| 文件上传漏洞 | 进行中 | 真实交互靶场 | `labs/web/file-upload/`、`tools/lab-scripts/web/file-upload/` | `labs/web/file-upload/` |
+| 目录遍历 | 进行中 | 真实交互靶场 | `labs/web/path-traversal/`、`tools/lab-scripts/web/path-traversal/` | `labs/web/path-traversal/` |
+| 信息泄露 | 进行中 | 真实交互靶场 / 案例化演示 | `labs/web/info-disclosure/`、`tools/lab-scripts/web/info-disclosure/` | `labs/web/info-disclosure/` |
 
 ## 5. 注入类
 
 | 内容 | 状态 | 落地方式 | 当前落点 | 未来代码位置 |
 |---|---|---|---|---|
-| SQL 注入 | 规划中 | 真实交互靶场 | `docs/design/project-scope-and-security-content.md` | `labs/web/sql-injection/` |
+| SQL 注入 | 进行中 | 真实交互靶场 | `labs/web/sql-injection/`、`tools/lab-scripts/web/sql-injection/` | `labs/web/sql-injection/` |
 | NoSQL 注入 | 规划中 | 真实交互靶场 / 案例化演示 | `docs/design/project-scope-and-security-content.md` | `labs/web/nosql-injection/` |
-| 命令注入 | 规划中 | 真实交互靶场 / 脚本实验 | `docs/design/project-scope-and-security-content.md` | `labs/web/command-injection/` |
+| 命令注入 | 进行中 | 真实交互靶场 / 脚本实验 | `labs/web/command-injection/`、`tools/lab-scripts/web/command-injection/` | `labs/web/command-injection/` |
 | LDAP 注入 | 规划中 | 案例化演示 | `docs/design/project-scope-and-security-content.md` | `labs/web/ldap-injection/` |
 | XPath 注入 | 规划中 | 案例化演示 | `docs/design/project-scope-and-security-content.md` | `labs/web/xpath-injection/` |
 | CRLF 注入 | 规划中 | 真实交互靶场 / 案例化演示 | `docs/design/project-scope-and-security-content.md` | `labs/web/crlf-injection/` |
-| 模板注入（SSTI） | 规划中 | 真实交互靶场 | `docs/design/project-scope-and-security-content.md` | `labs/web/ssti/` |
-| XXE 注入 | 规划中 | 真实交互靶场 | `docs/design/project-scope-and-security-content.md` | `labs/web/xxe/` |
+| 模板注入（SSTI） | 进行中 | 真实交互靶场 | `labs/web/ssti/`、`tools/lab-scripts/web/ssti/` | `labs/web/ssti/` |
+| XXE 注入 | 进行中 | 真实交互靶场 | `labs/web/xxe/`、`tools/lab-scripts/web/xxe/` | `labs/web/xxe/` |
 
 ## 6. 认证 / 授权
 
 | 内容 | 状态 | 落地方式 | 当前落点 | 未来代码位置 |
 |---|---|---|---|---|
-| 暴力破解 | 规划中 | 真实交互靶场 | `docs/design/project-scope-and-security-content.md` | `labs/auth/brute-force/` |
+| 暴力破解 | 进行中 | 真实交互靶场 | `labs/auth/brute-force/`、`tools/lab-scripts/auth/brute-force/` | `labs/auth/brute-force/` |
 | 凭据填充 | 规划中 | 真实交互靶场 / 案例化演示 | `docs/design/project-scope-and-security-content.md` | `labs/auth/credential-stuffing/` |
 | 会话劫持 | 规划中 | 真实交互靶场 / 案例化演示 | `docs/design/project-scope-and-security-content.md` | `labs/auth/session-hijacking/` |
-| 会话固定 | 规划中 | 真实交互靶场 | `docs/design/project-scope-and-security-content.md` | `labs/auth/session-fixation/` |
-| JWT 攻击 | 规划中 | 真实交互靶场 | `docs/design/project-scope-and-security-content.md` | `labs/auth/jwt/` |
+| 会话固定 | 进行中 | 真实交互靶场 | `labs/auth/session-fixation/`、`tools/lab-scripts/auth/session-fixation/` | `labs/auth/session-fixation/` |
+| JWT 攻击 | 进行中 | 真实交互靶场 | `labs/auth/jwt/`、`tools/lab-scripts/auth/jwt/` | `labs/auth/jwt/` |
 | OAuth 漏洞 | 规划中 | 真实交互靶场 / 案例化演示 | `docs/design/project-scope-and-security-content.md` | `labs/auth/oauth/` |
-| 权限提升 | 规划中 | 真实交互靶场 | `docs/design/project-scope-and-security-content.md` | `labs/auth/privilege-escalation/` |
-| IDOR | 规划中 | 真实交互靶场 | `docs/design/project-scope-and-security-content.md` | `labs/auth/idor/` |
+| 权限提升 | 进行中 | 真实交互靶场 | `labs/auth/privilege-escalation/`、`tools/lab-scripts/auth/privilege-escalation/` | `labs/auth/privilege-escalation/` |
+| IDOR | 进行中 | 真实交互靶场 | `labs/auth/idor/`、`tools/lab-scripts/auth/idor/` | `labs/auth/idor/` |
 
 ## 7. 网络 / 传输层
 
@@ -203,9 +206,10 @@
 ## 14. 风险与待确认
 
 - [ ] 一期实验的具体优先级还未最终锁定
-- [ ] 技术版本策略还未文档化
-- [ ] 数据库表结构尚未定义
-- [ ] 自动化测试边界尚未细化到工具级
+- [x] 技术版本策略已文档化：`docs/design/tech-stack-and-version-strategy.md`
+- [x] 实验元数据结构已文档化：`docs/design/lab-metadata-structure.md`
+- [x] 数据库基础表结构已文档化：`docs/design/database-foundation-schema.md`
+- [x] 自动化测试边界已文档化：`docs/design/automation-testing-plan.md`
 
 ## 15. 更新规则
 
@@ -216,4 +220,4 @@
 3. 当前落点
 4. 未来代码位置
 
-只要某一种内容开始写文档、脚本、页面或后端接口，就要在本文件里体现出来。\n"}}]}ારીઓ to=mcp__filesystem.write_file code  亿贝
+只要某一种内容开始写文档、脚本、页面或后端接口，就要在本文件里体现出来。

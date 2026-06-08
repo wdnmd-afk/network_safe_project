@@ -1,0 +1,11 @@
+{
+  "name": "@network-safe/server",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "node src/index.js",
+    "build": "echo server build placeholder",
+    "test": "echo server test placeholder"
+  }
+}
