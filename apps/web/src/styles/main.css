@@ -396,6 +396,21 @@ td small {
   gap: 1rem;
 }
 
+.form-hint,
+.form-error {
+  margin: 0;
+  font-size: 0.88rem;
+  line-height: 1.5;
+}
+
+.form-hint {
+  color: #cbd5e1;
+}
+
+.form-error {
+  color: #fecaca;
+}
+
 .profile-panel {
   display: flex;
   align-items: center;

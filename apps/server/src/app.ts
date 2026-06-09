@@ -1,5 +1,6 @@
 import express from "express";
 
+import { createAuthService, type AuthService } from "./services/auth.js";
 import { createLabRegistry } from "./services/lab-registry.js";
 
 type DatabaseHealth = {
@@ -10,6 +11,7 @@ type DatabaseHealth = {
 type CreateAppOptions = {
   checkDatabaseHealth?: () => Promise<DatabaseHealth>;
   labRegistry?: ReturnType<typeof createLabRegistry>;
+  authService?: AuthService;
 };
 
 function getTimestamp() {
@@ -27,6 +29,9 @@ function getErrorMessage(error: unknown) {
 export function createApp(options: CreateAppOptions = {}) {
   const app = express();
   const labRegistry = options.labRegistry ?? createLabRegistry();
+  const authService = options.authService ?? createAuthService();
+
+  app.use(express.json());
 
   app.get("/api/health", (_req, res) => {
     res.status(200).json({
@@ -59,6 +64,68 @@ export function createApp(options: CreateAppOptions = {}) {
         timestamp: getTimestamp(),
       });
     }
+  });
+
+  app.post("/api/auth/login", async (req, res, next) => {
+    try {
+      const username = typeof req.body?.username === "string" ? req.body.username : "";
+      const password = typeof req.body?.password === "string" ? req.body.password : "";
+      const loginResult = await authService.login({
+        username,
+        password,
+      });
+
+      if (!loginResult) {
+        res.status(401).json({
+          status: "error",
+          message: "invalid credentials",
+        });
+        return;
+      }
+
+      res.status(200).json(loginResult);
+    } catch (error) {
+      next(error);
+    }
+  });
+
+  app.get("/api/auth/me", async (req, res, next) => {
+    try {
+      const authorization = req.header("authorization") ?? "";
+      const token = authorization.startsWith("Bearer ")
+        ? authorization.slice("Bearer ".length)
+        : "";
+
+      if (!token) {
+        res.status(401).json({
+          status: "error",
+          message: "missing session token",
+        });
+        return;
+      }
+
+      const user = await authService.getCurrentUser(token);
+
+      if (!user) {
+        res.status(401).json({
+          status: "error",
+          message: "invalid session token",
+        });
+        return;
+      }
+
+      res.status(200).json({
+        user,
+      });
+    } catch (error) {
+      next(error);
+    }
+  });
+
+  app.post("/api/auth/logout", (_req, res) => {
+    res.status(200).json({
+      status: "ok",
+    });
   });
 
   app.get("/api/labs", async (_req, res, next) => {
