@@ -12,6 +12,7 @@
     "prisma:validate": "node ./scripts/prisma-validate.mjs"
   },
   "dependencies": {
+    "@network-safe/shared": "workspace:*",
     "dotenv": "^16.6.1",
     "express": "^5.1.0"
   },

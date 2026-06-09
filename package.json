@@ -19,6 +19,10 @@
     "build:server": "pnpm --filter @network-safe/server build",
     "test:web": "pnpm --filter @network-safe/web test",
     "test:server": "pnpm --filter @network-safe/server test",
-    "test:shared": "pnpm --filter @network-safe/shared test"
+    "test:shared": "pnpm --filter @network-safe/shared test",
+    "test:smoke": "pnpm --filter @network-safe/testing smoke",
+    "test:e2e": "pnpm --filter @network-safe/testing e2e",
+    "test:playwright": "pnpm test:e2e",
+    "test:automation": "pnpm test:server && pnpm test:web -- --run && pnpm test:shared && pnpm test:smoke && pnpm test:e2e"
   }
 }
