@@ -1,9 +1,10 @@
 import "dotenv/config";
 
 import { createApp } from "./app.js";
+import { getServerPort } from "./config/runtime.js";
 import { checkDatabaseHealth } from "./services/database-health.js";
 
-const port = Number(process.env.PORT || 3000);
+const port = getServerPort();
 const app = createApp({
   checkDatabaseHealth,
 });
