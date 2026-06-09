@@ -14,7 +14,7 @@ test("smoke runner stops managed services after checks complete", async () => {
   const checks = [
     {
       name: "web-home",
-      url: "http://127.0.0.1:6666/",
+      url: "http://127.0.0.1:6670/",
       kind: "text",
       expectedText: "SafeMart",
     },

@@ -9,9 +9,9 @@ export const smokeRuntime = {
   repoRoot,
   webRoot: path.join(repoRoot, "apps/web"),
   serverRoot: path.join(repoRoot, "apps/server"),
-  webOrigin: "http://127.0.0.1:6666",
+  webOrigin: "http://127.0.0.1:6670",
   apiOrigin: "http://127.0.0.1:6667",
-  webPublicOrigin: "http://localhost:6666",
+  webPublicOrigin: "http://localhost:6670",
 };
 
 export const smokeChecks = [

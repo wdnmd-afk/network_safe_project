@@ -12,7 +12,7 @@ pnpm dev:web
 访问前端：
 
 ```text
-http://localhost:6666/labs
+http://localhost:6670/labs
 ```
 
 ## 漏洞版验证

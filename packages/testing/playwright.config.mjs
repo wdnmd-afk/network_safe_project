@@ -7,7 +7,6 @@ import {
   browserChannel,
   playwrightGlobalSetup,
   playwrightBaseUrl,
-  unsafePortBypassArg,
 } from "./src/playwright/config.mjs";
 
 export default defineConfig({
@@ -30,9 +29,6 @@ export default defineConfig({
       use: {
         ...devices["Desktop Chrome"],
         channel: browserChannel,
-        launchOptions: {
-          args: [unsafePortBypassArg],
-        },
       },
     },
   ],

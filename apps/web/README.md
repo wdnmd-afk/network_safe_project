@@ -25,7 +25,7 @@ pnpm --filter @network-safe/web dev
 默认访问：
 
 ```text
-http://localhost:6666/
+http://localhost:6670/
 ```
 
 ## 最小验证
