@@ -1,0 +1,20 @@
+import assert from "node:assert/strict";
+import test from "node:test";
+
+import { smokeChecks, smokeRuntime } from "../src/smoke/config.mjs";
+
+test("smoke runtime uses local frontend and backend ports", () => {
+  assert.equal(smokeRuntime.webOrigin, "http://127.0.0.1:6666");
+  assert.equal(smokeRuntime.apiOrigin, "http://127.0.0.1:6667");
+});
+
+test("smoke checks cover web home, backend health, labs API, and frontend proxy", () => {
+  const checkNames = smokeChecks.map((check) => check.name);
+
+  assert.deepEqual(checkNames, [
+    "web-home",
+    "api-health-direct",
+    "api-labs-direct",
+    "api-health-proxy",
+  ]);
+});
