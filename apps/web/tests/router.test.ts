@@ -14,6 +14,8 @@ describe("SafeMart 路由清单", () => {
       "/orders",
       "/support",
       "/labs",
+      "/labs/web/xss/vuln",
+      "/labs/web/xss/fixed",
     ]);
   });
 });

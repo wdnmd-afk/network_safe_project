@@ -482,6 +482,99 @@ td small {
   color: #cbd5e1;
 }
 
+.variant-switch,
+.form-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.85rem;
+}
+
+.variant-switch {
+  margin: 1.5rem 0;
+}
+
+.variant-switch a {
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  border: 1px solid rgba(248, 250, 252, 0.18);
+  border-radius: 8px;
+  padding: 0.75rem 1rem;
+  color: #f8fafc;
+  background: rgba(15, 23, 42, 0.62);
+  font-weight: 800;
+}
+
+.variant-switch a.router-link-active {
+  color: #111827;
+  background: #fbbf24;
+}
+
+.lab-note {
+  display: grid;
+  gap: 0.4rem;
+  max-width: 640px;
+  border-left: 4px solid #f59e0b;
+  border-radius: 8px;
+  padding: 1rem;
+  background: rgba(245, 158, 11, 0.12);
+}
+
+.lab-note span {
+  color: #cbd5e1;
+}
+
+.xss-workbench {
+  display: grid;
+  gap: 1rem;
+}
+
+.secondary-button {
+  border: 1px solid rgba(248, 250, 252, 0.22);
+  color: #f8fafc;
+  background: rgba(15, 23, 42, 0.7);
+}
+
+.xss-preview,
+.message-card {
+  display: grid;
+  gap: 0.85rem;
+}
+
+.message-card {
+  border: 1px solid rgba(248, 250, 252, 0.14);
+  border-radius: 8px;
+  padding: 1rem;
+  background: rgba(15, 23, 42, 0.72);
+}
+
+.message-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  color: #cbd5e1;
+}
+
+.message-meta strong {
+  color: #f8fafc;
+}
+
+.message-body {
+  margin: 0;
+  overflow-wrap: anywhere;
+  color: #e2e8f0;
+}
+
+.message-body [data-xss-lab-signal] {
+  display: inline-flex;
+  border-radius: 6px;
+  padding: 0.15rem 0.45rem;
+  color: #111827;
+  background: #fbbf24;
+  font-weight: 800;
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,

@@ -36,4 +36,20 @@ export const routes: RouteRecordRaw[] = [
     name: "labs",
     component: () => import("../views/LabsView.vue"),
   },
+  {
+    path: "/labs/web/xss/vuln",
+    name: "lab-web-xss-vuln",
+    component: () => import("../views/XssLabView.vue"),
+    props: {
+      variant: "vuln",
+    },
+  },
+  {
+    path: "/labs/web/xss/fixed",
+    name: "lab-web-xss-fixed",
+    component: () => import("../views/XssLabView.vue"),
+    props: {
+      variant: "fixed",
+    },
+  },
 ];
