@@ -17,6 +17,21 @@ export type XssSubmission = {
   renderMode: XssRenderMode;
 };
 
+export type XssLearningProgressInput = {
+  variantKey: XssVariantKey;
+  status: "in-progress";
+  notes: string;
+};
+
+export type XssVerificationRecordInput = {
+  variantKey: XssVariantKey;
+  result: "passed";
+  summary: string;
+  details: {
+    signal: string;
+  };
+};
+
 export const xssSamplePayload =
   '<mark data-xss-lab-signal="xss">XSS 模拟信号</mark>';
 
@@ -54,5 +69,39 @@ export function createXssSubmission(
     title: config.key === "vuln" ? "漏洞版客服留言" : "修复版客服留言",
     renderedContent: message,
     renderMode: config.renderMode,
+  };
+}
+
+export function createXssLearningProgress(
+  config: XssVariantConfig,
+): XssLearningProgressInput {
+  return {
+    variantKey: config.key,
+    status: "in-progress",
+    notes: `进入 ${config.title}`,
+  };
+}
+
+export function createXssVerificationRecord(
+  config: XssVariantConfig,
+): XssVerificationRecordInput {
+  if (config.key === "vuln") {
+    return {
+      variantKey: config.key,
+      result: "passed",
+      summary: "漏洞版出现 XSS 模拟信号",
+      details: {
+        signal: "data-xss-lab-signal",
+      },
+    };
+  }
+
+  return {
+    variantKey: config.key,
+    result: "passed",
+    summary: "修复版原样显示 HTML 字符串",
+    details: {
+      signal: "text-rendered",
+    },
   };
 }

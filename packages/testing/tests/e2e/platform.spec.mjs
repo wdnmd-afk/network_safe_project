@@ -51,3 +51,42 @@ test("实验页展示真实元数据列表", async ({ page }) => {
   await expect(page.getByRole("link", { name: "漏洞版" }).first()).toBeVisible();
   await expect(page.getByRole("link", { name: "修复版" }).first()).toBeVisible();
 });
+
+test("XSS 漏洞版和修复版对同一样例呈现不同结果", async ({ page }) => {
+  const samplePayload =
+    '<mark data-xss-lab-signal="xss">XSS 模拟信号</mark>';
+
+  await page.goto("/labs/web/xss/vuln");
+  await page.getByRole("button", { name: "填入样例" }).click();
+  await page.getByRole("button", { name: "提交留言" }).click();
+
+  await expect(page.locator("[data-xss-lab-signal='xss']")).toBeVisible();
+
+  await page.goto("/labs/web/xss/fixed");
+  await page.getByRole("button", { name: "填入样例" }).click();
+  await page.getByRole("button", { name: "提交留言" }).click();
+
+  await expect(page.locator("[data-xss-lab-signal='xss']")).toHaveCount(0);
+  await expect(page.getByText(samplePayload)).toBeVisible();
+});
+
+test("登录用户完成 XSS 样例后可在账户中心看到实验记录", async ({ page }) => {
+  await page.goto("/login");
+
+  await page.getByLabel("用户名").fill("demo_user");
+  await page.getByLabel("密码").fill("Demo@123456");
+  await page.getByRole("button", { name: "登录" }).click();
+
+  await expect(page.getByRole("heading", { name: "账户中心" })).toBeVisible();
+
+  await page.goto("/labs/web/xss/fixed");
+  await page.getByRole("button", { name: "填入样例" }).click();
+  await page.getByRole("button", { name: "提交留言" }).click();
+
+  await page.goto("/account");
+
+  await expect(page.getByRole("heading", { name: "学习进度" })).toBeVisible();
+  await expect(page.getByText("fixed / completed")).toBeVisible();
+  await expect(page.getByRole("heading", { name: "最近验证" })).toBeVisible();
+  await expect(page.getByText("修复版原样显示 HTML 字符串").first()).toBeVisible();
+});

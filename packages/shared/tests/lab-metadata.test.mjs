@@ -27,6 +27,31 @@ test("validateLabMetadata accepts existing xss metadata", async () => {
   assert.equal(result.value.variants.length, 2);
 });
 
+test("xss metadata declares active automation and script verification entries", async () => {
+  const metadata = await readFixture("labs/web/xss/meta.json");
+  const result = validateLabMetadata(metadata);
+
+  assert.equal(result.ok, true);
+  assert.equal(result.value.status, "ready");
+  assert.equal(result.value.verification.automation.supported, true);
+  assert.deepEqual(result.value.verification.automation.playwright, {
+    enabled: true,
+    specPath: "packages/testing/tests/e2e/platform.spec.mjs",
+  });
+  assert.deepEqual(result.value.verification.automation.scriptVerification, {
+    enabled: true,
+    scriptKeys: ["xss-verify"],
+  });
+  assert.deepEqual(result.value.entrypoints.scripts, [
+    {
+      key: "xss-verify",
+      language: "ts",
+      path: "tools/lab-scripts/web/xss/verify.ts",
+      description: "本机受控 XSS 漏洞版与修复版差异验证配置",
+    },
+  ]);
+});
+
 test("validateLabMetadata rejects missing required fields", () => {
   const result = validateLabMetadata({
     id: "web.demo",

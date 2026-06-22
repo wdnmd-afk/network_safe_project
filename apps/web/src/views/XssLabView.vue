@@ -3,12 +3,19 @@ import { computed, ref, watch } from "vue";
 import { RouterLink } from "vue-router";
 
 import {
+  recordLearningProgress,
+  recordVerificationRecord,
+} from "../api/lab-records";
+import {
+  createXssLearningProgress,
   createXssSubmission,
+  createXssVerificationRecord,
   getXssVariantConfig,
   type XssSubmission,
   type XssVariantKey,
   xssSamplePayload,
 } from "../labs/xss";
+import { useSessionStore } from "../stores/session";
 
 const props = defineProps<{
   variant: XssVariantKey;
@@ -17,6 +24,41 @@ const props = defineProps<{
 const config = computed(() => getXssVariantConfig(props.variant));
 const message = ref("订单 #SM-2048 的状态说明没有及时更新。");
 const submissions = ref<XssSubmission[]>([]);
+const session = useSessionStore();
+
+async function recordProgress() {
+  if (!session.token) {
+    return;
+  }
+
+  try {
+    await recordLearningProgress(
+      "web",
+      "xss",
+      session.token,
+      createXssLearningProgress(config.value),
+    );
+  } catch {
+    // 记录链路失败不阻断本机实验页面，避免 MySQL 或实验主数据缺失影响学习。
+  }
+}
+
+async function recordVerification() {
+  if (!session.token) {
+    return;
+  }
+
+  try {
+    await recordVerificationRecord(
+      "web",
+      "xss",
+      session.token,
+      createXssVerificationRecord(config.value),
+    );
+  } catch {
+    // 用户可继续观察漏洞版 / 修复版差异，记录失败后续由接口或数据库状态排查。
+  }
+}
 
 function resetSubmissions() {
   submissions.value = [
@@ -25,6 +67,10 @@ function resetSubmissions() {
 }
 
 watch(config, resetSubmissions, {
+  immediate: true,
+});
+
+watch(config, () => void recordProgress(), {
   immediate: true,
 });
 
@@ -40,6 +86,10 @@ function submitMessage() {
   }
 
   submissions.value.unshift(createXssSubmission(normalizedMessage, config.value));
+
+  if (normalizedMessage === xssSamplePayload) {
+    void recordVerification();
+  }
 }
 </script>
 

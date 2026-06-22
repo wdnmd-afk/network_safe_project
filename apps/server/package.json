@@ -10,7 +10,8 @@
     "test": "node --import tsx --test tests/**/*.test.ts",
     "prisma:generate": "node ./scripts/prisma-generate.mjs",
     "prisma:validate": "node ./scripts/prisma-validate.mjs",
-    "seed:auth": "node ./scripts/seed-auth-users.mjs"
+    "seed:auth": "node ./scripts/seed-auth-users.mjs",
+    "seed:labs": "tsx ./scripts/seed-lab-metadata.ts"
   },
   "dependencies": {
     "@network-safe/shared": "workspace:*",

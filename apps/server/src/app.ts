@@ -1,7 +1,13 @@
 import express from "express";
+import type { LabMetadata } from "@network-safe/shared/lab-metadata";
 
 import { createAuthService, type AuthService } from "./services/auth.js";
 import { createLabRegistry } from "./services/lab-registry.js";
+import {
+  createLabRecordsService,
+  LabRecordError,
+  type LabRecordsService,
+} from "./services/lab-records.js";
 
 type DatabaseHealth = {
   status: string;
@@ -12,7 +18,31 @@ type CreateAppOptions = {
   checkDatabaseHealth?: () => Promise<DatabaseHealth>;
   labRegistry?: ReturnType<typeof createLabRegistry>;
   authService?: AuthService;
+  labRecordsService?: LabRecordsService;
 };
+
+type ErrorResult = {
+  ok: false;
+  status: number;
+  body: {
+    status: string;
+    message: string;
+  };
+};
+
+type CurrentUserResult =
+  | {
+      ok: true;
+      user: Awaited<ReturnType<AuthService["getCurrentUser"]>> & {};
+    }
+  | ErrorResult;
+
+type LabResult =
+  | {
+      ok: true;
+      lab: LabMetadata;
+    }
+  | ErrorResult;
 
 function getTimestamp() {
   return new Date().toISOString();
@@ -30,6 +60,8 @@ export function createApp(options: CreateAppOptions = {}) {
   const app = express();
   const labRegistry = options.labRegistry ?? createLabRegistry();
   const authService = options.authService ?? createAuthService();
+  const labRecordsService =
+    options.labRecordsService ?? createLabRecordsService();
 
   app.use(express.json());
 
@@ -127,6 +159,204 @@ export function createApp(options: CreateAppOptions = {}) {
       status: "ok",
     });
   });
+
+  async function readCurrentUser(req: express.Request): Promise<CurrentUserResult> {
+    const authorization = req.header("authorization") ?? "";
+    const token = authorization.startsWith("Bearer ")
+      ? authorization.slice("Bearer ".length)
+      : "";
+
+    if (!token) {
+      return {
+        ok: false,
+        status: 401,
+        body: {
+          status: "error",
+          message: "missing session token",
+        },
+      };
+    }
+
+    const user = await authService.getCurrentUser(token);
+
+    if (!user) {
+      return {
+        ok: false,
+        status: 401,
+        body: {
+          status: "error",
+          message: "invalid session token",
+        },
+      };
+    }
+
+    return {
+      ok: true,
+      user,
+    };
+  }
+
+  async function readLab(category: string, scene: string): Promise<LabResult> {
+    const lab = await labRegistry.getLab(category, scene);
+
+    if (!lab) {
+      return {
+        ok: false,
+        status: 404,
+        body: {
+          status: "error",
+          message: "lab not found",
+        },
+      };
+    }
+
+    return {
+      ok: true,
+      lab,
+    };
+  }
+
+  function readOptionalString(value: unknown) {
+    return typeof value === "string" ? value : undefined;
+  }
+
+  function readRequiredString(value: unknown) {
+    return typeof value === "string" && value.trim() ? value.trim() : "";
+  }
+
+  app.get("/api/lab-records/me", async (req, res, next) => {
+    try {
+      const currentUser = await readCurrentUser(req);
+
+      if (!currentUser.ok) {
+        res.status(currentUser.status).json(currentUser.body);
+        return;
+      }
+
+      const records = await labRecordsService.listUserLabRecords({
+        userId: currentUser.user.id,
+      });
+
+      res.status(200).json({
+        status: "ok",
+        records,
+      });
+    } catch (error) {
+      next(error);
+    }
+  });
+
+  app.post(
+    "/api/labs/:category/:scene/learning-progress",
+    async (req, res, next) => {
+      try {
+        const currentUser = await readCurrentUser(req);
+
+        if (!currentUser.ok) {
+          res.status(currentUser.status).json(currentUser.body);
+          return;
+        }
+
+        const currentLab = await readLab(req.params.category, req.params.scene);
+
+        if (!currentLab.ok) {
+          res.status(currentLab.status).json(currentLab.body);
+          return;
+        }
+
+        const variantKey = readRequiredString(req.body?.variantKey);
+        const status = readRequiredString(req.body?.status);
+
+        if (!variantKey || !status) {
+          res.status(400).json({
+            status: "error",
+            message: "variantKey and status are required",
+          });
+          return;
+        }
+
+        const progress = await labRecordsService.recordLearningProgress({
+          userId: currentUser.user.id,
+          labKey: currentLab.lab.id,
+          variantKey,
+          status,
+          notes: readOptionalString(req.body?.notes),
+        });
+
+        res.status(200).json({
+          status: "ok",
+          progress,
+        });
+      } catch (error) {
+        if (error instanceof LabRecordError) {
+          res.status(409).json({
+            status: "error",
+            message: error.message,
+          });
+          return;
+        }
+
+        next(error);
+      }
+    },
+  );
+
+  app.post(
+    "/api/labs/:category/:scene/verification-records",
+    async (req, res, next) => {
+      try {
+        const currentUser = await readCurrentUser(req);
+
+        if (!currentUser.ok) {
+          res.status(currentUser.status).json(currentUser.body);
+          return;
+        }
+
+        const currentLab = await readLab(req.params.category, req.params.scene);
+
+        if (!currentLab.ok) {
+          res.status(currentLab.status).json(currentLab.body);
+          return;
+        }
+
+        const variantKey = readRequiredString(req.body?.variantKey);
+        const result = readRequiredString(req.body?.result);
+        const summary = readRequiredString(req.body?.summary);
+
+        if (!variantKey || !result || !summary) {
+          res.status(400).json({
+            status: "error",
+            message: "variantKey, result and summary are required",
+          });
+          return;
+        }
+
+        const record = await labRecordsService.recordVerification({
+          userId: currentUser.user.id,
+          labKey: currentLab.lab.id,
+          variantKey,
+          result,
+          summary,
+          details: req.body?.details,
+        });
+
+        res.status(200).json({
+          status: "ok",
+          record,
+        });
+      } catch (error) {
+        if (error instanceof LabRecordError) {
+          res.status(409).json({
+            status: "error",
+            message: error.message,
+          });
+          return;
+        }
+
+        next(error);
+      }
+    },
+  );
 
   app.get("/api/labs", async (_req, res, next) => {
     try {

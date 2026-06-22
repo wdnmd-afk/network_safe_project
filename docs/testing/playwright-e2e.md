@@ -10,6 +10,8 @@ Playwright 测试用于验证真实浏览器中的平台基础流程。
 - 商品页可按关键字搜索
 - 前端页面可通过 `/api/health` 代理访问后端健康检查
 - `/labs` 页面可展示后端 `/api/labs` 返回的真实实验元数据列表，包括 XSS 与 JWT
+- `web/xss` 漏洞版与修复版对同一样例 payload 呈现不同结果
+- 登录演示用户后访问 `web/xss` 修复版，提交样例并在账户中心看到学习进度与最近验证记录
 
 ## 2. 运行命令
 
@@ -22,6 +24,15 @@ pnpm test:e2e
 ```powershell
 pnpm test:automation
 ```
+
+Playwright 全局 setup 会在启动本机服务前自动执行以下 seed，保证演示账号与实验主数据存在：
+
+```powershell
+pnpm --filter @network-safe/server seed:auth
+pnpm --filter @network-safe/server seed:labs
+```
+
+其中 `seed:auth` 用于准备 `demo_user / Demo@123456`，`seed:labs` 用于将 `labs/*/*/meta.json` 同步到数据库实验主表与变体表。若单独做人工联调，也需要先确保这两类数据已同步。
 
 ## 3. 浏览器策略
 
@@ -40,7 +51,8 @@ channel: chrome
 ## 5. 当前限制
 
 - 当前只运行 Chromium。
-- 当前不验证漏洞版 / 修复版差异。
+- 当前只覆盖 `web/xss` 的漏洞版 / 修复版差异和修复版记录闭环，尚未覆盖所有实验场景。
+- 当前不做真实脚本执行、Cookie 读取或外部网络访问断言。
 - 当前不截图比对 UI。
 - 当前不覆盖 build 后 nginx 托管场景。
 
@@ -48,6 +60,5 @@ channel: chrome
 
 后续建议补充：
 
-- `web/xss` 漏洞版 / 修复版对照测试
-- 学习记录与验证记录端到端链路
+- 更多实验场景复用学习记录与验证记录端到端链路
 - build 后 nginx 场景回归

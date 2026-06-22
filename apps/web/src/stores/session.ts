@@ -7,6 +7,10 @@ import {
   type AuthUser,
   type LoginInput,
 } from "../api/auth";
+import {
+  fetchCurrentUserLabRecords,
+  type CurrentUserLabRecordsResponse,
+} from "../api/lab-records";
 
 const tokenStorageKey = "network-safe-session-token";
 
@@ -30,8 +34,14 @@ export const useSessionStore = defineStore("session", {
   state: () => ({
     token: readStoredToken(),
     user: null as AuthUser | null,
+    labRecords: {
+      progress: [],
+      verifications: [],
+    } as CurrentUserLabRecordsResponse["records"],
     isLoading: false,
+    isLoadingLabRecords: false,
     errorMessage: "",
+    labRecordsErrorMessage: "",
   }),
   getters: {
     isAuthenticated: (state) => Boolean(state.token && state.user),
@@ -48,7 +58,12 @@ export const useSessionStore = defineStore("session", {
     clearSession() {
       this.token = null;
       this.user = null;
+      this.labRecords = {
+        progress: [],
+        verifications: [],
+      };
       this.errorMessage = "";
+      this.labRecordsErrorMessage = "";
       clearStoredToken();
     },
 
@@ -86,6 +101,29 @@ export const useSessionStore = defineStore("session", {
           error instanceof Error ? error.message : "登录状态已失效";
       } finally {
         this.isLoading = false;
+      }
+    },
+
+    async loadLabRecordSummary() {
+      if (!this.token) {
+        return;
+      }
+
+      this.isLoadingLabRecords = true;
+      this.labRecordsErrorMessage = "";
+
+      try {
+        const result = await fetchCurrentUserLabRecords(this.token);
+        this.labRecords = result.records;
+      } catch (error) {
+        this.labRecords = {
+          progress: [],
+          verifications: [],
+        };
+        this.labRecordsErrorMessage =
+          error instanceof Error ? error.message : "实验记录加载失败";
+      } finally {
+        this.isLoadingLabRecords = false;
       }
     },
 

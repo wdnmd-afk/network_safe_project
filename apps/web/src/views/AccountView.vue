@@ -7,8 +7,16 @@ import { useSessionStore } from "../stores/session";
 
 const session = useSessionStore();
 const router = useRouter();
-const { displayName, errorMessage, isAuthenticated, isLoading, user } =
-  storeToRefs(session);
+const {
+  displayName,
+  errorMessage,
+  isAuthenticated,
+  isLoading,
+  isLoadingLabRecords,
+  labRecords,
+  labRecordsErrorMessage,
+  user,
+} = storeToRefs(session);
 
 const avatarText = computed(() => displayName.value.slice(0, 1));
 
@@ -16,6 +24,8 @@ onMounted(() => {
   if (!user.value) {
     void session.loadCurrentUser();
   }
+
+  void session.loadLabRecordSummary();
 });
 
 async function logout() {
@@ -68,6 +78,40 @@ async function logout() {
         <div>
           <h2>{{ user?.status }}</h2>
           <p>账户状态</p>
+        </div>
+      </section>
+
+      <section class="profile-panel records-panel">
+        <div>
+          <h2>学习进度</h2>
+          <p v-if="isLoadingLabRecords">正在读取实验记录</p>
+          <p v-else-if="labRecordsErrorMessage">{{ labRecordsErrorMessage }}</p>
+          <p v-else-if="labRecords.progress.length === 0">暂无学习记录</p>
+          <ul v-else class="record-list">
+            <li v-for="item in labRecords.progress" :key="`${item.labKey}-progress`">
+              <strong>{{ item.title }}</strong>
+              <span>{{ item.variantKey }} / {{ item.status }}</span>
+            </li>
+          </ul>
+        </div>
+      </section>
+
+      <section class="profile-panel records-panel">
+        <div>
+          <h2>最近验证</h2>
+          <p v-if="isLoadingLabRecords">正在读取验证记录</p>
+          <p v-else-if="labRecordsErrorMessage">{{ labRecordsErrorMessage }}</p>
+          <p v-else-if="labRecords.verifications.length === 0">暂无验证记录</p>
+          <ul v-else class="record-list">
+            <li
+              v-for="item in labRecords.verifications"
+              :key="`${item.labKey}-${item.createdAt}`"
+            >
+              <strong>{{ item.title }}</strong>
+              <span>{{ item.variantKey }} / {{ item.result }}</span>
+              <small>{{ item.summary }}</small>
+            </li>
+          </ul>
         </div>
       </section>
     </div>

@@ -8,7 +8,7 @@
   "severity": "high",
   "difficulty": "beginner",
   "summary": "在客服留言业务上下文中对比未转义输出与文本渲染的 XSS 风险差异。",
-  "status": "in-progress",
+  "status": "ready",
   "phase": "phase-1",
   "tags": ["web", "xss", "output-encoding"],
   "knowledgePoints": [
@@ -52,12 +52,29 @@
       }
     ],
     "api": [],
-    "scripts": [],
+    "scripts": [
+      {
+        "key": "xss-verify",
+        "language": "ts",
+        "path": "tools/lab-scripts/web/xss/verify.ts",
+        "description": "本机受控 XSS 漏洞版与修复版差异验证配置"
+      }
+    ],
     "docs": [
       {
         "key": "overview",
         "path": "labs/web/xss/README.md",
         "description": "实验总说明"
+      },
+      {
+        "key": "attack-steps",
+        "path": "labs/web/xss/docs/attack-steps.md",
+        "description": "漏洞版观察步骤"
+      },
+      {
+        "key": "fix-notes",
+        "path": "labs/web/xss/docs/fix-notes.md",
+        "description": "修复版实现说明"
       },
       {
         "key": "manual-verification",
@@ -78,16 +95,16 @@
     "automation": {
       "supported": true,
       "playwright": {
-        "enabled": false,
-        "specPath": ""
+        "enabled": true,
+        "specPath": "packages/testing/tests/e2e/platform.spec.mjs"
       },
       "apiTest": {
         "enabled": false,
         "specPath": ""
       },
       "scriptVerification": {
-        "enabled": false,
-        "scriptKeys": []
+        "enabled": true,
+        "scriptKeys": ["xss-verify"]
       }
     }
   },
