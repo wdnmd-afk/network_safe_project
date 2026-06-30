@@ -1,3 +1,718 @@
+# 2026-06-30 最新进展：端口扫描目录与 planned 元数据
+
+- [x] 新增执行文档 `docs/execution/2026-06-30-network-port-scan-directory-metadata.md`。
+- [x] 建立 `labs/network/port-scan/` 标准目录和 `tools/lab-scripts/network/port-scan/` 脚本目录占位。
+- [x] 新增 `labs/network/port-scan/meta.json`，状态为 `planned`，模式为 `simulation`，只登记 docs 入口。
+- [x] 新增 README、漏洞版说明、修复版说明、mock 说明、攻击方观察步骤、修复说明和手动验证文档。
+- [x] 脚本目录当前只包含 README，不提供 `exploit.py`、`verify.ts`、真实端口扫描脚本或通用扫描器能力。
+- [x] 更新共享元数据测试，确认 `network.port-scan` 是 planned/docs-only simulation。
+- [x] 更新服务端 health / registry 测试，当前本地元数据总数从 19 增加到 20，并包含 `network.port-scan` planned 条目。
+
+验证记录：
+
+- 本轮未新增页面、API、数据库迁移、事件日志写入实现或扫描脚本。
+- `pnpm --filter @network-safe/shared test` 通过，28 项测试通过。
+- `pnpm --filter @network-safe/server test -- tests/health.test.ts tests/lab-registry.test.ts` 通过；该命令实际运行服务端全量测试，154 项测试通过。
+- `git diff --check -- docs\execution\2026-06-30-network-port-scan-lab.md docs\execution\2026-06-30-network-port-scan-directory-metadata.md docs\design\next-wave-security-labs.md docs\TODO.md docs\execution\security-lab-master-goal.md labs\network\port-scan tools\lab-scripts\network\port-scan packages\shared\tests\lab-metadata.test.mjs apps\server\tests\health.test.ts apps\server\tests\lab-registry.test.ts` 未发现新增空白错误，仅提示 `apps/server/tests/health.test.ts`、`apps/server/tests/lab-registry.test.ts`、`docs/TODO.md`、`packages/shared/tests/lab-metadata.test.mjs` 既有 LF/CRLF 转换。
+- `rg -n "[ \t]+$" ...` 未发现目标文件行尾空白。
+- 端口扫描安全关键词扫描仅命中文档中的禁止性说明、localhost 测试 URL 和历史验证记录，未发现真实扫描脚本、真实 socket 探测、系统命令探测或通用扫描器实现。
+- 下一项建议：进入 `network/port-scan` 虚拟资产模型与受控 API 设计切片，仍不创建真实扫描能力。
+
+# 2026-06-30 最新进展：端口扫描暴露面实验执行文档
+
+- [x] 新增执行文档 `docs/execution/2026-06-30-network-port-scan-lab.md`。
+- [x] 将 `network/port-scan` 首版定位为“虚拟暴露面观察器”，用于学习端口暴露面侦察和最小暴露面治理，不作为真实扫描器。
+- [x] 明确后续实现只允许固定虚拟目标 `targetKey` 和固定观察模式，不接收任意 IP、域名、网段、端口范围、超时、并发或代理参数。
+- [x] 明确首版不调用真实 socket、系统命令、PowerShell、`nmap`、`Test-NetConnection`、`ping`、`tracert` 或类似探测工具。
+- [x] 明确事件日志只记录虚拟目标 key、虚拟端口数量、开放端口数量、高风险端口数量、暴露面评分和学习信号，不保存真实 IP、主机名、banner、凭据、token 或 Cookie。
+- [x] 更新 `docs/design/next-wave-security-labs.md`，将端口扫描状态从规划中推进到已有执行文档。
+
+验证记录：
+
+- 本轮只新增执行文档并更新规划状态，未新增目录、元数据、页面、API、数据库迁移或脚本。
+- `git diff --check -- docs\execution\2026-06-30-network-port-scan-lab.md docs\design\next-wave-security-labs.md docs\TODO.md docs\execution\security-lab-master-goal.md` 未发现新增空白错误，仅提示 `docs/TODO.md` 既有 LF/CRLF 转换。
+- `rg -n "[ \t]+$" ...` 未发现目标文档行尾空白。
+- 端口扫描安全关键词扫描仅命中文档中的禁止性说明、localhost 固定目标说明和历史验证记录，未发现真实目标扫描方案、可执行扫描命令或通用扫描器实现。
+- 下一项建议：进入 `network/port-scan` 目录与 `planned` 元数据切片，先只登记 docs 入口，不创建扫描脚本。
+
+# 2026-06-30 最新进展：下一波安全实验规划
+
+- [x] 新增执行文档 `docs/execution/2026-06-30-next-wave-security-labs-planning.md`。
+- [x] 新增设计文档 `docs/design/next-wave-security-labs.md`，承接网络 / 传输层、社会工程学、AI、供应链、恶意软件、客户端和基础设施扩展实验。
+- [x] 推荐首批顺序锁定为 `network/port-scan`、`network/dns-hijack`、`ai/prompt-injection`、`social/phishing`、`supply-chain/dependency-confusion`、`infrastructure/misconfiguration`。
+- [x] 明确网络实验首版以虚拟资产和内存解析表为主，不扫描真实网段，不修改本机 DNS、hosts、代理、路由或防火墙。
+- [x] 明确社会工程学只做仿真页面、固定样例和识别训练，不发送真实邮件 / 短信，不收集真实凭据。
+- [x] 明确 AI 首批以确定性 Prompt 注入模拟器为主，不调用外部 AI 生成攻击内容。
+- [x] 明确供应链、恶意软件、客户端和基础设施方向的禁止能力，避免演变成真实投毒、恶意样本、表单外传或真实配置改动。
+
+验证记录：
+
+- 本轮为规划文档切片，未新增页面、API、数据库迁移、实验元数据或脚本。
+- `git diff --check -- docs\execution\2026-06-30-next-wave-security-labs-planning.md docs\design\next-wave-security-labs.md docs\TODO.md docs\execution\security-lab-master-goal.md` 未发现新增空白错误，仅提示 `docs/TODO.md` 既有 LF/CRLF 转换。
+- `rg -n "[ \t]+$" ...` 未发现目标文档行尾空白。
+- 安全关键词扫描命中的内容均为禁止性说明或历史验证记录，未发现外部 URL、真实凭据或可执行外部攻击链。
+- 下一项建议：为 `network/port-scan` 单独编写实现执行文档，优先锁定虚拟资产模型和 localhost-only 脚本边界。
+
+# 2026-06-30 最新进展：case-study ready 共享元数据规则
+
+- [x] 新增执行文档 `docs/execution/2026-06-30-case-study-ready-metadata-rule.md`。
+- [x] 更新 `packages/shared/src/lab-metadata.js`，为 `status: "ready"` 且 `mode: "case-study"` 的元数据增加共享校验。
+- [x] 规则要求 case-study ready 必须具备 `safeBoundaries`、说明不提供攻击脚本的 `notes`、全部为 `false` 的 `variants[].supportsAutomation`，并至少登记两类自动化证据。
+- [x] 更新 `packages/shared/tests/lab-metadata.test.mjs`，覆盖合法样例、缺少边界和 notes、误标变体自动化、自动化证据不足等情况。
+- [x] 当前唯一 `ready + case-study` 实验仍是 `web.ldap-injection`，现有 19 个实验元数据均通过共享校验。
+
+验证记录：
+
+- `pnpm --filter @network-safe/shared test` 通过，27 项测试通过。
+- 目标文件 `git diff --check` 未发现空白错误，仅有既有 LF/CRLF 提示。
+- 目标文件行尾空白扫描未命中。
+- 当前唯一 `ready + case-study` 元数据仍为 `web.ldap-injection`。
+
+# 2026-06-30 最新进展：LDAP 注入 case-study ready 收口
+
+- [x] 新增执行文档 `docs/execution/2026-06-30-web-ldap-injection-ready-closeout.md`。
+- [x] 将 `labs/web/ldap-injection/meta.json` 更新为 `status: "ready"`，并保留 `mode: "case-study"`。
+- [x] 保持 `variants[].supportsAutomation` 为 `false`，明确当前没有攻击脚本自动化。
+- [x] 在元数据 `safeBoundaries` 与 `notes` 中说明当前 ready 是 case-study 例外收口，不提供 `exploit.py` 或 LDAP 查询脚本。
+- [x] 更新共享元数据测试、服务端 health / registry 测试和 LDAP 只读一致性验证脚本，使 ready 状态与安全边界一起被校验。
+- [x] 更新 LDAP README、手动验证文档、注入类剩余规划和总纲，说明当前 ready 由页面、API、事件日志、Playwright、文档和只读验证闭环证明。
+- [x] 当前仍不连接真实 LDAP / AD / OpenLDAP 服务，不创建 LDAP 查询脚本或攻击脚本，不提供过滤器 payload 库或任意过滤器执行器。
+
+验证记录：
+
+- `pnpm --filter @network-safe/shared test` 通过，23 项测试通过。
+- `pnpm --filter @network-safe/server test -- tests/ldap-injection-lab.test.ts tests/health.test.ts tests/lab-registry.test.ts` 通过；当前服务端脚本实际运行全量测试，154 项通过。
+- `pnpm --filter @network-safe/web exec tsx ../../tools/lab-scripts/web/ldap-injection/verify.ts` 通过，报告 `ok: true`。
+- `pnpm --filter @network-safe/testing test` 通过，9 项测试通过。
+- `pnpm --filter @network-safe/testing e2e -- --grep "LDAP"` 通过，1 项 Playwright 测试通过。
+- 首轮 shared / LDAP verify 曾暴露 `safeBoundaries` 缺少同时包含 `case-study` 与 `ready` 的证据，已补强元数据后重跑通过。
+- 目标文件 `git diff --check` 未发现空白错误，仅有既有 LF/CRLF 提示。
+- 目标文件行尾空白扫描未命中。
+- LDAP 聚焦安全关键词扫描仅命中文档中的禁止性说明和共享元数据测试读取 fixture 的 `readFile`，未发现真实目录连接、目录命令、动态执行、命令执行、外部请求或 `inputSummaryJson` 暴露。
+
+# 2026-06-30 最新进展：LDAP 注入 Playwright 页面验证切片
+
+- [x] 新增执行文档 `docs/execution/2026-06-30-web-ldap-injection-playwright-verification.md`。
+- [x] 在 `packages/testing/tests/e2e/platform.spec.mjs` 中新增 LDAP 页面级差异验证，用真实浏览器流程登录、进入漏洞版 / 修复版工作台、填入受控样例并提交虚拟目录查询。
+- [x] 漏洞版断言学习信号为“漏洞版虚拟目录结果范围被扩大”，后端决策为 `accepted`，结果范围为 `expanded`，并展示虚拟受限教学记录。
+- [x] 修复版断言学习信号为“修复版阻断受控 LDAP 样例”，后端决策与结果范围均为 `blocked`，并确认不展示虚拟受限教学记录。
+- [x] 修正 `packages/testing/src/smoke/config.mjs` 的实验总数前置检查，从本地 `labs/*/*/meta.json` 动态统计当前实验数量，避免新增实验后 smoke 仍停留在旧的固定总数。
+- [x] 补充 `packages/testing/tests/smoke-config.test.mjs`，确认 labs API smoke 检查使用当前本地元数据数量。
+- [x] 更新 LDAP 元数据、共享元数据测试、只读一致性验证脚本、README、手动验证文档和注入类剩余规划，登记 Playwright 页面验证入口。
+- [x] 该 Playwright 切片当时仍保持 LDAP `status: in-progress`、`mode: case-study`；后续已按 case-study ready 标准收口，仍不连接真实 LDAP / AD / OpenLDAP 服务，不创建 LDAP 查询脚本或攻击脚本，不提供过滤器 payload 库。
+
+验证记录：
+
+- `pnpm --filter @network-safe/testing test` 通过，9 项测试通过。
+- `pnpm --filter @network-safe/testing e2e -- --grep "LDAP"` 通过，1 项 Playwright 测试通过。
+- `pnpm --filter @network-safe/shared test` 通过，23 项测试通过。
+- `pnpm --filter @network-safe/web exec tsx ../../tools/lab-scripts/web/ldap-injection/verify.ts` 通过，报告 `ok: true`。
+- 本轮曾发现两个可追溯问题并已修正：testing smoke 旧基线期望 `total: 15`，实际当前本地实验为 19；LDAP E2E 短文本状态断言匹配过宽，已改为状态面板内的精确语义断言。
+
+# 2026-06-30 最新进展：LDAP 注入前端工作台接入切片
+
+- [x] 新增执行文档 `docs/execution/2026-06-30-web-ldap-injection-frontend-workbench.md`。
+- [x] 新增 `apps/web/src/api/ldap-injection-lab.ts`，接入 `POST /api/labs/web/ldap-injection/:variant/search`。
+- [x] 扩展 `apps/web/src/labs/ldap-injection.ts`，补充正常样例、受控样例、学习进度载荷、验证记录载荷和虚拟目录 API 信号文案。
+- [x] 改造 `apps/web/src/views/LdapInjectionLabView.vue`，从静态案例页升级为案例观察 + 虚拟目录工作台。
+- [x] 页面只展示后端决策、学习信号、目录条目数量、关键词长度、脱敏预览、风险类型、结果范围和虚拟目录条目，不展示原始 `inputSummaryJson`。
+- [x] 补充 `apps/web/tests/ldap-injection-api.test.ts`，更新 `apps/web/tests/ldap-injection-lab.test.ts`。
+- [x] 更新 LDAP 元数据、场景文档、手动验证、只读一致性验证脚本、共享元数据测试和注入类剩余规划。
+- [x] 当前仍不连接真实 LDAP / AD / OpenLDAP 服务，不创建 LDAP 查询脚本或攻击脚本，不提供过滤器 payload 库。
+
+验证记录：
+
+- `pnpm --filter @network-safe/web exec vitest run tests/ldap-injection-api.test.ts tests/ldap-injection-lab.test.ts tests/router.test.ts` 通过，3 个测试文件、9 项测试通过。
+- `pnpm --filter @network-safe/web exec vue-tsc -p tsconfig.json --noEmit` 通过。
+- `pnpm --filter @network-safe/web exec tsx ../../tools/lab-scripts/web/ldap-injection/verify.ts` 通过，报告 `ok: true`。
+- `pnpm --filter @network-safe/shared test` 通过，23 项测试通过。
+- 目标文件 `git diff --check` 未发现空白错误，仅有 `docs/TODO.md` 与 `packages/shared/tests/lab-metadata.test.mjs` 的既有 LF/CRLF 提示。
+- 目标文件行尾空白扫描未命中。
+- LDAP 前端、helper、测试、场景文档和脚本聚焦安全扫描未发现真实目录连接、目录命令、动态执行、命令执行、文件读取或 `inputSummaryJson` 暴露；唯一 `fetch(` 为前端调用本项目 API。
+
+# 2026-06-30 最新进展：LDAP 注入虚拟目录 API 切片
+
+- [x] 新增执行文档 `docs/execution/2026-06-30-web-ldap-injection-virtual-directory-api.md`。
+- [x] 新增 `apps/server/src/services/ldap-injection-lab.ts`，只使用内存虚拟目录数据，不连接真实 LDAP / AD / OpenLDAP 服务。
+- [x] 新增 `POST /api/labs/web/ldap-injection/:variant/search`，支持漏洞版和修复版虚拟目录查询。
+- [x] 漏洞版固定受控样例触发 `ldap-injection-scope-expanded`，修复版同样样例触发 `ldap-injection-controlled-sample-blocked`。
+- [x] LDAP 事件已接入 `lab_event_logs`，日志只写入场景、关键词长度、脱敏预览、风险类型、结果范围、条目数量和学习信号。
+- [x] 更新 `labs/web/ldap-injection/meta.json`，登记虚拟目录 API 和 API 测试，仍不登记攻击脚本。
+- [x] 更新只读一致性验证脚本，校验前端工作台、虚拟目录 API、文档和脚本入口一致性。
+- [x] 更新共享元数据测试、服务端 health / registry 断言和 LDAP 文档。
+
+验证记录：
+
+- `pnpm --filter @network-safe/server test -- tests/ldap-injection-lab.test.ts tests/health.test.ts tests/lab-registry.test.ts` 通过；该脚本实际运行服务端全量测试，154 项通过。
+
+# 2026-06-30 最新进展：LDAP 注入一致性验证脚本切片
+
+- [x] 新增执行文档 `docs/execution/2026-06-30-web-ldap-injection-consistency-verify.md`。
+- [x] 新增 `tools/lab-scripts/web/ldap-injection/README.md`。
+- [x] 新增 `tools/lab-scripts/web/ldap-injection/verify.ts`，只读取本仓库内固定 LDAP 元数据和案例文档，输出一致性验证报告。
+- [x] 更新 `labs/web/ldap-injection/meta.json`，登记 `ldap-injection-verify` 脚本入口；后续虚拟目录 API 切片已补齐 api 入口。
+- [x] `verification.automation.supported` 调整为 `true`，仅表示接入文档一致性验证脚本；`variants[].supportsAutomation` 仍为 `false`。
+- [x] 更新 LDAP README 和手动验证文档，当时明确没有后端 API、事件日志写入、LDAP 查询脚本或攻击脚本；后续已补齐受控虚拟目录 API。
+- [x] 更新共享元数据测试，确认 LDAP 当前登记前端工作台、虚拟目录 API、文档和一致性验证脚本。
+
+验证记录：
+
+- `pnpm --filter @network-safe/web exec tsx ../../tools/lab-scripts/web/ldap-injection/verify.ts` 通过，报告 `ok: true`。
+- `pnpm --filter @network-safe/shared test` 通过，23 项测试通过。
+- `git diff --check -- docs/TODO.md docs/execution/security-lab-master-goal.md docs/execution/2026-06-30-web-ldap-injection-lab.md docs/execution/2026-06-30-web-ldap-injection-static-case-page.md docs/execution/2026-06-30-web-ldap-injection-consistency-verify.md docs/design/injection-remaining-labs.md labs/web/ldap-injection tools/lab-scripts/web/ldap-injection packages/shared/tests/lab-metadata.test.mjs` 未发现空白错误，仅有既有 LF/CRLF 提示。
+- `rg -n "[ \t]+$" ...` 未发现目标文件行尾空白。
+- LDAP 脚本目录与场景文档安全关键词扫描未命中。
+
+# 2026-06-30 最新进展：LDAP 注入静态案例页切片
+
+- [x] 新增执行文档 `docs/execution/2026-06-30-web-ldap-injection-static-case-page.md`。
+- [x] 新增 `apps/web/src/labs/ldap-injection.ts`，维护 LDAP 静态案例、变体配置、复盘清单和学习信号文案。
+- [x] 新增 `apps/web/src/views/LdapInjectionLabView.vue`，提供漏洞案例 / 修复案例静态学习页面。
+- [x] 新增 `/labs/web/ldap-injection/vuln` 与 `/labs/web/ldap-injection/fixed` 路由。
+- [x] 更新 `labs/web/ldap-injection/meta.json` 为 `in-progress`，该静态页切片当时只登记 web 与 docs 入口；后续已补齐脚本和虚拟目录 API 入口。
+- [x] 更新 LDAP README、攻击步骤、修复案例说明和手动验证文档，静态页切片当时明确没有后端 API、事件日志写入或脚本入口；后续已补齐受控虚拟目录 API。
+- [x] 补充 `apps/web/tests/ldap-injection-lab.test.ts`，更新路由测试和共享元数据测试。
+- [x] 当前仍不连接真实 LDAP / AD / OpenLDAP 服务，不创建 LDAP 查询脚本，不提供过滤器 payload 库，不写入事件日志。
+
+验证记录：
+
+- `pnpm --filter @network-safe/web exec vitest run tests/ldap-injection-lab.test.ts tests/router.test.ts` 通过，2 个测试文件、5 项测试通过。
+- `pnpm --filter @network-safe/shared test` 通过，23 项测试通过。
+- `pnpm --filter @network-safe/web exec vue-tsc -p tsconfig.json --noEmit` 通过。
+- `git diff --check -- docs/TODO.md docs/execution/security-lab-master-goal.md docs/execution/2026-06-30-web-ldap-injection-lab.md docs/execution/2026-06-30-web-ldap-injection-static-case-page.md docs/design/injection-remaining-labs.md labs/web/ldap-injection apps/web/src/labs/ldap-injection.ts apps/web/src/views/LdapInjectionLabView.vue apps/web/src/router/routes.ts apps/web/src/styles/main.css apps/web/tests/ldap-injection-lab.test.ts apps/web/tests/router.test.ts packages/shared/tests/lab-metadata.test.mjs` 未发现空白错误，仅有既有 LF/CRLF 提示。
+- `rg -n "[ \t]+$" ...` 未发现目标文件行尾空白。
+- LDAP 静态页、helper 与场景文档安全关键词扫描未命中。
+- `Test-Path -LiteralPath tools\lab-scripts\web\ldap-injection` 返回 `False`，确认本轮未创建 LDAP 脚本目录。
+
+# 2026-06-30 最新进展：LDAP 注入目录与案例文档切片
+
+- [x] 建立 `labs/web/ldap-injection/` 标准实验目录结构。
+- [x] 新增 `labs/web/ldap-injection/meta.json`，当前状态为 `planned`，模式为 `case-study`。
+- [x] 元数据只登记 docs 入口，不登记尚未实现的 web / api / scripts 入口。
+- [x] 新增实验总说明、漏洞案例、修复案例、mock 说明、攻击方观察步骤、修复说明和手动验证文档。
+- [x] 补充共享元数据测试，确认 LDAP 当前为 planned/docs-only/case-study 元数据。
+- [x] 当前仍不创建后端 API、前端页面或 LDAP 查询脚本。
+
+验证记录：
+
+- `pnpm --filter @network-safe/shared test` 通过，23 项测试通过。
+- `git diff --check -- docs/TODO.md docs/execution/security-lab-master-goal.md docs/execution/2026-06-30-web-ldap-injection-lab.md docs/design/injection-remaining-labs.md labs/web/ldap-injection packages/shared/tests/lab-metadata.test.mjs` 未发现空白错误，仅有 `docs/TODO.md` 与 `packages/shared/tests/lab-metadata.test.mjs` 的既有 LF/CRLF 提示。
+- `rg -n "[ \t]+$" docs/TODO.md docs/execution/security-lab-master-goal.md docs/execution/2026-06-30-web-ldap-injection-lab.md docs/design/injection-remaining-labs.md labs/web/ldap-injection packages/shared/tests/lab-metadata.test.mjs` 未发现目标文件行尾空白。
+- `rg -n "ldap://|ldaps://|ldapsearch|ldapmodify|ldapdelete|ldapadd|bindDN|password|process\\.env|createReadStream|readFile|http\\.request|https\\.request|eval\\(|new Function|child_process" labs/web/ldap-injection` 未命中。
+- `Test-Path -LiteralPath tools\\lab-scripts\\web\\ldap-injection` 返回 `False`，确认本轮未创建 LDAP 脚本目录。
+
+# 2026-06-30 最新进展：LDAP 注入案例化执行文档
+
+- [x] 新增 `docs/execution/2026-06-30-web-ldap-injection-lab.md`。
+- [x] 明确 `web/ldap-injection` 一期落地方式为 `case-study`，状态先保持 `planned`。
+- [x] 明确本实验不连接真实 LDAP / AD / OpenLDAP 服务，不进行真实 bind、search、modify 或 delete 操作。
+- [x] 明确不保存目录账号、组织结构、DN、邮箱、手机号、凭据或外部目标信息。
+- [x] 明确不提供对外 LDAP 查询脚本、不生成过滤器 payload 库、不实现任意 LDAP 过滤器执行器。
+- [x] 规划后续目录为 `labs/web/ldap-injection/`，初始只登记 docs 入口，不登记未实现的 web / api / scripts 入口。
+- [x] 规划案例内容为组织成员搜索、权限组查询和登录筛选三个固定案例。
+- [x] 下一步进入 `web/ldap-injection` 目录与文档切片，创建 planned/case-study 元数据和基础案例文档，暂不创建后端 API、前端页面或 LDAP 查询脚本。
+
+验证记录：
+
+- `git diff --check -- docs/TODO.md docs/execution/security-lab-master-goal.md docs/execution/2026-06-30-web-ldap-injection-lab.md docs/design/injection-remaining-labs.md` 未发现空白错误，仅有 `docs/TODO.md` 的既有 LF/CRLF 提示。
+- `rg -n "[ \t]+$" docs/TODO.md docs/execution/security-lab-master-goal.md docs/execution/2026-06-30-web-ldap-injection-lab.md docs/design/injection-remaining-labs.md` 未发现目标文档行尾空白。
+- LDAP 执行文档安全边界关键词检查确认已明确 `case-study`、`planned`、不连接真实 LDAP、不保存目录账号、不提供对外 LDAP 查询脚本、不生成过滤器 payload 库和不实现任意 LDAP 过滤器执行器。
+- LDAP 执行文档风险关键词扫描仅命中禁止展示原始 `inputSummaryJson` 的说明，未发现真实 LDAP URL、ldapsearch / ldapmodify / bindDN、文件读取、外部请求、动态执行或命令执行内容。
+
+# 2026-06-30 最新进展：XPath 注入实验 ready 收口
+
+- [x] 新增 `apps/web/src/api/xpath-injection-lab.ts`，接入 `POST /api/labs/web/xpath-injection/:variant/search`。
+- [x] 新增 `apps/web/src/labs/xpath-injection.ts`，提供漏洞版 / 修复版配置、正常样例、受控样例、学习进度和验证记录载荷。
+- [x] 新增 `apps/web/src/views/XpathInjectionLabView.vue`，提供 XML 产品目录查询工作台、受控样例填充、后端判定、学习信号、虚拟产品目录结果和日志摘要说明。
+- [x] 新增 `/labs/web/xpath-injection/vuln` 与 `/labs/web/xpath-injection/fixed` 路由。
+- [x] 新增 `tools/lab-scripts/web/xpath-injection/exploit.py` 与 `verify.ts`，脚本仅允许本机受控目标。
+- [x] 更新 `labs/web/xpath-injection/meta.json` 为 `ready`，补齐 web / api / scripts / docs / verification 入口。
+- [x] 更新 XPath 实验 README、漏洞版 / 修复版 / mock 说明、攻击步骤、修复说明、手动验证文档和脚本目录说明。
+- [x] 补齐前端 API/helper/router 测试、共享元数据测试和服务端 registry/health 状态断言。
+- [x] 已清理 `python -m py_compile` 生成的 `tools/lab-scripts/web/xpath-injection/__pycache__`。
+- [x] 后续已完成 `web/ldap-injection` 案例化执行文档，下一步进入目录与文档切片。
+
+验证记录：
+
+- `pnpm --filter @network-safe/web exec vitest run tests/xpath-injection-api.test.ts tests/xpath-injection-lab.test.ts tests/router.test.ts` 通过，3 个测试文件、7 项测试通过。
+- `pnpm --filter @network-safe/shared test` 通过，22 项测试通过。
+- `pnpm --filter @network-safe/server test -- tests/xpath-injection-lab.test.ts tests/health.test.ts tests/lab-registry.test.ts` 通过；该脚本实际运行服务端全量测试，147 项通过。
+- `pnpm --filter @network-safe/web exec vue-tsc -p tsconfig.json --noEmit` 通过。
+- `pnpm --filter @network-safe/server exec tsc -p tsconfig.json --noEmit` 通过。
+- `pnpm --filter @network-safe/web exec tsx ../../tools/lab-scripts/web/xpath-injection/verify.ts` 通过并输出本机验证计划。
+- `python -m py_compile tools/lab-scripts/web/xpath-injection/exploit.py` 通过，生成的 `__pycache__` 已清理。
+- 文档更新后目标文件 `git diff --check` 未发现空白错误，仅有既有 LF/CRLF 提示。
+- 文档更新后目标文件行尾空白扫描未命中。
+- 文档更新后 XPath service 安全关键词扫描零命中；全链路扫描仅命中文档中的禁止性说明、共享元数据测试的 `readFile` 和既有 `readFileUploadVariantKey` 函数名误报。
+- 文档更新后 `tools/lab-scripts/web/xpath-injection/` 下未发现残留 `__pycache__`。
+
+# 2026-06-30 最新进展：XPath 注入后端切片
+
+- [x] 新增 `apps/server/src/services/xpath-injection-lab.ts`，使用内存虚拟 XML 产品目录数据集合和固定查询路径模拟器。
+- [x] 新增 `POST /api/labs/web/xpath-injection/:variant/search`，支持 `vuln` / `fixed` 两个受控变体。
+- [x] 漏洞版固定受控样例触发 `xpath-injection-result-scope-expanded`，只扩大虚拟教学结果范围，不执行任意 XPath 表达式。
+- [x] 修复版同样样例触发 `xpath-injection-controlled-sample-blocked`，在进入虚拟查询前阻断。
+- [x] XPath 事件已接入 `lab_event_logs`，日志只写入模板、范围、关键词长度、脱敏预览、风险类别、结果范围、文档数量和学习信号。
+- [x] 更新 `labs/web/xpath-injection/meta.json` 为 `in-progress`，当前只登记后端 API 和 API 测试，web / scripts 入口仍为空。
+- [x] 补齐服务端测试、共享元数据测试和服务端 registry/health 数量断言。
+- [x] `pnpm --filter @network-safe/server test -- tests/xpath-injection-lab.test.ts tests/health.test.ts tests/lab-registry.test.ts` 通过；该脚本实际运行服务端全量测试，147 项通过。
+- [x] `pnpm --filter @network-safe/shared test` 通过，22 项测试通过。
+- [ ] 下一步补齐前端 API client、实验 helper、工作台页面、路由和本机受控脚本入口。
+
+验证记录：
+
+- `pnpm --filter @network-safe/server exec tsc -p tsconfig.json --noEmit` 通过。
+- 目标文件 `git diff --check` 未发现空白错误，仅有既有 LF/CRLF 提示。
+- 目标文件行尾空白扫描未命中。
+- XPath 后端切片安全关键词扫描仅命中测试中的本机 `fetch` 和既有 `readFileUploadVariantKey` 函数名；`apps/server/src/services/xpath-injection-lab.ts` 单独扫描未命中危险 API、文件读取、外部请求、XPath 执行器或原始输入摘要暴露。
+
+# 2026-06-30 最新进展：XPath 注入目录与文档切片
+
+- [x] 新增 `docs/execution/2026-06-30-web-xpath-injection-lab.md`，锁定业务包装、接口计划、日志摘要和安全边界。
+- [x] 建立 `labs/web/xpath-injection/` 标准实验目录结构。
+- [x] 新增 `labs/web/xpath-injection/meta.json`，当前状态为 `planned`，模式为 `simulation`。
+- [x] 元数据当前只登记 docs 入口，web / api / scripts 暂为空，避免误标为可运行实验。
+- [x] 新增实验总说明、漏洞版规划、修复版规划、mock 说明、攻击步骤、修复说明和手动验证计划。
+- [x] 新增 `tools/lab-scripts/web/xpath-injection/README.md`，预留本机受控脚本入口并明确 localhost 边界。
+- [x] 补充共享元数据测试，确认 XPath 当前为 docs-only planned 元数据。
+- [x] `pnpm --filter @network-safe/shared test` 通过，22 项测试通过。
+- [x] 已在后续切片中实现后端虚拟 XML 产品目录查询模拟 service、受控 API 和服务端测试。
+
+验证记录：
+
+- `git diff --check -- docs/TODO.md docs/execution/security-lab-master-goal.md docs/execution/2026-06-30-web-xpath-injection-lab.md labs/web/xpath-injection tools/lab-scripts/web/xpath-injection packages/shared/tests/lab-metadata.test.mjs` 未发现空白错误，仅有 `docs/TODO.md` 与 `packages/shared/tests/lab-metadata.test.mjs` 的既有 LF/CRLF 提示。
+- `rg -n "[ \t]+$" docs/TODO.md docs/execution/security-lab-master-goal.md docs/execution/2026-06-30-web-xpath-injection-lab.md labs/web/xpath-injection tools/lab-scripts/web/xpath-injection packages/shared/tests/lab-metadata.test.mjs` 未发现目标文件行尾空白。
+- XPath 目录、脚本 README 与执行文档安全关键词扫描未命中危险 API、外部请求、文件读取或原始输入摘要暴露。
+- XPath 安全边界扫描确认文档明确包含“不读取真实 XML 文件、不执行任意 XPath 表达式、不接入外部 XML 数据源、不访问外部目标”等约束。
+
+# 2026-06-30 最新进展：CRLF 注入实验 ready 收口
+
+- [x] 新增 `apps/web/src/api/crlf-injection-lab.ts`，接入 `POST /api/labs/web/crlf-injection/:variant/preview`。
+- [x] 新增 `apps/web/src/labs/crlf-injection.ts`，提供漏洞版 / 修复版配置、正常样例、受控样例、学习进度和验证记录载荷。
+- [x] 新增 `apps/web/src/views/CrlfInjectionLabView.vue`，提供下载响应头预览工作台、受控样例填充、后端判定、学习信号、虚拟头部预览和日志摘要说明。
+- [x] 新增 `/labs/web/crlf-injection/vuln` 与 `/labs/web/crlf-injection/fixed` 路由。
+- [x] 新增 `tools/lab-scripts/web/crlf-injection/exploit.py` 与 `verify.ts`，脚本仅允许本机受控目标。
+- [x] 更新 `labs/web/crlf-injection/meta.json` 为 `ready`，补齐 web / api / scripts / docs / verification 入口。
+- [x] 更新 CRLF 实验 README、漏洞版 / 修复版 / mock 说明、攻击步骤、手动验证文档和脚本目录说明。
+- [x] 补齐前端 API/helper/router 测试、共享元数据测试和服务端 registry/health 状态断言。
+- [x] 已在后续切片中为 `web/xpath-injection` 编写实现执行文档并进入目录、元数据和文档切片。
+
+验证记录：
+
+- `pnpm --filter @network-safe/web exec vitest run tests/crlf-injection-api.test.ts tests/crlf-injection-lab.test.ts tests/router.test.ts` 通过，3 个测试文件、7 项测试通过。
+- `pnpm --filter @network-safe/server test -- tests/crlf-injection-lab.test.ts tests/health.test.ts tests/lab-registry.test.ts` 通过；该脚本实际运行服务端全量测试，140 项通过。
+- `pnpm --filter @network-safe/shared test` 通过，21 项测试通过。
+- `pnpm --filter @network-safe/web exec vue-tsc -p tsconfig.json --noEmit` 通过。
+- `pnpm --filter @network-safe/server exec tsc -p tsconfig.json --noEmit` 通过。
+- `pnpm --filter @network-safe/web exec tsx ../../tools/lab-scripts/web/crlf-injection/verify.ts` 通过并输出本机验证计划。
+- `python -m py_compile tools/lab-scripts/web/crlf-injection/exploit.py` 通过，生成的 `__pycache__` 已清理。
+
+# 2026-06-30 最新进展：CRLF 注入后端切片
+
+- [x] 新增 `apps/server/src/services/crlf-injection-lab.ts`，使用内存虚拟响应头预览器模拟 `Content-Disposition` 头部构造差异。
+- [x] 新增 `POST /api/labs/web/crlf-injection/:variant/preview`，支持 `vuln` / `fixed` 两个受控变体。
+- [x] 漏洞版固定受控样例触发 `crlf-injection-virtual-header-injected`，只返回虚拟教学头部，不设置真实响应头。
+- [x] 修复版同样样例触发 `crlf-injection-control-chars-blocked`，在进入虚拟头部构造器前阻断。
+- [x] CRLF 事件已接入 `lab_event_logs`，日志只写入模板、下载方式、文件名长度、脱敏预览、控制字符类别、虚拟头部数量和学习信号。
+- [x] 更新 `labs/web/crlf-injection/meta.json` 为 `in-progress`，当前只登记后端 API 和 API 测试，web / scripts 入口仍为空。
+- [x] 更新 CRLF 实验 README、漏洞版 / 修复版 / mock 说明、手动验证文档和脚本目录说明。
+- [x] 补齐服务端测试、共享元数据测试和服务端 registry/health 数量断言。
+- [ ] 下一步补齐前端 API client、实验 helper、工作台页面、路由和脚本入口。
+
+验证记录：
+
+- `pnpm --filter @network-safe/server test -- tests/crlf-injection-lab.test.ts` 通过；该脚本实际运行服务端全量测试，140 项通过。
+- `pnpm --filter @network-safe/shared test` 通过，21 项测试通过。
+- `pnpm --filter @network-safe/server exec tsc -p tsconfig.json --noEmit` 通过。
+
+# 2026-06-30 最新进展：CRLF 注入目录与文档切片
+
+- [x] 建立 `labs/web/crlf-injection/` 标准实验目录结构。
+- [x] 新增 `labs/web/crlf-injection/meta.json`，当前状态为 `planned`，web / api / scripts 入口暂为空，避免误标为可运行实验。
+- [x] 新增实验总说明、漏洞版规划、修复版规划、mock 说明、攻击步骤、修复说明和手动验证计划。
+- [x] 新增 `tools/lab-scripts/web/crlf-injection/README.md`，预留本机受控脚本入口并明确安全边界。
+- [x] 补充共享元数据测试，确认 CRLF 当前为 docs-only planned 元数据。
+- [x] `pnpm --filter @network-safe/shared test` 通过，21 项测试通过。
+- [ ] 下一步实现后端虚拟响应头预览 service、受控 API 和服务端测试。
+
+验证记录：
+
+- `pnpm --filter @network-safe/shared test` 通过，21 项测试通过。
+- `git diff --check -- docs/TODO.md docs/execution/security-lab-master-goal.md docs/execution/2026-06-30-web-crlf-injection-lab.md labs/web/crlf-injection tools/lab-scripts/web/crlf-injection packages/shared/tests/lab-metadata.test.mjs` 未发现空白错误，仅有 `docs/TODO.md` 与 `packages/shared/tests/lab-metadata.test.mjs` 的既有 LF/CRLF 提示。
+- `rg -n "[ \t]+$" docs/TODO.md docs/execution/security-lab-master-goal.md docs/execution/2026-06-30-web-crlf-injection-lab.md labs/web/crlf-injection tools/lab-scripts/web/crlf-injection packages/shared/tests/lab-metadata.test.mjs` 未发现目标文件行尾空白。
+- CRLF 目录、脚本 README 与执行文档安全关键词扫描未命中危险 API、外部请求、文件读取或原始输入摘要暴露。
+
+# 2026-06-30 最新进展：CRLF 注入实现执行文档
+
+- [x] 新增 `docs/execution/2026-06-30-web-crlf-injection-lab.md`。
+- [x] 明确业务包装为“下载响应头预览”。
+- [x] 明确后续实现只使用虚拟响应头预览器，不构造真实 HTTP 响应拆分。
+- [x] 明确后端 API 计划为 `POST /api/labs/web/crlf-injection/:variant/preview`。
+- [x] 明确固定受控样例只用于虚拟预览，不写入真实响应头。
+- [x] 明确日志 `inputSummary` 只记录模板、下载方式、文件名长度与脱敏预览、控制字符类别、虚拟头部数量和学习信号。
+- [x] 明确禁止真实缓存投毒、Cookie 注入、代理链路影响、外部目标访问和通用 payload 库。
+- [ ] 下一步进入 `web/crlf-injection` 目录、元数据和文档切片。
+
+验证记录：
+
+- `git diff --check -- docs/TODO.md docs/execution/security-lab-master-goal.md docs/execution/2026-06-30-web-crlf-injection-lab.md` 未发现空白错误，仅有 `docs/TODO.md` 的 LF/CRLF 提示。
+- `rg -n "[ \t]+$" docs/TODO.md docs/execution/security-lab-master-goal.md docs/execution/2026-06-30-web-crlf-injection-lab.md` 未发现目标文档行尾空白。
+- `rg -n "真实响应拆分|缓存投毒|Cookie 注入|代理链路|外部目标|payload 库" docs/execution/2026-06-30-web-crlf-injection-lab.md` 确认文档已明确安全边界。
+
+# 2026-06-30 最新进展：NoSQL 注入实验 ready 收口
+
+- [x] 新增 `apps/web/src/api/nosql-injection-lab.ts`，接入 `POST /api/labs/web/nosql-injection/:variant/search`。
+- [x] 新增 `apps/web/src/labs/nosql-injection.ts`，提供漏洞版 / 修复版配置、正常样例、受控样例、学习进度和验证记录载荷。
+- [x] 新增 `apps/web/src/views/NosqlInjectionLabView.vue`，提供优惠券检索工作台、受控样例填充、后端判定、学习信号、风险摘要和虚拟文档结果展示。
+- [x] 新增 `/labs/web/nosql-injection/vuln` 与 `/labs/web/nosql-injection/fixed` 路由。
+- [x] 新增 `tools/lab-scripts/web/nosql-injection/exploit.py` 与 `verify.ts`，脚本仅允许本机受控目标。
+- [x] 更新 `labs/web/nosql-injection/meta.json` 为 `ready`，补齐 web / api / scripts / docs / verification 入口。
+- [x] 更新 NoSQL 实验 README、漏洞版 / 修复版 / mock 说明、攻击步骤、修复说明和手动验证文档。
+- [x] 补齐前端 API/helper/router 测试、共享元数据测试和服务端 registry/health 状态断言。
+- [x] CRLF 注入实现执行文档与安全边界规划已在后续完成。
+
+验证记录：
+
+- `pnpm --filter @network-safe/web exec vitest run tests/nosql-injection-api.test.ts tests/nosql-injection-lab.test.ts tests/router.test.ts` 通过，3 个测试文件、7 项测试通过。
+- `pnpm --filter @network-safe/shared test` 通过，20 项通过。
+- `pnpm --filter @network-safe/server test -- tests/nosql-injection-lab.test.ts tests/health.test.ts tests/lab-registry.test.ts` 通过；该脚本实际运行服务端全量测试，133 项通过。
+- `pnpm --filter @network-safe/web exec vue-tsc -p tsconfig.json --noEmit` 通过。
+- `pnpm --filter @network-safe/server exec tsc -p tsconfig.json --noEmit` 通过。
+- `pnpm --filter @network-safe/web exec tsx ../../tools/lab-scripts/web/nosql-injection/verify.ts` 通过并输出本机验证计划。
+- `python -m py_compile tools/lab-scripts/web/nosql-injection/exploit.py` 通过，生成的 `__pycache__` 已清理。
+- 目标文件 `git diff --check` 未发现空白错误，仅有既有 LF/CRLF 提示。
+- 目标文件行尾空白扫描未命中。
+- 安全关键词扫描仅命中 `readFileUploadVariantKey` 函数名误报，未发现 NoSQL 链路使用真实危险 API。
+
+# 2026-06-30 最新进展：NoSQL 注入后端切片收口
+
+- [x] 新增 `apps/server/src/services/nosql-injection-lab.ts`，使用内存虚拟优惠券文档查询器，不引入 MongoDB、Redis、Elasticsearch 或外部 NoSQL 服务。
+- [x] 新增 `POST /api/labs/web/nosql-injection/:variant/search`，支持 `vuln` / `fixed` 两个受控变体。
+- [x] 漏洞版可通过固定受控样例触发 `nosql-injection-query-expanded`，修复版同样样例返回 `nosql-injection-operator-blocked`。
+- [x] NoSQL 实验事件已接入 `lab_event_logs` 统一日志，`inputSummary` 只记录查询模式、关键词长度与脱敏预览、筛选文本长度、风险类别、结果范围、文档数量和学习信号，不保存完整 `filterText` 或查询结构。
+- [x] 更新 `labs/web/nosql-injection/meta.json` 为 `in-progress`，仅登记已实现的后端 API，web / scripts 入口仍保持未登记。
+- [x] `pnpm --filter @network-safe/server test -- tests/nosql-injection-lab.test.ts` 通过；该脚本实际运行服务端全量测试，133 项通过。
+- [x] `pnpm --filter @network-safe/server exec tsc -p tsconfig.json --noEmit` 通过。
+- [x] 后端切片收口检查通过：目标文件无行尾空白；安全关键词扫描仅命中 `readFileUploadVariantKey` 函数名误报。
+- [x] NoSQL 前端 API/helper/page/router、脚本与测试切片已在后续完成。
+
+验证记录：
+
+- `git diff --check -- apps/server/src/app.ts apps/server/src/services/nosql-injection-lab.ts apps/server/tests/nosql-injection-lab.test.ts apps/server/tests/health.test.ts apps/server/tests/lab-registry.test.ts labs/web/nosql-injection packages/shared/tests/lab-metadata.test.mjs docs/TODO.md docs/execution/security-lab-master-goal.md docs/execution/2026-06-30-web-nosql-injection-lab.md` 未发现空白错误，仅有既有 LF/CRLF 提示。
+- `rg -n "[ \t]+$" apps/server/src/app.ts apps/server/src/services/nosql-injection-lab.ts apps/server/tests/nosql-injection-lab.test.ts apps/server/tests/health.test.ts apps/server/tests/lab-registry.test.ts labs/web/nosql-injection packages/shared/tests/lab-metadata.test.mjs docs/TODO.md docs/execution/security-lab-master-goal.md docs/execution/2026-06-30-web-nosql-injection-lab.md` 未发现目标文件行尾空白。
+- `rg -n "mongodb|mongoose|eval\(|new Function|vm\.|child_process|readFile|createReadStream|http\.request|https\.request|process\.env|inputSummaryJson" apps/server/src/services/nosql-injection-lab.ts apps/server/src/app.ts apps/server/tests/nosql-injection-lab.test.ts labs/web/nosql-injection tools/lab-scripts/web/nosql-injection` 仅命中 `readFileUploadVariantKey` 函数名误报，未发现 NoSQL 后端切片使用真实危险 API。
+
+# 2026-06-30 最新进展：NoSQL 注入目录与文档切片
+
+- [x] 建立 `web/nosql-injection` 实验目录骨架。
+- [x] 新增 `labs/web/nosql-injection/meta.json`，当前状态为 `planned`，避免误标为可运行实验。
+- [x] 新增实验总说明、漏洞版规划、修复版规划、mock 说明、攻击步骤、修复说明和手动验证计划。
+- [x] 新增脚本目录说明：`tools/lab-scripts/web/nosql-injection/README.md`。
+- [x] 补充共享元数据测试，明确 NoSQL 当前为 docs-only planned 元数据，web / api / scripts 入口暂为空。
+- [x] `pnpm --filter @network-safe/shared test` 通过，20 项通过。
+- [x] NoSQL 后端虚拟文档查询器与受控 API 切片已在后续完成。
+
+验证记录：
+
+- `pnpm --filter @network-safe/shared test` 通过，20 项通过。
+- `git diff --check -- docs/TODO.md docs/execution/security-lab-master-goal.md docs/execution/2026-06-30-web-nosql-injection-lab.md labs/web/nosql-injection tools/lab-scripts/web/nosql-injection packages/shared/tests/lab-metadata.test.mjs` 未发现空白错误，仅有 `docs/TODO.md` 与 `packages/shared/tests/lab-metadata.test.mjs` 的 LF/CRLF 提示。
+- `rg -n "[ \t]+$" docs/TODO.md docs/execution/security-lab-master-goal.md docs/execution/2026-06-30-web-nosql-injection-lab.md labs/web/nosql-injection tools/lab-scripts/web/nosql-injection packages/shared/tests/lab-metadata.test.mjs` 未发现目标文件行尾空白。
+
+# 2026-06-30 最新进展：NoSQL 注入实现执行文档
+
+- [x] 完成 `web/nosql-injection` 实现执行文档。
+- [x] 新增执行文档：`docs/execution/2026-06-30-web-nosql-injection-lab.md`。
+- [x] 明确业务包装为“优惠券文档检索”。
+- [x] 明确后续实现使用内存虚拟文档查询器，不引入 MongoDB、Redis、Elasticsearch 或其他 NoSQL 服务。
+- [x] 明确后端 API 计划为 `POST /api/labs/web/nosql-injection/:variant/search`。
+- [x] 明确建议请求体字段为 `queryMode`、`keyword` 与 `filterText`，其中 `filterText` 只用于受控风险分类，不作为真实查询结构执行。
+- [x] 明确事件日志 `inputSummary` 只记录查询模式、关键词长度、筛选文本长度、风险类别、是否命中受控样例和结果范围，不保存完整查询结构。
+- [x] 明确后续需要补齐实验目录、元数据、文档、脚本、后端 service / API、前端页面和测试。
+- [x] `web/nosql-injection` 实验目录、元数据和文档切片已在后续落地。
+
+验证记录：
+
+- `git diff --check -- docs/TODO.md docs/execution/security-lab-master-goal.md docs/execution/2026-06-30-web-nosql-injection-lab.md` 未发现空白错误，仅有 `docs/TODO.md` 的 LF/CRLF 提示。
+- `rg -n "[ \t]+$" docs/TODO.md docs/execution/security-lab-master-goal.md docs/execution/2026-06-30-web-nosql-injection-lab.md` 未发现目标文档行尾空白。
+
+# 2026-06-30 最新进展：注入类一期剩余清单规划
+
+- [x] 完成注入类一期剩余清单规划。
+- [x] 新增执行文档：`docs/execution/2026-06-30-injection-remaining-planning.md`。
+- [x] 新增设计文档：`docs/design/injection-remaining-labs.md`。
+- [x] 明确 `web/nosql-injection` 作为下一项优先实验，但使用内存虚拟文档查询器，不引入 MongoDB 或外部服务。
+- [x] 明确 `web/crlf-injection` 可做虚拟响应头构造预览，不做真实响应拆分、缓存投毒或代理链路影响。
+- [x] 明确 `web/xpath-injection` 一期先做模拟实验，不读取真实 XML 文件，不执行任意 XPath 表达式。
+- [x] 明确 `web/ldap-injection` 一期先做案例化，不连接真实 LDAP 服务，不保存目录凭据。
+- [x] 明确后续每个具体实验仍需单独编写实现执行文档，再进入代码实现。
+- [x] `web/nosql-injection` 实现执行文档已在后续切片落地。
+
+验证记录：
+
+- `git diff --check -- docs/TODO.md docs/execution/security-lab-master-goal.md docs/execution/2026-06-30-injection-remaining-planning.md docs/design/injection-remaining-labs.md` 未发现空白错误，仅有 `docs/TODO.md` 的 LF/CRLF 提示。
+- `rg -n "[ \t]+$" docs/TODO.md docs/execution/security-lab-master-goal.md docs/execution/2026-06-30-injection-remaining-planning.md docs/design/injection-remaining-labs.md` 未发现目标文档行尾空白。
+
+# 2026-06-30 最新进展：Web 扩展注入实验统一回归收口
+
+- [x] 完成 `web/command-injection`、`web/ssti`、`web/xxe` 三个扩展注入实验统一回归验证与收口。
+- [x] 新增并执行收口文档：`docs/execution/2026-06-30-web-injection-regression-closeout.md`。
+- [x] 服务端三项回归通过；该命令实际运行服务端全量测试，126 项通过。
+- [x] 前端三项 API / helper / 路由回归通过，7 个测试文件、19 项测试通过。
+- [x] 前端 `vue-tsc` 与服务端 `tsc` 类型检查通过。
+- [x] 共享元数据测试通过，19 项通过。
+- [x] 三个 `verify.ts` 均可输出本机验证计划，三个 `exploit.py` 均通过 Python 语法检查。
+- [x] 已清理 Python 语法检查生成的三个 `__pycache__` 目录。
+- [x] 安全关键词扫描未发现真实危险 API，三项实验仍保持本机受控边界。
+- [x] `git diff --check` 未发现空白错误，仅有当前工作区既有 LF/CRLF 提示；目标文件行尾空白扫描未命中。
+- [x] 注入类一期剩余清单规划已在后续切片落地。
+
+验证记录：
+
+- `pnpm --filter @network-safe/server test -- tests/command-injection-lab.test.ts tests/ssti-lab.test.ts tests/xxe-lab.test.ts` 通过；该脚本实际运行服务端全量测试，126 项通过。
+- `pnpm --filter @network-safe/web exec vitest run tests/command-injection-api.test.ts tests/command-injection-lab.test.ts tests/ssti-api.test.ts tests/ssti-lab.test.ts tests/xxe-api.test.ts tests/xxe-lab.test.ts tests/router.test.ts` 通过，7 个测试文件、19 项测试通过。
+- `pnpm --filter @network-safe/web exec vue-tsc -p tsconfig.json --noEmit` 通过。
+- `pnpm --filter @network-safe/server exec tsc -p tsconfig.json --noEmit` 通过。
+- `pnpm --filter @network-safe/shared test` 通过，19 项通过。
+- `pnpm --filter @network-safe/web exec tsx ../../tools/lab-scripts/web/command-injection/verify.ts` 通过并输出本机验证计划。
+- `pnpm --filter @network-safe/web exec tsx ../../tools/lab-scripts/web/ssti/verify.ts` 通过并输出本机验证计划。
+- `pnpm --filter @network-safe/web exec tsx ../../tools/lab-scripts/web/xxe/verify.ts` 通过并输出本机验证计划。
+- `python -m py_compile tools/lab-scripts/web/command-injection/exploit.py tools/lab-scripts/web/ssti/exploit.py tools/lab-scripts/web/xxe/exploit.py` 通过。
+- `rg -n "child_process|exec\(|spawn\(|eval\(|new Function|readFile|createReadStream|http\.request|https\.request|process\.env|inputSummaryJson" ...` 未命中三项实验实现与脚本中的真实危险 API。
+- `rg -n "[ \t]+$" ...` 未发现本轮目标文件行尾空白。
+
+# 2026-06-29 最新进展：XXE 实验落地
+
+- [x] 落地 `web/xxe` 漏洞版 / 修复版纵向实验。
+- [x] 新增后端虚拟 XML 资源解析器 service：`apps/server/src/services/xxe-lab.ts`。
+- [x] 新增受控 API：`POST /api/labs/web/xxe/:variant/import`。
+- [x] 新增前端 API、实验 helper、工作台页面和路由入口。
+- [x] 更新 `labs/web/xxe/meta.json`，补齐 web / api / scripts / docs / verification / safeBoundaries。
+- [x] 补充攻击步骤、修复说明、手动验证、漏洞版 / 修复版 / mock 说明。
+- [x] 新增本机受控 `exploit.py` 与 `verify.ts`，脚本只允许 localhost / 127.0.0.1 / ::1。
+- [x] XXE 事件已接入统一实验事件日志，日志不保存完整 XML 文档、完整实体声明或虚拟资源内容。
+- [x] 本实验不读取真实本机文件、不请求真实外部 URL、不解析真实外部实体。
+- [x] 已完成 `web/command-injection`、`web/ssti`、`web/xxe` 三个扩展注入实验的统一回归验证与收口。
+
+验证记录：
+
+- `pnpm --filter @network-safe/server test -- tests/xxe-lab.test.ts` 通过；该脚本实际运行服务端全量测试，126 项通过。
+- `pnpm --filter @network-safe/web exec vitest run tests/xxe-api.test.ts tests/xxe-lab.test.ts tests/router.test.ts` 通过。
+- `pnpm --filter @network-safe/shared test` 通过，19 项通过。
+- `pnpm --filter @network-safe/web exec tsx ../../tools/lab-scripts/web/xxe/verify.ts` 通过并输出本机验证计划。
+- `python -m py_compile tools/lab-scripts/web/xxe/exploit.py` 通过。
+- `pnpm --filter @network-safe/web exec vue-tsc -p tsconfig.json --noEmit` 通过。
+- `pnpm --filter @network-safe/server exec tsc -p tsconfig.json --noEmit` 通过。
+
+# 2026-06-29 最新进展：XXE 实现执行文档
+
+- [x] 新增 `web/xxe` 实现执行文档。
+- [x] 新增执行文档：`docs/execution/2026-06-29-web-xxe-lab.md`。
+- [x] 明确 XXE 业务包装为“XML 发票 / 配置导入预览”。
+- [x] 明确后续实现只允许使用虚拟 XML 资源解析器，不读取真实本机文件、不请求真实外部 URL、不解析真实外部实体。
+- [x] 明确后端 API 计划为 `POST /api/labs/web/xxe/:variant/import`。
+- [x] 明确请求体字段为 `importKind` 与 `xmlDocument`，其中导入类型使用固定允许列表。
+- [x] 明确 `file:///virtual/lab/internal-note` 只作为教学标识，不映射到真实文件系统。
+- [x] 明确事件日志 `inputSummary` 只记录 XML 长度、是否包含 DOCTYPE、实体名、是否命中受控样例和学习信号，不保存完整 XML 文档。
+- [x] 明确后续需要补齐后端 service、前端 API / helper / 页面、路由、元数据、文档、脚本和测试。
+- [x] `web/xxe` 前后端、元数据、文档、脚本和测试已在后续切片落地。
+
+验证记录：
+
+- `git diff --check -- docs/TODO.md docs/execution/security-lab-master-goal.md docs/execution/2026-06-29-web-xxe-lab.md` 未发现空白错误，仅有 `docs/TODO.md` 的 LF/CRLF 提示。
+- `rg -n "[ \t]+$" docs/TODO.md docs/execution/security-lab-master-goal.md docs/execution/2026-06-29-web-xxe-lab.md` 未发现目标文档行尾空白。
+- 安全边界关键字检查确认文档明确禁止真实文件读取、真实网络请求和真实外部实体解析。
+
+# 2026-06-29 最新进展：SSTI 实验落地
+
+- [x] 落地 `web/ssti` 漏洞版 / 修复版纵向实验。
+- [x] 新增后端教学用模板模拟器 service：`apps/server/src/services/ssti-lab.ts`。
+- [x] 新增受控 API：`POST /api/labs/web/ssti/:variant/preview`。
+- [x] 新增前端 API、实验 helper、工作台页面和路由入口。
+- [x] 更新 `labs/web/ssti/meta.json`，补齐 web / api / scripts / docs / verification / safeBoundaries。
+- [x] 补充攻击步骤、修复说明、手动验证、漏洞版 / 修复版 / mock 说明。
+- [x] 新增本机受控 `exploit.py` 与 `verify.ts`，脚本只允许 localhost / 127.0.0.1 / ::1。
+- [x] SSTI 事件已接入统一实验事件日志，日志不保存完整模板、完整表达式或完整变量值。
+- [x] 本实验不使用 `eval`、`Function`、Node VM 或真实危险模板表达式执行。
+- [x] `web/xxe` 实现执行文档已在后续切片落地。
+
+验证记录：
+
+- `pnpm --filter @network-safe/server test -- tests/ssti-lab.test.ts` 通过；该脚本实际运行服务端全量测试，118 项通过。
+- `pnpm --filter @network-safe/web exec vitest run tests/ssti-api.test.ts tests/ssti-lab.test.ts tests/router.test.ts` 通过。
+- `pnpm --filter @network-safe/shared test` 通过，18 项通过。
+- `pnpm --filter @network-safe/web exec tsx ../../tools/lab-scripts/web/ssti/verify.ts` 通过并输出本机验证计划。
+- `python -m py_compile tools/lab-scripts/web/ssti/exploit.py` 通过。
+- `pnpm --filter @network-safe/web exec vue-tsc -p tsconfig.json --noEmit` 通过。
+- `pnpm --filter @network-safe/server exec tsc -p tsconfig.json --noEmit` 通过。
+
+# 2026-06-29 最新进展：SSTI 实现执行文档
+
+- [x] 新增 `web/ssti` 实现执行文档。
+- [x] 新增执行文档：`docs/execution/2026-06-29-web-ssti-lab.md`。
+- [x] 明确 SSTI 业务包装为“通知模板预览”。
+- [x] 明确后续实现只允许使用教学用模板模拟器，不使用 `eval`、`Function`、Node VM 或可访问运行时对象的真实模板表达式。
+- [x] 明确后端 API 计划为 `POST /api/labs/web/ssti/:variant/preview`。
+- [x] 明确请求体字段为 `templateKey`、`templateText` 与 `variables`，其中模板 key 和变量名都使用固定允许列表。
+- [x] 明确事件日志 `inputSummary` 只记录模板长度、变量名、表达式类别、是否命中受控样例和学习信号，不保存完整模板、完整表达式或完整变量值。
+- [x] 明确后续需要补齐后端 service、前端 API / helper / 页面、路由、元数据、文档、脚本和测试。
+- [x] `web/ssti` 前后端、元数据、文档、脚本和测试已在后续切片落地。
+- [x] `web/xxe` 实现执行文档已在后续切片落地。
+
+验证记录：
+
+- `git diff --check -- docs/TODO.md docs/execution/security-lab-master-goal.md docs/execution/2026-06-29-web-ssti-lab.md` 未发现空白错误，仅有 `docs/TODO.md` 的 LF/CRLF 提示。
+- `rg -n "[ \t]+$" docs/TODO.md docs/execution/security-lab-master-goal.md docs/execution/2026-06-29-web-ssti-lab.md` 未发现目标文档行尾空白。
+
+# 2026-06-29 最新进展：命令注入实验落地
+
+- [x] 落地 `web/command-injection` 漏洞版 / 修复版纵向实验。
+- [x] 新增后端虚拟命令运行器 service：`apps/server/src/services/command-injection-lab.ts`。
+- [x] 新增受控 API：`POST /api/labs/web/command-injection/:variant/run`。
+- [x] 新增前端 API、实验 helper、工作台页面和路由入口。
+- [x] 更新 `labs/web/command-injection/meta.json`，补齐 web / api / scripts / docs / verification / safeBoundaries。
+- [x] 补充攻击步骤、修复说明、手动验证、漏洞版 / 修复版 / mock 说明。
+- [x] 新增本机受控 `exploit.py` 与 `verify.ts`，脚本只允许 localhost / 127.0.0.1 / ::1。
+- [x] 命令注入事件已接入统一实验事件日志，日志不保存完整 `target`。
+- [x] 本实验不调用真实 shell、PowerShell、`cmd.exe`、`child_process` 或系统命令。
+- [x] `web/ssti` 实现执行文档已在后续切片落地。
+
+验证记录：
+
+- `pnpm --filter @network-safe/server test -- tests/command-injection-lab.test.ts` 通过；该脚本实际运行服务端全量测试，110 项通过。
+- `pnpm --filter @network-safe/web exec vitest run tests/command-injection-api.test.ts tests/command-injection-lab.test.ts tests/router.test.ts` 通过。
+- `pnpm --filter @network-safe/shared test` 通过。
+- `pnpm --filter @network-safe/web exec vue-tsc -p tsconfig.json --noEmit` 通过。
+- `pnpm --filter @network-safe/server exec tsc -p tsconfig.json --noEmit` 通过。
+- `pnpm --filter @network-safe/web exec vitest run` 通过，35 个测试文件、121 项测试通过。
+- `pnpm --filter @network-safe/web exec tsx ../../tools/lab-scripts/web/command-injection/verify.ts` 通过并输出本机验证计划。
+- `python -m py_compile tools/lab-scripts/web/command-injection/exploit.py` 通过。
+- `git diff --check` 未发现空白错误，仅有当前工作区既有 LF/CRLF 提示。
+- `rg -n "[ \t]+$" ...` 未发现本轮目标文件行尾空白。
+
+# 2026-06-29 最新进展：命令注入实现执行文档
+
+- [x] 新增 `web/command-injection` 实现执行文档。
+- [x] 新增执行文档：`docs/execution/2026-06-29-web-command-injection-lab.md`。
+- [x] 明确命令注入业务包装为“诊断任务运行器”。
+- [x] 明确后续实现只允许使用虚拟命令运行器，不调用真实 shell、PowerShell、`cmd.exe`、`child_process` 或系统命令。
+- [x] 明确后端 API 计划为 `POST /api/labs/web/command-injection/:variant/run`。
+- [x] 明确请求体字段为 `taskKey` 与 `target`，其中 `taskKey` 使用固定允许列表。
+- [x] 明确事件日志 `inputSummary` 只记录任务、长度、操作符类型、是否命中受控样例和学习信号，不保存完整 `target`。
+- [x] 明确后续需要补齐后端 service、前端 API / helper / 页面、路由、元数据、文档、脚本和测试。
+- [x] `web/command-injection` 前后端、元数据、文档、脚本和测试已在后续切片落地。
+- [x] `web/ssti` 实现执行文档已在后续切片落地。
+
+验证记录：
+
+- `git diff --check -- docs/TODO.md docs/execution/security-lab-master-goal.md docs/execution/2026-06-29-web-command-injection-lab.md` 未发现空白错误，仅有 `docs/TODO.md` 的 LF/CRLF 提示。
+- `rg -n "[ \t]+$" docs/TODO.md docs/execution/security-lab-master-goal.md docs/execution/2026-06-29-web-command-injection-lab.md` 未发现目标文档行尾空白。
+
+# 2026-06-29 最新进展：下一批 Web 注入类扩展实验设计
+
+- [x] 新增下一批 Web 注入类扩展实验设计。
+- [x] 新增执行文档：`docs/execution/2026-06-29-next-wave-web-injection-labs.md`。
+- [x] 新增设计文档：`docs/design/next-wave-web-injection-labs.md`。
+- [x] 明确下一批优先顺序为 `web/command-injection`、`web/ssti`、`web/xxe`。
+- [x] 明确命令注入必须使用虚拟命令运行器，不调用真实 shell、PowerShell、`cmd.exe`、`child_process` 或系统命令。
+- [x] 明确 SSTI 必须使用教学用模板模拟器，不使用 `eval`、`Function` 或可访问运行时对象的真实模板表达式。
+- [x] 明确 XXE 必须使用虚拟 XML 资源解析，不读取真实本机文件、不请求真实外部 URL、不解析真实外部实体。
+- [x] 明确三个实验后续都要补齐元数据入口、工作台页面、受控 API、统一事件日志、文档、脚本和最小测试。
+- [x] 明确脚本仍只允许访问 localhost / 127.0.0.1 / ::1，不扫描网络、不访问外部目标、不生成通用攻击 payload 库。
+- [x] `web/command-injection` 实现执行文档已在后续切片落地。
+- [x] `web/command-injection` 前后端、元数据、文档、脚本和测试已在后续切片落地。
+- [x] `web/ssti` 实现执行文档已在后续切片落地。
+
+验证记录：
+
+- `git diff --check -- docs/TODO.md docs/execution/security-lab-master-goal.md docs/execution/2026-06-29-next-wave-web-injection-labs.md docs/design/next-wave-web-injection-labs.md` 未发现空白错误，仅有 `docs/TODO.md` 的 LF/CRLF 提示。
+- `rg -n "[ \t]+$" docs/TODO.md docs/execution/security-lab-master-goal.md docs/execution/2026-06-29-next-wave-web-injection-labs.md docs/design/next-wave-web-injection-labs.md` 未发现目标文档行尾空白。
+
+# 2026-06-29 最新进展：复盘统计说明文档
+
+- [x] 阶段 D 新增学习复盘统计说明文档。
+- [x] 新增执行文档：`docs/execution/2026-06-29-learning-recap-statistics-guide.md`。
+- [x] 新增设计文档：`docs/design/learning-recap-statistics.md`。
+- [x] 明确账号中心复盘完成度只代表当前筛选范围内最近事件的复盘问题完成情况。
+- [x] 明确该统计不代表全量历史学习完成率、漏洞掌握度、攻击成功率或安全能力评分。
+- [x] 明确统计按 `labKey` 聚合，分母来自当前事件生成的固定引导式问题数量。
+- [x] 明确只统计当前问题范围内 `completed: true` 的完成记录，越界 `questionIndex` 不计入完成数。
+- [x] 明确筛选实验、阶段或风险后，当前事件列表、分子、分母和百分比都会随之变化。
+- [x] 明确统计区域仍不展示 `inputSummaryJson`、真实密码、真实 token、真实 Cookie、完整 payload 或外部目标信息。
+- [x] 下一批 Web 注入类扩展实验设计已在后续切片落地。
+- [x] `web/command-injection` 实现执行文档已在后续切片落地。
+- [x] `web/command-injection` 前后端、元数据、文档、脚本和测试已在后续切片落地。
+- [x] `web/ssti` 实现执行文档已在后续切片落地。
+
+验证记录：
+
+- `git diff --check -- docs/TODO.md docs/execution/security-lab-master-goal.md docs/execution/2026-06-29-learning-recap-statistics-guide.md docs/design/learning-recap-statistics.md` 未发现空白错误，仅有 `docs/TODO.md` 的 LF/CRLF 提示。
+- `rg -n "[ \t]+$" docs/TODO.md docs/execution/security-lab-master-goal.md docs/execution/2026-06-29-learning-recap-statistics-guide.md docs/design/learning-recap-statistics.md` 未发现目标文档行尾空白。
+
+# 2026-06-29 最新进展：详情页复用模式规划
+
+- [x] 阶段 D 新增后续实验复用详情页模式规划。
+- [x] 新增执行文档：`docs/execution/2026-06-29-lab-detail-reuse-pattern.md`。
+- [x] 新增设计文档：`docs/design/lab-detail-reuse-pattern.md`。
+- [x] 明确通用详情页负责元数据、变体入口、验证方式、当前实验记录、最近事件复盘和复盘问题完成状态。
+- [x] 明确实验工作台页面负责具体攻击 / 防御交互，详情页不承载实验专属表单。
+- [x] 明确后续实验必须通过 `variant.entryKey -> entrypoints.web[].key` 精确匹配入口，不猜测路由。
+- [x] 明确详情页使用 `lab.id` 作为 `labKey`，学习记录、事件日志和复盘完成状态均按已确认字段关联。
+- [x] 明确最近事件复盘仍不展示 `inputSummaryJson`、真实密码、真实 token、真实 Cookie、完整 payload 或外部目标信息。
+- [x] 明确新增实验接入详情页的检查清单，为后续命令注入、SSTI、XXE 等扩展实验预留复用路径。
+- [x] 复盘统计说明文档已在后续切片落地。
+- [x] 下一批 Web 注入类扩展实验设计已在后续切片落地。
+- [x] `web/command-injection` 实现执行文档已在后续切片落地。
+- [x] `web/command-injection` 前后端、元数据、文档、脚本和测试已在后续切片落地。
+- [x] `web/ssti` 实现执行文档已在后续切片落地。
+
+验证记录：
+
+- `git diff --check -- docs/TODO.md docs/execution/security-lab-master-goal.md docs/execution/2026-06-29-lab-detail-reuse-pattern.md docs/design/lab-detail-reuse-pattern.md` 未发现空白错误，仅有 `docs/TODO.md` 的 LF/CRLF 提示。
+- `rg -n "[ \t]+$" docs/TODO.md docs/execution/security-lab-master-goal.md docs/execution/2026-06-29-lab-detail-reuse-pattern.md docs/design/lab-detail-reuse-pattern.md` 未发现目标文档行尾空白。
+
+# 2026-06-29 最新进展：账号中心复盘完成度统计
+
+- [x] 阶段 D 新增账号中心复盘完成度统计视图。
+- [x] 复用当前用户事件日志接口和复盘问题完成记录接口，未新增后端接口或数据库字段。
+- [x] 账号中心刷新最近事件复盘时，同步按 `traceId` 拉取复盘问题完成记录。
+- [x] 新增按实验聚合的复盘统计：最近事件数、已完成问题数 / 问题总数、完成百分比。
+- [x] 统计口径限定为当前筛选范围内的最近事件，不作为全量历史完成率。
+- [x] 完成数只统计当前问题数量范围内的 `completed: true` 记录。
+- [x] 本轮仍不展示 `inputSummaryJson`，不保存或展示真实密码、真实 token、真实 Cookie、完整 payload 或外部目标信息。
+- [x] 已补充账号中心复盘统计 helper 测试。
+- [x] 后续实验复用详情页模式规划已在后续切片落地。
+- [x] 复盘统计说明文档已在后续切片落地。
+- [x] 下一批 Web 注入类扩展实验设计已在后续切片落地。
+- [x] `web/command-injection` 实现执行文档已在后续切片落地。
+- [x] `web/command-injection` 前后端、元数据、文档、脚本和测试已在后续切片落地。
+- [x] `web/ssti` 实现执行文档已在后续切片落地。
+
+验证记录：
+
+- `pnpm --filter @network-safe/web exec vitest run tests/account-recap.test.ts tests/lab-records-api.test.ts` 通过。
+- `pnpm --filter @network-safe/web exec vue-tsc -p tsconfig.json --noEmit` 通过。
+
+# 2026-06-29 最新进展：复盘问题持久化
+
+- [x] 阶段 D 新增学习复盘问题完成记录持久化能力。
+- [x] 新增 `lab_recap_question_completions` 表、Prisma schema 与 SQL 迁移文件。
+- [x] 新增 `GET /api/lab-recap-question-completions/me` 当前用户完成记录查询接口。
+- [x] 新增 `PUT /api/lab-recap-question-completions/me` 当前用户完成记录写入接口。
+- [x] 实验详情页加载事件复盘后按 `traceId` 拉取已完成问题状态。
+- [x] 实验详情页勾选 / 取消勾选复盘问题时写回后端，失败时回滚本地状态。
+- [x] 本轮仍不展示 `inputSummaryJson`，不保存真实密码、真实 token、真实 Cookie 或完整 payload。
+- [x] 已补充服务端 service / API 测试、前端 API / helper 测试，并完成最小必要验证。
+- [x] 账号中心复盘完成度统计视图已在后续切片落地。
+
+验证记录：
+
+- `pnpm --filter @network-safe/server test` 通过。
+- `pnpm --filter @network-safe/web exec vitest run` 通过。
+- `pnpm --filter @network-safe/web exec vue-tsc -p tsconfig.json --noEmit` 通过。
+- `pnpm --filter @network-safe/server prisma:validate` 通过。
+- `git diff --check` 未发现空白错误，仅有既有 LF/CRLF 提示。
+- `pnpm --filter @network-safe/server prisma:generate` 因 Windows Prisma engine DLL 文件锁失败；Prisma 类型已刷新且测试通过，后续释放相关 Node 进程后可重试该命令。
+
 # 项目进度 TODO
 
 > 本文件既记录项目级工作进度，也记录每一种攻击类型 / 安全内容是否已纳入、当前做到哪一步、后续准备落到哪里。
@@ -57,10 +772,60 @@
 - [x] 账户中心展示学习进度与最近验证记录
 - [x] 补充登录到 XSS 再到账户中心记录可见的 Playwright 闭环用例
 - [x] 完善 `web/xss` 文档、脚本入口、元数据自动化入口和漏洞版 / 修复版差异验证
+- [x] 建立单个实验详情页，展示元数据、变体入口、验证方式和当前实验记录
+- [x] 落地 `web/csrf` 前端页面、后端受控业务接口、文档、脚本入口和差异验证
+- [x] 落地阶段 A 统一实验事件日志表、Prisma schema、日志服务与 CSRF 首个接入
+- [x] 落地 `web/sql-injection` 前端页面、后端受控查询接口、场景数据表、文档、脚本入口和统一事件日志
+- [x] 落地 `web/file-upload` 前端页面、后端受控模拟上传接口、文档、脚本入口和统一事件日志
+- [x] 落地 `web/path-traversal` 前端页面、后端受控虚拟文档读取接口、文档、脚本入口和统一事件日志
+- [x] 落地 `web/ssrf` 前端页面、后端受控虚拟资源抓取接口、文档、脚本入口和统一事件日志
+- [x] 落地 `web/info-disclosure` 前端页面、后端受控虚拟诊断报告接口、文档、脚本入口和统一事件日志
+- [x] 落地 `auth/jwt` 前端页面、后端受控 JWT 验证接口、文档、脚本入口和统一事件日志
+- [x] 落地 `auth/idor` 前端页面、后端受控订单对象读取接口、文档、脚本入口和统一事件日志
+- [x] 落地 `auth/privilege-escalation` 前端页面、后端受控管理操作接口、文档、脚本入口和统一事件日志
+- [x] 落地 `auth/session-fixation` 前端页面、后端受控教学登录会话接口、文档、脚本入口和统一事件日志
+- [x] 落地 `auth/brute-force` 前端页面、后端受控候选口令检查接口、文档、脚本入口和统一事件日志
+- [x] 落地 `web/command-injection` 前端页面、后端虚拟命令运行器接口、文档、脚本入口和统一事件日志
+- [x] 落地阶段 D 最近实验事件日志复盘：账户中心时间线、实验详情页复盘卡片与当前用户事件日志接口
+- [x] 落地阶段 D 事件日志阶段 / 风险筛选与引导式复盘问题
+- [x] 落地阶段 D 账户中心按实验筛选事件复盘
+- [x] 落地阶段 D 复盘卡片展开 / 收起状态
+- [x] 落地阶段 D 实验详情页复盘问题本地完成状态
+- [x] 落地阶段 D 统一复盘卡片组件
+- [x] 落地阶段 D 后续实验复用详情页模式规划
+- [x] 落地阶段 D 复盘统计说明文档
+- [x] 落地下一批 Web 注入类扩展实验设计
+- [x] 落地 `web/command-injection` 实现执行文档
+- [x] 落地 `web/command-injection` 前后端、元数据、文档、脚本和测试
+- [x] 落地 `web/ssti` 实现执行文档
+- [x] 落地 `web/ssti` 前后端、元数据、文档、脚本和测试
+- [x] 落地 `web/xxe` 实现执行文档
+- [x] 落地 `web/xxe` 前后端、元数据、文档、脚本和测试
+- [x] 完成 `web/command-injection`、`web/ssti`、`web/xxe` 三个扩展注入实验统一回归验证与收口
+- [x] 完成注入类一期剩余清单规划
+- [x] 完成 `web/nosql-injection` 实现执行文档
+- [x] 建立 `web/nosql-injection` 实验目录、planned 元数据和基础文档
+- [x] 完成 `web/ldap-injection` 案例化执行文档
+- [x] 建立 `web/ldap-injection` 实验目录、planned 元数据和基础案例文档
+- [x] 补充 `web/ldap-injection` 静态案例页方案与前端入口，后续已升级为前端虚拟目录工作台
+- [x] 补充 `web/ldap-injection` 文档与元数据一致性验证脚本
+- [x] 补充 `web/ldap-injection` 受控虚拟目录 API、事件日志和服务端测试
+- [x] 补充 `web/ldap-injection` 前端虚拟目录工作台、API client 和前端测试
 
 ### 2.3 进行中
 
-- [ ] 实验详情页记录展示与验证入口规划
+- [x] `web/nosql-injection` 后端虚拟文档查询器与受控 API
+- [x] `web/nosql-injection` 前端 API/helper/page/router、脚本与测试
+- [x] `web/crlf-injection` 实现执行文档与安全边界规划
+- [x] `web/crlf-injection` 目录、元数据、后端、前端、脚本与测试
+- [x] `web/xpath-injection` 目录、元数据、后端、前端、脚本与测试
+- [x] `web/ldap-injection` 案例化执行文档
+- [x] `web/ldap-injection` 目录、planned 元数据和基础案例文档
+- [x] `web/ldap-injection` 静态案例页、路由、元数据和测试，后续已升级为前端虚拟目录工作台
+- [x] `web/ldap-injection` 只读一致性验证脚本和元数据自动化入口
+- [x] `web/ldap-injection` 虚拟目录 API、事件日志和 API 测试
+- [x] `web/ldap-injection` 前端工作台接入、API client 和 helper 测试
+- [ ] 后续新增实验逐步接入 `lab_event_logs` 统一事件日志
 
 ### 2.4 待办清单
 
@@ -72,6 +837,17 @@
 - [x] 补充自动化测试规划文档
 - [x] 补充一期落地实施计划文档
 - [x] 补充一期实验清单文档
+- [x] 补充后续实验复用详情页模式设计文档
+- [x] 补充学习复盘统计说明文档
+- [x] 补充下一批 Web 注入类扩展实验设计文档
+- [x] 补充 `web/command-injection` 实现执行文档
+- [x] 补充 `web/ssti` 实现执行文档
+- [x] 补充 `web/xxe` 实现执行文档
+- [x] 补充 Web 扩展注入实验统一回归收口执行文档
+- [x] 补充注入类一期剩余清单规划执行文档
+- [x] 补充注入类一期剩余清单设计文档
+- [x] 补充 `web/nosql-injection` 实现执行文档
+- [x] 补充 `web/ldap-injection` 案例化执行文档
 
 #### 工程骨架
 
@@ -93,10 +869,18 @@
 - [x] 建立学习进度与验证记录写入接口
 - [x] 建立实验元数据同步至数据库实验主表入口
 - [x] 建立当前用户实验记录摘要接口
+- [x] 建立单个实验详情页与当前实验记录展示入口
+- [x] 建立统一实验事件日志表、日志服务与控制台结构化日志入口
+- [x] 建立当前用户最近实验事件日志查询接口与前端复盘展示入口
+- [x] 建立事件日志阶段 / 风险筛选与固定引导式复盘问题
+- [x] 建立账户中心按实验筛选最近事件日志入口
+- [x] 建立账户中心与实验详情页复盘卡片展开 / 收起入口
+- [x] 建立实验详情页复盘问题本地完成状态入口
+- [x] 建立统一复盘卡片组件复用账户中心与实验详情页展示
 
 #### 一期实验重点
 
-- [ ] Web 层漏洞一期清单
+- [x] Web 层漏洞一期清单
 - [x] 将前端 `/labs` 页面接入真实实验元数据接口
 - [x] 补充 Playwright 浏览器端到端冒烟测试
 - [x] 补充 Playwright 平台闭环测试
@@ -106,10 +890,42 @@
 - [x] 账户中心展示学习进度与最近验证记录
 - [x] 登录用户完成 XSS 样例后可在账户中心看到实验记录
 - [x] 完善 `web/xss` 攻击步骤、修复说明、手动验证矩阵与脚本验证入口
+- [x] 实验详情页记录展示与验证入口
+- [x] 落地 `web/csrf` 漏洞版 / 修复版纵向实验、受控业务接口与验证脚本入口
+- [x] 将 `web/csrf` 转账动作接入统一实验事件日志
+- [x] 落地 `web/sql-injection` 漏洞版 / 修复版纵向实验、受控业务接口、场景数据表与验证脚本入口
+- [x] 将 `web/sql-injection` 搜索动作接入统一实验事件日志
+- [x] 落地 `web/file-upload` 漏洞版 / 修复版纵向实验、受控模拟上传接口与验证脚本入口
+- [x] 将 `web/file-upload` 上传动作接入统一实验事件日志
+- [x] 落地 `web/path-traversal` 漏洞版 / 修复版纵向实验、受控虚拟文档读取接口与验证脚本入口
+- [x] 将 `web/path-traversal` 文档读取动作接入统一实验事件日志
+- [x] 落地 `web/ssrf` 漏洞版 / 修复版纵向实验、受控虚拟资源抓取接口与验证脚本入口
+- [x] 将 `web/ssrf` URL 抓取动作接入统一实验事件日志
+- [x] 落地 `web/info-disclosure` 漏洞版 / 修复版纵向实验、受控虚拟诊断报告接口与验证脚本入口
+- [x] 将 `web/info-disclosure` 诊断报告读取动作接入统一实验事件日志
+- [x] 落地 `auth/jwt` 漏洞版 / 修复版纵向实验、受控 JWT 验证接口与验证脚本入口
+- [x] 将 `auth/jwt` token 验证动作接入统一实验事件日志
+- [x] 落地 `auth/idor` 漏洞版 / 修复版纵向实验、受控订单对象读取接口与验证脚本入口
+- [x] 将 `auth/idor` 订单读取动作接入统一实验事件日志
+- [x] 落地 `auth/privilege-escalation` 漏洞版 / 修复版纵向实验、受控管理操作接口与验证脚本入口
+- [x] 将 `auth/privilege-escalation` 操作执行动作接入统一实验事件日志
+- [x] 落地 `auth/session-fixation` 漏洞版 / 修复版纵向实验、受控教学登录会话接口与验证脚本入口
+- [x] 将 `auth/session-fixation` 教学登录会话动作接入统一实验事件日志
+- [x] 落地 `auth/brute-force` 漏洞版 / 修复版纵向实验、受控候选口令检查接口与验证脚本入口
+- [x] 将 `auth/brute-force` 候选口令检查动作接入统一实验事件日志
+- [x] 补充 `web/command-injection`、`web/ssti`、`web/xxe` 下一批实现设计
+- [x] 补充 `web/command-injection` 实现执行文档
+- [x] 落地 `web/command-injection` 漏洞版 / 修复版纵向实验、后端虚拟命令运行器接口与验证脚本入口
+- [x] 将 `web/command-injection` 诊断任务运行接入统一实验事件日志
+- [x] 补充 `web/ssti` 实现执行文档
+- [x] 落地 `web/ssti` 漏洞版 / 修复版纵向实验、后端教学用模板模拟器接口与验证脚本入口
+- [x] 将 `web/ssti` 通知模板预览接入统一实验事件日志
+- [x] 补充 `web/xxe` 实现执行文档
+- [x] 落地 `web/xxe` 漏洞版 / 修复版纵向实验、后端虚拟 XML 资源解析器接口与验证脚本入口
+- [x] 将 `web/xxe` XML 导入预览接入统一实验事件日志
 - [ ] 注入类一期清单
 - [ ] 认证 / 授权一期清单
 - [ ] 漏洞版 / 修复版组织规范落地
-- [ ] 实验详情页记录展示与验证入口
 
 ## 3. 安全内容覆盖跟踪
 
@@ -125,39 +941,39 @@
 | 内容 | 状态 | 落地方式 | 当前落点 | 未来代码位置 |
 |---|---|---|---|---|
 | XSS | 已完成 | 真实交互靶场 / 脚本实验 | `labs/web/xss/`、`tools/lab-scripts/web/xss/`、`packages/testing/tests/e2e/platform.spec.mjs` | `labs/web/xss/` |
-| CSRF | 进行中 | 真实交互靶场 | `labs/web/csrf/`、`tools/lab-scripts/web/csrf/` | `labs/web/csrf/` |
+| CSRF | 已完成 | 真实交互靶场 / 脚本实验 | `labs/web/csrf/`、`apps/web/src/views/CsrfLabView.vue`、`apps/server/tests/csrf-lab.test.ts`、`tools/lab-scripts/web/csrf/verify.ts`、`packages/testing/tests/e2e/platform.spec.mjs` | `labs/web/csrf/` |
 | 点击劫持 | 规划中 | 真实交互靶场 | `docs/design/project-scope-and-security-content.md` | `labs/web/clickjacking/` |
-| SSRF | 进行中 | 真实交互靶场 / 脚本实验 | `labs/web/ssrf/`、`tools/lab-scripts/web/ssrf/` | `labs/web/ssrf/` |
+| SSRF | 已完成 | 真实交互靶场 / 脚本实验 | `labs/web/ssrf/`、`apps/web/src/views/SsrfLabView.vue`、`apps/server/tests/ssrf-lab.test.ts`、`tools/lab-scripts/web/ssrf/verify.ts` | `labs/web/ssrf/` |
 | 开放重定向 | 规划中 | 真实交互靶场 | `docs/design/project-scope-and-security-content.md` | `labs/web/open-redirect/` |
-| 文件上传漏洞 | 进行中 | 真实交互靶场 | `labs/web/file-upload/`、`tools/lab-scripts/web/file-upload/` | `labs/web/file-upload/` |
-| 目录遍历 | 进行中 | 真实交互靶场 | `labs/web/path-traversal/`、`tools/lab-scripts/web/path-traversal/` | `labs/web/path-traversal/` |
-| 信息泄露 | 进行中 | 真实交互靶场 / 案例化演示 | `labs/web/info-disclosure/`、`tools/lab-scripts/web/info-disclosure/` | `labs/web/info-disclosure/` |
+| 文件上传漏洞 | 已完成 | 真实交互靶场 / 脚本实验 | `labs/web/file-upload/`、`apps/web/src/views/FileUploadLabView.vue`、`apps/server/tests/file-upload-lab.test.ts`、`tools/lab-scripts/web/file-upload/verify.ts` | `labs/web/file-upload/` |
+| 目录遍历 | 已完成 | 真实交互靶场 / 脚本实验 | `labs/web/path-traversal/`、`apps/web/src/views/PathTraversalLabView.vue`、`apps/server/tests/path-traversal-lab.test.ts`、`tools/lab-scripts/web/path-traversal/verify.ts` | `labs/web/path-traversal/` |
+| 信息泄露 | 已完成 | 真实交互靶场 / 脚本实验 | `labs/web/info-disclosure/`、`apps/web/src/views/InfoDisclosureLabView.vue`、`apps/server/tests/info-disclosure-lab.test.ts`、`tools/lab-scripts/web/info-disclosure/verify.ts` | `labs/web/info-disclosure/` |
 
 ## 5. 注入类
 
 | 内容 | 状态 | 落地方式 | 当前落点 | 未来代码位置 |
 |---|---|---|---|---|
-| SQL 注入 | 进行中 | 真实交互靶场 | `labs/web/sql-injection/`、`tools/lab-scripts/web/sql-injection/` | `labs/web/sql-injection/` |
-| NoSQL 注入 | 规划中 | 真实交互靶场 / 案例化演示 | `docs/design/project-scope-and-security-content.md` | `labs/web/nosql-injection/` |
-| 命令注入 | 进行中 | 真实交互靶场 / 脚本实验 | `labs/web/command-injection/`、`tools/lab-scripts/web/command-injection/` | `labs/web/command-injection/` |
-| LDAP 注入 | 规划中 | 案例化演示 | `docs/design/project-scope-and-security-content.md` | `labs/web/ldap-injection/` |
-| XPath 注入 | 规划中 | 案例化演示 | `docs/design/project-scope-and-security-content.md` | `labs/web/xpath-injection/` |
-| CRLF 注入 | 规划中 | 真实交互靶场 / 案例化演示 | `docs/design/project-scope-and-security-content.md` | `labs/web/crlf-injection/` |
-| 模板注入（SSTI） | 进行中 | 真实交互靶场 | `labs/web/ssti/`、`tools/lab-scripts/web/ssti/` | `labs/web/ssti/` |
-| XXE 注入 | 进行中 | 真实交互靶场 | `labs/web/xxe/`、`tools/lab-scripts/web/xxe/` | `labs/web/xxe/` |
+| SQL 注入 | 已完成 | 真实交互靶场 / 脚本实验 | `labs/web/sql-injection/`、`apps/web/src/views/SqlInjectionLabView.vue`、`apps/server/tests/sql-injection-lab.test.ts`、`tools/lab-scripts/web/sql-injection/verify.ts` | `labs/web/sql-injection/` |
+| NoSQL 注入 | 已完成 | 真实交互靶场 / 本机模拟 | `labs/web/nosql-injection/`、`apps/server/src/services/nosql-injection-lab.ts`、`apps/web/src/views/NosqlInjectionLabView.vue`、`apps/web/tests/nosql-injection-lab.test.ts`、`apps/server/tests/nosql-injection-lab.test.ts`、`tools/lab-scripts/web/nosql-injection/verify.ts`、`packages/shared/tests/lab-metadata.test.mjs`、`docs/design/injection-remaining-labs.md`、`docs/execution/2026-06-30-web-nosql-injection-lab.md` | `labs/web/nosql-injection/` |
+| 命令注入 | 已完成 | 真实交互靶场 / 脚本实验 | `labs/web/command-injection/`、`apps/web/src/views/CommandInjectionLabView.vue`、`apps/server/tests/command-injection-lab.test.ts`、`tools/lab-scripts/web/command-injection/verify.ts`、`docs/design/next-wave-web-injection-labs.md`、`docs/execution/2026-06-30-web-injection-regression-closeout.md` | `labs/web/command-injection/` |
+| LDAP 注入 | 进行中 | 案例化演示 / 前端虚拟目录工作台 / 虚拟目录 API / 只读一致性验证 | `labs/web/ldap-injection/`、`apps/server/src/services/ldap-injection-lab.ts`、`apps/server/tests/ldap-injection-lab.test.ts`、`apps/web/src/api/ldap-injection-lab.ts`、`apps/web/src/views/LdapInjectionLabView.vue`、`apps/web/src/labs/ldap-injection.ts`、`apps/web/tests/ldap-injection-api.test.ts`、`apps/web/tests/ldap-injection-lab.test.ts`、`tools/lab-scripts/web/ldap-injection/verify.ts`、`packages/shared/tests/lab-metadata.test.mjs`、`docs/design/project-scope-and-security-content.md`、`docs/design/injection-remaining-labs.md`、`docs/execution/2026-06-30-injection-remaining-planning.md`、`docs/execution/2026-06-30-web-ldap-injection-lab.md`、`docs/execution/2026-06-30-web-ldap-injection-static-case-page.md`、`docs/execution/2026-06-30-web-ldap-injection-consistency-verify.md`、`docs/execution/2026-06-30-web-ldap-injection-virtual-directory-api.md`、`docs/execution/2026-06-30-web-ldap-injection-frontend-workbench.md` | `labs/web/ldap-injection/` |
+| XPath 注入 | 已完成 | 本机模拟 / 脚本实验 | `labs/web/xpath-injection/`、`apps/server/src/services/xpath-injection-lab.ts`、`apps/web/src/views/XpathInjectionLabView.vue`、`apps/web/tests/xpath-injection-lab.test.ts`、`apps/server/tests/xpath-injection-lab.test.ts`、`tools/lab-scripts/web/xpath-injection/verify.ts`、`docs/execution/2026-06-30-web-xpath-injection-lab.md` | `labs/web/xpath-injection/` |
+| CRLF 注入 | 已完成 | 真实交互靶场 / 本机模拟 / 脚本实验 | `labs/web/crlf-injection/`、`apps/server/src/services/crlf-injection-lab.ts`、`apps/web/src/views/CrlfInjectionLabView.vue`、`apps/web/tests/crlf-injection-lab.test.ts`、`apps/server/tests/crlf-injection-lab.test.ts`、`tools/lab-scripts/web/crlf-injection/verify.ts`、`docs/execution/2026-06-30-web-crlf-injection-lab.md` | `labs/web/crlf-injection/` |
+| 模板注入（SSTI） | 已完成 | 真实交互靶场 / 脚本实验 | `labs/web/ssti/`、`apps/web/src/views/SstiLabView.vue`、`apps/server/tests/ssti-lab.test.ts`、`tools/lab-scripts/web/ssti/verify.ts`、`docs/execution/2026-06-29-web-ssti-lab.md`、`docs/execution/2026-06-30-web-injection-regression-closeout.md` | `labs/web/ssti/` |
+| XXE 注入 | 已完成 | 真实交互靶场 / 脚本实验 | `labs/web/xxe/`、`apps/web/src/views/XxeLabView.vue`、`apps/server/tests/xxe-lab.test.ts`、`tools/lab-scripts/web/xxe/verify.ts`、`docs/execution/2026-06-29-web-xxe-lab.md`、`docs/execution/2026-06-30-web-injection-regression-closeout.md` | `labs/web/xxe/` |
 
 ## 6. 认证 / 授权
 
 | 内容 | 状态 | 落地方式 | 当前落点 | 未来代码位置 |
 |---|---|---|---|---|
-| 暴力破解 | 进行中 | 真实交互靶场 | `labs/auth/brute-force/`、`tools/lab-scripts/auth/brute-force/` | `labs/auth/brute-force/` |
+| 暴力破解 | 已完成 | 真实交互靶场 / 脚本实验 | `labs/auth/brute-force/`、`apps/web/src/views/BruteForceLabView.vue`、`apps/server/tests/brute-force-lab.test.ts`、`tools/lab-scripts/auth/brute-force/verify.ts` | `labs/auth/brute-force/` |
 | 凭据填充 | 规划中 | 真实交互靶场 / 案例化演示 | `docs/design/project-scope-and-security-content.md` | `labs/auth/credential-stuffing/` |
 | 会话劫持 | 规划中 | 真实交互靶场 / 案例化演示 | `docs/design/project-scope-and-security-content.md` | `labs/auth/session-hijacking/` |
-| 会话固定 | 进行中 | 真实交互靶场 | `labs/auth/session-fixation/`、`tools/lab-scripts/auth/session-fixation/` | `labs/auth/session-fixation/` |
-| JWT 攻击 | 进行中 | 真实交互靶场 | `labs/auth/jwt/`、`tools/lab-scripts/auth/jwt/` | `labs/auth/jwt/` |
+| 会话固定 | 已完成 | 真实交互靶场 / 脚本实验 | `labs/auth/session-fixation/`、`apps/web/src/views/SessionFixationLabView.vue`、`apps/server/tests/session-fixation-lab.test.ts`、`tools/lab-scripts/auth/session-fixation/verify.ts` | `labs/auth/session-fixation/` |
+| JWT 攻击 | 已完成 | 真实交互靶场 / 脚本实验 | `labs/auth/jwt/`、`apps/web/src/views/JwtLabView.vue`、`apps/server/tests/jwt-lab.test.ts`、`tools/lab-scripts/auth/jwt/verify.ts` | `labs/auth/jwt/` |
 | OAuth 漏洞 | 规划中 | 真实交互靶场 / 案例化演示 | `docs/design/project-scope-and-security-content.md` | `labs/auth/oauth/` |
-| 权限提升 | 进行中 | 真实交互靶场 | `labs/auth/privilege-escalation/`、`tools/lab-scripts/auth/privilege-escalation/` | `labs/auth/privilege-escalation/` |
-| IDOR | 进行中 | 真实交互靶场 | `labs/auth/idor/`、`tools/lab-scripts/auth/idor/` | `labs/auth/idor/` |
+| 权限提升 | 已完成 | 真实交互靶场 / 脚本实验 | `labs/auth/privilege-escalation/`、`apps/web/src/views/PrivilegeEscalationLabView.vue`、`apps/server/tests/privilege-escalation-lab.test.ts`、`tools/lab-scripts/auth/privilege-escalation/verify.ts` | `labs/auth/privilege-escalation/` |
+| IDOR | 已完成 | 真实交互靶场 / 脚本实验 | `labs/auth/idor/`、`apps/web/src/views/IdorLabView.vue`、`apps/server/tests/idor-lab.test.ts`、`tools/lab-scripts/auth/idor/verify.ts` | `labs/auth/idor/` |
 
 ## 7. 网络 / 传输层
 
@@ -243,7 +1059,167 @@
 - [x] 数据库基础表结构已文档化：`docs/design/database-foundation-schema.md`
 - [x] 自动化测试边界已文档化：`docs/design/automation-testing-plan.md`
 
-## 15. 更新规则
+## 15. 2026-06-25 文件上传实验更新
+
+- [x] 落地 `web/file-upload` 漏洞版 / 修复版纵向实验。
+- [x] 新增 `POST /api/labs/web/file-upload/:variant/upload` 受控模拟上传接口。
+- [x] 新增文件上传实验前端页面、API client、教学模型与路由入口。
+- [x] 将文件上传动作接入 `lab_event_logs` 统一事件日志，日志只记录摘要，不保存完整上传内容。
+- [x] 补齐 `labs/web/file-upload/` 场景文档、元数据、漏洞版 / 修复版说明和手动验证文档。
+- [x] 补齐 `tools/lab-scripts/web/file-upload/` 本机受控脚本入口。
+- [x] 补齐服务端、前端 API、前端模型和共享元数据测试。
+- [x] 阶段 B 下一项：推进 `web/path-traversal` 路径遍历实验。
+
+## 16. 2026-06-25 目录遍历实验更新
+
+- [x] 落地 `web/path-traversal` 漏洞版 / 修复版纵向实验。
+- [x] 新增 `POST /api/labs/web/path-traversal/:variant/read` 受控虚拟文档读取接口。
+- [x] 新增目录遍历实验前端页面、API client、教学模型与路由入口。
+- [x] 将文档读取动作接入 `lab_event_logs` 统一事件日志，日志只记录路径摘要和规范化结果，不读取真实文件系统。
+- [x] 补齐 `labs/web/path-traversal/` 场景文档、元数据、漏洞版 / 修复版说明和手动验证文档。
+- [x] 补齐 `tools/lab-scripts/web/path-traversal/` 本机受控脚本入口。
+- [x] 补齐服务端、前端 API、前端模型和共享元数据测试。
+- [x] 阶段 B 下一项：推进 `web/ssrf` SSRF 实验。
+
+## 17. 2026-06-25 SSRF 实验更新
+
+- [x] 落地 `web/ssrf` 漏洞版 / 修复版纵向实验。
+- [x] 新增 `POST /api/labs/web/ssrf/:variant/fetch` 受控虚拟资源抓取接口。
+- [x] 新增 SSRF 实验前端页面、API client、教学模型与路由入口。
+- [x] 将 URL 抓取动作接入 `lab_event_logs` 统一事件日志，日志只记录 URL 摘要、协议、主机、路径和学习信号，不执行真实网络请求。
+- [x] 补齐 `labs/web/ssrf/` 场景文档、元数据、漏洞版 / 修复版说明和手动验证文档。
+- [x] 补齐 `tools/lab-scripts/web/ssrf/` 本机受控脚本入口。
+- [x] 补齐服务端、前端 API、前端模型和共享元数据测试。
+- [x] 阶段 B 下一项：推进 `web/info-disclosure` 信息泄露实验。
+
+## 18. 2026-06-25 信息泄露实验更新
+
+- [x] 落地 `web/info-disclosure` 漏洞版 / 修复版纵向实验。
+- [x] 新增 `POST /api/labs/web/info-disclosure/:variant/report` 受控虚拟诊断报告接口。
+- [x] 新增信息泄露实验前端页面、API client、教学模型与路由入口。
+- [x] 将诊断报告读取动作接入 `lab_event_logs` 统一事件日志，日志只记录报告 key 摘要、敏感报告标记、字段数量和学习信号，不读取真实环境、真实日志或真实文件。
+- [x] 补齐 `labs/web/info-disclosure/` 场景文档、元数据、漏洞版 / 修复版说明和手动验证文档。
+- [x] 补齐 `tools/lab-scripts/web/info-disclosure/` 本机受控脚本入口。
+- [x] 补齐服务端、前端 API、前端模型和共享元数据测试。
+- [x] 阶段 B Web 常见漏洞优先清单已完成，下一项进入阶段 C：优先推进 `auth/jwt` JWT 攻击实验。
+
+## 19. 2026-06-25 JWT 攻击实验更新
+
+- [x] 落地 `auth/jwt` 漏洞版 / 修复版纵向实验。
+- [x] 新增 `POST /api/labs/auth/jwt/:variant/verify` 受控 JWT 验证接口。
+- [x] 新增 JWT 攻击实验前端页面、API client、教学模型与路由入口。
+- [x] 将 token 验证动作接入 `lab_event_logs` 统一事件日志，日志只记录 token 长度、段数、算法、角色声明、签名状态和学习信号，不保存完整 token。
+- [x] 补齐 `labs/auth/jwt/` 场景文档、元数据、漏洞版 / 修复版说明和手动验证文档。
+- [x] 补齐 `tools/lab-scripts/auth/jwt/` 本机受控脚本入口。
+- [x] 补齐服务端、前端 API、前端模型和共享元数据测试。
+- [x] 阶段 C 下一项：推进 `auth/idor` IDOR 实验。
+
+## 20. 2026-06-25 IDOR 实验更新
+
+- [x] 落地 `auth/idor` 漏洞版 / 修复版纵向实验。
+- [x] 新增 `POST /api/labs/auth/idor/:variant/read` 受控订单对象读取接口。
+- [x] 新增 IDOR 实验前端页面、API client、教学模型与路由入口。
+- [x] 将订单读取动作接入 `lab_event_logs` 统一事件日志，日志只记录 `orderId` 摘要、对象类型、归属判断和学习信号，不保存完整敏感明细。
+- [x] 补齐 `labs/auth/idor/` 场景文档、元数据、漏洞版 / 修复版说明和手动验证文档。
+- [x] 补齐 `tools/lab-scripts/auth/idor/` 本机受控脚本入口。
+- [x] 补齐服务端、前端 API、前端模型和共享元数据测试。
+- [x] 阶段 C 下一项：推进 `auth/privilege-escalation` 权限提升实验。
+
+## 21. 2026-06-25 权限提升实验更新
+
+- [x] 落地 `auth/privilege-escalation` 漏洞版 / 修复版纵向实验。
+- [x] 新增 `POST /api/labs/auth/privilege-escalation/:variant/execute` 受控管理操作执行接口。
+- [x] 新增权限提升实验前端页面、API client、教学模型与路由入口。
+- [x] 将操作执行动作接入 `lab_event_logs` 统一事件日志，日志只记录操作 key 摘要、服务端角色、客户端声明角色和学习信号，不修改真实用户角色。
+- [x] 补齐 `labs/auth/privilege-escalation/` 场景文档、元数据、漏洞版 / 修复版说明和手动验证文档。
+- [x] 补齐 `tools/lab-scripts/auth/privilege-escalation/` 本机受控脚本入口。
+- [x] 补齐服务端、前端 API、前端模型和共享元数据测试。
+- [x] 阶段 C 下一项：推进 `auth/session-fixation` 会话固定实验。
+
+## 22. 2026-06-25 会话固定实验更新
+
+- [x] 落地 `auth/session-fixation` 漏洞版 / 修复版纵向实验。
+- [x] 新增 `POST /api/labs/auth/session-fixation/:variant/login` 受控教学登录会话绑定接口。
+- [x] 新增会话固定实验前端页面、API client、教学模型与路由入口。
+- [x] 将教学登录会话动作接入 `lab_event_logs` 统一事件日志，日志只记录会话 ID 长度、来源、轮换判断、脱敏摘要和学习信号，不保存真实 token 或 Cookie。
+- [x] 补齐 `labs/auth/session-fixation/` 场景文档、元数据、漏洞版 / 修复版说明和手动验证文档。
+- [x] 补齐 `tools/lab-scripts/auth/session-fixation/` 本机受控脚本入口。
+- [x] 补齐服务端、前端 API、前端模型、路由和共享元数据测试。
+- [x] 阶段 C 下一项：推进 `auth/brute-force` 暴力破解实验。
+
+## 23. 2026-06-25 暴力破解实验更新
+
+- [x] 落地 `auth/brute-force` 漏洞版 / 修复版纵向实验。
+- [x] 新增 `POST /api/labs/auth/brute-force/:variant/attempt` 受控候选口令检查接口。
+- [x] 新增暴力破解实验前端页面、API client、教学模型与路由入口。
+- [x] 将候选口令检查动作接入 `lab_event_logs` 统一事件日志，日志只记录候选数量、匹配位置、失败次数、阈值判断、脱敏摘要和学习信号，不保存候选口令明文。
+- [x] 补齐 `labs/auth/brute-force/` 场景文档、元数据、漏洞版 / 修复版说明和手动验证文档。
+- [x] 补齐 `tools/lab-scripts/auth/brute-force/` 本机受控脚本入口。
+- [x] 补齐服务端、前端 API、前端模型、路由和共享元数据测试。
+- [x] 阶段 C 认证授权高优先级清单已完成，下一项进入阶段 D：完善学习复盘。
+
+## 24. 2026-06-25 最近事件日志复盘更新
+
+- [x] 新增 `GET /api/lab-event-logs/me` 当前用户最近事件日志接口。
+- [x] 支持 `labKey` 查询参数，用于实验详情页只查看当前实验事件。
+- [x] 扩展 `lab-event-logs` 服务，按当前用户、可选实验 key 查询最近事件日志摘要。
+- [x] 前端新增事件日志 API client 与 session store 加载状态。
+- [x] 账户中心新增“最近事件复盘”时间线。
+- [x] 单个实验详情页新增“最近事件复盘”卡片。
+- [x] 复盘页不展示 `inputSummaryJson`，只展示信号、决策、阶段、风险等级、状态码、说明和时间。
+- [x] 补齐服务端查询 / 接口测试、前端 API / 数据整理 / store 测试。
+- [x] 阶段 D 已开始，下一项建议继续做更细的日志筛选、复盘卡片展开态或学习问题生成。
+
+## 25. 2026-06-25 事件日志筛选与复盘问题更新
+
+- [x] `GET /api/lab-event-logs/me` 新增 `phase` 与 `riskLevel` 筛选。
+- [x] 后端按枚举白名单读取筛选参数，非法值不进入查询条件。
+- [x] 账户中心“最近事件复盘”新增阶段 / 风险筛选控件。
+- [x] 实验详情页事件复盘卡片新增固定引导式问题。
+- [x] 复盘问题基于阶段和后端决策生成，不调用外部服务，不展示输入摘要 JSON。
+- [x] 补齐服务端查询 / 接口测试、前端 API / store / helper 测试。
+- [x] 下一项建议继续做复盘卡片展开态、按实验筛选的账户中心视图或学习问题完成状态。
+
+## 26. 2026-06-25 账户中心按实验筛选复盘更新
+
+- [x] 账户中心“最近事件复盘”新增实验筛选控件。
+- [x] 前端从学习进度、验证记录和事件日志合并实验筛选选项，不猜测字段。
+- [x] 切换实验 / 阶段 / 风险时，统一通过 `GET /api/lab-event-logs/me` 查询。
+- [x] 筛选仍不展示 `inputSummaryJson`，只查看安全摘要字段。
+- [x] 补齐账户复盘 helper 和 store 筛选测试。
+- [x] 下一项建议继续做复盘卡片展开态或学习问题完成状态。
+
+## 27. 2026-06-26 复盘卡片展开状态更新
+
+- [x] 账户中心“最近事件复盘”改为摘要默认可见、详情按单条事件展开。
+- [x] 实验详情页“最近事件复盘”改为摘要默认可见，展开后查看时间、状态码和引导式复盘问题。
+- [x] 新增前端复盘展开状态 helper，以 `traceId` 精确控制单条事件状态。
+- [x] 切换筛选条件或重新加载实验详情时重置展开状态，避免旧列表状态干扰新结果。
+- [x] 不展示 `inputSummaryJson`，不新增后端字段、数据库字段或日志写入逻辑。
+- [x] 补齐展开、收起、独立事件状态和重置状态的前端单元测试。
+- [x] 下一项建议继续做学习问题完成状态，或抽出统一复盘卡片组件。
+
+## 28. 2026-06-26 复盘问题完成状态更新
+
+- [x] 实验详情页复盘卡片展开后，支持逐项勾选引导式复盘问题。
+- [x] 每条事件展示本地问题完成进度，例如 `问题完成 2 / 4`。
+- [x] 新增前端复盘问题完成状态 helper，以 `traceId + 问题序号` 精确控制状态，不依赖问题文案。
+- [x] 重新加载实验详情或事件日志时重置本地完成状态，避免旧事件状态污染新列表。
+- [x] 本轮不新增后端接口、数据库字段或事件日志字段，不展示 `inputSummaryJson`。
+- [x] 补齐问题 key、勾选、取消、跨事件隔离、统计和重置的前端单元测试。
+- [x] 下一项建议抽出统一复盘卡片组件，或单独设计可持久化的学习问题完成记录。
+
+## 29. 2026-06-26 统一复盘卡片组件更新
+
+- [x] 新增 `EventRecapCard.vue` 统一展示事件复盘摘要、展开详情与可选复盘问题。
+- [x] 账户中心“最近事件复盘”改用统一复盘卡片组件。
+- [x] 实验详情页“最近事件复盘”改用统一复盘卡片组件，并保留问题完成状态。
+- [x] 新增账户中心版与实验详情页版复盘卡片内容整理 helper，避免页面模板重复拼接字段。
+- [x] 本轮不新增后端接口、数据库字段或事件日志字段，不展示 `inputSummaryJson`。
+- [x] 补齐复盘卡片内容整理单元测试。
+- [x] 下一项建议单独设计可持久化的学习问题完成记录，或继续补充复盘统计视图。
+
+## 30. 更新规则
 
 后续每次有实质进展时，必须同时更新：
 

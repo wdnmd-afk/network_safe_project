@@ -63,6 +63,7 @@ database/schema/platform/
 - 学习记录
 - 验证记录
 - 实验运行记录
+- 实验事件日志
 
 ## 3.2 实验场景层
 
@@ -106,11 +107,12 @@ database/seeds/
 | `learning_progress` | 学习进度记录 |
 | `verification_records` | 验证结果记录 |
 | `lab_run_records` | 实验运行记录 |
+| `lab_event_logs` | 实验事件日志 |
 
 说明：
 
 - 一期不急着设计过多平台表
-- 先围绕“能展示实验、能进入实验、能记录学习、能记录验证”四件事建模
+- 先围绕“能展示实验、能进入实验、能记录学习、能记录验证、能复盘关键事件”五件事建模
 
 ## 5. 核心表详细设计
 
@@ -350,6 +352,42 @@ database/seeds/
 - 它关注“有没有运行、运行到哪里”
 - 后续可以用来观察哪些实验被频繁使用、哪些入口出错更多
 
+## 5.10 `lab_event_logs`
+
+### 作用
+
+记录实验中的关键攻防事件，便于后续在实验详情页、账号中心或复盘页面展示“这次请求为什么被接受 / 阻断”。
+
+### 字段建议
+
+| 字段 | 类型 | 说明 |
+|---|---|---|
+| `id` | `bigint` | 主键 |
+| `trace_id` | `varchar(64)` | 单次实验动作追踪 ID |
+| `user_id` | `bigint` | 用户 ID，可为空 |
+| `lab_id` | `bigint` | 实验 ID，可为空以支持早期日志 |
+| `lab_key` | `varchar(128)` | 实验唯一键，对应元数据 `id` |
+| `variant_key` | `varchar(32)` | 变体，如 `vuln` / `fixed` |
+| `phase` | `varchar(32)` | `attack` / `defense` / `normal` |
+| `event_type` | `varchar(64)` | `request` / `validation` / `blocked` / `success` / `failure` |
+| `actor_perspective` | `varchar(32)` | `attacker` / `user` / `system` |
+| `method` | `varchar(16)` | HTTP 方法或脚本动作 |
+| `path` | `varchar(255)` | 请求路径或脚本入口 |
+| `input_summary_json` | `json` | 输入摘要，不保存真实敏感值 |
+| `decision` | `varchar(32)` | `accepted` / `blocked` / `failed` |
+| `signal` | `varchar(100)` | 面向学习者的结果信号 |
+| `status_code` | `int` | HTTP 状态码或脚本退出码 |
+| `message` | `varchar(500)` | 面向学习者的说明 |
+| `risk_level` | `varchar(32)` | `low` / `medium` / `high` / `critical` |
+| `created_at` | `datetime` | 创建时间 |
+
+### 说明
+
+- 该表记录“关键动作为什么发生了这个结果”
+- `lab_id` 允许为空，但应尽量通过 `lab_key` 关联到实验主表
+- `input_summary_json` 只能保存摘要、脱敏值或学习信号，不能保存真实密码、token、payload、文件路径等敏感内容
+- 与 `lab_run_records` 不同，事件日志关注攻防判断与学习复盘，不只关注入口是否运行
+
 ## 6. 核心表关系
 
 简化关系如下：
@@ -358,7 +396,8 @@ database/seeds/
 users
   ├─ learning_progress
   ├─ verification_records
-  └─ lab_run_records
+  ├─ lab_run_records
+  └─ lab_event_logs
 
 lab_categories
   └─ labs
@@ -366,7 +405,8 @@ lab_categories
        ├─ lab_tag_relations
        ├─ learning_progress
        ├─ verification_records
-       └─ lab_run_records
+       ├─ lab_run_records
+       └─ lab_event_logs
 
 lab_tags
   └─ lab_tag_relations
@@ -474,6 +514,9 @@ lab_tags
 - `verification_records(lab_id, variant_key, verification_type, created_at)`
 - `verification_records(user_id, created_at)`
 - `lab_run_records(lab_id, created_at)`
+- `lab_event_logs(trace_id)`
+- `lab_event_logs(user_id, created_at)`
+- `lab_event_logs(lab_key, variant_key, created_at)`
 - `learning_progress(user_id, status)`
 
 ## 10. 一期建议状态值
@@ -519,6 +562,39 @@ lab_tags
 - `finished`
 - `error`
 
+### `lab_event_logs.phase`
+
+- `attack`
+- `defense`
+- `normal`
+
+### `lab_event_logs.event_type`
+
+- `request`
+- `validation`
+- `blocked`
+- `success`
+- `failure`
+
+### `lab_event_logs.actor_perspective`
+
+- `attacker`
+- `user`
+- `system`
+
+### `lab_event_logs.decision`
+
+- `accepted`
+- `blocked`
+- `failed`
+
+### `lab_event_logs.risk_level`
+
+- `low`
+- `medium`
+- `high`
+- `critical`
+
 ## 11. 与后续技术栈的关系
 
 该数据库设计需与以下技术方案对齐：
@@ -537,8 +613,8 @@ lab_tags
 补充实现约束：
 
 - `labs.category_id` 与 `lab_categories.id` 建立 Prisma relation
-- `lab_variants.lab_id`、`lab_tag_relations.lab_id`、`learning_progress.lab_id`、`verification_records.lab_id`、`lab_run_records.lab_id` 都应使用显式 relation
-- `verification_records.user_id`、`lab_run_records.user_id` 允许为空，以支持系统触发记录
+- `lab_variants.lab_id`、`lab_tag_relations.lab_id`、`learning_progress.lab_id`、`verification_records.lab_id`、`lab_run_records.lab_id`、`lab_event_logs.lab_id` 都应使用显式 relation
+- `verification_records.user_id`、`lab_run_records.user_id`、`lab_event_logs.user_id` 允许为空，以支持系统触发记录
 
 ## 12. 后续目录建议
 
@@ -581,6 +657,6 @@ database/
 - 平台核心表稳定建模
 - 实验场景表按需扩展
 - 元数据驱动实验注册
-- 学习记录、验证记录、运行记录分表管理
+- 学习记录、验证记录、运行记录、事件日志分表管理
 
 这样后续无论是做 Web 漏洞、认证授权实验，还是网络模拟与案例化模块，都能在不破坏平台主干的前提下继续扩展。
