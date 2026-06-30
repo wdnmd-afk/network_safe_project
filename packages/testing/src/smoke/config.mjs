@@ -1,3 +1,4 @@
+import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -13,6 +14,29 @@ export const smokeRuntime = {
   apiOrigin: "http://127.0.0.1:6667",
   webPublicOrigin: "http://localhost:6670",
 };
+
+function countLocalLabMetadata() {
+  const labsRoot = path.join(repoRoot, "labs");
+
+  return fs
+    .readdirSync(labsRoot, {
+      withFileTypes: true,
+    })
+    .filter((category) => category.isDirectory())
+    .flatMap((category) => {
+      const categoryRoot = path.join(labsRoot, category.name);
+
+      return fs
+        .readdirSync(categoryRoot, {
+          withFileTypes: true,
+        })
+        .filter((scene) => scene.isDirectory())
+        .map((scene) => path.join(categoryRoot, scene.name, "meta.json"));
+    })
+    .filter((metadataPath) => fs.existsSync(metadataPath)).length;
+}
+
+export const expectedLabTotal = countLocalLabMetadata();
 
 export const smokeChecks = [
   {
@@ -35,7 +59,7 @@ export const smokeChecks = [
     url: `${smokeRuntime.apiOrigin}/api/labs`,
     kind: "json",
     expectedJson: {
-      total: 15,
+      total: expectedLabTotal,
     },
   },
   {

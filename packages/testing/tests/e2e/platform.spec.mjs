@@ -52,6 +52,27 @@ test("实验页展示真实元数据列表", async ({ page }) => {
   await expect(page.getByRole("link", { name: "修复版" }).first()).toBeVisible();
 });
 
+test("XSS 实验详情页展示元数据、验证方式和变体入口", async ({ page }) => {
+  await page.goto("/labs/web/xss");
+
+  await expect(page.getByRole("heading", { name: "XSS" })).toBeVisible();
+  await expect(page.getByText("在客服留言业务上下文中对比未转义输出与文本渲染")).toBeVisible();
+  await expect(page.getByRole("heading", { name: "知识点" })).toBeVisible();
+  await expect(page.getByText("用户输入不应直接作为 HTML 输出")).toBeVisible();
+  await expect(page.getByRole("heading", { name: "验证方式" })).toBeVisible();
+  await expect(
+    page.getByText("labs/web/xss/docs/manual-verification.md").first(),
+  ).toBeVisible();
+  await expect(page.getByRole("link", { name: "进入漏洞版" })).toHaveAttribute(
+    "href",
+    "/labs/web/xss/vuln",
+  );
+  await expect(page.getByRole("link", { name: "进入修复版" })).toHaveAttribute(
+    "href",
+    "/labs/web/xss/fixed",
+  );
+});
+
 test("XSS 漏洞版和修复版对同一样例呈现不同结果", async ({ page }) => {
   const samplePayload =
     '<mark data-xss-lab-signal="xss">XSS 模拟信号</mark>';
@@ -86,7 +107,133 @@ test("登录用户完成 XSS 样例后可在账户中心看到实验记录", asy
   await page.goto("/account");
 
   await expect(page.getByRole("heading", { name: "学习进度" })).toBeVisible();
-  await expect(page.getByText("fixed / completed")).toBeVisible();
+  await expect(
+    page.getByRole("listitem").filter({ hasText: "XSS" }).filter({
+      hasText: "fixed / completed",
+    }),
+  ).toBeVisible();
   await expect(page.getByRole("heading", { name: "最近验证" })).toBeVisible();
   await expect(page.getByText("修复版原样显示 HTML 字符串").first()).toBeVisible();
+});
+
+test("登录用户可在 XSS 详情页看到当前实验记录", async ({ page }) => {
+  await page.goto("/login");
+
+  await page.getByLabel("用户名").fill("demo_user");
+  await page.getByLabel("密码").fill("Demo@123456");
+  await page.getByRole("button", { name: "登录" }).click();
+
+  await expect(page.getByRole("heading", { name: "账户中心" })).toBeVisible();
+
+  await page.goto("/labs/web/xss/fixed");
+  await page.getByRole("button", { name: "填入样例" }).click();
+  await page.getByRole("button", { name: "提交留言" }).click();
+
+  await page.goto("/labs/web/xss");
+
+  await expect(page.getByRole("heading", { name: "当前实验记录" })).toBeVisible();
+  await expect(page.getByText("fixed / completed")).toBeVisible();
+  await expect(page.getByText("修复版原样显示 HTML 字符串").first()).toBeVisible();
+});
+
+test("登录用户可以观察 CSRF 漏洞版接受缺少 token 的模拟请求", async ({ page }) => {
+  await page.goto("/login");
+
+  await page.getByLabel("用户名").fill("demo_user");
+  await page.getByLabel("密码").fill("Demo@123456");
+  await page.getByRole("button", { name: "登录" }).click();
+
+  await expect(page.getByRole("heading", { name: "账户中心" })).toBeVisible();
+
+  await page.goto("/labs/web/csrf/vuln");
+  await expect(page.getByRole("heading", { name: "CSRF 漏洞版" })).toBeVisible();
+
+  const balanceMetric = page
+    .locator(".status-metric")
+    .filter({ hasText: "账户余额" })
+    .locator("strong");
+  const balanceBefore = Number(await balanceMetric.textContent());
+
+  await page.getByRole("button", { name: "模拟第三方请求" }).click();
+
+  await expect(page.getByText("模拟第三方请求已被漏洞版接受")).toBeVisible();
+  await expect(page.getByText("漏洞版接受了缺少 token 的请求")).toBeVisible();
+  await expect(balanceMetric).toHaveText(String(balanceBefore - 200));
+});
+
+test("登录用户可以观察 CSRF 修复版阻断缺少 token 的模拟请求", async ({ page }) => {
+  await page.goto("/login");
+
+  await page.getByLabel("用户名").fill("demo_user");
+  await page.getByLabel("密码").fill("Demo@123456");
+  await page.getByRole("button", { name: "登录" }).click();
+
+  await expect(page.getByRole("heading", { name: "账户中心" })).toBeVisible();
+
+  await page.goto("/labs/web/csrf/fixed");
+  await expect(page.getByRole("heading", { name: "CSRF 修复版" })).toBeVisible();
+
+  const balanceMetric = page
+    .locator(".status-metric")
+    .filter({ hasText: "账户余额" })
+    .locator("strong");
+  const balanceBefore = await balanceMetric.textContent();
+
+  await page.getByRole("button", { name: "模拟第三方请求" }).click();
+
+  await expect(page.getByText("模拟第三方请求已被修复版阻断")).toBeVisible();
+  await expect(page.getByText("修复版阻断了缺少 token 的请求")).toBeVisible();
+  await expect(balanceMetric).toHaveText(balanceBefore ?? "");
+});
+
+test("登录用户可以对比 LDAP 漏洞版扩大范围与修复版阻断", async ({ page }) => {
+  await page.goto("/login");
+
+  await page.getByLabel("用户名").fill("demo_user");
+  await page.getByLabel("密码").fill("Demo@123456");
+  await page.getByRole("button", { name: "登录" }).click();
+
+  await expect(page.getByRole("heading", { name: "账户中心" })).toBeVisible();
+
+  await page.goto("/labs/web/ldap-injection/vuln");
+  await expect(page.getByRole("heading", { name: "LDAP 注入漏洞版" })).toBeVisible();
+
+  await page.getByRole("button", { name: "填入受控样例" }).click();
+  await page.getByRole("button", { name: "查询虚拟目录" }).click();
+
+  const vulnStatusPanel = page.locator(".ldap-injection-status-panel");
+
+  await expect(page.getByText("漏洞版虚拟目录结果范围被扩大")).toBeVisible();
+  await expect(
+    vulnStatusPanel.locator(".status-metric strong").filter({
+      hasText: /^accepted$/,
+    }),
+  ).toBeVisible();
+  await expect(
+    vulnStatusPanel.locator(".inspection-grid dd").filter({
+      hasText: /^expanded$/,
+    }),
+  ).toBeVisible();
+  await expect(page.getByText("虚拟受限成员记录")).toBeVisible();
+
+  await page.goto("/labs/web/ldap-injection/fixed");
+  await expect(page.getByRole("heading", { name: "LDAP 注入修复版" })).toBeVisible();
+
+  await page.getByRole("button", { name: "填入受控样例" }).click();
+  await page.getByRole("button", { name: "查询虚拟目录" }).click();
+
+  const fixedStatusPanel = page.locator(".ldap-injection-status-panel");
+
+  await expect(page.getByText("修复版阻断受控 LDAP 样例")).toBeVisible();
+  await expect(
+    fixedStatusPanel.locator(".status-metric strong").filter({
+      hasText: /^blocked$/,
+    }),
+  ).toBeVisible();
+  await expect(
+    fixedStatusPanel.locator(".inspection-grid dd").filter({
+      hasText: /^blocked$/,
+    }),
+  ).toBeVisible();
+  await expect(page.getByText("虚拟受限成员记录")).toHaveCount(0);
 });
