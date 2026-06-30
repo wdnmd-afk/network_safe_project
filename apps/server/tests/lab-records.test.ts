@@ -274,6 +274,73 @@ test("GET /api/lab-records/me requires login", async () => {
   });
 });
 
+test("GET /api/lab-event-logs/me requires login", async () => {
+  const app = createApp();
+  const origin = await listen(app);
+
+  const response = await fetch(`${origin}/api/lab-event-logs/me`);
+  const body = (await response.json()) as {
+    status: string;
+    message: string;
+  };
+
+  assert.equal(response.status, 401);
+  assert.deepEqual(body, {
+    status: "error",
+    message: "missing session token",
+  });
+});
+
+test("GET /api/lab-recap-question-completions/me requires login", async () => {
+  const app = createApp();
+  const origin = await listen(app);
+
+  const response = await fetch(
+    `${origin}/api/lab-recap-question-completions/me`,
+  );
+  const body = (await response.json()) as {
+    status: string;
+    message: string;
+  };
+
+  assert.equal(response.status, 401);
+  assert.deepEqual(body, {
+    status: "error",
+    message: "missing session token",
+  });
+});
+
+test("PUT /api/lab-recap-question-completions/me requires login", async () => {
+  const app = createApp();
+  const origin = await listen(app);
+
+  const response = await fetch(
+    `${origin}/api/lab-recap-question-completions/me`,
+    {
+      method: "PUT",
+      headers: {
+        "content-type": "application/json",
+      },
+      body: JSON.stringify({
+        traceId: "trace-csrf-vuln",
+        labKey: "web.csrf",
+        questionIndex: 0,
+        completed: true,
+      }),
+    },
+  );
+  const body = (await response.json()) as {
+    status: string;
+    message: string;
+  };
+
+  assert.equal(response.status, 401);
+  assert.deepEqual(body, {
+    status: "error",
+    message: "missing session token",
+  });
+});
+
 test("GET /api/lab-records/me returns current user record summary", async () => {
   const calls: unknown[] = [];
   const app = createApp({
@@ -354,6 +421,271 @@ test("GET /api/lab-records/me returns current user record summary", async () => 
   assert.deepEqual(calls, [
     {
       userId: "1",
+    },
+  ]);
+});
+
+test("GET /api/lab-recap-question-completions/me returns current user completions", async () => {
+  const calls: unknown[] = [];
+  const app = createApp({
+    authService: {
+      login: async () => null,
+      getCurrentUser: async (token: string) =>
+        token === "local-session-token" ? demoUser : null,
+    },
+    labRecapQuestionCompletionsService: {
+      listUserQuestionCompletions: async (input: unknown) => {
+        calls.push(input);
+
+        return [
+          {
+            traceId: "trace-csrf-vuln",
+            labKey: "web.csrf",
+            questionIndex: 0,
+            questionKey: "question-0",
+            completed: true,
+            completedAt: "2026-06-29T08:00:00.000Z",
+            updatedAt: "2026-06-29T08:01:00.000Z",
+          },
+        ];
+      },
+      setQuestionCompletion: async () => {
+        throw new Error("setQuestionCompletion should not be called");
+      },
+    },
+  } as Parameters<typeof createApp>[0] & {
+    labRecapQuestionCompletionsService: unknown;
+  });
+  const origin = await listen(app);
+
+  const response = await fetch(
+    `${origin}/api/lab-recap-question-completions/me?labKey=web.csrf&traceIds=trace-csrf-vuln,trace-extra`,
+    {
+      headers: {
+        authorization: "Bearer local-session-token",
+      },
+    },
+  );
+  const body = (await response.json()) as unknown;
+
+  assert.equal(response.status, 200);
+  assert.deepEqual(body, {
+    status: "ok",
+    items: [
+      {
+        traceId: "trace-csrf-vuln",
+        labKey: "web.csrf",
+        questionIndex: 0,
+        questionKey: "question-0",
+        completed: true,
+        completedAt: "2026-06-29T08:00:00.000Z",
+        updatedAt: "2026-06-29T08:01:00.000Z",
+      },
+    ],
+  });
+  assert.deepEqual(calls, [
+    {
+      userId: "1",
+      labKey: "web.csrf",
+      traceIds: ["trace-csrf-vuln", "trace-extra"],
+    },
+  ]);
+});
+
+test("PUT /api/lab-recap-question-completions/me stores current user completion", async () => {
+  const calls: unknown[] = [];
+  const app = createApp({
+    authService: {
+      login: async () => null,
+      getCurrentUser: async (token: string) =>
+        token === "local-session-token" ? demoUser : null,
+    },
+    labRecapQuestionCompletionsService: {
+      listUserQuestionCompletions: async () => {
+        throw new Error("listUserQuestionCompletions should not be called");
+      },
+      setQuestionCompletion: async (input: unknown) => {
+        calls.push(input);
+
+        return {
+          traceId: "trace-csrf-vuln",
+          labKey: "web.csrf",
+          questionIndex: 1,
+          questionKey: "question-1",
+          completed: false,
+          completedAt: null,
+          updatedAt: "2026-06-29T08:02:00.000Z",
+        };
+      },
+    },
+  } as Parameters<typeof createApp>[0] & {
+    labRecapQuestionCompletionsService: unknown;
+  });
+  const origin = await listen(app);
+
+  const response = await fetch(
+    `${origin}/api/lab-recap-question-completions/me`,
+    {
+      method: "PUT",
+      headers: {
+        authorization: "Bearer local-session-token",
+        "content-type": "application/json",
+      },
+      body: JSON.stringify({
+        traceId: "trace-csrf-vuln",
+        labKey: "web.csrf",
+        questionIndex: 1,
+        completed: false,
+      }),
+    },
+  );
+  const body = (await response.json()) as unknown;
+
+  assert.equal(response.status, 200);
+  assert.deepEqual(body, {
+    status: "ok",
+    item: {
+      traceId: "trace-csrf-vuln",
+      labKey: "web.csrf",
+      questionIndex: 1,
+      questionKey: "question-1",
+      completed: false,
+      completedAt: null,
+      updatedAt: "2026-06-29T08:02:00.000Z",
+    },
+  });
+  assert.deepEqual(calls, [
+    {
+      userId: "1",
+      traceId: "trace-csrf-vuln",
+      labKey: "web.csrf",
+      questionIndex: 1,
+      completed: false,
+    },
+  ]);
+});
+
+test("PUT /api/lab-recap-question-completions/me validates required fields", async () => {
+  const app = createApp({
+    authService: {
+      login: async () => null,
+      getCurrentUser: async () => demoUser,
+    },
+    labRecapQuestionCompletionsService: {
+      listUserQuestionCompletions: async () => [],
+      setQuestionCompletion: async () => {
+        throw new Error("setQuestionCompletion should not be called");
+      },
+    },
+  } as Parameters<typeof createApp>[0] & {
+    labRecapQuestionCompletionsService: unknown;
+  });
+  const origin = await listen(app);
+
+  const response = await fetch(
+    `${origin}/api/lab-recap-question-completions/me`,
+    {
+      method: "PUT",
+      headers: {
+        authorization: "Bearer local-session-token",
+        "content-type": "application/json",
+      },
+      body: JSON.stringify({
+        traceId: "trace-csrf-vuln",
+        labKey: "web.csrf",
+        questionIndex: 21,
+        completed: true,
+      }),
+    },
+  );
+  const body = (await response.json()) as {
+    status: string;
+    message: string;
+  };
+
+  assert.equal(response.status, 400);
+  assert.deepEqual(body, {
+    status: "error",
+    message: "traceId, labKey, questionIndex and completed are required",
+  });
+});
+
+test("GET /api/lab-event-logs/me returns current user recent event logs", async () => {
+  const calls: unknown[] = [];
+  const app = createApp({
+    authService: {
+      login: async () => null,
+      getCurrentUser: async (token: string) =>
+        token === "local-session-token" ? demoUser : null,
+    },
+    labEventLogsService: {
+      recordLabEvent: async () => {
+        throw new Error("recordLabEvent should not be called");
+      },
+      listUserLabEventLogs: async (input: unknown) => {
+        calls.push(input);
+
+        return [
+          {
+            traceId: "trace-xss-fixed",
+            labKey: "web.xss",
+            title: "XSS",
+            variantKey: "fixed",
+            phase: "defense",
+            eventType: "success",
+            actorPerspective: "user",
+            decision: "accepted",
+            signal: "xss-payload-rendered-as-text",
+            statusCode: 200,
+            message: "修复版按文本显示输入",
+            riskLevel: "low",
+            createdAt: "2026-06-25T08:00:00.000Z",
+          },
+        ];
+      },
+    },
+  } as Parameters<typeof createApp>[0] & {
+    labEventLogsService: unknown;
+  });
+  const origin = await listen(app);
+
+  const response = await fetch(
+    `${origin}/api/lab-event-logs/me?labKey=web.xss&phase=defense&riskLevel=low`,
+    {
+      headers: {
+        authorization: "Bearer local-session-token",
+      },
+    },
+  );
+  const body = (await response.json()) as unknown;
+
+  assert.equal(response.status, 200);
+  assert.deepEqual(body, {
+    status: "ok",
+    events: [
+      {
+        traceId: "trace-xss-fixed",
+        labKey: "web.xss",
+        title: "XSS",
+        variantKey: "fixed",
+        phase: "defense",
+        eventType: "success",
+        actorPerspective: "user",
+        decision: "accepted",
+        signal: "xss-payload-rendered-as-text",
+        statusCode: 200,
+        message: "修复版按文本显示输入",
+        riskLevel: "low",
+        createdAt: "2026-06-25T08:00:00.000Z",
+      },
+    ],
+  });
+  assert.deepEqual(calls, [
+    {
+      userId: "1",
+      labKey: "web.xss",
+      phase: "defense",
+      riskLevel: "low",
     },
   ]);
 });

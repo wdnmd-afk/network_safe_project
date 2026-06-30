@@ -86,8 +86,38 @@ test("GET /api/labs returns scanned lab metadata list", async () => {
   };
 
   assert.equal(response.status, 200);
-  assert.equal(body.total, 15);
+  assert.equal(body.total, 20);
+  assert.ok(
+    body.items.some(
+      (item) =>
+        item.id === "network.port-scan" && item.status === "planned",
+    ),
+  );
   assert.ok(body.items.some((item) => item.id === "web.xss"));
+  assert.ok(
+    body.items.some(
+      (item) =>
+        item.id === "web.crlf-injection" && item.status === "ready",
+    ),
+  );
+  assert.ok(
+    body.items.some(
+      (item) =>
+        item.id === "web.nosql-injection" && item.status === "ready",
+    ),
+  );
+  assert.ok(
+    body.items.some(
+      (item) =>
+        item.id === "web.xpath-injection" && item.status === "ready",
+    ),
+  );
+  assert.ok(
+    body.items.some(
+      (item) =>
+        item.id === "web.ldap-injection" && item.status === "ready",
+    ),
+  );
 });
 
 test("GET /api/labs/:category/:scene returns one lab", async () => {

@@ -7,8 +7,33 @@ test("lab registry scans phase-one metadata files", async () => {
   const registry = createLabRegistry();
   const labs = await registry.listLabs();
 
-  assert.equal(labs.length, 15);
+  assert.equal(labs.length, 20);
   assert.equal(labs[0]?.id, "auth.brute-force");
+  assert.ok(
+    labs.some(
+      (lab) => lab.id === "network.port-scan" && lab.status === "planned",
+    ),
+  );
+  assert.ok(
+    labs.some(
+      (lab) => lab.id === "web.crlf-injection" && lab.status === "ready",
+    ),
+  );
+  assert.ok(
+    labs.some(
+      (lab) => lab.id === "web.nosql-injection" && lab.status === "ready",
+    ),
+  );
+  assert.ok(
+    labs.some(
+      (lab) => lab.id === "web.xpath-injection" && lab.status === "ready",
+    ),
+  );
+  assert.ok(
+    labs.some(
+      (lab) => lab.id === "web.ldap-injection" && lab.status === "ready",
+    ),
+  );
   assert.equal(labs.at(-1)?.id, "web.xxe");
 });
 
