@@ -4,7 +4,7 @@
 
 本实验用于学习端口暴露面观察，不是端口扫描工具。
 
-后续实现会通过固定虚拟资产表展示：
+当前后端受控 API 会通过固定虚拟资产表展示：
 
 - 攻击方如何从开放端口推断资产暴露面。
 - 管理端口、调试端口和多余服务暴露为什么危险。
@@ -12,7 +12,7 @@
 
 ## 2. 当前状态
 
-当前状态为 `planned`。
+当前状态为 `in-progress`。
 
 本阶段只包含：
 
@@ -21,13 +21,13 @@
 - 漏洞版 / 修复版说明。
 - mock 虚拟资产说明。
 - 手动验证说明。
+- 后端受控虚拟资产观察 API。
+- 服务端 API 测试。
 
 当前不包含：
 
 - 前端页面。
-- 后端 API。
 - 数据库迁移。
-- 事件日志写入实现。
 - `exploit.py`。
 - 真实端口扫描脚本。
 
@@ -43,19 +43,27 @@
 - 做并发扫描、压力探测、服务漏洞识别、认证绕过或利用。
 - 保存真实 IP、真实主机名、真实服务 banner、凭据、token 或 Cookie。
 
-## 4. 后续入口规划
+## 4. 当前入口
 
-后续计划入口：
+当前已实现入口：
 
-- 漏洞版：`/labs/network/port-scan/vuln`
-- 修复版：`/labs/network/port-scan/fixed`
-- API：`POST /api/labs/network/port-scan/:variant/scan`
+- 漏洞版 API：`POST /api/labs/network/port-scan/vuln/scan`
+- 修复版 API：`POST /api/labs/network/port-scan/fixed/scan`
 
-这些入口当前尚未实现，不能登记为可运行入口。
+请求体只允许使用：
+
+```json
+{
+  "targetKey": "admin-node",
+  "scanProfile": "surface-review"
+}
+```
+
+前端页面入口 `/labs/network/port-scan/vuln` 和 `/labs/network/port-scan/fixed` 尚未实现，不能登记为可运行页面入口。
 
 ## 5. 学习信号规划
 
-后续计划使用以下学习信号：
+当前 API 使用以下学习信号：
 
 - `port-scan-exposure-expanded`
 - `port-scan-management-surface-visible`
@@ -65,5 +73,4 @@
 
 ## 6. 下一步
 
-下一步应在执行文档约束下补齐虚拟资产模型、后端受控 API、前端工作台和最小测试。
-
+下一步应在执行文档约束下补齐前端工作台和最小前端测试，仍不创建真实扫描脚本。

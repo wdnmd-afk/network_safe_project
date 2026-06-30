@@ -90,7 +90,7 @@ test("GET /api/labs returns scanned lab metadata list", async () => {
   assert.ok(
     body.items.some(
       (item) =>
-        item.id === "network.port-scan" && item.status === "planned",
+        item.id === "network.port-scan" && item.status === "in-progress",
     ),
   );
   assert.ok(body.items.some((item) => item.id === "web.xss"));

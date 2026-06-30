@@ -405,16 +405,22 @@ test("ldap injection metadata exposes virtual workbench pages, virtual api and c
   assert.match(result.value.notes, /不提供 exploit\.py 或 LDAP 查询脚本/);
 });
 
-test("port scan metadata is planned docs-only simulation", async () => {
+test("port scan metadata is in-progress api-only simulation", async () => {
   const metadata = await readFixture("labs/network/port-scan/meta.json");
   const result = validateLabMetadata(metadata);
 
   assert.equal(result.ok, true);
   assert.equal(result.value.id, "network.port-scan");
-  assert.equal(result.value.status, "planned");
+  assert.equal(result.value.status, "in-progress");
   assert.equal(result.value.mode, "simulation");
   assert.deepEqual(result.value.entrypoints.web, []);
-  assert.deepEqual(result.value.entrypoints.api, []);
+  assert.deepEqual(
+    result.value.entrypoints.api.map((entrypoint) => entrypoint.path),
+    [
+      "/api/labs/network/port-scan/vuln/scan",
+      "/api/labs/network/port-scan/fixed/scan",
+    ],
+  );
   assert.deepEqual(result.value.entrypoints.scripts, []);
   assert.deepEqual(
     result.value.entrypoints.docs.map((entrypoint) => entrypoint.path),
@@ -426,10 +432,18 @@ test("port scan metadata is planned docs-only simulation", async () => {
     ],
   );
   assert.equal(result.value.verification.manual.supported, true);
-  assert.equal(result.value.verification.automation.supported, false);
+  assert.equal(result.value.verification.automation.supported, true);
+  assert.deepEqual(result.value.verification.automation.apiTest, {
+    enabled: true,
+    specPath: "apps/server/tests/port-scan-lab.test.ts",
+  });
+  assert.deepEqual(result.value.verification.automation.scriptVerification, {
+    enabled: false,
+    scriptKeys: [],
+  });
   assert.deepEqual(
     result.value.variants.map((variant) => variant.supportsAutomation),
-    [false, false],
+    [true, true],
   );
   assert.ok(
     result.value.safeBoundaries.some((boundary) =>

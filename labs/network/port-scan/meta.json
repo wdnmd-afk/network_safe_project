@@ -7,8 +7,8 @@
   "mode": "simulation",
   "severity": "medium",
   "difficulty": "beginner",
-  "summary": "通过固定虚拟资产表学习开放端口暴露面侦察风险与最小暴露面治理思路。",
-  "status": "planned",
+  "summary": "通过固定虚拟资产表和受控 API 学习开放端口暴露面侦察风险与最小暴露面治理思路。",
+  "status": "in-progress",
   "phase": "phase-2",
   "tags": ["network", "port-scan", "exposure-surface", "simulation"],
   "knowledgePoints": [
@@ -23,24 +23,39 @@
       "key": "vuln",
       "title": "漏洞版观察",
       "enabled": true,
-      "description": "后续通过固定虚拟资产展示管理端口、调试端口和多余服务暴露后的学习信号。",
+      "description": "通过受控虚拟资产 API 展示管理端口、调试端口和多余服务暴露后的学习信号。",
       "entryKey": "vuln-entry",
       "expectedOutcome": "观察 port-scan-exposure-expanded 或 port-scan-management-surface-visible 信号。",
-      "supportsAutomation": false
+      "supportsAutomation": true
     },
     {
       "key": "fixed",
       "title": "修复版观察",
       "enabled": true,
-      "description": "后续通过固定虚拟资产展示最小暴露面、访问控制和服务指纹收敛后的学习信号。",
+      "description": "通过受控虚拟资产 API 展示最小暴露面、访问控制和服务指纹收敛后的学习信号。",
       "entryKey": "fixed-entry",
       "expectedOutcome": "观察 port-scan-surface-reduced 或 port-scan-normal-inventory-returned 信号。",
-      "supportsAutomation": false
+      "supportsAutomation": true
     }
   ],
   "entrypoints": {
     "web": [],
-    "api": [],
+    "api": [
+      {
+        "key": "vuln-scan-api",
+        "path": "/api/labs/network/port-scan/vuln/scan",
+        "description": "漏洞版虚拟资产暴露面观察接口",
+        "variant": "vuln",
+        "method": "POST"
+      },
+      {
+        "key": "fixed-scan-api",
+        "path": "/api/labs/network/port-scan/fixed/scan",
+        "description": "修复版虚拟资产暴露面观察接口",
+        "variant": "fixed",
+        "method": "POST"
+      }
+    ],
     "scripts": [],
     "docs": [
       {
@@ -61,7 +76,7 @@
       {
         "key": "manual-verification",
         "path": "labs/network/port-scan/docs/manual-verification.md",
-        "description": "planned 阶段文档、元数据和边界验证方式"
+        "description": "API 接入阶段文档、元数据和边界验证方式"
       }
     ]
   },
@@ -70,20 +85,22 @@
       "supported": true,
       "stepsDocPath": "labs/network/port-scan/docs/manual-verification.md",
       "expectedSignals": [
-        "port-scan-planned-docs-reviewed",
+        "port-scan-management-surface-visible",
+        "port-scan-surface-reduced",
+        "port-scan-target-blocked",
         "port-scan-virtual-boundary-verified",
         "port-scan-no-real-scan-confirmed"
       ]
     },
     "automation": {
-      "supported": false,
+      "supported": true,
       "playwright": {
         "enabled": false,
         "specPath": ""
       },
       "apiTest": {
-        "enabled": false,
-        "specPath": ""
+        "enabled": true,
+        "specPath": "apps/server/tests/port-scan-lab.test.ts"
       },
       "scriptVerification": {
         "enabled": false,
@@ -92,8 +109,8 @@
     }
   },
   "prerequisites": [
-    "已阅读端口扫描暴露面实验执行文档",
-    "理解当前仅为 planned 文档与元数据阶段",
+    "已阅读端口扫描暴露面实验执行文档和虚拟资产观察 API 执行文档",
+    "理解当前仅接入后端受控 API，尚未接入前端页面或脚本入口",
     "理解本实验首版只使用固定虚拟资产表，不执行真实网络探测"
   ],
   "paths": {
@@ -108,11 +125,11 @@
   "sortOrder": 210,
   "estimatedMinutes": 30,
   "safeBoundaries": [
-    "当前仅为 planned 文档与元数据阶段，不提供页面、API 或脚本入口",
-    "首版只使用固定虚拟资产表和虚拟端口状态，不扫描局域网、网段、外部 IP、域名或用户输入主机",
+    "当前仅提供后端受控 API 和文档入口，不提供页面或脚本入口",
+    "API 只使用固定虚拟资产表和虚拟端口状态，不扫描局域网、网段、外部 IP、域名或用户输入主机",
     "不调用真实 socket、系统命令、PowerShell、nmap、Test-NetConnection、ping、tracert 或类似探测工具",
     "不做并发扫描、压力探测、服务漏洞识别、认证绕过或利用",
-    "事件日志规划只记录虚拟目标 key、虚拟端口数量、暴露面评分和学习信号，不保存真实 IP、主机名、banner、凭据、token 或 Cookie"
+    "事件日志只记录虚拟目标 key、虚拟端口数量、暴露面评分和学习信号，不保存真实 IP、主机名、banner、凭据、token 或 Cookie"
   ],
-  "notes": "端口扫描暴露面实验当前只建立 planned 元数据和文档入口；不提供 exploit.py、扫描脚本、真实 socket 探测或通用扫描器能力。"
+  "notes": "端口扫描暴露面实验当前已接入后端受控 API，仍不提供 exploit.py、扫描脚本、真实 socket 探测或通用扫描器能力。"
 }
