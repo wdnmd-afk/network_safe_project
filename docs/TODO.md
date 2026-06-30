@@ -1,3 +1,26 @@
+# 2026-06-30 最新进展：端口扫描虚拟资产观察 API
+
+- [x] 新增执行文档 `docs/execution/2026-06-30-network-port-scan-virtual-api.md`。
+- [x] 新增 `apps/server/src/services/port-scan-lab.ts`，只使用固定虚拟资产表和虚拟端口状态。
+- [x] 新增 `POST /api/labs/network/port-scan/:variant/scan` 后端受控 API，只读取 `targetKey` 和 `scanProfile`。
+- [x] API 不接收任意 IP、域名、网段、端口范围、超时、并发、代理、认证、Cookie 或 token 字段。
+- [x] 未知虚拟目标或观察模式会返回 `port-scan-target-blocked`，并将响应与事件日志中的原始目标脱敏为 `blocked-target` / `blocked-profile`。
+- [x] 事件日志只记录虚拟目标 key、观察模式、虚拟端口数量、公开端口数量、受限端口数量、高风险端口数量、暴露面评分和学习信号。
+- [x] 新增 `apps/server/tests/port-scan-lab.test.ts`，覆盖漏洞版管理面暴露、修复版暴露面收敛、未知目标阻断、登录要求和事件日志脱敏摘要。
+- [x] 将 `labs/network/port-scan/meta.json` 更新为 `in-progress`，登记漏洞版 / 修复版 API 入口和 API 测试证据，脚本入口仍为空。
+- [x] 更新端口扫描 README、攻击步骤、修复说明、mock 说明和手动验证文档，说明当前仅接入后端 API，尚未接入页面或脚本。
+
+验证记录：
+
+- `pnpm --filter @network-safe/server test -- tests/port-scan-lab.test.ts` 通过；该命令实际运行服务端全量测试，161 项通过。
+- `pnpm --filter @network-safe/shared test` 通过，28 项测试通过。
+- `pnpm --filter @network-safe/server test -- tests/port-scan-lab.test.ts tests/health.test.ts tests/lab-registry.test.ts` 通过；该命令实际运行服务端全量测试，161 项通过。
+- `git diff --check -- <本轮目标文件>` 通过；仅出现 Windows 下 LF 将转换为 CRLF 的提示。
+- `rg -n "[ \t]+$" -- <本轮目标文件>` 无命中。
+- 端口扫描相关代码安全关键词复核通过，未命中真实 socket、系统命令、`nmap`、`Test-NetConnection`、`ping`、`tracert`、`netcat` 或独立 `nc`。
+- 本轮未新增前端页面、数据库迁移、`exploit.py`、`verify.ts`、真实端口扫描脚本或通用扫描器能力。
+- 下一项建议：进入 `network/port-scan` 前端工作台切片，继续使用固定目标选择器和固定观察模式，不提供任意目标输入。
+
 # 2026-06-30 最新进展：端口扫描目录与 planned 元数据
 
 - [x] 新增执行文档 `docs/execution/2026-06-30-network-port-scan-directory-metadata.md`。
