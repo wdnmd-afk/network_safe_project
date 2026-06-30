@@ -8,8 +8,11 @@ import {
   type LoginInput,
 } from "../api/auth";
 import {
+  fetchCurrentUserLabEventLogs,
   fetchCurrentUserLabRecords,
+  type CurrentUserLabEventLogsResponse,
   type CurrentUserLabRecordsResponse,
+  type LabEventLogFilters,
 } from "../api/lab-records";
 
 const tokenStorageKey = "network-safe-session-token";
@@ -38,10 +41,13 @@ export const useSessionStore = defineStore("session", {
       progress: [],
       verifications: [],
     } as CurrentUserLabRecordsResponse["records"],
+    labEventLogs: [] as CurrentUserLabEventLogsResponse["events"],
     isLoading: false,
     isLoadingLabRecords: false,
+    isLoadingLabEventLogs: false,
     errorMessage: "",
     labRecordsErrorMessage: "",
+    labEventLogsErrorMessage: "",
   }),
   getters: {
     isAuthenticated: (state) => Boolean(state.token && state.user),
@@ -62,8 +68,10 @@ export const useSessionStore = defineStore("session", {
         progress: [],
         verifications: [],
       };
+      this.labEventLogs = [];
       this.errorMessage = "";
       this.labRecordsErrorMessage = "";
+      this.labEventLogsErrorMessage = "";
       clearStoredToken();
     },
 
@@ -124,6 +132,28 @@ export const useSessionStore = defineStore("session", {
           error instanceof Error ? error.message : "实验记录加载失败";
       } finally {
         this.isLoadingLabRecords = false;
+      }
+    },
+
+    async loadLabEventLogs(filters: LabEventLogFilters = {}) {
+      if (!this.token) {
+        return [];
+      }
+
+      this.isLoadingLabEventLogs = true;
+      this.labEventLogsErrorMessage = "";
+
+      try {
+        const result = await fetchCurrentUserLabEventLogs(this.token, filters);
+        this.labEventLogs = result.events;
+        return result.events;
+      } catch (error) {
+        this.labEventLogs = [];
+        this.labEventLogsErrorMessage =
+          error instanceof Error ? error.message : "实验事件日志加载失败";
+        return [];
+      } finally {
+        this.isLoadingLabEventLogs = false;
       }
     },
 

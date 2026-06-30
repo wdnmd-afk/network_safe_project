@@ -64,6 +64,9 @@ onMounted(async () => {
               <span>{{ lab.variants.length }} 个变体</span>
             </div>
             <div class="lab-list">
+              <RouterLink :to="`/labs/${lab.category}/${lab.subcategory}`">
+                查看详情
+              </RouterLink>
               <RouterLink
                 v-for="variant in lab.variants"
                 :key="variant.key"

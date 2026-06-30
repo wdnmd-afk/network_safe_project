@@ -8,6 +8,38 @@ export type LabVariant = {
   supportsAutomation: boolean;
 };
 
+export type LabEntrypoint = {
+  key: string;
+  path: string;
+  description: string;
+  variant?: string;
+  method?: string;
+  language?: string;
+};
+
+export type LabVerification = {
+  manual: {
+    supported: boolean;
+    stepsDocPath: string;
+    expectedSignals: string[];
+  };
+  automation: {
+    supported: boolean;
+    playwright?: {
+      enabled: boolean;
+      specPath: string;
+    };
+    apiTest?: {
+      enabled: boolean;
+      specPath: string;
+    };
+    scriptVerification?: {
+      enabled: boolean;
+      scriptKeys: string[];
+    };
+  };
+};
+
 export type LabMetadata = {
   id: string;
   slug: string;
@@ -21,7 +53,25 @@ export type LabMetadata = {
   status: string;
   phase?: string;
   tags: string[];
+  knowledgePoints: string[];
   variants: LabVariant[];
+  entrypoints: {
+    web: LabEntrypoint[];
+    api: LabEntrypoint[];
+    scripts: LabEntrypoint[];
+    docs: LabEntrypoint[];
+  };
+  verification: LabVerification;
+  prerequisites: unknown[];
+  paths: {
+    root: string;
+    readme: string;
+    vuln: string;
+    fixed: string;
+    mock: string;
+    docs: string;
+    scripts: string;
+  };
 };
 
 export type LabListResponse = {
