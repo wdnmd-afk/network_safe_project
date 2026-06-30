@@ -1,0 +1,156 @@
+{
+  "id": "web.nosql-injection",
+  "slug": "nosql-injection",
+  "title": "NoSQL 注入",
+  "category": "web",
+  "subcategory": "nosql-injection",
+  "mode": "interactive",
+  "severity": "high",
+  "difficulty": "intermediate",
+  "summary": "在优惠券文档检索业务中对比结构化查询条件被用户输入改变与服务端查询模板的攻防差异。",
+  "status": "ready",
+  "phase": "phase-1",
+  "tags": ["web", "nosql-injection", "injection"],
+  "knowledgePoints": [
+    "结构化查询条件边界",
+    "对象型输入风险",
+    "查询模板与字段允许列表",
+    "虚拟文档查询器",
+    "脱敏事件日志"
+  ],
+  "variants": [
+    {
+      "key": "vuln",
+      "title": "漏洞版",
+      "enabled": true,
+      "description": "后端虚拟文档查询器会展示用户输入影响查询语义后导致结果范围扩大的风险。",
+      "entryKey": "vuln-entry",
+      "expectedOutcome": "出现 nosql-injection-query-expanded 或 nosql-injection-operator-detected 信号。",
+      "supportsAutomation": true
+    },
+    {
+      "key": "fixed",
+      "title": "修复版",
+      "enabled": true,
+      "description": "后端虚拟文档查询器会展示服务端查询模板、字段允许列表和输入类型约束如何阻断同样风险。",
+      "entryKey": "fixed-entry",
+      "expectedOutcome": "出现 nosql-injection-operator-blocked 或 nosql-injection-schema-blocked 信号。",
+      "supportsAutomation": true
+    }
+  ],
+  "entrypoints": {
+    "web": [
+      {
+        "key": "vuln-entry",
+        "path": "/labs/web/nosql-injection/vuln",
+        "description": "NoSQL 注入漏洞版优惠券文档检索入口",
+        "variant": "vuln"
+      },
+      {
+        "key": "fixed-entry",
+        "path": "/labs/web/nosql-injection/fixed",
+        "description": "NoSQL 注入修复版优惠券文档检索入口",
+        "variant": "fixed"
+      }
+    ],
+    "api": [
+      {
+        "key": "vuln-search-api",
+        "path": "/api/labs/web/nosql-injection/vuln/search",
+        "description": "漏洞版虚拟优惠券文档检索接口",
+        "variant": "vuln",
+        "method": "POST"
+      },
+      {
+        "key": "fixed-search-api",
+        "path": "/api/labs/web/nosql-injection/fixed/search",
+        "description": "修复版虚拟优惠券文档检索接口",
+        "variant": "fixed",
+        "method": "POST"
+      }
+    ],
+    "scripts": [
+      {
+        "key": "nosql-injection-exploit",
+        "language": "python",
+        "path": "tools/lab-scripts/web/nosql-injection/exploit.py",
+        "description": "本机受控 NoSQL 注入样例请求脚本"
+      },
+      {
+        "key": "nosql-injection-verify",
+        "language": "ts",
+        "path": "tools/lab-scripts/web/nosql-injection/verify.ts",
+        "description": "NoSQL 注入漏洞版与修复版差异验证入口"
+      }
+    ],
+    "docs": [
+      {
+        "key": "overview",
+        "path": "labs/web/nosql-injection/README.md",
+        "description": "实验规划总说明"
+      },
+      {
+        "key": "attack-steps",
+        "path": "labs/web/nosql-injection/docs/attack-steps.md",
+        "description": "计划攻击步骤与观察点"
+      },
+      {
+        "key": "fix-notes",
+        "path": "labs/web/nosql-injection/docs/fix-notes.md",
+        "description": "计划修复说明"
+      },
+      {
+        "key": "manual-verification",
+        "path": "labs/web/nosql-injection/docs/manual-verification.md",
+        "description": "后续手动验证计划"
+      }
+    ]
+  },
+  "verification": {
+    "manual": {
+      "supported": true,
+      "stepsDocPath": "labs/web/nosql-injection/docs/manual-verification.md",
+      "expectedSignals": [
+        "nosql-injection-safe-query-completed",
+        "nosql-injection-query-expanded",
+        "nosql-injection-operator-blocked"
+      ]
+    },
+    "automation": {
+      "supported": true,
+      "playwright": {
+        "enabled": false,
+        "specPath": ""
+      },
+      "apiTest": {
+        "enabled": true,
+        "specPath": "apps/server/tests/nosql-injection-lab.test.ts"
+      },
+      "scriptVerification": {
+        "enabled": true,
+        "scriptKeys": ["nosql-injection-verify"]
+      }
+    }
+  },
+  "prerequisites": [
+    "已登录平台演示账号",
+    "后端服务已启用统一实验事件日志"
+  ],
+  "paths": {
+    "root": "labs/web/nosql-injection",
+    "readme": "labs/web/nosql-injection/README.md",
+    "vuln": "labs/web/nosql-injection/vuln",
+    "fixed": "labs/web/nosql-injection/fixed",
+    "mock": "labs/web/nosql-injection/mock",
+    "docs": "labs/web/nosql-injection/docs",
+    "scripts": "tools/lab-scripts/web/nosql-injection"
+  },
+  "sortOrder": 34,
+  "estimatedMinutes": 35,
+  "safeBoundaries": [
+    "仅面向 localhost / 127.0.0.1 的本机受控实验",
+    "后续实现仅面向 localhost / 127.0.0.1 的本机受控实验",
+    "后续实现使用内存虚拟文档查询器，不引入 MongoDB 或外部 NoSQL 服务",
+    "日志只保存查询模式、长度、风险类别、是否命中受控样例和学习信号，不保存完整查询结构"
+  ]
+}

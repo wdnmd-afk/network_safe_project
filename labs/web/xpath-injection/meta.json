@@ -1,0 +1,158 @@
+{
+  "id": "web.xpath-injection",
+  "slug": "xpath-injection",
+  "title": "XPath 注入",
+  "category": "web",
+  "subcategory": "xpath-injection",
+  "mode": "simulation",
+  "severity": "high",
+  "difficulty": "intermediate",
+  "summary": "通过 XML 产品目录查询预览学习 XPath 注入风险，观察漏洞版虚拟结果范围扩大与修复版固定模板阻断的差异。",
+  "status": "ready",
+  "phase": "phase-1",
+  "tags": ["web", "xpath-injection", "injection", "xml"],
+  "knowledgePoints": [
+    "XML 查询语义边界",
+    "XPath 条件拼接风险",
+    "固定查询模板",
+    "字段允许列表",
+    "脱敏事件日志"
+  ],
+  "variants": [
+    {
+      "key": "vuln",
+      "title": "漏洞版",
+      "enabled": true,
+      "description": "后续使用虚拟 XML 产品目录查询模拟器展示固定受控样例如何扩大教学结果范围。",
+      "entryKey": "vuln-search-api",
+      "expectedOutcome": "出现 xpath-injection-result-scope-expanded 信号。",
+      "supportsAutomation": true
+    },
+    {
+      "key": "fixed",
+      "title": "修复版",
+      "enabled": true,
+      "description": "后续展示服务端固定查询模板、查询范围允许列表和文本值处理如何阻断同样风险。",
+      "entryKey": "fixed-search-api",
+      "expectedOutcome": "出现 xpath-injection-controlled-sample-blocked 信号。",
+      "supportsAutomation": true
+    }
+  ],
+  "entrypoints": {
+    "web": [
+      {
+        "key": "vuln-entry",
+        "path": "/labs/web/xpath-injection/vuln",
+        "description": "XPath 注入漏洞版产品目录查询预览入口",
+        "variant": "vuln"
+      },
+      {
+        "key": "fixed-entry",
+        "path": "/labs/web/xpath-injection/fixed",
+        "description": "XPath 注入修复版产品目录查询预览入口",
+        "variant": "fixed"
+      }
+    ],
+    "api": [
+      {
+        "key": "vuln-search-api",
+        "path": "/api/labs/web/xpath-injection/vuln/search",
+        "description": "漏洞版虚拟 XML 产品目录查询接口",
+        "variant": "vuln",
+        "method": "POST"
+      },
+      {
+        "key": "fixed-search-api",
+        "path": "/api/labs/web/xpath-injection/fixed/search",
+        "description": "修复版虚拟 XML 产品目录查询接口",
+        "variant": "fixed",
+        "method": "POST"
+      }
+    ],
+    "scripts": [
+      {
+        "key": "xpath-injection-exploit",
+        "language": "python",
+        "path": "tools/lab-scripts/web/xpath-injection/exploit.py",
+        "description": "本机受控 XPath 注入样例请求脚本"
+      },
+      {
+        "key": "xpath-injection-verify",
+        "language": "ts",
+        "path": "tools/lab-scripts/web/xpath-injection/verify.ts",
+        "description": "XPath 注入漏洞版与修复版差异验证入口"
+      }
+    ],
+    "docs": [
+      {
+        "key": "overview",
+        "path": "labs/web/xpath-injection/README.md",
+        "description": "实验规划总说明"
+      },
+      {
+        "key": "attack-steps",
+        "path": "labs/web/xpath-injection/docs/attack-steps.md",
+        "description": "计划攻击步骤与观察点"
+      },
+      {
+        "key": "fix-notes",
+        "path": "labs/web/xpath-injection/docs/fix-notes.md",
+        "description": "计划修复说明"
+      },
+      {
+        "key": "manual-verification",
+        "path": "labs/web/xpath-injection/docs/manual-verification.md",
+        "description": "后续手动验证计划"
+      }
+    ]
+  },
+  "verification": {
+    "manual": {
+      "supported": true,
+      "stepsDocPath": "labs/web/xpath-injection/docs/manual-verification.md",
+      "expectedSignals": [
+        "xpath-injection-safe-query-completed",
+        "xpath-injection-result-scope-expanded",
+        "xpath-injection-controlled-sample-blocked"
+      ]
+    },
+    "automation": {
+      "supported": true,
+      "playwright": {
+        "enabled": false,
+        "specPath": ""
+      },
+      "apiTest": {
+        "enabled": true,
+        "specPath": "apps/server/tests/xpath-injection-lab.test.ts"
+      },
+      "scriptVerification": {
+        "enabled": true,
+        "scriptKeys": ["xpath-injection-verify"]
+      }
+    }
+  },
+  "prerequisites": [
+    "已登录平台演示账号",
+    "后端服务已启用统一实验事件日志",
+    "已落地后端虚拟 XML 产品目录查询 service、前端页面和本机受控脚本"
+  ],
+  "paths": {
+    "root": "labs/web/xpath-injection",
+    "readme": "labs/web/xpath-injection/README.md",
+    "vuln": "labs/web/xpath-injection/vuln",
+    "fixed": "labs/web/xpath-injection/fixed",
+    "mock": "labs/web/xpath-injection/mock",
+    "docs": "labs/web/xpath-injection/docs",
+    "scripts": "tools/lab-scripts/web/xpath-injection"
+  },
+  "sortOrder": 36,
+  "estimatedMinutes": 35,
+  "safeBoundaries": [
+    "仅面向 localhost / 127.0.0.1 / ::1 的本机受控实验",
+    "当前实现只登记本项目已落地的页面、API、脚本和验证入口",
+    "后端实现只使用虚拟 XML 产品目录查询模拟器，不读取真实 XML 文件",
+    "不执行任意 XPath 表达式，不接入外部 XML 数据源，不访问外部目标",
+    "日志只保存模板、范围、关键词长度、脱敏预览、风险类别、虚拟结果范围和学习信号"
+  ]
+}

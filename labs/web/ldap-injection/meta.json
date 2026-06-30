@@ -1,0 +1,160 @@
+{
+  "id": "web.ldap-injection",
+  "slug": "ldap-injection",
+  "title": "LDAP 注入",
+  "category": "web",
+  "subcategory": "ldap-injection",
+  "mode": "case-study",
+  "severity": "high",
+  "difficulty": "intermediate",
+  "summary": "通过组织成员搜索、权限组查询和登录筛选工作台学习 LDAP 过滤条件拼接风险与模板化防护。",
+  "status": "ready",
+  "phase": "phase-1",
+  "tags": ["web", "ldap-injection", "injection", "case-study"],
+  "knowledgePoints": [
+    "目录服务过滤条件边界",
+    "用户输入影响查询语义",
+    "过滤器转义",
+    "服务端查询模板",
+    "目录账号最小权限"
+  ],
+  "variants": [
+    {
+      "key": "vuln",
+      "title": "漏洞版工作台",
+      "enabled": true,
+      "description": "通过固定案例和虚拟目录查询展示用户输入影响 LDAP 查询语义后的风险，不连接真实目录服务。",
+      "entryKey": "vuln-entry",
+      "expectedOutcome": "提交正常关键词和受控样例，理解虚拟目录结果范围被扩大的学习信号。",
+      "supportsAutomation": false
+    },
+    {
+      "key": "fixed",
+      "title": "修复版工作台",
+      "enabled": true,
+      "description": "通过固定案例和虚拟目录查询说明服务端查询模板、字段允许列表、过滤器转义和最小权限的防护价值。",
+      "entryKey": "fixed-entry",
+      "expectedOutcome": "提交同样受控样例，理解修复版如何阻断查询语义改变并记录审计摘要。",
+      "supportsAutomation": false
+    }
+  ],
+  "entrypoints": {
+    "web": [
+      {
+        "key": "vuln-entry",
+        "path": "/labs/web/ldap-injection/vuln",
+        "description": "LDAP 注入漏洞版虚拟目录工作台入口",
+        "variant": "vuln"
+      },
+      {
+        "key": "fixed-entry",
+        "path": "/labs/web/ldap-injection/fixed",
+        "description": "LDAP 注入修复版虚拟目录工作台入口",
+        "variant": "fixed"
+      }
+    ],
+    "api": [
+      {
+        "key": "vuln-search-api",
+        "path": "/api/labs/web/ldap-injection/vuln/search",
+        "description": "LDAP 注入漏洞版虚拟目录查询接口",
+        "variant": "vuln",
+        "method": "POST"
+      },
+      {
+        "key": "fixed-search-api",
+        "path": "/api/labs/web/ldap-injection/fixed/search",
+        "description": "LDAP 注入修复版虚拟目录查询接口",
+        "variant": "fixed",
+        "method": "POST"
+      }
+    ],
+    "scripts": [
+      {
+        "key": "ldap-injection-verify",
+        "language": "ts",
+        "path": "tools/lab-scripts/web/ldap-injection/verify.ts",
+        "description": "本机只读 LDAP 案例文档与元数据一致性验证脚本"
+      }
+    ],
+    "docs": [
+      {
+        "key": "overview",
+        "path": "labs/web/ldap-injection/README.md",
+        "description": "LDAP 注入案例化实验总说明"
+      },
+      {
+        "key": "attack-steps",
+        "path": "labs/web/ldap-injection/docs/attack-steps.md",
+        "description": "攻击方观察步骤与案例化风险路径"
+      },
+      {
+        "key": "fix-notes",
+        "path": "labs/web/ldap-injection/docs/fix-notes.md",
+        "description": "LDAP 注入修复思路与生产补充防护"
+      },
+      {
+        "key": "manual-verification",
+        "path": "labs/web/ldap-injection/docs/manual-verification.md",
+        "description": "虚拟目录工作台、元数据与文档边界验证"
+      }
+    ]
+  },
+  "verification": {
+    "manual": {
+      "supported": true,
+      "stepsDocPath": "labs/web/ldap-injection/docs/manual-verification.md",
+      "expectedSignals": [
+        "ldap-injection-case-study-reviewed",
+        "ldap-injection-filter-template-reviewed",
+        "ldap-injection-boundary-verified",
+        "ldap-injection-safe-search-completed",
+        "ldap-injection-scope-expanded",
+        "ldap-injection-controlled-sample-blocked"
+      ]
+    },
+    "automation": {
+      "supported": true,
+      "playwright": {
+        "enabled": true,
+        "specPath": "packages/testing/tests/e2e/platform.spec.mjs"
+      },
+      "apiTest": {
+        "enabled": true,
+        "specPath": "apps/server/tests/ldap-injection-lab.test.ts"
+      },
+      "scriptVerification": {
+        "enabled": true,
+        "scriptKeys": ["ldap-injection-verify"]
+      }
+    }
+  },
+  "prerequisites": [
+    "已阅读 LDAP 注入案例化执行文档",
+    "理解本实验不连接真实 LDAP 服务",
+    "理解本实验已登记前端虚拟目录工作台、受控虚拟目录 API、Playwright 页面验证与文档入口",
+    "理解本实验 ready 状态采用 case-study 例外收口标准，仍不提供攻击脚本入口",
+    "理解脚本入口只做文档、元数据和安全边界一致性验证"
+  ],
+  "paths": {
+    "root": "labs/web/ldap-injection",
+    "readme": "labs/web/ldap-injection/README.md",
+    "vuln": "labs/web/ldap-injection/vuln",
+    "fixed": "labs/web/ldap-injection/fixed",
+    "mock": "labs/web/ldap-injection/mock",
+    "docs": "labs/web/ldap-injection/docs",
+    "scripts": "tools/lab-scripts/web/ldap-injection"
+  },
+  "sortOrder": 37,
+  "estimatedMinutes": 35,
+  "safeBoundaries": [
+    "一期仅做案例化学习和受控虚拟目录工作台，不连接真实 LDAP、AD 或 OpenLDAP 服务",
+    "不进行真实 bind、search、modify 或 delete 操作",
+    "不保存目录账号、组织结构、DN、邮箱、手机号、凭据或外部目标信息",
+    "API 只使用内存虚拟目录数据，不连接真实目录服务",
+    "case-study ready 状态仅表示案例文档、虚拟工作台、虚拟目录 API、事件日志、Playwright 页面验证和只读一致性验证已形成闭环",
+    "仅登记已实现的虚拟目录工作台、虚拟目录 API、docs 入口、Playwright 页面验证和只读验证脚本",
+    "不提供对外 LDAP 查询脚本、过滤器 payload 库或任意过滤器执行器"
+  ],
+  "notes": "LDAP 注入当前按 case-study ready 标准收口：不提供 exploit.py 或 LDAP 查询脚本，variants[].supportsAutomation 保持 false，仅通过页面、API、事件日志、文档和只读一致性验证证明学习闭环。"
+}

@@ -1,96 +1,154 @@
-﻿{
-    "id":  "web.info-disclosure",
-    "slug":  "info-disclosure",
-    "title":  "信息泄露",
-    "category":  "web",
-    "subcategory":  "info-disclosure",
-    "mode":  "interactive",
-    "severity":  "medium",
-    "difficulty":  "beginner",
-    "summary":  "信息泄露实验占位。",
-    "status":  "planned",
-    "phase":  "phase-1",
-    "tags":  [
-                 "web",
-                 "info-disclosure"
-             ],
-    "knowledgePoints":  [
-
-                        ],
-    "variants":  [
-                     {
-                         "key":  "vuln",
-                         "title":  "漏洞版",
-                         "enabled":  true,
-                         "description":  "一期占位，后续补充漏洞实现。",
-                         "entryKey":  "vuln-entry",
-                         "expectedOutcome":  "后续补充。",
-                         "supportsAutomation":  false
-                     },
-                     {
-                         "key":  "fixed",
-                         "title":  "修复版",
-                         "enabled":  true,
-                         "description":  "一期占位，后续补充修复实现。",
-                         "entryKey":  "fixed-entry",
-                         "expectedOutcome":  "后续补充。",
-                         "supportsAutomation":  false
-                     }
-                 ],
-    "entrypoints":  {
-                        "web":  [
-
-                                ],
-                        "api":  [
-
-                                ],
-                        "scripts":  [
-
-                                    ],
-                        "docs":  [
-                                     {
-                                         "key":  "overview",
-                                         "path":  "labs/web/info-disclosure/README.md",
-                                         "description":  "实验总说明"
-                                     }
-                                 ]
-                    },
-    "verification":  {
-                         "manual":  {
-                                        "supported":  true,
-                                        "stepsDocPath":  "labs/web/info-disclosure/docs/.gitkeep",
-                                        "expectedSignals":  [
-                                                                "后续补充。"
-                                                            ]
-                                    },
-                         "automation":  {
-                                            "supported":  false,
-                                            "playwright":  {
-                                                               "enabled":  false,
-                                                               "specPath":  ""
-                                                           },
-                                            "apiTest":  {
-                                                            "enabled":  false,
-                                                            "specPath":  ""
-                                                        },
-                                            "scriptVerification":  {
-                                                                       "enabled":  false,
-                                                                       "scriptKeys":  [
-
-                                                                                      ]
-                                                                   }
-                                        }
-                     },
-    "prerequisites":  [
-
-                      ],
-    "paths":  {
-                  "root":  "labs/web/info-disclosure",
-                  "readme":  "labs/web/info-disclosure/README.md",
-                  "vuln":  "labs/web/info-disclosure/vuln",
-                  "fixed":  "labs/web/info-disclosure/fixed",
-                  "mock":  "labs/web/info-disclosure/mock",
-                  "docs":  "labs/web/info-disclosure/docs",
-                  "scripts":  "tools/lab-scripts/web/info-disclosure"
-              }
+{
+  "id": "web.info-disclosure",
+  "slug": "info-disclosure",
+  "title": "信息泄露",
+  "category": "web",
+  "subcategory": "info-disclosure",
+  "mode": "interactive",
+  "severity": "medium",
+  "difficulty": "beginner",
+  "summary": "在受控诊断报告业务中对比调试信息泄露与错误信息收敛的攻防差异。",
+  "status": "ready",
+  "phase": "phase-1",
+  "tags": ["web", "info-disclosure", "debug-report"],
+  "knowledgePoints": [
+    "调试信息泄露",
+    "错误信息收敛",
+    "敏感字段脱敏",
+    "调试入口隔离",
+    "实验事件日志"
+  ],
+  "variants": [
+    {
+      "key": "vuln",
+      "title": "漏洞版",
+      "enabled": true,
+      "description": "诊断报告接口未隔离调试报告，普通用户可通过 reportKey 读取教学占位的内部调试信息。",
+      "entryKey": "vuln-entry",
+      "expectedOutcome": "出现 info-disclosure-debug-data-exposed 信号。",
+      "supportsAutomation": true
+    },
+    {
+      "key": "fixed",
+      "title": "修复版",
+      "enabled": true,
+      "description": "诊断报告接口只允许公开报告，调试报告被阻断并返回通用说明。",
+      "entryKey": "fixed-entry",
+      "expectedOutcome": "出现 info-disclosure-debug-data-blocked 信号。",
+      "supportsAutomation": true
+    }
+  ],
+  "entrypoints": {
+    "web": [
+      {
+        "key": "vuln-entry",
+        "path": "/labs/web/info-disclosure/vuln",
+        "description": "信息泄露漏洞版实验入口",
+        "variant": "vuln"
+      },
+      {
+        "key": "fixed-entry",
+        "path": "/labs/web/info-disclosure/fixed",
+        "description": "信息泄露修复版实验入口",
+        "variant": "fixed"
+      }
+    ],
+    "api": [
+      {
+        "key": "vuln-report-api",
+        "path": "/api/labs/web/info-disclosure/vuln/report",
+        "description": "漏洞版诊断报告读取接口",
+        "variant": "vuln",
+        "method": "POST"
+      },
+      {
+        "key": "fixed-report-api",
+        "path": "/api/labs/web/info-disclosure/fixed/report",
+        "description": "修复版诊断报告读取接口",
+        "variant": "fixed",
+        "method": "POST"
+      }
+    ],
+    "scripts": [
+      {
+        "key": "info-disclosure-exploit",
+        "language": "python",
+        "path": "tools/lab-scripts/web/info-disclosure/exploit.py",
+        "description": "本机受控信息泄露攻击样例脚本"
+      },
+      {
+        "key": "info-disclosure-verify",
+        "language": "ts",
+        "path": "tools/lab-scripts/web/info-disclosure/verify.ts",
+        "description": "信息泄露漏洞版与修复版差异验证入口"
+      }
+    ],
+    "docs": [
+      {
+        "key": "overview",
+        "path": "labs/web/info-disclosure/README.md",
+        "description": "实验总说明"
+      },
+      {
+        "key": "attack-steps",
+        "path": "labs/web/info-disclosure/docs/attack-steps.md",
+        "description": "攻击步骤"
+      },
+      {
+        "key": "fix-notes",
+        "path": "labs/web/info-disclosure/docs/fix-notes.md",
+        "description": "修复说明"
+      },
+      {
+        "key": "manual-verification",
+        "path": "labs/web/info-disclosure/docs/manual-verification.md",
+        "description": "手动验证说明"
+      }
+    ]
+  },
+  "verification": {
+    "manual": {
+      "supported": true,
+      "stepsDocPath": "labs/web/info-disclosure/docs/manual-verification.md",
+      "expectedSignals": [
+        "info-disclosure-debug-data-exposed",
+        "info-disclosure-debug-data-blocked"
+      ]
+    },
+    "automation": {
+      "supported": true,
+      "playwright": {
+        "enabled": false,
+        "specPath": ""
+      },
+      "apiTest": {
+        "enabled": true,
+        "specPath": "apps/server/tests/info-disclosure-lab.test.ts"
+      },
+      "scriptVerification": {
+        "enabled": true,
+        "scriptKeys": ["info-disclosure-verify"]
+      }
+    }
+  },
+  "prerequisites": [
+    "已登录平台演示账号",
+    "后端服务已启用统一实验事件日志"
+  ],
+  "paths": {
+    "root": "labs/web/info-disclosure",
+    "readme": "labs/web/info-disclosure/README.md",
+    "vuln": "labs/web/info-disclosure/vuln",
+    "fixed": "labs/web/info-disclosure/fixed",
+    "mock": "labs/web/info-disclosure/mock",
+    "docs": "labs/web/info-disclosure/docs",
+    "scripts": "tools/lab-scripts/web/info-disclosure"
+  },
+  "sortOrder": 70,
+  "estimatedMinutes": 30,
+  "safeBoundaries": [
+    "仅面向 localhost / 127.0.0.1 的本机受控实验",
+    "后端只查询内置虚拟诊断报告表，不读取真实环境变量、文件或日志",
+    "日志只保存报告 key、敏感报告标记、字段类别和检测信号，不保存完整调试内容"
+  ]
 }

@@ -1,11 +1,24 @@
-﻿# 文件上传漏洞 脚本目录
+# 文件上传脚本目录
 
-当前目录为实验脚本占位目录。
+本目录只服务 `web.file-upload` 本机受控实验。
 
-后续优先放置：
+## 文件
 
-- `exploit.py`
-- `verify.ts`
-- `seed.ts`
-- `samples/`
-- `artifacts/`
+- `exploit.py`：攻击方视角的本机受控上传样例请求脚本。
+- `verify.ts`：平台验证配置与预期信号。
+
+## 安全边界
+
+- 默认只访问 `http://127.0.0.1:6667`。
+- 只允许 `localhost`、`127.0.0.1`、`::1`。
+- 不扫描网络，不访问外部目标。
+- 不读取真实样本文件，不写入真实上传文件。
+- 上传内容作为 JSON 文本传递，仅用于本项目后端模拟检测。
+
+## 使用示例
+
+```powershell
+python tools/lab-scripts/web/file-upload/exploit.py --token <local-token> --variant vuln
+python tools/lab-scripts/web/file-upload/exploit.py --token <local-token> --variant fixed
+pnpm --filter @network-safe/web exec tsx ../../tools/lab-scripts/web/file-upload/verify.ts
+```

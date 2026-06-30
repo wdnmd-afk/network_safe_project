@@ -1,96 +1,157 @@
-﻿{
-    "id":  "web.ssti",
-    "slug":  "ssti",
-    "title":  "SSTI",
-    "category":  "web",
-    "subcategory":  "ssti",
-    "mode":  "interactive",
-    "severity":  "high",
-    "difficulty":  "advanced",
-    "summary":  "模板注入实验占位。",
-    "status":  "planned",
-    "phase":  "phase-1",
-    "tags":  [
-                 "web",
-                 "ssti"
-             ],
-    "knowledgePoints":  [
-
-                        ],
-    "variants":  [
-                     {
-                         "key":  "vuln",
-                         "title":  "漏洞版",
-                         "enabled":  true,
-                         "description":  "一期占位，后续补充漏洞实现。",
-                         "entryKey":  "vuln-entry",
-                         "expectedOutcome":  "后续补充。",
-                         "supportsAutomation":  false
-                     },
-                     {
-                         "key":  "fixed",
-                         "title":  "修复版",
-                         "enabled":  true,
-                         "description":  "一期占位，后续补充修复实现。",
-                         "entryKey":  "fixed-entry",
-                         "expectedOutcome":  "后续补充。",
-                         "supportsAutomation":  false
-                     }
-                 ],
-    "entrypoints":  {
-                        "web":  [
-
-                                ],
-                        "api":  [
-
-                                ],
-                        "scripts":  [
-
-                                    ],
-                        "docs":  [
-                                     {
-                                         "key":  "overview",
-                                         "path":  "labs/web/ssti/README.md",
-                                         "description":  "实验总说明"
-                                     }
-                                 ]
-                    },
-    "verification":  {
-                         "manual":  {
-                                        "supported":  true,
-                                        "stepsDocPath":  "labs/web/ssti/docs/.gitkeep",
-                                        "expectedSignals":  [
-                                                                "后续补充。"
-                                                            ]
-                                    },
-                         "automation":  {
-                                            "supported":  false,
-                                            "playwright":  {
-                                                               "enabled":  false,
-                                                               "specPath":  ""
-                                                           },
-                                            "apiTest":  {
-                                                            "enabled":  false,
-                                                            "specPath":  ""
-                                                        },
-                                            "scriptVerification":  {
-                                                                       "enabled":  false,
-                                                                       "scriptKeys":  [
-
-                                                                                      ]
-                                                                   }
-                                        }
-                     },
-    "prerequisites":  [
-
-                      ],
-    "paths":  {
-                  "root":  "labs/web/ssti",
-                  "readme":  "labs/web/ssti/README.md",
-                  "vuln":  "labs/web/ssti/vuln",
-                  "fixed":  "labs/web/ssti/fixed",
-                  "mock":  "labs/web/ssti/mock",
-                  "docs":  "labs/web/ssti/docs",
-                  "scripts":  "tools/lab-scripts/web/ssti"
-              }
+{
+  "id": "web.ssti",
+  "slug": "ssti",
+  "title": "SSTI",
+  "category": "web",
+  "subcategory": "ssti",
+  "mode": "interactive",
+  "severity": "high",
+  "difficulty": "advanced",
+  "summary": "在通知模板预览中对比模板文本被解释与系统模板变量允许列表的攻防差异。",
+  "status": "ready",
+  "phase": "phase-1",
+  "tags": ["web", "ssti", "injection"],
+  "knowledgePoints": [
+    "模板来源隔离",
+    "模板变量允许列表",
+    "固定受控表达式识别",
+    "输出转义",
+    "模板注入审计日志"
+  ],
+  "variants": [
+    {
+      "key": "vuln",
+      "title": "漏洞版",
+      "enabled": true,
+      "description": "通知模板预览会把模板文本中的固定受控表达式当作语法解释，返回教学模拟信号。",
+      "entryKey": "vuln-entry",
+      "expectedOutcome": "出现 ssti-expression-evaluated 或 ssti-template-context-exposed 信号。",
+      "supportsAutomation": true
+    },
+    {
+      "key": "fixed",
+      "title": "修复版",
+      "enabled": true,
+      "description": "通知模板预览只允许系统维护模板和固定变量插值，非允许表达式会被阻断。",
+      "entryKey": "fixed-entry",
+      "expectedOutcome": "出现 ssti-expression-blocked 信号。",
+      "supportsAutomation": true
+    }
+  ],
+  "entrypoints": {
+    "web": [
+      {
+        "key": "vuln-entry",
+        "path": "/labs/web/ssti/vuln",
+        "description": "SSTI 漏洞版通知模板预览入口",
+        "variant": "vuln"
+      },
+      {
+        "key": "fixed-entry",
+        "path": "/labs/web/ssti/fixed",
+        "description": "SSTI 修复版通知模板预览入口",
+        "variant": "fixed"
+      }
+    ],
+    "api": [
+      {
+        "key": "vuln-preview-api",
+        "path": "/api/labs/web/ssti/vuln/preview",
+        "description": "漏洞版通知模板预览接口",
+        "variant": "vuln",
+        "method": "POST"
+      },
+      {
+        "key": "fixed-preview-api",
+        "path": "/api/labs/web/ssti/fixed/preview",
+        "description": "修复版通知模板预览接口",
+        "variant": "fixed",
+        "method": "POST"
+      }
+    ],
+    "scripts": [
+      {
+        "key": "ssti-exploit",
+        "language": "python",
+        "path": "tools/lab-scripts/web/ssti/exploit.py",
+        "description": "本机受控 SSTI 请求样例脚本"
+      },
+      {
+        "key": "ssti-verify",
+        "language": "ts",
+        "path": "tools/lab-scripts/web/ssti/verify.ts",
+        "description": "SSTI 漏洞版与修复版差异验证入口"
+      }
+    ],
+    "docs": [
+      {
+        "key": "overview",
+        "path": "labs/web/ssti/README.md",
+        "description": "实验总说明"
+      },
+      {
+        "key": "attack-steps",
+        "path": "labs/web/ssti/docs/attack-steps.md",
+        "description": "攻击步骤"
+      },
+      {
+        "key": "fix-notes",
+        "path": "labs/web/ssti/docs/fix-notes.md",
+        "description": "修复说明"
+      },
+      {
+        "key": "manual-verification",
+        "path": "labs/web/ssti/docs/manual-verification.md",
+        "description": "手动验证说明"
+      }
+    ]
+  },
+  "verification": {
+    "manual": {
+      "supported": true,
+      "stepsDocPath": "labs/web/ssti/docs/manual-verification.md",
+      "expectedSignals": [
+        "ssti-safe-template-rendered",
+        "ssti-expression-evaluated",
+        "ssti-template-context-exposed",
+        "ssti-expression-blocked"
+      ]
+    },
+    "automation": {
+      "supported": true,
+      "playwright": {
+        "enabled": false,
+        "specPath": ""
+      },
+      "apiTest": {
+        "enabled": true,
+        "specPath": "apps/server/tests/ssti-lab.test.ts"
+      },
+      "scriptVerification": {
+        "enabled": true,
+        "scriptKeys": ["ssti-verify"]
+      }
+    }
+  },
+  "prerequisites": [
+    "已登录平台演示账号",
+    "后端服务已启用统一实验事件日志"
+  ],
+  "paths": {
+    "root": "labs/web/ssti",
+    "readme": "labs/web/ssti/README.md",
+    "vuln": "labs/web/ssti/vuln",
+    "fixed": "labs/web/ssti/fixed",
+    "mock": "labs/web/ssti/mock",
+    "docs": "labs/web/ssti/docs",
+    "scripts": "tools/lab-scripts/web/ssti"
+  },
+  "sortOrder": 36,
+  "estimatedMinutes": 35,
+  "safeBoundaries": [
+    "仅面向 localhost / 127.0.0.1 的本机受控实验",
+    "后端只使用教学用模板模拟器，不使用 eval、Function、Node VM 或真实危险模板表达式执行",
+    "受控表达式结果来自固定教学映射，不读取真实服务器上下文、环境变量、文件系统或网络资源",
+    "日志只保存模板长度、变量名、表达式类别、是否命中受控样例和学习信号，不保存完整模板、完整表达式或完整变量值"
+  ]
 }

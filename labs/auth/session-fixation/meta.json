@@ -1,96 +1,155 @@
-﻿{
-    "id":  "auth.session-fixation",
-    "slug":  "session-fixation",
-    "title":  "会话固定",
-    "category":  "auth",
-    "subcategory":  "session-fixation",
-    "mode":  "interactive",
-    "severity":  "high",
-    "difficulty":  "intermediate",
-    "summary":  "会话固定实验占位。",
-    "status":  "planned",
-    "phase":  "phase-1",
-    "tags":  [
-                 "auth",
-                 "session-fixation"
-             ],
-    "knowledgePoints":  [
-
-                        ],
-    "variants":  [
-                     {
-                         "key":  "vuln",
-                         "title":  "漏洞版",
-                         "enabled":  true,
-                         "description":  "一期占位，后续补充漏洞实现。",
-                         "entryKey":  "vuln-entry",
-                         "expectedOutcome":  "后续补充。",
-                         "supportsAutomation":  false
-                     },
-                     {
-                         "key":  "fixed",
-                         "title":  "修复版",
-                         "enabled":  true,
-                         "description":  "一期占位，后续补充修复实现。",
-                         "entryKey":  "fixed-entry",
-                         "expectedOutcome":  "后续补充。",
-                         "supportsAutomation":  false
-                     }
-                 ],
-    "entrypoints":  {
-                        "web":  [
-
-                                ],
-                        "api":  [
-
-                                ],
-                        "scripts":  [
-
-                                    ],
-                        "docs":  [
-                                     {
-                                         "key":  "overview",
-                                         "path":  "labs/auth/session-fixation/README.md",
-                                         "description":  "实验总说明"
-                                     }
-                                 ]
-                    },
-    "verification":  {
-                         "manual":  {
-                                        "supported":  true,
-                                        "stepsDocPath":  "labs/auth/session-fixation/docs/.gitkeep",
-                                        "expectedSignals":  [
-                                                                "后续补充。"
-                                                            ]
-                                    },
-                         "automation":  {
-                                            "supported":  false,
-                                            "playwright":  {
-                                                               "enabled":  false,
-                                                               "specPath":  ""
-                                                           },
-                                            "apiTest":  {
-                                                            "enabled":  false,
-                                                            "specPath":  ""
-                                                        },
-                                            "scriptVerification":  {
-                                                                       "enabled":  false,
-                                                                       "scriptKeys":  [
-
-                                                                                      ]
-                                                                   }
-                                        }
-                     },
-    "prerequisites":  [
-
-                      ],
-    "paths":  {
-                  "root":  "labs/auth/session-fixation",
-                  "readme":  "labs/auth/session-fixation/README.md",
-                  "vuln":  "labs/auth/session-fixation/vuln",
-                  "fixed":  "labs/auth/session-fixation/fixed",
-                  "mock":  "labs/auth/session-fixation/mock",
-                  "docs":  "labs/auth/session-fixation/docs",
-                  "scripts":  "tools/lab-scripts/auth/session-fixation"
-              }
+{
+  "id": "auth.session-fixation",
+  "slug": "session-fixation",
+  "title": "会话固定",
+  "category": "auth",
+  "subcategory": "session-fixation",
+  "mode": "interactive",
+  "severity": "high",
+  "difficulty": "intermediate",
+  "summary": "在受控教学登录会话中对比继续使用客户端预登录会话 ID 与登录后服务端轮换会话 ID 的攻防差异。",
+  "status": "ready",
+  "phase": "phase-1",
+  "tags": ["auth", "session-fixation", "session-management"],
+  "knowledgePoints": [
+    "会话固定成因",
+    "登录后会话轮换",
+    "客户端会话 ID 信任边界",
+    "Cookie 与会话安全策略",
+    "实验事件日志"
+  ],
+  "variants": [
+    {
+      "key": "vuln",
+      "title": "漏洞版",
+      "enabled": true,
+      "description": "接口在教学登录完成后继续使用客户端传入的 preLoginSessionId，外部链接固定 ID 会被绑定到当前用户。",
+      "entryKey": "vuln-entry",
+      "expectedOutcome": "出现 session-fixed-id-bound 信号。",
+      "supportsAutomation": true
+    },
+    {
+      "key": "fixed",
+      "title": "修复版",
+      "enabled": true,
+      "description": "接口在教学登录完成后忽略客户端传入的 preLoginSessionId，并由服务端生成新的教学会话 ID。",
+      "entryKey": "fixed-entry",
+      "expectedOutcome": "出现 session-fixed-id-rotated 信号。",
+      "supportsAutomation": true
+    }
+  ],
+  "entrypoints": {
+    "web": [
+      {
+        "key": "vuln-entry",
+        "path": "/labs/auth/session-fixation/vuln",
+        "description": "会话固定漏洞版实验入口",
+        "variant": "vuln"
+      },
+      {
+        "key": "fixed-entry",
+        "path": "/labs/auth/session-fixation/fixed",
+        "description": "会话固定修复版实验入口",
+        "variant": "fixed"
+      }
+    ],
+    "api": [
+      {
+        "key": "vuln-login-api",
+        "path": "/api/labs/auth/session-fixation/vuln/login",
+        "description": "漏洞版教学登录会话绑定接口",
+        "variant": "vuln",
+        "method": "POST"
+      },
+      {
+        "key": "fixed-login-api",
+        "path": "/api/labs/auth/session-fixation/fixed/login",
+        "description": "修复版教学登录会话轮换接口",
+        "variant": "fixed",
+        "method": "POST"
+      }
+    ],
+    "scripts": [
+      {
+        "key": "session-fixation-exploit",
+        "language": "python",
+        "path": "tools/lab-scripts/auth/session-fixation/exploit.py",
+        "description": "本地受控外部链接固定会话 ID 样例脚本"
+      },
+      {
+        "key": "session-fixation-verify",
+        "language": "ts",
+        "path": "tools/lab-scripts/auth/session-fixation/verify.ts",
+        "description": "会话固定漏洞版与修复版差异验证入口"
+      }
+    ],
+    "docs": [
+      {
+        "key": "overview",
+        "path": "labs/auth/session-fixation/README.md",
+        "description": "实验总说明"
+      },
+      {
+        "key": "attack-steps",
+        "path": "labs/auth/session-fixation/docs/attack-steps.md",
+        "description": "攻击步骤"
+      },
+      {
+        "key": "fix-notes",
+        "path": "labs/auth/session-fixation/docs/fix-notes.md",
+        "description": "修复说明"
+      },
+      {
+        "key": "manual-verification",
+        "path": "labs/auth/session-fixation/docs/manual-verification.md",
+        "description": "手动验证说明"
+      }
+    ]
+  },
+  "verification": {
+    "manual": {
+      "supported": true,
+      "stepsDocPath": "labs/auth/session-fixation/docs/manual-verification.md",
+      "expectedSignals": [
+        "session-fixed-id-bound",
+        "session-fixed-id-rotated"
+      ]
+    },
+    "automation": {
+      "supported": true,
+      "playwright": {
+        "enabled": false,
+        "specPath": ""
+      },
+      "apiTest": {
+        "enabled": true,
+        "specPath": "apps/server/tests/session-fixation-lab.test.ts"
+      },
+      "scriptVerification": {
+        "enabled": true,
+        "scriptKeys": ["session-fixation-verify"]
+      }
+    }
+  },
+  "prerequisites": [
+    "已登录平台演示账号",
+    "后端服务已启用统一实验事件日志"
+  ],
+  "paths": {
+    "root": "labs/auth/session-fixation",
+    "readme": "labs/auth/session-fixation/README.md",
+    "vuln": "labs/auth/session-fixation/vuln",
+    "fixed": "labs/auth/session-fixation/fixed",
+    "mock": "labs/auth/session-fixation/mock",
+    "docs": "labs/auth/session-fixation/docs",
+    "scripts": "tools/lab-scripts/auth/session-fixation"
+  },
+  "sortOrder": 140,
+  "estimatedMinutes": 35,
+  "safeBoundaries": [
+    "仅面向 localhost / 127.0.0.1 的本机受控实验",
+    "使用独立教学会话 ID，不修改真实登录 token 或真实 Cookie",
+    "日志只保存会话 ID 长度、来源、布尔判断、脱敏摘要和学习信号",
+    "脚本只提交固定受控样例，不枚举会话 ID、不扫描接口、不访问外部目标"
+  ]
 }

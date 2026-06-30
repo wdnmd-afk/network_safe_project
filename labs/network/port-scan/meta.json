@@ -1,0 +1,118 @@
+{
+  "id": "network.port-scan",
+  "slug": "port-scan",
+  "title": "端口扫描暴露面",
+  "category": "network",
+  "subcategory": "port-scan",
+  "mode": "simulation",
+  "severity": "medium",
+  "difficulty": "beginner",
+  "summary": "通过固定虚拟资产表学习开放端口暴露面侦察风险与最小暴露面治理思路。",
+  "status": "planned",
+  "phase": "phase-2",
+  "tags": ["network", "port-scan", "exposure-surface", "simulation"],
+  "knowledgePoints": [
+    "端口暴露面观察",
+    "虚拟资产清单",
+    "管理端口隔离",
+    "最小暴露面",
+    "事件日志脱敏摘要"
+  ],
+  "variants": [
+    {
+      "key": "vuln",
+      "title": "漏洞版观察",
+      "enabled": true,
+      "description": "后续通过固定虚拟资产展示管理端口、调试端口和多余服务暴露后的学习信号。",
+      "entryKey": "vuln-entry",
+      "expectedOutcome": "观察 port-scan-exposure-expanded 或 port-scan-management-surface-visible 信号。",
+      "supportsAutomation": false
+    },
+    {
+      "key": "fixed",
+      "title": "修复版观察",
+      "enabled": true,
+      "description": "后续通过固定虚拟资产展示最小暴露面、访问控制和服务指纹收敛后的学习信号。",
+      "entryKey": "fixed-entry",
+      "expectedOutcome": "观察 port-scan-surface-reduced 或 port-scan-normal-inventory-returned 信号。",
+      "supportsAutomation": false
+    }
+  ],
+  "entrypoints": {
+    "web": [],
+    "api": [],
+    "scripts": [],
+    "docs": [
+      {
+        "key": "overview",
+        "path": "labs/network/port-scan/README.md",
+        "description": "端口扫描暴露面模拟实验总说明"
+      },
+      {
+        "key": "attack-steps",
+        "path": "labs/network/port-scan/docs/attack-steps.md",
+        "description": "攻击方视角观察步骤与安全边界"
+      },
+      {
+        "key": "fix-notes",
+        "path": "labs/network/port-scan/docs/fix-notes.md",
+        "description": "最小暴露面治理与修复说明"
+      },
+      {
+        "key": "manual-verification",
+        "path": "labs/network/port-scan/docs/manual-verification.md",
+        "description": "planned 阶段文档、元数据和边界验证方式"
+      }
+    ]
+  },
+  "verification": {
+    "manual": {
+      "supported": true,
+      "stepsDocPath": "labs/network/port-scan/docs/manual-verification.md",
+      "expectedSignals": [
+        "port-scan-planned-docs-reviewed",
+        "port-scan-virtual-boundary-verified",
+        "port-scan-no-real-scan-confirmed"
+      ]
+    },
+    "automation": {
+      "supported": false,
+      "playwright": {
+        "enabled": false,
+        "specPath": ""
+      },
+      "apiTest": {
+        "enabled": false,
+        "specPath": ""
+      },
+      "scriptVerification": {
+        "enabled": false,
+        "scriptKeys": []
+      }
+    }
+  },
+  "prerequisites": [
+    "已阅读端口扫描暴露面实验执行文档",
+    "理解当前仅为 planned 文档与元数据阶段",
+    "理解本实验首版只使用固定虚拟资产表，不执行真实网络探测"
+  ],
+  "paths": {
+    "root": "labs/network/port-scan",
+    "readme": "labs/network/port-scan/README.md",
+    "vuln": "labs/network/port-scan/vuln",
+    "fixed": "labs/network/port-scan/fixed",
+    "mock": "labs/network/port-scan/mock",
+    "docs": "labs/network/port-scan/docs",
+    "scripts": "tools/lab-scripts/network/port-scan"
+  },
+  "sortOrder": 210,
+  "estimatedMinutes": 30,
+  "safeBoundaries": [
+    "当前仅为 planned 文档与元数据阶段，不提供页面、API 或脚本入口",
+    "首版只使用固定虚拟资产表和虚拟端口状态，不扫描局域网、网段、外部 IP、域名或用户输入主机",
+    "不调用真实 socket、系统命令、PowerShell、nmap、Test-NetConnection、ping、tracert 或类似探测工具",
+    "不做并发扫描、压力探测、服务漏洞识别、认证绕过或利用",
+    "事件日志规划只记录虚拟目标 key、虚拟端口数量、暴露面评分和学习信号，不保存真实 IP、主机名、banner、凭据、token 或 Cookie"
+  ],
+  "notes": "端口扫描暴露面实验当前只建立 planned 元数据和文档入口；不提供 exploit.py、扫描脚本、真实 socket 探测或通用扫描器能力。"
+}

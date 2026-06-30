@@ -1,0 +1,69 @@
+# 端口扫描暴露面
+
+## 1. 场景目标
+
+本实验用于学习端口暴露面观察，不是端口扫描工具。
+
+后续实现会通过固定虚拟资产表展示：
+
+- 攻击方如何从开放端口推断资产暴露面。
+- 管理端口、调试端口和多余服务暴露为什么危险。
+- 防御方如何通过最小暴露面、访问控制和资产清单审计降低风险。
+
+## 2. 当前状态
+
+当前状态为 `planned`。
+
+本阶段只包含：
+
+- 元数据入口。
+- 基础文档。
+- 漏洞版 / 修复版说明。
+- mock 虚拟资产说明。
+- 手动验证说明。
+
+当前不包含：
+
+- 前端页面。
+- 后端 API。
+- 数据库迁移。
+- 事件日志写入实现。
+- `exploit.py`。
+- 真实端口扫描脚本。
+
+## 3. 安全边界
+
+本实验首版只允许使用固定虚拟资产表和虚拟端口状态。
+
+禁止：
+
+- 扫描局域网、网段、外部 IP、域名或用户输入主机。
+- 调用真实 socket、系统命令、PowerShell、`nmap`、`Test-NetConnection`、`ping`、`tracert` 或类似探测工具。
+- 接收任意 IP、域名、端口范围、超时、并发或代理参数。
+- 做并发扫描、压力探测、服务漏洞识别、认证绕过或利用。
+- 保存真实 IP、真实主机名、真实服务 banner、凭据、token 或 Cookie。
+
+## 4. 后续入口规划
+
+后续计划入口：
+
+- 漏洞版：`/labs/network/port-scan/vuln`
+- 修复版：`/labs/network/port-scan/fixed`
+- API：`POST /api/labs/network/port-scan/:variant/scan`
+
+这些入口当前尚未实现，不能登记为可运行入口。
+
+## 5. 学习信号规划
+
+后续计划使用以下学习信号：
+
+- `port-scan-exposure-expanded`
+- `port-scan-management-surface-visible`
+- `port-scan-surface-reduced`
+- `port-scan-target-blocked`
+- `port-scan-normal-inventory-returned`
+
+## 6. 下一步
+
+下一步应在执行文档约束下补齐虚拟资产模型、后端受控 API、前端工作台和最小测试。
+

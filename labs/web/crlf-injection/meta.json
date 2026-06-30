@@ -1,0 +1,158 @@
+{
+  "id": "web.crlf-injection",
+  "slug": "crlf-injection",
+  "title": "CRLF 注入",
+  "category": "web",
+  "subcategory": "crlf-injection",
+  "mode": "interactive",
+  "severity": "high",
+  "difficulty": "intermediate",
+  "summary": "在下载响应头预览业务中观察 CR / LF 控制字符进入虚拟头部构造流程后的风险，以及服务端模板化构造和控制字符阻断的防御差异。",
+  "status": "ready",
+  "phase": "phase-1",
+  "tags": ["web", "crlf-injection", "injection", "response-header"],
+  "knowledgePoints": [
+    "响应头上下文边界",
+    "CR / LF 控制字符风险",
+    "模板化头部构造",
+    "服务端输入校验",
+    "脱敏事件日志"
+  ],
+  "variants": [
+    {
+      "key": "vuln",
+      "title": "漏洞版",
+      "enabled": true,
+      "description": "后端虚拟响应头预览器展示固定受控样例如何污染教学头部结构。",
+      "entryKey": "vuln-entry",
+      "expectedOutcome": "出现 crlf-injection-virtual-header-injected 信号。",
+      "supportsAutomation": true
+    },
+    {
+      "key": "fixed",
+      "title": "修复版",
+      "enabled": true,
+      "description": "后端展示服务端固定模板、下载方式允许列表和控制字符阻断如何防止同样风险进入虚拟头部构造器。",
+      "entryKey": "fixed-entry",
+      "expectedOutcome": "出现 crlf-injection-control-chars-blocked 信号。",
+      "supportsAutomation": true
+    }
+  ],
+  "entrypoints": {
+    "web": [
+      {
+        "key": "vuln-entry",
+        "path": "/labs/web/crlf-injection/vuln",
+        "description": "CRLF 注入漏洞版下载响应头预览入口",
+        "variant": "vuln"
+      },
+      {
+        "key": "fixed-entry",
+        "path": "/labs/web/crlf-injection/fixed",
+        "description": "CRLF 注入修复版下载响应头预览入口",
+        "variant": "fixed"
+      }
+    ],
+    "api": [
+      {
+        "key": "vuln-preview-api",
+        "path": "/api/labs/web/crlf-injection/vuln/preview",
+        "description": "漏洞版虚拟响应头预览接口",
+        "variant": "vuln",
+        "method": "POST"
+      },
+      {
+        "key": "fixed-preview-api",
+        "path": "/api/labs/web/crlf-injection/fixed/preview",
+        "description": "修复版虚拟响应头预览接口",
+        "variant": "fixed",
+        "method": "POST"
+      }
+    ],
+    "scripts": [
+      {
+        "key": "crlf-injection-exploit",
+        "language": "python",
+        "path": "tools/lab-scripts/web/crlf-injection/exploit.py",
+        "description": "本机受控 CRLF 注入样例请求脚本"
+      },
+      {
+        "key": "crlf-injection-verify",
+        "language": "ts",
+        "path": "tools/lab-scripts/web/crlf-injection/verify.ts",
+        "description": "CRLF 注入漏洞版与修复版差异验证入口"
+      }
+    ],
+    "docs": [
+      {
+        "key": "overview",
+        "path": "labs/web/crlf-injection/README.md",
+        "description": "实验规划总说明"
+      },
+      {
+        "key": "attack-steps",
+        "path": "labs/web/crlf-injection/docs/attack-steps.md",
+        "description": "计划攻击步骤与观察点"
+      },
+      {
+        "key": "fix-notes",
+        "path": "labs/web/crlf-injection/docs/fix-notes.md",
+        "description": "计划修复说明"
+      },
+      {
+        "key": "manual-verification",
+        "path": "labs/web/crlf-injection/docs/manual-verification.md",
+        "description": "后续手动验证计划"
+      }
+    ]
+  },
+  "verification": {
+    "manual": {
+      "supported": true,
+      "stepsDocPath": "labs/web/crlf-injection/docs/manual-verification.md",
+      "expectedSignals": [
+        "crlf-injection-safe-header-previewed",
+        "crlf-injection-virtual-header-injected",
+        "crlf-injection-control-chars-blocked"
+      ]
+    },
+    "automation": {
+      "supported": true,
+      "playwright": {
+        "enabled": false,
+        "specPath": ""
+      },
+      "apiTest": {
+        "enabled": true,
+        "specPath": "apps/server/tests/crlf-injection-lab.test.ts"
+      },
+      "scriptVerification": {
+        "enabled": true,
+        "scriptKeys": ["crlf-injection-verify"]
+      }
+    }
+  },
+  "prerequisites": [
+    "已登录平台演示账号",
+    "后端服务已启用统一实验事件日志",
+    "已落地后端虚拟响应头预览 service、前端页面和本机受控脚本"
+  ],
+  "paths": {
+    "root": "labs/web/crlf-injection",
+    "readme": "labs/web/crlf-injection/README.md",
+    "vuln": "labs/web/crlf-injection/vuln",
+    "fixed": "labs/web/crlf-injection/fixed",
+    "mock": "labs/web/crlf-injection/mock",
+    "docs": "labs/web/crlf-injection/docs",
+    "scripts": "tools/lab-scripts/web/crlf-injection"
+  },
+  "sortOrder": 35,
+  "estimatedMinutes": 35,
+  "safeBoundaries": [
+    "仅面向 localhost / 127.0.0.1 / ::1 的本机受控实验",
+    "当前后端实现只使用虚拟响应头预览器，不构造真实 HTTP 响应拆分",
+    "不设置真实危险响应头，不演示真实缓存投毒、Cookie 注入、代理链路或浏览器缓存影响",
+    "不访问外部目标，不读取真实本机文件，不生成通用 payload 库",
+    "日志只保存模板、下载方式、文件名长度、脱敏预览、控制字符类别、虚拟头部数量和学习信号"
+  ]
+}

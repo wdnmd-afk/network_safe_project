@@ -162,6 +162,75 @@ function validateVerification(verification, errors) {
   }
 }
 
+function isEnabledAutomationEntry(value) {
+  return isRecord(value) && value.enabled === true;
+}
+
+function countEnabledAutomationTypes(automation) {
+  if (!isRecord(automation)) {
+    return 0;
+  }
+
+  return [
+    isEnabledAutomationEntry(automation.playwright),
+    isEnabledAutomationEntry(automation.apiTest),
+    isEnabledAutomationEntry(automation.scriptVerification),
+  ].filter(Boolean).length;
+}
+
+function validateReadyCaseStudyMetadata(metadata, errors) {
+  if (metadata.status !== "ready" || metadata.mode !== "case-study") {
+    return;
+  }
+
+  if (!Array.isArray(metadata.safeBoundaries)) {
+    errors.push("ready case-study metadata must include safeBoundaries");
+  } else {
+    const hasReadyBoundary = metadata.safeBoundaries.some(
+      (boundary) =>
+        typeof boundary === "string" &&
+        boundary.includes("case-study") &&
+        boundary.includes("ready"),
+    );
+
+    if (!hasReadyBoundary) {
+      errors.push(
+        "ready case-study metadata must explain the case-study ready boundary",
+      );
+    }
+  }
+
+  if (!isNonEmptyString(metadata.notes)) {
+    errors.push("ready case-study metadata must include notes");
+  } else if (
+    !metadata.notes.includes("不提供") ||
+    !(
+      metadata.notes.includes("exploit.py") ||
+      metadata.notes.includes("攻击脚本") ||
+      metadata.notes.includes("查询脚本")
+    )
+  ) {
+    errors.push(
+      "ready case-study metadata notes must explain that attack scripts are not provided",
+    );
+  }
+
+  if (
+    Array.isArray(metadata.variants) &&
+    metadata.variants.some((variant) => variant?.supportsAutomation === true)
+  ) {
+    errors.push(
+      "ready case-study variants must not declare attack script automation",
+    );
+  }
+
+  if (countEnabledAutomationTypes(metadata.verification?.automation) < 2) {
+    errors.push(
+      "ready case-study metadata must include at least two automation evidence types",
+    );
+  }
+}
+
 export function validateLabMetadata(value) {
   const errors = [];
 
@@ -191,6 +260,7 @@ export function validateLabMetadata(value) {
   validateEntrypoints(value.entrypoints, errors);
   validateVerification(value.verification, errors);
   validatePaths(value.paths, errors);
+  validateReadyCaseStudyMetadata(value, errors);
 
   if (errors.length > 0) {
     return {

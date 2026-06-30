@@ -1,96 +1,154 @@
-﻿{
-    "id":  "web.ssrf",
-    "slug":  "ssrf",
-    "title":  "SSRF",
-    "category":  "web",
-    "subcategory":  "ssrf",
-    "mode":  "interactive",
-    "severity":  "high",
-    "difficulty":  "intermediate",
-    "summary":  "SSRF 实验占位。",
-    "status":  "planned",
-    "phase":  "phase-1",
-    "tags":  [
-                 "web",
-                 "ssrf"
-             ],
-    "knowledgePoints":  [
-
-                        ],
-    "variants":  [
-                     {
-                         "key":  "vuln",
-                         "title":  "漏洞版",
-                         "enabled":  true,
-                         "description":  "一期占位，后续补充漏洞实现。",
-                         "entryKey":  "vuln-entry",
-                         "expectedOutcome":  "后续补充。",
-                         "supportsAutomation":  false
-                     },
-                     {
-                         "key":  "fixed",
-                         "title":  "修复版",
-                         "enabled":  true,
-                         "description":  "一期占位，后续补充修复实现。",
-                         "entryKey":  "fixed-entry",
-                         "expectedOutcome":  "后续补充。",
-                         "supportsAutomation":  false
-                     }
-                 ],
-    "entrypoints":  {
-                        "web":  [
-
-                                ],
-                        "api":  [
-
-                                ],
-                        "scripts":  [
-
-                                    ],
-                        "docs":  [
-                                     {
-                                         "key":  "overview",
-                                         "path":  "labs/web/ssrf/README.md",
-                                         "description":  "实验总说明"
-                                     }
-                                 ]
-                    },
-    "verification":  {
-                         "manual":  {
-                                        "supported":  true,
-                                        "stepsDocPath":  "labs/web/ssrf/docs/.gitkeep",
-                                        "expectedSignals":  [
-                                                                "后续补充。"
-                                                            ]
-                                    },
-                         "automation":  {
-                                            "supported":  false,
-                                            "playwright":  {
-                                                               "enabled":  false,
-                                                               "specPath":  ""
-                                                           },
-                                            "apiTest":  {
-                                                            "enabled":  false,
-                                                            "specPath":  ""
-                                                        },
-                                            "scriptVerification":  {
-                                                                       "enabled":  false,
-                                                                       "scriptKeys":  [
-
-                                                                                      ]
-                                                                   }
-                                        }
-                     },
-    "prerequisites":  [
-
-                      ],
-    "paths":  {
-                  "root":  "labs/web/ssrf",
-                  "readme":  "labs/web/ssrf/README.md",
-                  "vuln":  "labs/web/ssrf/vuln",
-                  "fixed":  "labs/web/ssrf/fixed",
-                  "mock":  "labs/web/ssrf/mock",
-                  "docs":  "labs/web/ssrf/docs",
-                  "scripts":  "tools/lab-scripts/web/ssrf"
-              }
+{
+  "id": "web.ssrf",
+  "slug": "ssrf",
+  "title": "SSRF",
+  "category": "web",
+  "subcategory": "ssrf",
+  "mode": "interactive",
+  "severity": "high",
+  "difficulty": "intermediate",
+  "summary": "在受控虚拟 URL 抓取业务中对比未限制服务端请求目标与白名单阻断的攻防差异。",
+  "status": "ready",
+  "phase": "phase-1",
+  "tags": ["web", "ssrf", "server-side-request"],
+  "knowledgePoints": [
+    "服务端请求伪造",
+    "私有地址阻断",
+    "主机白名单",
+    "虚拟资源索引",
+    "实验事件日志"
+  ],
+  "variants": [
+    {
+      "key": "vuln",
+      "title": "漏洞版",
+      "enabled": true,
+      "description": "URL 预览接口未限制服务端请求目标，受控内部元数据样例会被模拟读取。",
+      "entryKey": "vuln-entry",
+      "expectedOutcome": "出现 ssrf-internal-metadata-exposed 信号。",
+      "supportsAutomation": true
+    },
+    {
+      "key": "fixed",
+      "title": "修复版",
+      "enabled": true,
+      "description": "URL 预览接口只允许公开白名单主机，并阻断私有地址、链路本地地址和内部域名。",
+      "entryKey": "fixed-entry",
+      "expectedOutcome": "出现 ssrf-private-target-blocked 信号。",
+      "supportsAutomation": true
+    }
+  ],
+  "entrypoints": {
+    "web": [
+      {
+        "key": "vuln-entry",
+        "path": "/labs/web/ssrf/vuln",
+        "description": "SSRF 漏洞版实验入口",
+        "variant": "vuln"
+      },
+      {
+        "key": "fixed-entry",
+        "path": "/labs/web/ssrf/fixed",
+        "description": "SSRF 修复版实验入口",
+        "variant": "fixed"
+      }
+    ],
+    "api": [
+      {
+        "key": "vuln-fetch-api",
+        "path": "/api/labs/web/ssrf/vuln/fetch",
+        "description": "漏洞版虚拟 URL 抓取接口",
+        "variant": "vuln",
+        "method": "POST"
+      },
+      {
+        "key": "fixed-fetch-api",
+        "path": "/api/labs/web/ssrf/fixed/fetch",
+        "description": "修复版虚拟 URL 抓取接口",
+        "variant": "fixed",
+        "method": "POST"
+      }
+    ],
+    "scripts": [
+      {
+        "key": "ssrf-exploit",
+        "language": "python",
+        "path": "tools/lab-scripts/web/ssrf/exploit.py",
+        "description": "本机受控 SSRF 攻击样例脚本"
+      },
+      {
+        "key": "ssrf-verify",
+        "language": "ts",
+        "path": "tools/lab-scripts/web/ssrf/verify.ts",
+        "description": "SSRF 漏洞版与修复版差异验证入口"
+      }
+    ],
+    "docs": [
+      {
+        "key": "overview",
+        "path": "labs/web/ssrf/README.md",
+        "description": "实验总说明"
+      },
+      {
+        "key": "attack-steps",
+        "path": "labs/web/ssrf/docs/attack-steps.md",
+        "description": "攻击步骤"
+      },
+      {
+        "key": "fix-notes",
+        "path": "labs/web/ssrf/docs/fix-notes.md",
+        "description": "修复说明"
+      },
+      {
+        "key": "manual-verification",
+        "path": "labs/web/ssrf/docs/manual-verification.md",
+        "description": "手动验证说明"
+      }
+    ]
+  },
+  "verification": {
+    "manual": {
+      "supported": true,
+      "stepsDocPath": "labs/web/ssrf/docs/manual-verification.md",
+      "expectedSignals": [
+        "ssrf-internal-metadata-exposed",
+        "ssrf-private-target-blocked"
+      ]
+    },
+    "automation": {
+      "supported": true,
+      "playwright": {
+        "enabled": false,
+        "specPath": ""
+      },
+      "apiTest": {
+        "enabled": true,
+        "specPath": "apps/server/tests/ssrf-lab.test.ts"
+      },
+      "scriptVerification": {
+        "enabled": true,
+        "scriptKeys": ["ssrf-verify"]
+      }
+    }
+  },
+  "prerequisites": [
+    "已登录平台演示账号",
+    "后端服务已启用统一实验事件日志"
+  ],
+  "paths": {
+    "root": "labs/web/ssrf",
+    "readme": "labs/web/ssrf/README.md",
+    "vuln": "labs/web/ssrf/vuln",
+    "fixed": "labs/web/ssrf/fixed",
+    "mock": "labs/web/ssrf/mock",
+    "docs": "labs/web/ssrf/docs",
+    "scripts": "tools/lab-scripts/web/ssrf"
+  },
+  "sortOrder": 60,
+  "estimatedMinutes": 35,
+  "safeBoundaries": [
+    "仅面向 localhost / 127.0.0.1 的本机受控实验",
+    "后端只查询内置虚拟资源表，不发起真实 HTTP 请求",
+    "日志只保存 URL 摘要、协议、主机、目标分类和检测信号，不保存真实凭据"
+  ]
 }
