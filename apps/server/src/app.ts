@@ -78,6 +78,11 @@ import {
   type PathTraversalVariantKey,
 } from "./services/path-traversal-lab.js";
 import {
+  createPortScanLabService,
+  type PortScanLabService,
+  type PortScanVariantKey,
+} from "./services/port-scan-lab.js";
+import {
   createPrivilegeEscalationLabService,
   type PrivilegeEscalationLabService,
   type PrivilegeEscalationVariantKey,
@@ -133,6 +138,7 @@ type CreateAppOptions = {
   nosqlInjectionLabService?: NosqlInjectionLabService;
   xpathInjectionLabService?: XpathInjectionLabService;
   pathTraversalLabService?: PathTraversalLabService;
+  portScanLabService?: PortScanLabService;
   privilegeEscalationLabService?: PrivilegeEscalationLabService;
   sessionFixationLabService?: SessionFixationLabService;
   sqlInjectionLabService?: SqlInjectionLabService;
@@ -208,6 +214,8 @@ export function createApp(options: CreateAppOptions = {}) {
     options.xpathInjectionLabService ?? createXpathInjectionLabService();
   const pathTraversalLabService =
     options.pathTraversalLabService ?? createPathTraversalLabService();
+  const portScanLabService =
+    options.portScanLabService ?? createPortScanLabService();
   const privilegeEscalationLabService =
     options.privilegeEscalationLabService ??
     createPrivilegeEscalationLabService();
@@ -491,6 +499,10 @@ export function createApp(options: CreateAppOptions = {}) {
   }
 
   function readPathTraversalVariantKey(value: unknown): PathTraversalVariantKey | "" {
+    return value === "vuln" || value === "fixed" ? value : "";
+  }
+
+  function readPortScanVariantKey(value: unknown): PortScanVariantKey | "" {
     return value === "vuln" || value === "fixed" ? value : "";
   }
 
@@ -938,6 +950,32 @@ export function createApp(options: CreateAppOptions = {}) {
       normalizedPath: input.inspection.normalizedPath,
       containsTraversalSequence: input.inspection.containsTraversalSequence,
       escapedAllowedRoot: input.inspection.escapedAllowedRoot,
+      signal: input.signal,
+    };
+  }
+
+  function summarizePortScanInput(input: {
+    targetKey: string;
+    scanProfile: string;
+    summary: {
+      virtualPortCount: number;
+      openPortCount: number;
+      restrictedPortCount: number;
+      highRiskPortCount: number;
+      exposureScore: number;
+      matchedControlledSample: boolean;
+    };
+    signal: string;
+  }) {
+    return {
+      targetKey: input.targetKey,
+      scanProfile: input.scanProfile,
+      virtualPortCount: input.summary.virtualPortCount,
+      openPortCount: input.summary.openPortCount,
+      restrictedPortCount: input.summary.restrictedPortCount,
+      highRiskPortCount: input.summary.highRiskPortCount,
+      exposureScore: input.summary.exposureScore,
+      matchedControlledSample: input.summary.matchedControlledSample,
       signal: input.signal,
     };
   }
@@ -2996,6 +3034,95 @@ export function createApp(options: CreateAppOptions = {}) {
       next(error);
     }
   });
+
+  app.post(
+    "/api/labs/network/port-scan/:variant/scan",
+    async (req, res, next) => {
+      try {
+        const currentUser = await readCurrentUser(req);
+
+        if (!currentUser.ok) {
+          res.status(currentUser.status).json(currentUser.body);
+          return;
+        }
+
+        const variantKey = readPortScanVariantKey(req.params.variant);
+        const targetKey = readRequiredString(req.body?.targetKey);
+        const scanProfile = readRequiredString(req.body?.scanProfile);
+
+        if (!variantKey) {
+          res.status(404).json({
+            status: "error",
+            message: "port scan variant not found",
+          });
+          return;
+        }
+
+        if (!targetKey || !scanProfile) {
+          res.status(400).json({
+            status: "error",
+            message: "targetKey and scanProfile are required",
+          });
+          return;
+        }
+
+        const result = await portScanLabService.observeExposure({
+          userId: currentUser.user.id,
+          variantKey,
+          targetKey,
+          scanProfile,
+        });
+        const responseStatus = result.status === "blocked" ? 403 : 200;
+        const highRiskExposure =
+          result.signal === "port-scan-exposure-expanded" ||
+          result.signal === "port-scan-management-surface-visible";
+
+        await recordLabEventSafely({
+          traceId: readOptionalTraceId(req),
+          userId: currentUser.user.id,
+          labKey: "network.port-scan",
+          variantKey,
+          phase:
+            result.status === "blocked"
+              ? "defense"
+              : highRiskExposure
+                ? "attack"
+                : variantKey === "fixed"
+                  ? "defense"
+                  : "normal",
+          eventType: result.status === "blocked" ? "blocked" : "success",
+          actorPerspective:
+            result.status === "blocked" || highRiskExposure
+              ? "attacker"
+              : "user",
+          method: req.method,
+          path: req.path,
+          inputSummary: summarizePortScanInput({
+            targetKey: result.targetKey,
+            scanProfile: result.scanProfile,
+            summary: result.summary,
+            signal: result.signal,
+          }),
+          decision: result.decision,
+          signal: result.signal,
+          statusCode: responseStatus,
+          message: result.message,
+          riskLevel: highRiskExposure
+            ? "high"
+            : result.status === "blocked"
+              ? "medium"
+              : "low",
+        });
+
+        res.status(responseStatus).json({
+          status: result.status,
+          result,
+        });
+      } catch (error) {
+        next(error);
+      }
+    },
+  );
 
   app.get("/api/labs", async (_req, res, next) => {
     try {
