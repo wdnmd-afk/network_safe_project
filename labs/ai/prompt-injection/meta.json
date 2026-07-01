@@ -1,0 +1,108 @@
+{
+  "id": "ai.prompt-injection",
+  "slug": "prompt-injection",
+  "title": "Prompt 注入",
+  "category": "ai",
+  "subcategory": "prompt-injection",
+  "mode": "interactive",
+  "severity": "high",
+  "difficulty": "intermediate",
+  "summary": "通过 planned 文档入口规划确定性提示词路由模拟器，学习外部内容、检索片段、用户意图和工具调用之间的指令边界风险。",
+  "status": "planned",
+  "phase": "phase-2",
+  "tags": ["ai", "prompt-injection", "llm-security", "deterministic-simulation"],
+  "knowledgePoints": [
+    "指令优先级边界",
+    "检索内容隔离",
+    "工具允许列表",
+    "输出策略校验",
+    "事件日志脱敏摘要"
+  ],
+  "variants": [
+    {
+      "key": "vuln",
+      "title": "漏洞版规划",
+      "enabled": true,
+      "description": "规划使用固定样例展示外部内容被错误提升为高优先级指令后的学习信号。",
+      "entryKey": "vuln-entry",
+      "expectedOutcome": "后续观察 prompt-injection-instruction-overridden 或 prompt-injection-retrieval-poisoning-visible 信号。",
+      "supportsAutomation": false
+    },
+    {
+      "key": "fixed",
+      "title": "修复版规划",
+      "enabled": true,
+      "description": "规划使用固定样例展示指令分层、检索隔离、工具允许列表和输出策略校验的防御信号。",
+      "entryKey": "fixed-entry",
+      "expectedOutcome": "后续观察 prompt-injection-tool-request-blocked 或 prompt-injection-policy-guardrail-applied 信号。",
+      "supportsAutomation": false
+    }
+  ],
+  "entrypoints": {
+    "web": [],
+    "api": [],
+    "scripts": [],
+    "docs": [
+      {
+        "key": "overview",
+        "path": "labs/ai/prompt-injection/README.md",
+        "description": "Prompt 注入 planned 实验总说明"
+      },
+      {
+        "key": "attack-steps",
+        "path": "labs/ai/prompt-injection/docs/attack-steps.md",
+        "description": "攻击方视角观察步骤与安全边界"
+      },
+      {
+        "key": "fix-notes",
+        "path": "labs/ai/prompt-injection/docs/fix-notes.md",
+        "description": "指令分层、检索隔离、工具允许列表和输出策略校验说明"
+      },
+      {
+        "key": "manual-verification",
+        "path": "labs/ai/prompt-injection/docs/manual-verification.md",
+        "description": "planned 文档入口、元数据和边界验证方式"
+      }
+    ]
+  },
+  "verification": {
+    "manual": {
+      "supported": true,
+      "stepsDocPath": "labs/ai/prompt-injection/docs/manual-verification.md",
+      "expectedSignals": [
+        "prompt-injection-planned-boundary-verified",
+        "prompt-injection-fixed-samples-reviewed",
+        "prompt-injection-no-external-ai-confirmed"
+      ]
+    },
+    "automation": {
+      "supported": false
+    }
+  },
+  "prerequisites": [
+    "已阅读 Prompt 注入实验执行文档和目录与 planned 元数据执行文档",
+    "理解当前 planned 状态只表示文档和元数据入口存在，尚未提供前端页面、后端 API 或事件日志写入",
+    "理解本实验首版规划只允许固定样例和确定性路由模拟，不调用外部 AI 或真实工具"
+  ],
+  "paths": {
+    "root": "labs/ai/prompt-injection",
+    "readme": "labs/ai/prompt-injection/README.md",
+    "vuln": "labs/ai/prompt-injection/vuln",
+    "fixed": "labs/ai/prompt-injection/fixed",
+    "mock": "labs/ai/prompt-injection/mock",
+    "docs": "labs/ai/prompt-injection/docs",
+    "scripts": "tools/lab-scripts/ai/prompt-injection"
+  },
+  "sortOrder": 300,
+  "estimatedMinutes": 25,
+  "safeBoundaries": [
+    "planned 状态仅表示本项目内 Prompt 注入学习场景的文档和元数据入口已建立，不表示提供可运行靶场或攻击能力",
+    "当前只登记 docs 入口，不登记 web、api 或 scripts 入口",
+    "当前不调用外部 AI、云模型、本地大模型、第三方推理接口或真实工具调用",
+    "当前不接收任意提示词正文、真实系统提示词、模型配置、工具参数、URL、密钥或外部目标",
+    "当前不生成钓鱼文本、恶意代码、绕过策略、仿冒身份内容、可投递攻击素材、完整危险提示词或危险样例库",
+    "当前不保存完整用户提示词、完整系统提示词、完整检索片段、真实模型输出、Cookie、token 或凭据",
+    "当前不提供 exploit.py、Prompt 注入攻击脚本、任意提示词执行器或可复用绕过模板"
+  ],
+  "notes": "Prompt 注入 planned 入口已建立：当前仅包含元数据和文档说明，后续应先接入确定性提示词路由模拟器；当前仍不提供 exploit.py、外部 AI 调用、完整危险提示词或任意提示词执行器。"
+}

@@ -1,3 +1,26 @@
+# 2026-07-01 最新进展：Prompt 注入目录与 planned 元数据
+
+本轮已按执行文档建立 `ai/prompt-injection` 的 planned 文档入口：
+
+- 新增执行文档：`docs/execution/2026-07-01-ai-prompt-injection-directory-metadata.md`。
+- 建立 `labs/ai/prompt-injection/` 标准目录。
+- 新增 `labs/ai/prompt-injection/meta.json`，状态为 `planned`，模式为 `interactive`，只登记 docs 入口。
+- 新增 Prompt 注入 README、漏洞版说明、修复版说明、mock 说明、攻击步骤、修复说明和手动验证文档。
+- 新增 `tools/lab-scripts/ai/prompt-injection/README.md`，当前只说明脚本边界，不提供 `exploit.py` 或 `verify.ts`。
+- 当前不登记 web、api 或 scripts 入口，不创建前端页面、后端 API、事件日志写入、模型调用、工具调用或 Prompt 注入攻击脚本。
+- 更新共享元数据测试，确认 Prompt 注入 planned/docs-only 元数据合法。
+- 更新服务端 health / registry 测试，本地元数据总数从 21 增加到 22，并确认 `ai.prompt-injection` 为 planned 条目。
+- 更新 `docs/design/next-wave-security-labs.md` 和 `docs/TODO.md`，将 Prompt 注入推进到 planned 文档入口。
+
+验证情况：
+
+- `pnpm --filter @network-safe/shared test` 通过，30 项测试通过。
+- `pnpm --filter @network-safe/server test -- tests/health.test.ts tests/lab-registry.test.ts` 通过；该命令实际运行服务端全量测试，169 项通过。
+- `git diff --check -- <本轮目标文件>` 未发现空白错误，仅有既有 LF/CRLF 提示。
+- `rg -n "[ \t]+$" -- <本轮目标文件>` 未发现目标文件行尾空白。
+- Prompt 注入安全关键词扫描仅命中文档中的禁止性说明、历史进度、localhost 测试 URL 或路径 / 信号名，未发现外部 AI 调用、危险提示词正文、可复用绕过模板、真实工具执行或攻击脚本实现。
+- 下一项建议：进入 `ai/prompt-injection` 后端确定性路由 API 切片，仍只接受固定 `scenarioKey`、固定 `instructionSourceKey` 和固定 `defensePolicyKey`。
+
 # 2026-07-01 最新进展：Prompt 注入实验执行文档
 
 本轮已为下一项 AI / 新型攻击实验 `ai/prompt-injection` 补齐单独实现执行文档：

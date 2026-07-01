@@ -551,6 +551,50 @@ test("dns hijack metadata is ready controlled DNS simulation", async () => {
   assert.match(result.value.notes, /不提供 exploit\.py/);
 });
 
+test("prompt injection metadata is planned docs-only interactive lab", async () => {
+  const metadata = await readFixture("labs/ai/prompt-injection/meta.json");
+  const result = validateLabMetadata(metadata);
+
+  assert.equal(result.ok, true);
+  assert.equal(result.value.id, "ai.prompt-injection");
+  assert.equal(result.value.status, "planned");
+  assert.equal(result.value.mode, "interactive");
+  assert.deepEqual(result.value.entrypoints.web, []);
+  assert.deepEqual(result.value.entrypoints.api, []);
+  assert.deepEqual(result.value.entrypoints.scripts, []);
+  assert.deepEqual(
+    result.value.entrypoints.docs.map((entrypoint) => entrypoint.path),
+    [
+      "labs/ai/prompt-injection/README.md",
+      "labs/ai/prompt-injection/docs/attack-steps.md",
+      "labs/ai/prompt-injection/docs/fix-notes.md",
+      "labs/ai/prompt-injection/docs/manual-verification.md",
+    ],
+  );
+  assert.equal(result.value.verification.manual.supported, true);
+  assert.equal(
+    result.value.verification.manual.stepsDocPath,
+    "labs/ai/prompt-injection/docs/manual-verification.md",
+  );
+  assert.equal(result.value.verification.automation.supported, false);
+  assert.deepEqual(
+    result.value.variants.map((variant) => variant.supportsAutomation),
+    [false, false],
+  );
+  assert.ok(
+    result.value.safeBoundaries.some((boundary) =>
+      boundary.includes("不调用外部 AI"),
+    ),
+  );
+  assert.ok(
+    result.value.safeBoundaries.some((boundary) =>
+      boundary.includes("当前只登记 docs 入口"),
+    ),
+  );
+  assert.match(result.value.notes, /planned 入口已建立/);
+  assert.match(result.value.notes, /不提供 exploit\.py/);
+});
+
 test("command injection metadata declares web, api and script verification entries", async () => {
   const metadata = await readFixture("labs/web/command-injection/meta.json");
   const result = validateLabMetadata(metadata);

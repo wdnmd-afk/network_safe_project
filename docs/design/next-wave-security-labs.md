@@ -136,7 +136,7 @@
 
 | 实验 | 状态 | 推荐模式 | 当前规划落点 | 后续目录 |
 |---|---|---|---|---|
-| Prompt 注入 | 已有执行文档 | 确定性提示词路由模拟器 / 可交互演示 | `docs/execution/2026-07-01-ai-prompt-injection-lab.md` | `labs/ai/prompt-injection/` |
+| Prompt 注入 | planned 文档入口 | 确定性提示词路由模拟器 / 可交互演示 | `labs/ai/prompt-injection/meta.json`、`docs/execution/2026-07-01-ai-prompt-injection-directory-metadata.md` | `labs/ai/prompt-injection/` |
 | AI 驱动攻击 | 延后 | 案例化演示 | `docs/design/project-scope-and-security-content.md` | `labs/ai/ai-driven-attacks/` |
 | Deepfake | 不做真实生成 | 案例化演示 | `docs/design/project-scope-and-security-content.md` | `labs/ai/deepfake/` |
 | 对抗性 AI | 延后 | 案例化演示 | `docs/design/project-scope-and-security-content.md` | `labs/ai/adversarial-ai/` |
@@ -148,7 +148,9 @@
 - 修复版：指令分层、工具允许列表、检索隔离和输出策略校验。
 - 日志：只记录输入长度、风险类别、命中样例和学习信号。
 - 当前已补齐执行文档：`docs/execution/2026-07-01-ai-prompt-injection-lab.md`。
-- 下一步切片建议：创建 `labs/ai/prompt-injection/` 标准目录和 `planned` 元数据，只登记 docs 入口。
+- 当前已建立 planned 文档入口：`labs/ai/prompt-injection/meta.json`。
+- 当前只登记 docs 入口，不登记 web、api 或 scripts 入口。
+- 下一步切片建议：接入后端确定性提示词路由 API，仍只接受固定 `scenarioKey`、固定 `instructionSourceKey` 和固定 `defensePolicyKey`。
 
 禁止：
 
@@ -237,7 +239,7 @@
 
 推荐后续按以下切片推进：
 
-1. `ai/prompt-injection` 目录与 planned 元数据。
+1. `ai/prompt-injection` 后端确定性路由 API。
 2. `social/phishing` 案例化执行文档。
 3. `supply-chain/dependency-confusion` 模拟实验执行文档。
 4. `infrastructure/misconfiguration` 模拟实验执行文档。
