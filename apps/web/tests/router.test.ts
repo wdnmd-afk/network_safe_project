@@ -55,6 +55,8 @@ describe("SafeMart 路由清单", () => {
       "/labs/auth/session-fixation/fixed",
       "/labs/network/port-scan/vuln",
       "/labs/network/port-scan/fixed",
+      "/labs/network/dns-hijack/vuln",
+      "/labs/network/dns-hijack/fixed",
     ]);
   });
 });

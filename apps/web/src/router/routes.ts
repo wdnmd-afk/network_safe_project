@@ -362,4 +362,20 @@ export const routes: RouteRecordRaw[] = [
       variant: "fixed",
     },
   },
+  {
+    path: "/labs/network/dns-hijack/vuln",
+    name: "lab-network-dns-hijack-vuln",
+    component: () => import("../views/DnsHijackLabView.vue"),
+    props: {
+      variant: "vuln",
+    },
+  },
+  {
+    path: "/labs/network/dns-hijack/fixed",
+    name: "lab-network-dns-hijack-fixed",
+    component: () => import("../views/DnsHijackLabView.vue"),
+    props: {
+      variant: "fixed",
+    },
+  },
 ];
