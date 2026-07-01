@@ -1,3 +1,20 @@
+# 2026-07-01 最新进展：DNS 劫持实验执行文档
+
+- [x] 新增执行文档 `docs/execution/2026-07-01-network-dns-hijack-lab.md`。
+- [x] 将 `network/dns-hijack` 首版定位为“内存 DNS 解析差异模拟器”，用于学习错误解析、证书不匹配、可信解析源和异常解析审计。
+- [x] 明确后续实现只允许固定 `domainKey` 和固定 `resolverProfile`，不接收任意域名、DNS 服务器、IP、代理、网络接口或端口参数。
+- [x] 明确首版不修改本机 DNS、hosts、代理、路由、防火墙或系统网络配置，不请求真实外部 DNS、DoH、DoT 或公共解析服务。
+- [x] 明确事件日志只记录域名样例 key、解析结果类别、证书状态、异常审计结论和学习信号，不保存真实域名访问记录、真实 IP、真实证书、Cookie、token 或凭据。
+- [x] 更新下一波实验规划，将 `network/dns-hijack` 从规划中推进到已有执行文档，并把下一步切片调整为目录与 planned 元数据。
+- [x] 同步旧网络 / 传输层清单中的端口扫描与 DNS 劫持状态，避免继续显示为规划中。
+
+验证记录：
+
+- `git diff --check -- docs/execution/2026-07-01-network-dns-hijack-lab.md docs/design/next-wave-security-labs.md docs/TODO.md docs/execution/security-lab-master-goal.md` 通过；仅出现 Windows 下 LF 将转换为 CRLF 的提示。
+- `rg -n "[ \t]+$" -- docs/execution/2026-07-01-network-dns-hijack-lab.md docs/design/next-wave-security-labs.md docs/TODO.md docs/execution/security-lab-master-goal.md` 无命中。
+- 安全关键词扫描仅命中文档中的禁止性说明、边界约束和历史进度记录，未发现真实 DNS 配置改动、外部解析请求、真实投毒链路、隧道通信或可复用攻击脚本实现。
+- 下一项建议：进入 `network/dns-hijack` 目录与 planned 元数据切片，先只登记 docs 入口，不创建后端 API、前端页面或 DNS 脚本。
+
 # 2026-07-01 最新进展：端口扫描 ready 收口
 
 - [x] 新增执行文档 `docs/execution/2026-07-01-network-port-scan-ready-closeout.md`。
@@ -19,7 +36,7 @@
 - `git diff --check -- <本轮目标文件>` 通过；仅出现 Windows 下 LF 将转换为 CRLF 的提示。
 - `rg -n "[ \t]+$" -- <本轮目标文件>` 无命中。
 - 安全关键词扫描仅命中禁止性说明和只读脚本的负向检查列表，未发现真实网络探测、系统命令或通用扫描器实现。
-- 下一项建议：进入 `network/dns-hijack` 实现执行文档，继续保持内存解析表和不修改本机 DNS / hosts / 代理 / 路由的边界。
+- 下一项建议：进入 `network/dns-hijack` 目录与 planned 元数据切片，继续保持内存解析表和不修改本机 DNS / hosts / 代理 / 路由的边界。
 
 # 2026-07-01 最新进展：端口扫描只读一致性验证
 
@@ -1093,11 +1110,11 @@
 |---|---|---|---|---|
 | DDoS | 规划中 | 案例化演示 / 本机模拟 | `docs/design/project-scope-and-security-content.md` | `labs/network/ddos/` |
 | 中间人攻击 | 规划中 | 本机模拟 / 脚本实验 | `docs/design/project-scope-and-security-content.md` | `labs/network/mitm/` |
-| DNS 劫持 / 污染 | 规划中 | 本机模拟 / 案例化演示 | `docs/design/project-scope-and-security-content.md` | `labs/network/dns-hijack/` |
+| DNS 劫持 / 污染 | 已有执行文档 | 内存解析表 / 本机模拟 / 案例化演示 | `docs/execution/2026-07-01-network-dns-hijack-lab.md` | `labs/network/dns-hijack/` |
 | ARP 欺骗 | 规划中 | 本机模拟 / 脚本实验 | `docs/design/project-scope-and-security-content.md` | `labs/network/arp-spoofing/` |
 | 窃听攻击 | 规划中 | 本机模拟 / 案例化演示 | `docs/design/project-scope-and-security-content.md` | `labs/network/eavesdropping/` |
 | DNS 隧道 | 规划中 | 脚本实验 / 本机模拟 | `docs/design/project-scope-and-security-content.md` | `labs/network/dns-tunnel/` |
-| 端口扫描 | 规划中 | 脚本实验 | `docs/design/project-scope-and-security-content.md` | `labs/network/port-scan/` |
+| 端口扫描 | ready | 固定虚拟资产 / 受控 API / 只读脚本验证 | `labs/network/port-scan/`、`tools/lab-scripts/network/port-scan/verify.ts` | `labs/network/port-scan/` |
 | BGP 劫持 | 规划中 | 案例化演示 | `docs/design/project-scope-and-security-content.md` | `labs/network/bgp-hijack/` |
 
 ## 8. 社会工程学

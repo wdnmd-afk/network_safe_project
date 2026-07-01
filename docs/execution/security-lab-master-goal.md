@@ -1,3 +1,22 @@
+# 2026-07-01 最新进展：DNS 劫持实验执行文档
+
+本轮已为下一项网络实验 `network/dns-hijack` 补齐单独实现执行文档：
+
+- 新增执行文档：`docs/execution/2026-07-01-network-dns-hijack-lab.md`。
+- 将首版定位为“内存 DNS 解析差异模拟器”，用于学习攻击方如何利用错误解析结果引导用户访问错误虚拟地址，以及防御方如何通过可信解析源、证书校验和异常解析审计降低风险。
+- 明确后续实现只允许固定 `domainKey` 和固定 `resolverProfile`，不接收任意域名、DNS 服务器、IP、代理、网络接口或端口参数。
+- 明确首版不修改本机 DNS、hosts、代理、路由、防火墙或系统网络配置，不请求真实外部 DNS、DoH、DoT 或公共解析服务。
+- 明确事件日志只记录域名样例 key、解析结果类别、证书状态、异常审计结论和学习信号，不保存真实域名访问记录、真实 IP、真实证书、Cookie、token 或凭据。
+- 更新 `docs/design/next-wave-security-labs.md`，将 `network/dns-hijack` 从规划中推进到已有执行文档，并把下一步切片调整为目录与 planned 元数据。
+- 同步 `docs/TODO.md` 顶部进度和旧网络 / 传输层清单中的 DNS 劫持状态。
+
+验证情况：
+
+- `git diff --check -- docs/execution/2026-07-01-network-dns-hijack-lab.md docs/design/next-wave-security-labs.md docs/TODO.md docs/execution/security-lab-master-goal.md` 通过；仅出现 Windows 下 LF 将转换为 CRLF 的提示。
+- `rg -n "[ \t]+$" -- docs/execution/2026-07-01-network-dns-hijack-lab.md docs/design/next-wave-security-labs.md docs/TODO.md docs/execution/security-lab-master-goal.md` 无命中。
+- 安全关键词扫描仅命中文档中的禁止性说明、边界约束和历史进度记录，未发现真实 DNS 配置改动、外部解析请求、真实投毒链路、隧道通信或可复用攻击脚本实现。
+- 下一项建议：进入 `network/dns-hijack` 目录与 planned 元数据切片，先只登记 docs 入口，不创建后端 API、前端页面或 DNS 脚本。
+
 # 2026-07-01 最新进展：端口扫描 ready 收口
 
 本轮已按主计划完成标准对 `network/port-scan` 做 ready 收口审计：
@@ -22,7 +41,7 @@
 - `git diff --check -- <本轮目标文件>` 通过；仅出现 Windows 下 LF 将转换为 CRLF 的提示。
 - `rg -n "[ \t]+$" -- <本轮目标文件>` 无命中。
 - 安全关键词扫描仅命中禁止性说明和只读脚本的负向检查列表，未发现真实网络探测、系统命令或通用扫描器实现。
-- 下一项建议：进入 `network/dns-hijack` 实现执行文档，继续使用内存解析表，不修改本机 DNS、hosts、代理、路由或防火墙。
+- 下一项建议：进入 `network/dns-hijack` 目录与 planned 元数据切片，继续使用内存解析表，不修改本机 DNS、hosts、代理、路由或防火墙。
 
 # 2026-07-01 最新进展：端口扫描只读一致性验证
 
