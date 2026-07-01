@@ -4,7 +4,7 @@
 
 本实验用于学习端口暴露面观察，不是端口扫描工具。
 
-当前后端受控 API 会通过固定虚拟资产表展示：
+当前前端工作台和后端受控 API 会通过固定虚拟资产表展示：
 
 - 攻击方如何从开放端口推断资产暴露面。
 - 管理端口、调试端口和多余服务暴露为什么危险。
@@ -21,12 +21,14 @@
 - 漏洞版 / 修复版说明。
 - mock 虚拟资产说明。
 - 手动验证说明。
+- 前端固定目标观察工作台。
 - 后端受控虚拟资产观察 API。
+- 前端 API client 与实验模型测试。
 - 服务端 API 测试。
+- Playwright 页面级差异验证。
 
 当前不包含：
 
-- 前端页面。
 - 数据库迁移。
 - `exploit.py`。
 - 真实端口扫描脚本。
@@ -47,6 +49,8 @@
 
 当前已实现入口：
 
+- 漏洞版页面：`/labs/network/port-scan/vuln`
+- 修复版页面：`/labs/network/port-scan/fixed`
 - 漏洞版 API：`POST /api/labs/network/port-scan/vuln/scan`
 - 修复版 API：`POST /api/labs/network/port-scan/fixed/scan`
 
@@ -59,11 +63,11 @@
 }
 ```
 
-前端页面入口 `/labs/network/port-scan/vuln` 和 `/labs/network/port-scan/fixed` 尚未实现，不能登记为可运行页面入口。
+页面只提供固定虚拟目标和固定观察模式选择器，不提供任意目标输入框。
 
 ## 5. 学习信号规划
 
-当前 API 使用以下学习信号：
+当前页面和 API 使用以下学习信号：
 
 - `port-scan-exposure-expanded`
 - `port-scan-management-surface-visible`
@@ -73,4 +77,4 @@
 
 ## 6. 下一步
 
-下一步应在执行文档约束下补齐前端工作台和最小前端测试，仍不创建真实扫描脚本。
+下一步可在执行文档约束下补齐只读一致性验证脚本或 ready 收口审计，仍不创建真实扫描脚本。

@@ -1,3 +1,49 @@
+# 2026-07-01 最新进展：端口扫描 Playwright 页面级验证
+
+- [x] 新增执行文档 `docs/execution/2026-07-01-network-port-scan-playwright-verification.md`。
+- [x] 在 `packages/testing/tests/e2e/platform.spec.mjs` 新增端口扫描漏洞版 / 修复版页面差异验证。
+- [x] Playwright 用例登录 `demo_user` 后只操作固定虚拟目标“后台管理节点”和固定观察模式，不输入任意 IP、域名、网段或端口范围。
+- [x] 漏洞版断言 `port-scan-management-surface-visible` 对应页面文案、`accepted` 决策、暴露面评分 `155`、高风险端口 `3` 和 `public / critical` 数据库端口。
+- [x] 修复版断言 `port-scan-surface-reduced` 对应页面文案、`accepted` 决策、公开端口 `0`、高风险端口 `0`，以及数据库服务收敛为 `internal-only / medium`。
+- [x] 将 `labs/network/port-scan/meta.json` 的 Playwright 自动化证据更新为 `packages/testing/tests/e2e/platform.spec.mjs`。
+- [x] 更新端口扫描 README、手动验证、下一波实验规划和共享元数据测试。
+
+验证记录：
+
+- `pnpm --filter @network-safe/testing e2e -- --grep "端口扫描"` 通过，1 项 Playwright 用例通过。
+- `pnpm --filter @network-safe/testing test` 通过，9 项测试通过。
+- `pnpm --filter @network-safe/shared test` 通过，28 项测试通过。
+- `pnpm --filter @network-safe/web exec vitest run tests/port-scan-api.test.ts tests/port-scan-lab.test.ts tests/router.test.ts` 通过，3 个测试文件、9 项测试通过。
+- `pnpm --filter @network-safe/server test -- tests/health.test.ts tests/lab-registry.test.ts` 通过；该命令实际运行服务端全量测试，161 项通过。
+- `git diff --check -- <本轮已跟踪目标文件>` 通过；仅出现 Windows 下 LF 将转换为 CRLF 的提示。
+- `rg -n "[ \t]+$" -- <本轮目标文件>` 无命中，已覆盖新增未跟踪文件。
+- 端口扫描前端和 Playwright 实现未新增真实网络探测、系统命令、`nmap`、`Test-NetConnection`、`ping`、`tracert`、`netcat` 或独立 `nc` 调用；安全关键词命中均为禁止性说明、边界文案或测试中的反向断言。
+- 本轮未新增 `exploit.py`、`verify.ts`、真实端口扫描脚本、真实网络探测或通用扫描器能力。
+- 下一项建议：补齐 `network/port-scan` 只读一致性验证脚本，或按完成标准做 ready 收口审计。
+
+# 2026-07-01 最新进展：端口扫描前端工作台
+
+- [x] 新增执行文档 `docs/execution/2026-07-01-network-port-scan-frontend-workbench.md`。
+- [x] 新增 `apps/web/src/api/port-scan-lab.ts`，前端只提交 `targetKey` 和 `scanProfile`。
+- [x] 新增 `apps/web/src/labs/port-scan.ts`，定义固定虚拟目标、固定观察模式、学习信号文案、学习进度和验证记录载荷。
+- [x] 新增 `apps/web/src/views/PortScanLabView.vue`，提供漏洞版 / 修复版固定目标观察工作台。
+- [x] 新增 `/labs/network/port-scan/vuln` 与 `/labs/network/port-scan/fixed` 路由。
+- [x] 页面只提供固定虚拟目标和固定观察模式选择器，不提供任意 IP、域名、网段、端口范围、超时、并发或代理输入框。
+- [x] 将 `labs/network/port-scan/meta.json` 登记为已有 web 入口，状态仍保持 `in-progress`，脚本入口仍为空。
+- [x] 更新端口扫描 README、攻击步骤、修复说明、手动验证、下一波实验规划和共享元数据测试。
+
+验证记录：
+
+- `pnpm --filter @network-safe/web exec vitest run tests/port-scan-api.test.ts tests/port-scan-lab.test.ts tests/router.test.ts` 通过，3 个测试文件、9 项测试通过。
+- `pnpm --filter @network-safe/web exec vue-tsc -p tsconfig.json --noEmit` 通过。
+- `pnpm --filter @network-safe/shared test` 通过，28 项测试通过。
+- `pnpm --filter @network-safe/server test -- tests/health.test.ts tests/lab-registry.test.ts` 通过；该命令实际运行服务端全量测试，161 项通过。
+- `git diff --check -- <本轮已跟踪目标文件>` 通过；仅出现 Windows 下 LF 将转换为 CRLF 的提示。
+- `rg -n "[ \t]+$" -- <本轮目标文件>` 无命中，已覆盖新增未跟踪文件。
+- 端口扫描前端实现代码未命中真实网络探测、系统命令、`nmap`、`Test-NetConnection`、`ping`、`tracert`、`netcat` 或独立 `nc`；宽泛安全关键词扫描命中的内容均为禁止性说明、文档边界或测试中的反向断言。
+- 本轮未新增数据库迁移、`exploit.py`、`verify.ts`、真实端口扫描脚本或通用扫描器能力。
+- 下一项建议：为 `network/port-scan` 补齐页面级 Playwright 差异验证或只读一致性验证脚本，仍不创建真实扫描脚本。
+
 # 2026-06-30 最新进展：端口扫描虚拟资产观察 API
 
 - [x] 新增执行文档 `docs/execution/2026-06-30-network-port-scan-virtual-api.md`。
