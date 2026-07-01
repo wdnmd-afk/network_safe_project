@@ -25,6 +25,7 @@
 - 后端受控内存解析 API。
 - 前端固定样例观察工作台。
 - Playwright 页面差异验证。
+- 本机只读一致性验证脚本。
 - 统一事件日志写入。
 - 服务端 API 差异测试。
 - 前端 API client、实验模型和路由测试。
@@ -33,7 +34,6 @@
 
 - 数据库迁移。
 - `exploit.py`。
-- `verify.ts`。
 - 真实 DNS 查询脚本。
 
 ## 3. 安全边界
@@ -43,10 +43,10 @@
 禁止：
 
 - 修改本机 DNS、hosts、代理、路由、防火墙或系统网络配置。
-- 请求真实外部 DNS、DoH、DoT 或公共解析服务。
+- 不请求真实外部 DNS、DoH、DoT 或公共解析服务。
 - 实现真实 DNS 投毒、DNS 劫持、DNS 隧道、流量转发或中间人代理。
 - 接收任意域名、DNS 服务器、IP、代理、网络接口或端口参数。
-- 保存真实域名访问记录、真实 IP、真实证书、Cookie、token 或凭据。
+- 不保存真实域名访问记录、真实 IP、真实证书、Cookie、token 或凭据。
 
 ## 4. 当前入口
 
@@ -61,8 +61,9 @@
 - 漏洞版 API：`POST /api/labs/network/dns-hijack/vuln/resolve`
 - 修复版 API：`POST /api/labs/network/dns-hijack/fixed/resolve`
 - 页面级验证：`packages/testing/tests/e2e/platform.spec.mjs`
+- 只读一致性验证：`tools/lab-scripts/network/dns-hijack/verify.ts`
 
-当前没有脚本入口。
+当前没有 `exploit.py` 或真实 DNS 查询脚本入口。
 
 ## 5. 后续学习信号规划
 
@@ -77,4 +78,4 @@
 
 ## 6. 下一步
 
-下一步建议进入只读一致性验证切片，仍只允许固定 `domainKey` 和固定 `resolverProfile`，不请求真实 DNS，不创建真实 DNS 查询脚本。
+下一步建议进入 ready 收口审计切片，仍只允许固定 `domainKey` 和固定 `resolverProfile`，不请求真实 DNS，不创建真实 DNS 查询脚本。
