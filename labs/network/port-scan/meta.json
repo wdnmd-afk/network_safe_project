@@ -7,8 +7,8 @@
   "mode": "simulation",
   "severity": "medium",
   "difficulty": "beginner",
-    "summary": "通过固定虚拟资产表、受控 API、前端工作台和只读一致性验证学习开放端口暴露面侦察风险与最小暴露面治理思路。",
-  "status": "in-progress",
+  "summary": "通过固定虚拟资产表、受控 API、前端工作台和只读一致性验证学习开放端口暴露面侦察风险与最小暴露面治理思路。",
+  "status": "ready",
   "phase": "phase-2",
   "tags": ["network", "port-scan", "exposure-surface", "simulation"],
   "knowledgePoints": [
@@ -129,8 +129,8 @@
     }
   },
   "prerequisites": [
-    "已阅读端口扫描暴露面实验执行文档、虚拟资产观察 API 执行文档、前端工作台执行文档和只读一致性验证执行文档",
-    "理解当前已接入前端页面、后端受控 API 和只读一致性验证脚本，尚未接入攻击脚本或真实扫描脚本",
+    "已阅读端口扫描暴露面实验执行文档、虚拟资产观察 API 执行文档、前端工作台执行文档、只读一致性验证执行文档和 ready 收口审计文档",
+    "理解 ready 状态仅表示本项目受控虚拟实验闭环完成，当前仍不提供攻击脚本或真实扫描脚本",
     "理解本实验首版只使用固定虚拟资产表，不执行真实网络探测"
   ],
   "paths": {
@@ -145,11 +145,12 @@
   "sortOrder": 210,
   "estimatedMinutes": 30,
   "safeBoundaries": [
+    "ready 状态仅表示本项目内虚拟端口暴露面学习闭环完成，不表示提供真实扫描能力",
     "当前仅提供前端工作台、后端受控 API、文档入口和只读一致性验证脚本，不提供攻击脚本或真实扫描脚本",
     "页面和 API 只使用固定虚拟资产表和虚拟端口状态，不扫描局域网、网段、外部 IP、域名或用户输入主机",
     "不调用真实 socket、系统命令、PowerShell、nmap、Test-NetConnection、ping、tracert 或类似探测工具",
     "不做并发扫描、压力探测、服务漏洞识别、认证绕过或利用",
     "事件日志只记录虚拟目标 key、虚拟端口数量、暴露面评分和学习信号，不保存真实 IP、主机名、banner、凭据、token 或 Cookie"
   ],
-  "notes": "端口扫描暴露面实验当前已接入前端工作台、后端受控 API 和只读一致性验证脚本，仍不提供 exploit.py、真实端口扫描脚本、真实 socket 探测或通用扫描器能力。"
+  "notes": "端口扫描暴露面实验按 ready 收口：已接入前端工作台、后端受控 API、统一事件日志、Playwright 页面验证和只读一致性验证脚本；仍不提供 exploit.py、真实端口扫描脚本、真实 socket 探测或通用扫描器能力。"
 }

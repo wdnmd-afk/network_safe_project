@@ -229,8 +229,8 @@ export function runPortScanConsistencyVerification(): PortScanConsistencyReport 
       "metadata-basic-state",
       metadata.id === "network.port-scan" &&
         metadata.mode === "simulation" &&
-        metadata.status === "in-progress",
-      "端口扫描元数据应保持 network.port-scan / simulation / in-progress。",
+        metadata.status === "ready",
+      "端口扫描元数据应保持 network.port-scan / simulation / ready。",
     ),
   );
   checks.push(
@@ -331,6 +331,7 @@ export function runPortScanConsistencyVerification(): PortScanConsistencyReport 
     notes: [
       "本脚本只读取仓库内端口扫描元数据、文档和实现文件。",
       "本脚本不发起 HTTP 请求，不访问外部目标，不执行真实端口扫描。",
+      "ready 状态仅代表本项目内虚拟实验闭环完成，不代表提供真实扫描能力。",
       "本脚本不提供 exploit.py，不接收任意主机、网段或端口范围。",
     ],
   };

@@ -64,7 +64,7 @@
 
 | 实验 | 状态 | 推荐模式 | 当前规划落点 | 后续目录 |
 |---|---|---|---|---|
-| 端口扫描 | 只读一致性验证已接入 | 固定虚拟资产 / 受控 API / 前端固定选择器 / Playwright 差异验证 / 只读脚本验证 | `labs/network/port-scan/meta.json`、`apps/web/src/views/PortScanLabView.vue`、`packages/testing/tests/e2e/platform.spec.mjs`、`apps/server/src/services/port-scan-lab.ts`、`tools/lab-scripts/network/port-scan/verify.ts`、`docs/execution/2026-07-01-network-port-scan-readonly-verification.md` | `labs/network/port-scan/` |
+| 端口扫描 | ready | 固定虚拟资产 / 受控 API / 前端固定选择器 / Playwright 差异验证 / 只读脚本验证 | `labs/network/port-scan/meta.json`、`apps/web/src/views/PortScanLabView.vue`、`packages/testing/tests/e2e/platform.spec.mjs`、`apps/server/src/services/port-scan-lab.ts`、`tools/lab-scripts/network/port-scan/verify.ts`、`docs/execution/2026-07-01-network-port-scan-ready-closeout.md` | `labs/network/port-scan/` |
 | DNS 劫持 / 污染 | 规划中 | 本机模拟 / 案例化演示 | `docs/design/next-wave-security-labs.md` | `labs/network/dns-hijack/` |
 | 中间人攻击 | 规划中 | 案例化演示 / 本机模拟 | `docs/design/project-scope-and-security-content.md` | `labs/network/mitm/` |
 | ARP 欺骗 | 延后 | 案例化演示 | `docs/design/project-scope-and-security-content.md` | `labs/network/arp-spoofing/` |
@@ -228,12 +228,11 @@
 
 推荐后续按以下切片推进：
 
-1. `network/port-scan` ready 收口审计。
-2. `network/dns-hijack` 实现执行文档。
-3. `ai/prompt-injection` 实现执行文档。
-4. `social/phishing` 案例化执行文档。
-6. `supply-chain/dependency-confusion` 模拟实验执行文档。
-7. `infrastructure/misconfiguration` 模拟实验执行文档。
+1. `network/dns-hijack` 实现执行文档。
+2. `ai/prompt-injection` 实现执行文档。
+3. `social/phishing` 案例化执行文档。
+4. `supply-chain/dependency-confusion` 模拟实验执行文档。
+5. `infrastructure/misconfiguration` 模拟实验执行文档。
 
 每个切片完成后都必须同步 `docs/TODO.md` 和 `docs/execution/security-lab-master-goal.md`。
 

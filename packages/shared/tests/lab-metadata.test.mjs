@@ -405,13 +405,13 @@ test("ldap injection metadata exposes virtual workbench pages, virtual api and c
   assert.match(result.value.notes, /不提供 exploit\.py 或 LDAP 查询脚本/);
 });
 
-test("port scan metadata is in-progress virtual workbench simulation", async () => {
+test("port scan metadata is ready virtual workbench simulation", async () => {
   const metadata = await readFixture("labs/network/port-scan/meta.json");
   const result = validateLabMetadata(metadata);
 
   assert.equal(result.ok, true);
   assert.equal(result.value.id, "network.port-scan");
-  assert.equal(result.value.status, "in-progress");
+  assert.equal(result.value.status, "ready");
   assert.equal(result.value.mode, "simulation");
   assert.deepEqual(
     result.value.entrypoints.web.map((entrypoint) => entrypoint.path),
@@ -465,6 +465,11 @@ test("port scan metadata is in-progress virtual workbench simulation", async () 
   assert.ok(
     result.value.safeBoundaries.some((boundary) =>
       boundary.includes("不调用真实 socket"),
+    ),
+  );
+  assert.ok(
+    result.value.safeBoundaries.some((boundary) =>
+      boundary.includes("ready 状态仅表示"),
     ),
   );
   assert.match(result.value.notes, /不提供 exploit\.py/);

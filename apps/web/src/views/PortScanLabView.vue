@@ -105,7 +105,7 @@ const statusRows = computed(() => [
   },
   {
     label: "脚本入口",
-    value: "本轮不提供",
+    value: "只读一致性验证",
   },
 ]);
 

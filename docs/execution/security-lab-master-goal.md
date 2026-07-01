@@ -1,3 +1,29 @@
+# 2026-07-01 最新进展：端口扫描 ready 收口
+
+本轮已按主计划完成标准对 `network/port-scan` 做 ready 收口审计：
+
+- 新增执行文档：`docs/execution/2026-07-01-network-port-scan-ready-closeout.md`。
+- 逐项确认漏洞版可运行、修复版可运行、攻击方触发路径清晰、防御方收敛 / 阻断路径清晰、页面提供引导式交互。
+- 确认后端 `POST /api/labs/network/port-scan/:variant/scan` 已写入统一事件日志，日志只记录虚拟目标 key、观察模式、端口统计、暴露面评分和学习信号。
+- 确认文档已覆盖攻击步骤、修复说明、安全边界、手动验证和只读脚本验证。
+- 确认自动化证据包含服务端 API 测试、前端单元测试、Playwright 页面差异验证和只读一致性验证脚本。
+- 将 `labs/network/port-scan/meta.json` 从 `in-progress` 更新为 `ready`，并补充 ready 状态仅代表本项目内虚拟实验闭环完成，不表示提供真实扫描能力。
+- 更新只读验证脚本、共享元数据测试、服务端 health / registry 测试、端口扫描页面旧文案和下一波实验规划。
+- 当前仍不提供 `exploit.py`、真实端口扫描脚本、真实网络探测、系统探测命令或通用扫描器能力。
+
+验证情况：
+
+- `pnpm --filter @network-safe/web exec tsx ../../tools/lab-scripts/network/port-scan/verify.ts` 通过，报告 `ok: true`。
+- `pnpm --filter @network-safe/shared test` 通过，28 项测试通过。
+- `pnpm --filter @network-safe/web exec vitest run tests/port-scan-api.test.ts tests/port-scan-lab.test.ts tests/router.test.ts` 通过，3 个测试文件、9 项测试通过。
+- `pnpm --filter @network-safe/testing e2e -- --grep "端口扫描"` 通过，1 项 Playwright 用例通过。
+- `pnpm --filter @network-safe/testing test` 通过，9 项测试通过。
+- `pnpm --filter @network-safe/server test -- tests/port-scan-lab.test.ts tests/health.test.ts tests/lab-registry.test.ts` 通过；该命令实际运行服务端全量测试，161 项通过。
+- `git diff --check -- <本轮目标文件>` 通过；仅出现 Windows 下 LF 将转换为 CRLF 的提示。
+- `rg -n "[ \t]+$" -- <本轮目标文件>` 无命中。
+- 安全关键词扫描仅命中禁止性说明和只读脚本的负向检查列表，未发现真实网络探测、系统命令或通用扫描器实现。
+- 下一项建议：进入 `network/dns-hijack` 实现执行文档，继续使用内存解析表，不修改本机 DNS、hosts、代理、路由或防火墙。
+
 # 2026-07-01 最新进展：端口扫描只读一致性验证
 
 本轮已为 `network/port-scan` 补齐本机只读一致性验证脚本：
