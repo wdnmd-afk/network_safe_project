@@ -1,3 +1,26 @@
+# 2026-07-01 最新进展：DNS 劫持 ready 收口
+
+本轮已按主计划完成标准对 `network/dns-hijack` 做 ready 收口审计：
+
+- 新增执行文档：`docs/execution/2026-07-01-network-dns-hijack-ready-closeout.md`。
+- 逐项确认漏洞版可运行、修复版可运行、攻击方观察路径清晰、防御方阻断 / 恢复路径清晰、页面提供引导式交互。
+- 确认后端 `POST /api/labs/network/dns-hijack/:variant/resolve` 已写入统一事件日志，日志只记录域名样例 key、固定解析视角、虚拟地址类别、证书状态、异常标记和学习信号。
+- 确认文档已覆盖攻击步骤、修复说明、安全边界、手动验证和只读脚本验证。
+- 确认自动化证据包含服务端 API 测试、前端单元测试、Playwright 页面差异验证和只读一致性验证脚本。
+- 将 `labs/network/dns-hijack/meta.json` 从 `in-progress` 更新为 `ready`，并补充 ready 状态仅代表本项目内虚拟 DNS 解析学习闭环完成，不表示提供真实 DNS 攻击或解析能力。
+- 更新只读验证脚本、共享元数据测试、服务端 health / registry 测试、DNS 劫持页面旧文案和下一波实验规划。
+- 当前仍不提供 `exploit.py`、真实 DNS 查询脚本、真实 DNS 劫持能力、系统网络配置脚本或可复用攻击工具。
+
+验证情况：
+
+- 通过 `pnpm --filter @network-safe/web exec tsx ../../tools/lab-scripts/network/dns-hijack/verify.ts`，报告 `ok: true`。
+- 通过 `pnpm --filter @network-safe/shared test`，29 项测试通过。
+- 通过 `pnpm --filter @network-safe/web exec vitest run tests/dns-hijack-api.test.ts tests/dns-hijack-lab.test.ts tests/router.test.ts`，3 个测试文件、9 项测试通过。
+- 通过 `pnpm --filter @network-safe/testing e2e -- --grep "DNS 劫持"`，1 项 Playwright 用例通过。
+- 通过 `pnpm --filter @network-safe/testing test`，9 项测试通过。
+- 通过 `pnpm --filter @network-safe/server test -- tests/dns-hijack-lab.test.ts tests/health.test.ts tests/lab-registry.test.ts`，当前服务端测试脚本执行 169 项测试并全部通过。
+- 下一项建议：进入 `ai/prompt-injection` 实现执行文档切片，仍不调用外部 AI 生成攻击内容，不生成钓鱼文本、恶意代码或绕过策略。
+
 # 2026-07-01 最新进展：DNS 劫持只读一致性验证
 
 本轮已为 `network/dns-hijack` 补齐本机只读一致性验证脚本：

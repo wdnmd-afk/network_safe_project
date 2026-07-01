@@ -1,3 +1,23 @@
+# 2026-07-01 最新进展：DNS 劫持 ready 收口
+
+- [x] 新增执行文档 `docs/execution/2026-07-01-network-dns-hijack-ready-closeout.md`。
+- [x] 按主计划完成标准逐项审计 `network/dns-hijack`，确认漏洞版、修复版、攻击方观察路径、防御方阻断 / 恢复路径、引导式页面、统一事件日志、文档、元数据和自动化验证均有证据闭环。
+- [x] 将 `labs/network/dns-hijack/meta.json` 从 `in-progress` 更新为 `ready`，并补充 ready 状态安全边界说明。
+- [x] 更新 `tools/lab-scripts/network/dns-hijack/verify.ts`，只读一致性验证脚本改为校验 `ready` 状态。
+- [x] 修正 DNS 劫持页面空状态中的脚本入口文案为“只读一致性验证”。
+- [x] 更新 DNS 劫持 README、漏洞版说明、修复版说明、mock 说明、攻击步骤、修复说明、手动验证、脚本目录说明、下一波实验规划、共享元数据测试和服务端注册表测试。
+- [x] 当前仍不提供 `exploit.py`、真实 DNS 查询脚本、真实 DNS 劫持能力、系统网络配置脚本或可复用攻击工具。
+
+验证记录：
+
+- 通过 `pnpm --filter @network-safe/web exec tsx ../../tools/lab-scripts/network/dns-hijack/verify.ts`，报告 `ok: true`。
+- 通过 `pnpm --filter @network-safe/shared test`，29 项测试通过。
+- 通过 `pnpm --filter @network-safe/web exec vitest run tests/dns-hijack-api.test.ts tests/dns-hijack-lab.test.ts tests/router.test.ts`，3 个测试文件、9 项测试通过。
+- 通过 `pnpm --filter @network-safe/testing e2e -- --grep "DNS 劫持"`，1 项 Playwright 用例通过。
+- 通过 `pnpm --filter @network-safe/testing test`，9 项测试通过。
+- 通过 `pnpm --filter @network-safe/server test -- tests/dns-hijack-lab.test.ts tests/health.test.ts tests/lab-registry.test.ts`，当前服务端测试脚本执行 169 项测试并全部通过。
+- 下一项建议：进入 `ai/prompt-injection` 实现执行文档切片，仍不调用外部 AI 生成攻击内容，不生成钓鱼文本、恶意代码或绕过策略。
+
 # 2026-07-01 最新进展：DNS 劫持只读一致性验证
 
 - [x] 新增执行文档 `docs/execution/2026-07-01-network-dns-hijack-readonly-verification.md`。
@@ -1214,7 +1234,7 @@
 |---|---|---|---|---|
 | DDoS | 规划中 | 案例化演示 / 本机模拟 | `docs/design/project-scope-and-security-content.md` | `labs/network/ddos/` |
 | 中间人攻击 | 规划中 | 本机模拟 / 脚本实验 | `docs/design/project-scope-and-security-content.md` | `labs/network/mitm/` |
-| DNS 劫持 / 污染 | in-progress | 内存解析表 / 前端固定选择器 / Playwright 差异验证 / 只读脚本验证 / 本机模拟 / 案例化演示 | `labs/network/dns-hijack/meta.json`、`apps/web/src/views/DnsHijackLabView.vue`、`packages/testing/tests/e2e/platform.spec.mjs`、`tools/lab-scripts/network/dns-hijack/verify.ts`、`apps/server/src/services/dns-hijack-lab.ts` | `labs/network/dns-hijack/` |
+| DNS 劫持 / 污染 | ready | 内存解析表 / 前端固定选择器 / Playwright 差异验证 / 只读脚本验证 / 本机模拟 / 案例化演示 | `labs/network/dns-hijack/meta.json`、`apps/web/src/views/DnsHijackLabView.vue`、`packages/testing/tests/e2e/platform.spec.mjs`、`tools/lab-scripts/network/dns-hijack/verify.ts`、`apps/server/src/services/dns-hijack-lab.ts`、`docs/execution/2026-07-01-network-dns-hijack-ready-closeout.md` | `labs/network/dns-hijack/` |
 | ARP 欺骗 | 规划中 | 本机模拟 / 脚本实验 | `docs/design/project-scope-and-security-content.md` | `labs/network/arp-spoofing/` |
 | 窃听攻击 | 规划中 | 本机模拟 / 案例化演示 | `docs/design/project-scope-and-security-content.md` | `labs/network/eavesdropping/` |
 | DNS 隧道 | 规划中 | 脚本实验 / 本机模拟 | `docs/design/project-scope-and-security-content.md` | `labs/network/dns-tunnel/` |
