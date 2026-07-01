@@ -255,8 +255,8 @@ export function runDnsHijackConsistencyVerification(): DnsHijackConsistencyRepor
       "metadata-basic-state",
       metadata.id === "network.dns-hijack" &&
         metadata.mode === "simulation" &&
-        metadata.status === "in-progress",
-      "DNS 劫持元数据应保持 network.dns-hijack / simulation / in-progress。",
+        metadata.status === "ready",
+      "DNS 劫持元数据应保持 network.dns-hijack / simulation / ready。",
     ),
   );
   checks.push(
@@ -357,7 +357,7 @@ export function runDnsHijackConsistencyVerification(): DnsHijackConsistencyRepor
     notes: [
       "本脚本只读取仓库内 DNS 劫持元数据、文档和实现文件。",
       "本脚本不发起 HTTP 请求，不执行 DNS 查询，不读取或修改系统网络配置。",
-      "当前 in-progress 状态仅表示本项目内 DNS 劫持虚拟学习闭环继续推进，不代表 ready 收口完成。",
+      "ready 状态仅代表本项目内虚拟 DNS 解析学习闭环完成，不代表提供真实 DNS 攻击或解析能力。",
       "本脚本不提供 exploit.py，不接收任意域名、DNS 服务器、IP、代理、网络接口或端口参数。",
     ],
   };

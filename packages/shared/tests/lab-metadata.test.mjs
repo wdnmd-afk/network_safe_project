@@ -475,13 +475,13 @@ test("port scan metadata is ready virtual workbench simulation", async () => {
   assert.match(result.value.notes, /不提供 exploit\.py/);
 });
 
-test("dns hijack metadata declares controlled web, api and readonly script entries", async () => {
+test("dns hijack metadata is ready controlled DNS simulation", async () => {
   const metadata = await readFixture("labs/network/dns-hijack/meta.json");
   const result = validateLabMetadata(metadata);
 
   assert.equal(result.ok, true);
   assert.equal(result.value.id, "network.dns-hijack");
-  assert.equal(result.value.status, "in-progress");
+  assert.equal(result.value.status, "ready");
   assert.equal(result.value.mode, "simulation");
   assert.deepEqual(
     result.value.entrypoints.web.map((entrypoint) => entrypoint.path),
@@ -542,8 +542,12 @@ test("dns hijack metadata declares controlled web, api and readonly script entri
       boundary.includes("不请求真实外部 DNS"),
     ),
   );
-  assert.match(result.value.notes, /只读一致性验证阶段/);
-  assert.match(result.value.notes, /尚未完成 ready 收口审计/);
+  assert.ok(
+    result.value.safeBoundaries.some((boundary) =>
+      boundary.includes("ready 状态仅表示"),
+    ),
+  );
+  assert.match(result.value.notes, /按 ready 收口/);
   assert.match(result.value.notes, /不提供 exploit\.py/);
 });
 

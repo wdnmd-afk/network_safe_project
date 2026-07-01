@@ -109,7 +109,7 @@ const statusRows = computed(() => [
   },
   {
     label: "脚本入口",
-    value: "尚未接入",
+    value: "只读一致性验证",
   },
 ]);
 

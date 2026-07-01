@@ -2,7 +2,7 @@
 
 ## 1. 当前状态
 
-当前为 `in-progress` 后端 API 阶段，已在 `apps/server/src/services/dns-hijack-lab.ts` 实现固定内存解析表。
+当前为 `ready` 阶段，已在 `apps/server/src/services/dns-hijack-lab.ts` 实现固定内存解析表，并通过 API 测试、页面级验证和只读一致性验证覆盖关键边界。
 
 ## 2. 当前 mock 模型
 

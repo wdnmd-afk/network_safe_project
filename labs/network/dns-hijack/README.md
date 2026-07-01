@@ -12,7 +12,7 @@
 
 ## 2. 当前状态
 
-当前状态为 `in-progress`。
+当前状态为 `ready`。
 
 当前已包含：
 
@@ -78,4 +78,4 @@
 
 ## 6. 下一步
 
-下一步建议进入 ready 收口审计切片，仍只允许固定 `domainKey` 和固定 `resolverProfile`，不请求真实 DNS，不创建真实 DNS 查询脚本。
+本实验已完成 ready 收口审计。后续如继续扩展，只允许在新的执行文档约束下补充本机受控学习内容，仍只允许固定 `domainKey` 和固定 `resolverProfile`，不请求真实 DNS，不创建真实 DNS 查询脚本。

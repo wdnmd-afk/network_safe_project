@@ -11,7 +11,7 @@ test("lab registry scans phase-one metadata files", async () => {
   assert.equal(labs[0]?.id, "auth.brute-force");
   assert.ok(
     labs.some(
-      (lab) => lab.id === "network.dns-hijack" && lab.status === "in-progress",
+      (lab) => lab.id === "network.dns-hijack" && lab.status === "ready",
     ),
   );
   assert.ok(

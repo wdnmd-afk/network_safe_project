@@ -2,7 +2,7 @@
 
 ## 1. 当前状态
 
-当前为 `in-progress` 前端工作台阶段，已实现修复版页面 `/labs/network/dns-hijack/fixed` 和修复版 `POST /api/labs/network/dns-hijack/fixed/resolve`。
+当前为 `ready` 阶段，已实现修复版页面 `/labs/network/dns-hijack/fixed`、修复版 `POST /api/labs/network/dns-hijack/fixed/resolve`、页面级验证和本机只读一致性验证。
 
 ## 2. 修复版目标
 

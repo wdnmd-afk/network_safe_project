@@ -2,7 +2,7 @@
 
 ## 1. 当前状态
 
-当前为 `in-progress` 前端工作台阶段，已实现漏洞版页面 `/labs/network/dns-hijack/vuln` 和漏洞版 `POST /api/labs/network/dns-hijack/vuln/resolve`。
+当前为 `ready` 阶段，已实现漏洞版页面 `/labs/network/dns-hijack/vuln`、漏洞版 `POST /api/labs/network/dns-hijack/vuln/resolve`、页面级验证和本机只读一致性验证。
 
 ## 2. 漏洞版目标
 

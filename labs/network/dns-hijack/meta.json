@@ -8,7 +8,7 @@
   "severity": "medium",
   "difficulty": "intermediate",
   "summary": "通过固定内存解析表、后端受控 API、前端工作台和只读一致性验证学习错误 DNS 解析、证书不匹配、可信解析源和异常解析审计的攻防思路。",
-  "status": "in-progress",
+  "status": "ready",
   "phase": "phase-2",
   "tags": ["network", "dns", "dns-hijack", "resolution", "simulation"],
   "knowledgePoints": [
@@ -112,7 +112,7 @@
         "dns-hijack-domain-blocked",
         "dns-hijack-normal-resolution-returned",
         "dns-hijack-readonly-boundary-verified",
-        "dns-hijack-planned-docs-reviewed",
+        "dns-hijack-ready-boundary-verified",
         "dns-hijack-no-real-dns-confirmed"
       ]
     },
@@ -133,8 +133,8 @@
     }
   },
   "prerequisites": [
-    "已阅读 DNS 劫持 / 污染实验执行文档、目录与 planned 元数据执行文档、后端受控内存解析 API 执行文档、前端工作台执行文档、Playwright 页面验证执行文档和只读一致性验证执行文档",
-    "理解当前 in-progress 阶段已接入前端固定样例工作台、后端受控 API、页面级验证和只读一致性验证脚本，但尚未完成 ready 收口审计",
+    "已阅读 DNS 劫持 / 污染实验执行文档、目录与 planned 元数据执行文档、后端受控内存解析 API 执行文档、前端工作台执行文档、Playwright 页面验证执行文档、只读一致性验证执行文档和 ready 收口审计文档",
+    "理解 ready 状态仅表示本项目受控虚拟 DNS 解析学习闭环完成，当前仍不提供攻击脚本或真实 DNS 查询脚本",
     "理解本实验首版只允许固定内存解析表，不修改本机 DNS、hosts、代理、路由或防火墙"
   ],
   "paths": {
@@ -149,7 +149,8 @@
   "sortOrder": 211,
   "estimatedMinutes": 25,
   "safeBoundaries": [
-    "当前 in-progress 阶段仅提供前端固定样例工作台、后端受控 API、文档入口、页面级验证和只读一致性验证脚本，不提供攻击脚本或真实 DNS 查询能力",
+    "ready 状态仅表示本项目内虚拟 DNS 解析学习闭环完成，不表示提供真实 DNS 劫持、真实 DNS 查询或系统网络配置修改能力",
+    "当前仅提供前端固定样例工作台、后端受控 API、文档入口、页面级验证和只读一致性验证脚本，不提供攻击脚本或真实 DNS 查询能力",
     "只读一致性验证脚本只读取仓库内元数据、文档和实现文件，不发起 HTTP 请求、不执行 DNS 查询、不读取或修改系统网络配置",
     "页面只提供固定域名样例和固定解析视角选择器，不提供任意域名、DNS 服务器、IP、代理、网络接口或端口输入",
     "API 只使用固定内存解析表、固定域名样例和固定解析视角，不接收任意域名、DNS 服务器、IP、代理、网络接口或端口参数",
@@ -158,5 +159,5 @@
     "不实现真实 DNS 投毒、DNS 劫持、DNS 隧道、流量转发或中间人代理",
     "事件日志只记录域名样例 key、固定解析视角、解析结果类别、证书状态、异常审计结论和学习信号，不保存真实域名访问记录、真实 IP、真实证书、Cookie、token 或凭据"
   ],
-  "notes": "DNS 劫持 / 污染实验当前为 in-progress 只读一致性验证阶段：已建立标准目录、元数据、基础说明、后端受控内存解析 API、前端固定样例观察页面、Playwright 页面差异验证和只读一致性验证脚本；仍不提供 exploit.py、真实 DNS 查询脚本或系统网络配置修改能力，尚未完成 ready 收口审计。"
+  "notes": "DNS 劫持 / 污染实验按 ready 收口：已接入前端固定样例工作台、后端受控内存解析 API、统一事件日志、Playwright 页面验证和只读一致性验证脚本；仍不提供 exploit.py、真实 DNS 查询脚本、真实 DNS 劫持能力或系统网络配置修改能力。"
 }

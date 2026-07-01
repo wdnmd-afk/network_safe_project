@@ -2,7 +2,7 @@
 
 ## 1. 当前可验证内容
 
-当前 `in-progress` 阶段可验证：
+当前 `ready` 阶段可验证：
 
 - `labs/network/dns-hijack/meta.json` 存在。
 - `README.md`、`vuln/README.md`、`fixed/README.md`、`mock/README.md` 存在。
@@ -31,6 +31,7 @@
 - `dns-hijack-domain-blocked`
 - `dns-hijack-normal-resolution-returned`
 - `dns-hijack-readonly-boundary-verified`
+- `dns-hijack-ready-boundary-verified`
 - `dns-hijack-no-real-dns-confirmed`
 
 ## 3. 不应出现的内容
@@ -62,4 +63,4 @@ pnpm --filter @network-safe/web exec tsx ../../tools/lab-scripts/network/dns-hij
 
 该脚本只读取仓库文件，不发起 HTTP 请求，不执行真实 DNS 查询，不读取或修改系统网络配置。
 
-在最终 ready 审计补齐前，不能将本实验标记为 `ready`。
+ready 状态仅表示本项目内固定内存解析表学习闭环完成，不表示提供真实 DNS 查询、真实 DNS 劫持或系统网络配置修改能力。
