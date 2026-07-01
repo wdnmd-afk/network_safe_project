@@ -2,11 +2,11 @@
 
 ## 1. 当前状态
 
-当前为 `planned` 文档入口阶段，尚未实现漏洞版页面或后端 API。
+当前为 `in-progress` 后端 API 阶段，已实现漏洞版 `POST /api/labs/network/dns-hijack/vuln/resolve`，尚未实现漏洞版页面。
 
-## 2. 后续漏洞版目标
+## 2. 漏洞版目标
 
-漏洞版后续用于展示固定域名样例被解析到错误虚拟地址后的风险。
+漏洞版用于展示固定域名样例被解析到错误虚拟地址后的风险。
 
 建议观察点：
 
@@ -14,6 +14,7 @@
 - 漏洞版返回的错误虚拟地址类别。
 - 证书状态是否变为 `mismatch`。
 - 后端学习信号是否为 `dns-hijack-resolution-misdirected` 或 `dns-hijack-certificate-mismatch-visible`。
+- 统一事件日志是否只记录固定样例摘要，不保存真实域名、真实 IP 或真实 DNS 响应。
 
 ## 3. 攻击方视角
 

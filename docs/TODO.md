@@ -1,3 +1,24 @@
+# 2026-07-01 最新进展：DNS 劫持后端受控内存解析 API
+
+- [x] 新增执行文档 `docs/execution/2026-07-01-network-dns-hijack-virtual-api.md`。
+- [x] 新增 `apps/server/src/services/dns-hijack-lab.ts`，使用固定 `domainKey` 和固定 `resolverProfile` 的内存解析表。
+- [x] 新增 `POST /api/labs/network/dns-hijack/:variant/resolve`，只读取 `domainKey` 与 `resolverProfile`。
+- [x] 漏洞版 `public-cache` 可观察错误虚拟地址类别和 `dns-hijack-certificate-mismatch-visible`。
+- [x] 修复版 `public-cache` 可观察 `dns-hijack-anomaly-blocked`，修复版 `trusted-resolver` 可观察 `dns-hijack-trusted-resolution-restored`。
+- [x] API 已写入统一事件日志，日志只记录域名样例 key、固定解析视角、虚拟地址类别、证书状态、异常标记和学习信号。
+- [x] 未知 `domainKey` 或 `resolverProfile` 会被阻断，并在响应与日志中脱敏为 `blocked-domain` / `blocked-resolver`。
+- [x] 更新 `labs/network/dns-hijack/meta.json` 为 `in-progress`，只登记 API 入口和 API 测试证据，web / scripts 入口仍为空。
+- [x] 更新 DNS 劫持 README、漏洞版说明、修复版说明、mock 说明、攻击步骤、修复说明和手动验证文档。
+
+验证记录：
+
+- `pnpm --filter @network-safe/server test -- tests/dns-hijack-lab.test.ts tests/health.test.ts tests/lab-registry.test.ts` 通过；该命令实际运行服务端全量测试，169 项通过。
+- `pnpm --filter @network-safe/shared test` 通过，29 项通过。
+- `git diff --check` 通过；仅出现 Windows 下 LF 将转换为 CRLF 的提示。
+- `rg -n "[ \t]+$" -- <本轮目标文件>` 无命中。
+- 真实 DNS / 系统命令相关扫描无命中；宽泛安全关键词扫描仅命中文档中的禁止性说明、边界约束和历史记录。
+- 下一项建议：进入 `network/dns-hijack` 前端固定样例观察工作台切片，仍不创建 DNS 脚本或真实 DNS 查询能力。
+
 # 2026-07-01 最新进展：DNS 劫持目录与 planned 元数据
 
 - [x] 新增执行文档 `docs/execution/2026-07-01-network-dns-hijack-directory-metadata.md`。
@@ -15,7 +36,7 @@
 - `git diff --check -- <本轮目标文件>` 通过；仅出现 Windows 下 LF 将转换为 CRLF 的提示。
 - `rg -n "[ \t]+$" -- <本轮目标文件>` 无命中。
 - DNS 劫持安全关键词扫描仅命中文档中的禁止性说明、planned 边界和历史记录，未发现真实 DNS 配置改动、外部解析请求、真实投毒链路、隧道通信或可复用攻击脚本实现。
-- 下一项建议：进入 `network/dns-hijack` 后端受控内存解析 API 切片，只接收固定 `domainKey` 和固定 `resolverProfile`，不请求真实 DNS。
+- 下一项建议：已在后续切片接入 `network/dns-hijack` 后端受控内存解析 API，下一步进入前端固定样例观察工作台。
 
 # 2026-07-01 最新进展：DNS 劫持实验执行文档
 
@@ -1129,7 +1150,7 @@
 |---|---|---|---|---|
 | DDoS | 规划中 | 案例化演示 / 本机模拟 | `docs/design/project-scope-and-security-content.md` | `labs/network/ddos/` |
 | 中间人攻击 | 规划中 | 本机模拟 / 脚本实验 | `docs/design/project-scope-and-security-content.md` | `labs/network/mitm/` |
-| DNS 劫持 / 污染 | planned | 内存解析表 / 本机模拟 / 案例化演示 | `labs/network/dns-hijack/meta.json`、`labs/network/dns-hijack/README.md` | `labs/network/dns-hijack/` |
+| DNS 劫持 / 污染 | in-progress | 内存解析表 / 本机模拟 / 案例化演示 | `labs/network/dns-hijack/meta.json`、`apps/server/src/services/dns-hijack-lab.ts` | `labs/network/dns-hijack/` |
 | ARP 欺骗 | 规划中 | 本机模拟 / 脚本实验 | `docs/design/project-scope-and-security-content.md` | `labs/network/arp-spoofing/` |
 | 窃听攻击 | 规划中 | 本机模拟 / 案例化演示 | `docs/design/project-scope-and-security-content.md` | `labs/network/eavesdropping/` |
 | DNS 隧道 | 规划中 | 脚本实验 / 本机模拟 | `docs/design/project-scope-and-security-content.md` | `labs/network/dns-tunnel/` |

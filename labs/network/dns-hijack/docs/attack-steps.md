@@ -2,7 +2,7 @@
 
 ## 1. 当前阶段
 
-当前实验处于 `planned` 阶段，只提供文档和元数据入口。
+当前实验处于 `in-progress` 阶段，已提供后端受控内存解析 API，尚未提供前端页面或脚本。
 
 本文件只描述受控学习路径，不提供真实 DNS 修改、真实解析请求或网络劫持步骤。
 
@@ -18,14 +18,15 @@
 6. 查看期望虚拟地址类别、实际虚拟地址类别、证书状态和异常审计信号。
 7. 切换到修复版，使用同一域名样例观察可信解析和证书校验后的差异。
 
-## 3. 后续 API 观察步骤
+## 3. API 观察步骤
 
-后续如接入 API，也只能通过本项目后端受控接口观察固定样例：
+当前 API 只能通过本项目后端受控接口观察固定样例：
 
 1. 登录本项目演示账号，获取本机 session。
 2. 选择固定 `domainKey` 和固定 `resolverProfile`。
-3. 提交到本项目 localhost API。
+3. 提交到 `POST /api/labs/network/dns-hijack/vuln/resolve` 或 `POST /api/labs/network/dns-hijack/fixed/resolve`。
 4. 只检查返回的虚拟解析类别、证书状态、审计摘要和学习信号。
+5. 对比漏洞版 `public-cache` 的异常信号和修复版 `public-cache` 的审计阻断信号。
 
 ## 4. 攻击方视角
 

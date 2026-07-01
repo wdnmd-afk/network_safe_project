@@ -4,7 +4,7 @@
 
 本实验用于学习 DNS 解析链路中的错误解析和信任校验风险，不是真实 DNS 工具。
 
-后续首版会通过固定内存解析表展示：
+当前后端 API 已通过固定内存解析表展示：
 
 - 攻击方如何从错误解析结果观察用户被引向错误虚拟地址的风险。
 - 证书状态不匹配为什么是重要的异常信号。
@@ -12,9 +12,9 @@
 
 ## 2. 当前状态
 
-当前状态为 `planned`。
+当前状态为 `in-progress`。
 
-当前只包含：
+当前已包含：
 
 - 元数据入口。
 - 基础文档。
@@ -22,13 +22,14 @@
 - mock 内存解析表说明。
 - 手动验证说明。
 - 脚本目录边界说明。
+- 后端受控内存解析 API。
+- 统一事件日志写入。
+- 服务端 API 差异测试。
 
 当前不包含：
 
 - 前端页面。
-- 后端 API。
 - 数据库迁移。
-- 事件日志写入实现。
 - `exploit.py`。
 - `verify.ts`。
 - 真实 DNS 查询脚本。
@@ -47,18 +48,20 @@
 
 ## 4. 当前入口
 
-当前只登记文档入口：
+当前登记文档入口和后端 API 入口：
 
 - 总说明：`labs/network/dns-hijack/README.md`
 - 攻击步骤：`labs/network/dns-hijack/docs/attack-steps.md`
 - 修复说明：`labs/network/dns-hijack/docs/fix-notes.md`
 - 手动验证：`labs/network/dns-hijack/docs/manual-verification.md`
+- 漏洞版 API：`POST /api/labs/network/dns-hijack/vuln/resolve`
+- 修复版 API：`POST /api/labs/network/dns-hijack/fixed/resolve`
 
-当前没有页面、API 或脚本入口。
+当前没有页面或脚本入口。
 
 ## 5. 后续学习信号规划
 
-后续页面和 API 可使用以下学习信号：
+当前 API 可返回以下学习信号：
 
 - `dns-hijack-resolution-misdirected`
 - `dns-hijack-certificate-mismatch-visible`
@@ -69,4 +72,4 @@
 
 ## 6. 下一步
 
-下一步建议进入后端受控内存解析 API 切片，仍只允许固定 `domainKey` 和固定 `resolverProfile`，不请求真实 DNS，不创建 DNS 脚本。
+下一步建议进入前端工作台切片，仍只允许固定 `domainKey` 和固定 `resolverProfile`，不请求真实 DNS，不创建 DNS 脚本。

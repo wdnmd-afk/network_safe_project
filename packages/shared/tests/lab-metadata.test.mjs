@@ -475,16 +475,22 @@ test("port scan metadata is ready virtual workbench simulation", async () => {
   assert.match(result.value.notes, /不提供 exploit\.py/);
 });
 
-test("dns hijack metadata is planned docs-only simulation", async () => {
+test("dns hijack metadata declares controlled api entries", async () => {
   const metadata = await readFixture("labs/network/dns-hijack/meta.json");
   const result = validateLabMetadata(metadata);
 
   assert.equal(result.ok, true);
   assert.equal(result.value.id, "network.dns-hijack");
-  assert.equal(result.value.status, "planned");
+  assert.equal(result.value.status, "in-progress");
   assert.equal(result.value.mode, "simulation");
   assert.deepEqual(result.value.entrypoints.web, []);
-  assert.deepEqual(result.value.entrypoints.api, []);
+  assert.deepEqual(
+    result.value.entrypoints.api.map((entrypoint) => entrypoint.path),
+    [
+      "/api/labs/network/dns-hijack/vuln/resolve",
+      "/api/labs/network/dns-hijack/fixed/resolve",
+    ],
+  );
   assert.deepEqual(result.value.entrypoints.scripts, []);
   assert.deepEqual(
     result.value.entrypoints.docs.map((entrypoint) => entrypoint.path),
@@ -496,10 +502,14 @@ test("dns hijack metadata is planned docs-only simulation", async () => {
     ],
   );
   assert.equal(result.value.verification.manual.supported, true);
-  assert.equal(result.value.verification.automation.supported, false);
+  assert.equal(result.value.verification.automation.supported, true);
+  assert.deepEqual(result.value.verification.automation.apiTest, {
+    enabled: true,
+    specPath: "apps/server/tests/dns-hijack-lab.test.ts",
+  });
   assert.deepEqual(
     result.value.variants.map((variant) => variant.supportsAutomation),
-    [false, false],
+    [true, true],
   );
   assert.ok(
     result.value.safeBoundaries.some((boundary) =>
@@ -511,7 +521,8 @@ test("dns hijack metadata is planned docs-only simulation", async () => {
       boundary.includes("不请求真实外部 DNS"),
     ),
   );
-  assert.match(result.value.notes, /尚未提供 web\/API\/scripts 入口/);
+  assert.match(result.value.notes, /尚未提供 web\/scripts 入口/);
+  assert.match(result.value.notes, /不提供 exploit\.py/);
 });
 
 test("command injection metadata declares web, api and script verification entries", async () => {

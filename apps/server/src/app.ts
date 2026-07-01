@@ -23,6 +23,11 @@ import {
   type CrlfInjectionVariantKey,
 } from "./services/crlf-injection-lab.js";
 import {
+  createDnsHijackLabService,
+  type DnsHijackLabService,
+  type DnsHijackVariantKey,
+} from "./services/dns-hijack-lab.js";
+import {
   createNosqlInjectionLabService,
   type NosqlInjectionLabService,
   type NosqlInjectionVariantKey,
@@ -128,6 +133,7 @@ type CreateAppOptions = {
   commandInjectionLabService?: CommandInjectionLabService;
   crlfInjectionLabService?: CrlfInjectionLabService;
   csrfLabService?: CsrfLabService;
+  dnsHijackLabService?: DnsHijackLabService;
   fileUploadLabService?: FileUploadLabService;
   infoDisclosureLabService?: InfoDisclosureLabService;
   idorLabService?: IdorLabService;
@@ -195,6 +201,8 @@ export function createApp(options: CreateAppOptions = {}) {
   const crlfInjectionLabService =
     options.crlfInjectionLabService ?? createCrlfInjectionLabService();
   const csrfLabService = options.csrfLabService ?? createCsrfLabService();
+  const dnsHijackLabService =
+    options.dnsHijackLabService ?? createDnsHijackLabService();
   const fileUploadLabService =
     options.fileUploadLabService ?? createFileUploadLabService();
   const infoDisclosureLabService =
@@ -455,6 +463,10 @@ export function createApp(options: CreateAppOptions = {}) {
   function readCrlfInjectionVariantKey(
     value: unknown,
   ): CrlfInjectionVariantKey | "" {
+    return value === "vuln" || value === "fixed" ? value : "";
+  }
+
+  function readDnsHijackVariantKey(value: unknown): DnsHijackVariantKey | "" {
     return value === "vuln" || value === "fixed" ? value : "";
   }
 
@@ -976,6 +988,30 @@ export function createApp(options: CreateAppOptions = {}) {
       highRiskPortCount: input.summary.highRiskPortCount,
       exposureScore: input.summary.exposureScore,
       matchedControlledSample: input.summary.matchedControlledSample,
+      signal: input.signal,
+    };
+  }
+
+  function summarizeDnsHijackInput(input: {
+    domainKey: string;
+    resolverProfile: string;
+    resolution: {
+      expectedAddressCategory: string;
+      resolvedAddressCategory: string;
+      certificateStatus: string;
+      anomalyDetected: boolean;
+      matchedControlledSample: boolean;
+    };
+    signal: string;
+  }) {
+    return {
+      domainKey: input.domainKey,
+      resolverProfile: input.resolverProfile,
+      expectedAddressCategory: input.resolution.expectedAddressCategory,
+      resolvedAddressCategory: input.resolution.resolvedAddressCategory,
+      certificateStatus: input.resolution.certificateStatus,
+      anomalyDetected: input.resolution.anomalyDetected,
+      matchedControlledSample: input.resolution.matchedControlledSample,
       signal: input.signal,
     };
   }
@@ -3108,6 +3144,93 @@ export function createApp(options: CreateAppOptions = {}) {
           statusCode: responseStatus,
           message: result.message,
           riskLevel: highRiskExposure
+            ? "high"
+            : result.status === "blocked"
+              ? "medium"
+              : "low",
+        });
+
+        res.status(responseStatus).json({
+          status: result.status,
+          result,
+        });
+      } catch (error) {
+        next(error);
+      }
+    },
+  );
+
+  app.post(
+    "/api/labs/network/dns-hijack/:variant/resolve",
+    async (req, res, next) => {
+      try {
+        const currentUser = await readCurrentUser(req);
+
+        if (!currentUser.ok) {
+          res.status(currentUser.status).json(currentUser.body);
+          return;
+        }
+
+        const variantKey = readDnsHijackVariantKey(req.params.variant);
+        const domainKey = readRequiredString(req.body?.domainKey);
+        const resolverProfile = readRequiredString(req.body?.resolverProfile);
+
+        if (!variantKey) {
+          res.status(404).json({
+            status: "error",
+            message: "dns hijack variant not found",
+          });
+          return;
+        }
+
+        if (!domainKey || !resolverProfile) {
+          res.status(400).json({
+            status: "error",
+            message: "domainKey and resolverProfile are required",
+          });
+          return;
+        }
+
+        const result = await dnsHijackLabService.resolveDomain({
+          userId: currentUser.user.id,
+          variantKey,
+          domainKey,
+          resolverProfile,
+        });
+        const responseStatus = result.status === "blocked" ? 403 : 200;
+        const hijackVisible =
+          result.signal === "dns-hijack-resolution-misdirected" ||
+          result.signal === "dns-hijack-certificate-mismatch-visible";
+
+        await recordLabEventSafely({
+          traceId: readOptionalTraceId(req),
+          userId: currentUser.user.id,
+          labKey: "network.dns-hijack",
+          variantKey,
+          phase:
+            result.status === "blocked"
+              ? "defense"
+              : hijackVisible
+                ? "attack"
+                : variantKey === "fixed"
+                  ? "defense"
+                  : "normal",
+          eventType: result.status === "blocked" ? "blocked" : "success",
+          actorPerspective:
+            result.status === "blocked" || hijackVisible ? "attacker" : "user",
+          method: req.method,
+          path: req.path,
+          inputSummary: summarizeDnsHijackInput({
+            domainKey: result.domainKey,
+            resolverProfile: result.resolverProfile,
+            resolution: result.resolution,
+            signal: result.signal,
+          }),
+          decision: result.decision,
+          signal: result.signal,
+          statusCode: responseStatus,
+          message: result.message,
+          riskLevel: hijackVisible
             ? "high"
             : result.status === "blocked"
               ? "medium"

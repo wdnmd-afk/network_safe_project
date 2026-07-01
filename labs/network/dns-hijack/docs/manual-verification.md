@@ -2,25 +2,22 @@
 
 ## 1. 当前可验证内容
 
-当前 `planned` 阶段可验证：
+当前 `in-progress` 阶段可验证：
 
 - `labs/network/dns-hijack/meta.json` 存在。
 - `README.md`、`vuln/README.md`、`fixed/README.md`、`mock/README.md` 存在。
 - 攻击步骤、修复说明和手动验证文档存在。
 - `tools/lab-scripts/network/dns-hijack/README.md` 存在。
-- 元数据只登记 docs 入口。
-- 元数据未登记 web、api 或 scripts 入口。
-- `verification.automation.supported` 为 `false`。
+- 元数据已登记漏洞版 / 修复版 `resolve` API 入口。
+- 元数据未登记 web 或 scripts 入口。
+- `verification.automation.supported` 为 `true`，且当前只登记 API 测试证据。
+- `POST /api/labs/network/dns-hijack/vuln/resolve` 可返回漏洞版错误虚拟解析和证书不匹配信号。
+- `POST /api/labs/network/dns-hijack/fixed/resolve` 可返回可信解析恢复或异常解析阻断信号。
 - 文档明确禁止真实 DNS 查询、系统配置修改、DNS 投毒、DNS 劫持和 DNS 隧道能力。
 
 ## 2. 预期信号
 
-当前文档阶段只确认规划信号：
-
-- `dns-hijack-planned-docs-reviewed`
-- `dns-hijack-no-real-dns-confirmed`
-
-后续实现阶段可再验证：
+当前文档和 API 阶段可确认：
 
 - `dns-hijack-resolution-misdirected`
 - `dns-hijack-certificate-mismatch-visible`
@@ -28,6 +25,7 @@
 - `dns-hijack-anomaly-blocked`
 - `dns-hijack-domain-blocked`
 - `dns-hijack-normal-resolution-returned`
+- `dns-hijack-no-real-dns-confirmed`
 
 ## 3. 不应出现的内容
 
@@ -36,15 +34,19 @@
 - `exploit.py`。
 - `verify.ts`。
 - 真实 DNS 查询脚本。
-- 后端 DNS API。
 - 前端 DNS 工作台页面。
 - 修改 hosts、DNS、代理、路由或防火墙的命令。
 
 ## 4. 后续验证建议
 
-后续进入实现阶段后，再补齐：
+当前可运行：
 
-- 服务端 API 差异测试。
+```text
+pnpm --filter @network-safe/server test -- tests/dns-hijack-lab.test.ts tests/health.test.ts tests/lab-registry.test.ts
+```
+
+后续进入前端和脚本阶段后，再补齐：
+
 - 前端 API client 和实验模型测试。
 - Playwright 页面差异验证。
 - 本机只读一致性验证脚本。
