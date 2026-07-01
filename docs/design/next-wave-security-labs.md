@@ -65,7 +65,7 @@
 | 实验 | 状态 | 推荐模式 | 当前规划落点 | 后续目录 |
 |---|---|---|---|---|
 | 端口扫描 | ready | 固定虚拟资产 / 受控 API / 前端固定选择器 / Playwright 差异验证 / 只读脚本验证 | `labs/network/port-scan/meta.json`、`apps/web/src/views/PortScanLabView.vue`、`packages/testing/tests/e2e/platform.spec.mjs`、`apps/server/src/services/port-scan-lab.ts`、`tools/lab-scripts/network/port-scan/verify.ts`、`docs/execution/2026-07-01-network-port-scan-ready-closeout.md` | `labs/network/port-scan/` |
-| DNS 劫持 / 污染 | 已有执行文档 | 内存解析表 / 本机模拟 / 案例化演示 | `docs/execution/2026-07-01-network-dns-hijack-lab.md` | `labs/network/dns-hijack/` |
+| DNS 劫持 / 污染 | planned | 内存解析表 / 本机模拟 / 案例化演示 | `labs/network/dns-hijack/meta.json`、`labs/network/dns-hijack/README.md`、`docs/execution/2026-07-01-network-dns-hijack-directory-metadata.md` | `labs/network/dns-hijack/` |
 | 中间人攻击 | 规划中 | 案例化演示 / 本机模拟 | `docs/design/project-scope-and-security-content.md` | `labs/network/mitm/` |
 | ARP 欺骗 | 延后 | 案例化演示 | `docs/design/project-scope-and-security-content.md` | `labs/network/arp-spoofing/` |
 | DNS 隧道 | 延后 | 案例化演示 / 只读流量图解 | `docs/design/project-scope-and-security-content.md` | `labs/network/dns-tunnel/` |
@@ -95,6 +95,7 @@
 - 修复版：展示可信解析源、证书校验和异常解析审计。
 - 日志：记录域名样例 key、解析结果类别和学习信号。
 - 当前已补齐执行文档：`docs/execution/2026-07-01-network-dns-hijack-lab.md`。
+- 当前已建立 planned 文档入口：`labs/network/dns-hijack/meta.json`。
 
 禁止：
 
@@ -229,7 +230,7 @@
 
 推荐后续按以下切片推进：
 
-1. `network/dns-hijack` 目录与 planned 元数据切片。
+1. `network/dns-hijack` 后端受控内存解析 API 切片。
 2. `ai/prompt-injection` 实现执行文档。
 3. `social/phishing` 案例化执行文档。
 4. `supply-chain/dependency-confusion` 模拟实验执行文档。

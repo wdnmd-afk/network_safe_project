@@ -86,7 +86,13 @@ test("GET /api/labs returns scanned lab metadata list", async () => {
   };
 
   assert.equal(response.status, 200);
-  assert.equal(body.total, 20);
+  assert.equal(body.total, 21);
+  assert.ok(
+    body.items.some(
+      (item) =>
+        item.id === "network.dns-hijack" && item.status === "planned",
+    ),
+  );
   assert.ok(
     body.items.some(
       (item) =>

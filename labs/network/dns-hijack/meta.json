@@ -1,0 +1,110 @@
+{
+  "id": "network.dns-hijack",
+  "slug": "dns-hijack",
+  "title": "DNS 劫持 / 污染",
+  "category": "network",
+  "subcategory": "dns-hijack",
+  "mode": "simulation",
+  "severity": "medium",
+  "difficulty": "intermediate",
+  "summary": "通过固定内存解析表学习错误 DNS 解析、证书不匹配、可信解析源和异常解析审计的攻防思路。",
+  "status": "planned",
+  "phase": "phase-2",
+  "tags": ["network", "dns", "dns-hijack", "resolution", "simulation"],
+  "knowledgePoints": [
+    "DNS 解析链路风险",
+    "错误解析结果识别",
+    "证书状态校验",
+    "可信解析源",
+    "异常解析审计"
+  ],
+  "variants": [
+    {
+      "key": "vuln",
+      "title": "漏洞版观察",
+      "enabled": true,
+      "description": "后续通过固定内存解析表展示域名样例被解析到错误虚拟地址后的学习信号。",
+      "entryKey": "vuln-entry",
+      "expectedOutcome": "观察 dns-hijack-resolution-misdirected 或 dns-hijack-certificate-mismatch-visible 信号。",
+      "supportsAutomation": false
+    },
+    {
+      "key": "fixed",
+      "title": "修复版观察",
+      "enabled": true,
+      "description": "后续通过可信解析源、证书校验和异常审计展示同一域名样例的防御信号。",
+      "entryKey": "fixed-entry",
+      "expectedOutcome": "观察 dns-hijack-trusted-resolution-restored 或 dns-hijack-anomaly-blocked 信号。",
+      "supportsAutomation": false
+    }
+  ],
+  "entrypoints": {
+    "web": [],
+    "api": [],
+    "scripts": [],
+    "docs": [
+      {
+        "key": "overview",
+        "path": "labs/network/dns-hijack/README.md",
+        "description": "DNS 劫持 / 污染模拟实验总说明"
+      },
+      {
+        "key": "attack-steps",
+        "path": "labs/network/dns-hijack/docs/attack-steps.md",
+        "description": "攻击方视角观察步骤与安全边界"
+      },
+      {
+        "key": "fix-notes",
+        "path": "labs/network/dns-hijack/docs/fix-notes.md",
+        "description": "可信解析源、证书校验和异常审计修复说明"
+      },
+      {
+        "key": "manual-verification",
+        "path": "labs/network/dns-hijack/docs/manual-verification.md",
+        "description": "planned 文档入口、元数据和边界验证方式"
+      }
+    ]
+  },
+  "verification": {
+    "manual": {
+      "supported": true,
+      "stepsDocPath": "labs/network/dns-hijack/docs/manual-verification.md",
+      "expectedSignals": [
+        "dns-hijack-resolution-misdirected",
+        "dns-hijack-certificate-mismatch-visible",
+        "dns-hijack-trusted-resolution-restored",
+        "dns-hijack-anomaly-blocked",
+        "dns-hijack-planned-docs-reviewed",
+        "dns-hijack-no-real-dns-confirmed"
+      ]
+    },
+    "automation": {
+      "supported": false
+    }
+  },
+  "prerequisites": [
+    "已阅读 DNS 劫持 / 污染实验执行文档和目录与 planned 元数据执行文档",
+    "理解当前 planned 阶段只登记文档入口，不提供页面、API 或脚本",
+    "理解本实验首版只允许固定内存解析表，不修改本机 DNS、hosts、代理、路由或防火墙"
+  ],
+  "paths": {
+    "root": "labs/network/dns-hijack",
+    "readme": "labs/network/dns-hijack/README.md",
+    "vuln": "labs/network/dns-hijack/vuln",
+    "fixed": "labs/network/dns-hijack/fixed",
+    "mock": "labs/network/dns-hijack/mock",
+    "docs": "labs/network/dns-hijack/docs",
+    "scripts": "tools/lab-scripts/network/dns-hijack"
+  },
+  "sortOrder": 211,
+  "estimatedMinutes": 25,
+  "safeBoundaries": [
+    "当前 planned 阶段仅提供文档和元数据入口，不提供页面、API、脚本或真实 DNS 查询能力",
+    "后续实现只允许使用固定内存解析表和固定域名样例，不接收任意域名、DNS 服务器、IP、代理、网络接口或端口参数",
+    "不修改本机 DNS、hosts、代理、路由、防火墙或系统网络配置",
+    "不请求真实外部 DNS、DoH、DoT 或公共解析服务",
+    "不实现真实 DNS 投毒、DNS 劫持、DNS 隧道、流量转发或中间人代理",
+    "事件日志后续只记录域名样例 key、解析结果类别、证书状态、异常审计结论和学习信号，不保存真实域名访问记录、真实 IP、真实证书、Cookie、token 或凭据"
+  ],
+  "notes": "DNS 劫持 / 污染实验当前为 planned 文档入口阶段：已建立标准目录、元数据和基础说明，尚未提供 web/API/scripts 入口，也不提供 exploit.py、真实 DNS 查询脚本或系统网络配置修改能力。"
+}

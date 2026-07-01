@@ -1,3 +1,24 @@
+# 2026-07-01 最新进展：DNS 劫持目录与 planned 元数据
+
+本轮已按 DNS 劫持执行文档建立 `network/dns-hijack` 的 planned 文档入口：
+
+- 新增执行文档：`docs/execution/2026-07-01-network-dns-hijack-directory-metadata.md`。
+- 建立 `labs/network/dns-hijack/` 标准目录和 `tools/lab-scripts/network/dns-hijack/` 脚本目录占位。
+- 新增 `labs/network/dns-hijack/meta.json`，状态为 `planned`，模式为 `simulation`，只登记 docs 入口。
+- 新增 README、漏洞版说明、修复版说明、mock 说明、攻击方观察步骤、修复说明和手动验证文档。
+- 脚本目录当前只包含 README，不提供 `exploit.py`、`verify.ts`、真实 DNS 查询脚本或系统网络配置脚本。
+- 更新共享元数据测试，确认 `network.dns-hijack` 是 planned/docs-only simulation。
+- 更新服务端 health / registry 测试，当前本地元数据总数从 20 增加到 21，并包含 `network.dns-hijack` planned 条目。
+
+验证情况：
+
+- `pnpm --filter @network-safe/shared test` 通过。
+- `pnpm --filter @network-safe/server test -- tests/health.test.ts tests/lab-registry.test.ts` 通过；该命令实际运行服务端全量测试。
+- `git diff --check -- <本轮目标文件>` 通过；仅出现 Windows 下 LF 将转换为 CRLF 的提示。
+- `rg -n "[ \t]+$" -- <本轮目标文件>` 无命中。
+- DNS 劫持安全关键词扫描仅命中文档中的禁止性说明、planned 边界和历史记录，未发现真实 DNS 配置改动、外部解析请求、真实投毒链路、隧道通信或可复用攻击脚本实现。
+- 下一项建议：进入 `network/dns-hijack` 后端受控内存解析 API 切片，只接收固定 `domainKey` 和固定 `resolverProfile`，不请求真实 DNS。
+
 # 2026-07-01 最新进展：DNS 劫持实验执行文档
 
 本轮已为下一项网络实验 `network/dns-hijack` 补齐单独实现执行文档：
@@ -15,7 +36,7 @@
 - `git diff --check -- docs/execution/2026-07-01-network-dns-hijack-lab.md docs/design/next-wave-security-labs.md docs/TODO.md docs/execution/security-lab-master-goal.md` 通过；仅出现 Windows 下 LF 将转换为 CRLF 的提示。
 - `rg -n "[ \t]+$" -- docs/execution/2026-07-01-network-dns-hijack-lab.md docs/design/next-wave-security-labs.md docs/TODO.md docs/execution/security-lab-master-goal.md` 无命中。
 - 安全关键词扫描仅命中文档中的禁止性说明、边界约束和历史进度记录，未发现真实 DNS 配置改动、外部解析请求、真实投毒链路、隧道通信或可复用攻击脚本实现。
-- 下一项建议：进入 `network/dns-hijack` 目录与 planned 元数据切片，先只登记 docs 入口，不创建后端 API、前端页面或 DNS 脚本。
+- 下一项建议：已在后续切片建立 `network/dns-hijack` 目录与 planned 元数据，下一步进入后端受控内存解析 API。
 
 # 2026-07-01 最新进展：端口扫描 ready 收口
 

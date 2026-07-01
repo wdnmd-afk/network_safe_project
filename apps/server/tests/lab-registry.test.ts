@@ -7,8 +7,13 @@ test("lab registry scans phase-one metadata files", async () => {
   const registry = createLabRegistry();
   const labs = await registry.listLabs();
 
-  assert.equal(labs.length, 20);
+  assert.equal(labs.length, 21);
   assert.equal(labs[0]?.id, "auth.brute-force");
+  assert.ok(
+    labs.some(
+      (lab) => lab.id === "network.dns-hijack" && lab.status === "planned",
+    ),
+  );
   assert.ok(
     labs.some(
       (lab) => lab.id === "network.port-scan" && lab.status === "ready",

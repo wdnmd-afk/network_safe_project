@@ -475,6 +475,45 @@ test("port scan metadata is ready virtual workbench simulation", async () => {
   assert.match(result.value.notes, /不提供 exploit\.py/);
 });
 
+test("dns hijack metadata is planned docs-only simulation", async () => {
+  const metadata = await readFixture("labs/network/dns-hijack/meta.json");
+  const result = validateLabMetadata(metadata);
+
+  assert.equal(result.ok, true);
+  assert.equal(result.value.id, "network.dns-hijack");
+  assert.equal(result.value.status, "planned");
+  assert.equal(result.value.mode, "simulation");
+  assert.deepEqual(result.value.entrypoints.web, []);
+  assert.deepEqual(result.value.entrypoints.api, []);
+  assert.deepEqual(result.value.entrypoints.scripts, []);
+  assert.deepEqual(
+    result.value.entrypoints.docs.map((entrypoint) => entrypoint.path),
+    [
+      "labs/network/dns-hijack/README.md",
+      "labs/network/dns-hijack/docs/attack-steps.md",
+      "labs/network/dns-hijack/docs/fix-notes.md",
+      "labs/network/dns-hijack/docs/manual-verification.md",
+    ],
+  );
+  assert.equal(result.value.verification.manual.supported, true);
+  assert.equal(result.value.verification.automation.supported, false);
+  assert.deepEqual(
+    result.value.variants.map((variant) => variant.supportsAutomation),
+    [false, false],
+  );
+  assert.ok(
+    result.value.safeBoundaries.some((boundary) =>
+      boundary.includes("不修改本机 DNS"),
+    ),
+  );
+  assert.ok(
+    result.value.safeBoundaries.some((boundary) =>
+      boundary.includes("不请求真实外部 DNS"),
+    ),
+  );
+  assert.match(result.value.notes, /尚未提供 web\/API\/scripts 入口/);
+});
+
 test("command injection metadata declares web, api and script verification entries", async () => {
   const metadata = await readFixture("labs/web/command-injection/meta.json");
   const result = validateLabMetadata(metadata);
