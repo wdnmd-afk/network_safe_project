@@ -11,7 +11,8 @@
 - 元数据已登记漏洞版 / 修复版 web 页面入口。
 - 元数据已登记漏洞版 / 修复版 `resolve` API 入口。
 - 元数据未登记 scripts 入口。
-- `verification.automation.supported` 为 `true`，且当前只登记 API 测试证据。
+- `verification.automation.supported` 为 `true`，且当前登记 API 测试和 Playwright 页面差异验证证据。
+- Playwright 页面验证已覆盖漏洞版错误虚拟解析、修复版异常阻断和修复版可信解析恢复。
 - `/labs/network/dns-hijack/vuln` 页面只通过固定 `domainKey` 和固定 `resolverProfile` 观察漏洞版信号。
 - `/labs/network/dns-hijack/fixed` 页面只通过固定 `domainKey` 和固定 `resolverProfile` 观察修复版信号。
 - `POST /api/labs/network/dns-hijack/vuln/resolve` 可返回漏洞版错误虚拟解析和证书不匹配信号。
@@ -46,11 +47,11 @@
 ```text
 pnpm --filter @network-safe/server test -- tests/dns-hijack-lab.test.ts tests/health.test.ts tests/lab-registry.test.ts
 pnpm --filter @network-safe/web exec vitest run tests/dns-hijack-api.test.ts tests/dns-hijack-lab.test.ts tests/router.test.ts
+pnpm --filter @network-safe/testing e2e -- --grep "DNS 劫持"
 ```
 
 后续切片再补齐：
 
-- Playwright 页面差异验证。
 - 本机只读一致性验证脚本。
 
-在页面级验证或只读一致性验证补齐前，不能将本实验标记为 `ready`。
+在只读一致性验证或最终 ready 审计补齐前，不能将本实验标记为 `ready`。

@@ -24,6 +24,7 @@
 - 脚本目录边界说明。
 - 后端受控内存解析 API。
 - 前端固定样例观察工作台。
+- Playwright 页面差异验证。
 - 统一事件日志写入。
 - 服务端 API 差异测试。
 - 前端 API client、实验模型和路由测试。
@@ -59,6 +60,7 @@
 - 修复版页面：`/labs/network/dns-hijack/fixed`
 - 漏洞版 API：`POST /api/labs/network/dns-hijack/vuln/resolve`
 - 修复版 API：`POST /api/labs/network/dns-hijack/fixed/resolve`
+- 页面级验证：`packages/testing/tests/e2e/platform.spec.mjs`
 
 当前没有脚本入口。
 
@@ -75,4 +77,4 @@
 
 ## 6. 下一步
 
-下一步建议进入页面级验证或只读一致性验证切片，仍只允许固定 `domainKey` 和固定 `resolverProfile`，不请求真实 DNS，不创建真实 DNS 查询脚本。
+下一步建议进入只读一致性验证切片，仍只允许固定 `domainKey` 和固定 `resolverProfile`，不请求真实 DNS，不创建真实 DNS 查询脚本。

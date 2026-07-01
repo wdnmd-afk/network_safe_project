@@ -509,6 +509,10 @@ test("dns hijack metadata declares controlled web and api entries", async () => 
   );
   assert.equal(result.value.verification.manual.supported, true);
   assert.equal(result.value.verification.automation.supported, true);
+  assert.deepEqual(result.value.verification.automation.playwright, {
+    enabled: true,
+    specPath: "packages/testing/tests/e2e/platform.spec.mjs",
+  });
   assert.deepEqual(result.value.verification.automation.apiTest, {
     enabled: true,
     specPath: "apps/server/tests/dns-hijack-lab.test.ts",
@@ -527,7 +531,7 @@ test("dns hijack metadata declares controlled web and api entries", async () => 
       boundary.includes("不请求真实外部 DNS"),
     ),
   );
-  assert.match(result.value.notes, /前端工作台阶段/);
+  assert.match(result.value.notes, /页面级验证阶段/);
   assert.match(result.value.notes, /尚未提供 scripts 入口/);
   assert.match(result.value.notes, /不提供 exploit\.py/);
 });

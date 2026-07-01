@@ -1,3 +1,28 @@
+# 2026-07-01 最新进展：DNS 劫持 Playwright 页面级验证
+
+本轮已为 `network/dns-hijack` 补齐页面级 Playwright 差异验证：
+
+- 新增执行文档：`docs/execution/2026-07-01-network-dns-hijack-playwright-verification.md`。
+- 在 `packages/testing/tests/e2e/platform.spec.mjs` 新增 DNS 劫持漏洞版 / 修复版页面差异验证。
+- Playwright 用例登录 `demo_user` 后只操作固定域名样例“客户门户”和固定解析视角，不输入任意域名、DNS 服务器、IP、代理、网络接口或端口。
+- 漏洞版断言 `dns-hijack-certificate-mismatch-visible` 对应页面文案、`accepted` 决策、错误虚拟地址类别 `shadow-customer-portal` 和证书状态 `mismatch`。
+- 修复版 public-cache 断言 `dns-hijack-anomaly-blocked` 对应页面文案、`blocked` 决策和策略阻断状态。
+- 修复版 trusted-resolver 断言 `dns-hijack-trusted-resolution-restored` 对应页面文案、`accepted` 决策、可信虚拟地址类别 `trusted-customer-portal` 和证书状态 `trusted`。
+- `labs/network/dns-hijack/meta.json` 的 Playwright 自动化证据已更新，scripts 入口仍为空。
+- DNS 劫持 README、手动验证、下一波实验规划和共享元数据测试已同步页面级验证状态。
+
+验证情况：
+
+- `pnpm --filter @network-safe/testing e2e -- --grep "DNS 劫持"` 通过，1 项 Playwright 用例通过。
+- `pnpm --filter @network-safe/testing test` 通过，9 项测试通过。
+- `pnpm --filter @network-safe/shared test` 通过，29 项测试通过。
+- `pnpm --filter @network-safe/web exec vitest run tests/dns-hijack-api.test.ts tests/dns-hijack-lab.test.ts tests/router.test.ts` 通过，3 个测试文件、9 项测试通过。
+- `pnpm --filter @network-safe/server test -- tests/dns-hijack-lab.test.ts tests/health.test.ts tests/lab-registry.test.ts` 通过；该命令实际运行服务端全量测试，169 项通过。
+- `git diff --check` 通过；仅出现 Windows 下 LF 将转换为 CRLF 的提示。
+- `rg -n "[ \t]+$" -- <本轮目标文件>` 无命中。
+- 真实 DNS / 系统命令 / 脚本入口扫描无命中；任意输入关键词扫描无命中。
+- 下一项建议为 `network/dns-hijack` 补齐只读一致性验证脚本，或按完成标准做 ready 收口审计；仍不创建真实 DNS 查询脚本或系统网络配置能力。
+
 # 2026-07-01 最新进展：DNS 劫持前端固定样例观察工作台
 
 本轮已将 `network/dns-hijack` 从后端受控 API 阶段推进到前端工作台阶段：

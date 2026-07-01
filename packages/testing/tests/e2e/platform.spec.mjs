@@ -303,3 +303,98 @@ test("登录用户可以对比端口扫描漏洞版暴露面与修复版收敛",
   await expect(page.getByText("3306/tcp · 数据库服务")).toBeVisible();
   await expect(page.getByText("internal-only / medium").first()).toBeVisible();
 });
+
+test("登录用户可以对比 DNS 劫持漏洞版错误解析与修复版阻断恢复", async ({ page }) => {
+  await page.goto("/login");
+
+  await page.getByLabel("用户名").fill("demo_user");
+  await page.getByLabel("密码").fill("Demo@123456");
+  await page.getByRole("button", { name: "登录" }).click();
+
+  await expect(page.getByRole("heading", { name: "账户中心" })).toBeVisible();
+
+  await page.goto("/labs/network/dns-hijack/vuln");
+  await expect(page.getByRole("heading", { name: "DNS 劫持漏洞版" })).toBeVisible();
+  await expect(page.getByRole("textbox")).toHaveCount(0);
+
+  await page.getByRole("button", { name: "客户门户" }).click();
+  await page.getByRole("button", { name: "观察解析结果" }).click();
+
+  const vulnStatusPanel = page.locator(".dns-hijack-status-panel");
+
+  await expect(page.getByText("漏洞版证书不匹配可见")).toBeVisible();
+  await expect(page.getByText("漏洞版接受了错误虚拟解析结果")).toBeVisible();
+  await expect(
+    vulnStatusPanel.locator(".status-metric strong").filter({
+      hasText: /^accepted$/,
+    }),
+  ).toBeVisible();
+  await expect(
+    vulnStatusPanel.locator(".inspection-grid div").filter({
+      hasText: "当前虚拟地址",
+    }).locator("dd"),
+  ).toHaveText("shadow-customer-portal");
+  await expect(
+    vulnStatusPanel.locator(".inspection-grid div").filter({
+      hasText: "证书状态",
+    }).locator("dd"),
+  ).toHaveText("mismatch");
+  await expect(
+    vulnStatusPanel.locator(".inspection-grid div").filter({
+      hasText: "策略阻断",
+    }).locator("dd"),
+  ).toHaveText("否");
+
+  await page.goto("/labs/network/dns-hijack/fixed");
+  await expect(page.getByRole("heading", { name: "DNS 劫持修复版" })).toBeVisible();
+  await expect(page.getByRole("textbox")).toHaveCount(0);
+
+  await page.getByRole("button", { name: "客户门户" }).click();
+  await page.getByRole("button", { name: "观察解析结果" }).click();
+
+  const fixedStatusPanel = page.locator(".dns-hijack-status-panel");
+
+  await expect(page.getByText("修复版异常解析已阻断")).toBeVisible();
+  await expect(page.getByText("修复版识别到不可信解析来源")).toBeVisible();
+  await expect(
+    fixedStatusPanel.locator(".status-metric strong").filter({
+      hasText: /^blocked$/,
+    }),
+  ).toBeVisible();
+  await expect(
+    fixedStatusPanel.locator(".inspection-grid div").filter({
+      hasText: "当前虚拟地址",
+    }).locator("dd"),
+  ).toHaveText("shadow-customer-portal");
+  await expect(
+    fixedStatusPanel.locator(".inspection-grid div").filter({
+      hasText: "策略阻断",
+    }).locator("dd"),
+  ).toHaveText("是");
+
+  await page.getByRole("button", { name: "可信解析" }).click();
+  await page.getByRole("button", { name: "观察解析结果" }).click();
+
+  await expect(page.getByText("修复版可信解析已恢复")).toBeVisible();
+  await expect(page.getByText("修复版使用可信解析视角恢复到期望虚拟地址类别")).toBeVisible();
+  await expect(
+    fixedStatusPanel.locator(".status-metric strong").filter({
+      hasText: /^accepted$/,
+    }),
+  ).toBeVisible();
+  await expect(
+    fixedStatusPanel.locator(".inspection-grid div").filter({
+      hasText: "当前虚拟地址",
+    }).locator("dd"),
+  ).toHaveText("trusted-customer-portal");
+  await expect(
+    fixedStatusPanel.locator(".inspection-grid div").filter({
+      hasText: "证书状态",
+    }).locator("dd"),
+  ).toHaveText("trusted");
+  await expect(
+    fixedStatusPanel.locator(".inspection-grid div").filter({
+      hasText: "异常解析",
+    }).locator("dd"),
+  ).toHaveText("否");
+});
