@@ -1,3 +1,25 @@
+# 2026-07-01 最新进展：Prompt 注入前端固定样例工作台
+
+- [x] 新增执行文档 `docs/execution/2026-07-01-ai-prompt-injection-frontend-workbench.md`。
+- [x] 新增 `apps/web/src/api/prompt-injection-lab.ts`，前端只向后端提交固定 `scenarioKey`、固定 `instructionSourceKey` 和固定 `defensePolicyKey`。
+- [x] 新增 `apps/web/src/labs/prompt-injection.ts`，定义固定场景样例、固定外部内容来源、防御策略、学习信号文案、学习进度和验证记录载荷。
+- [x] 新增 `apps/web/src/views/PromptInjectionLabView.vue`，提供漏洞版 / 修复版固定样例观察工作台。
+- [x] 新增 `/labs/ai/prompt-injection/vuln` 与 `/labs/ai/prompt-injection/fixed` 路由。
+- [x] 页面只提供固定场景、固定来源和固定策略选择器，不提供任意提示词输入、模型配置、URL、密钥或真实工具参数输入。
+- [x] `labs/ai/prompt-injection/meta.json` 已登记 web 入口，状态仍保持 `in-progress`，scripts 入口仍为空。
+- [x] Prompt 注入 README、漏洞版说明、修复版说明、攻击步骤、修复说明、手动验证、脚本目录边界、下一波实验规划和共享元数据测试已同步当前状态。
+
+验证记录：
+
+- `pnpm --filter @network-safe/web exec vitest run tests/prompt-injection-api.test.ts tests/prompt-injection-lab.test.ts tests/router.test.ts` 通过，3 个测试文件、9 项测试通过。
+- `pnpm --filter @network-safe/web exec vue-tsc -p tsconfig.json --noEmit` 通过。
+- `pnpm --filter @network-safe/shared test` 通过，30 项测试通过。
+- `pnpm --filter @network-safe/server test -- tests/health.test.ts tests/lab-registry.test.ts` 通过；该命令实际运行服务端全量测试，178 项通过。
+- `git diff --check -- <本轮目标文件>` 通过；仅出现 Windows 下 LF 将转换为 CRLF 的提示。
+- `rg -n "[ \t]+$" -- <本轮目标文件>` 未发现目标文件行尾空白。
+- Prompt 注入安全关键词扫描仅命中禁止性说明、字段名反向断言、历史进度、路径 / 学习信号名和本地 API client 的 `fetch`，未发现外部 AI 调用、任意提示词输入器、危险提示词正文、可复用绕过模板、真实工具执行或攻击脚本实现。
+- 下一项建议：为 `ai/prompt-injection` 补齐页面级验证或只读一致性验证脚本，仍不提供任意提示词输入框、外部 AI 调用或攻击脚本入口。
+
 # 2026-07-01 最新进展：Prompt 注入后端确定性路由 API
 
 - [x] 新增执行文档 `docs/execution/2026-07-01-ai-prompt-injection-virtual-router-api.md`。
@@ -1341,7 +1363,7 @@
 | Deepfake | 规划中 | 案例化演示 | `docs/design/project-scope-and-security-content.md` | `labs/ai/deepfake/` |
 | 对抗性 AI | 规划中 | 案例化演示 | `docs/design/project-scope-and-security-content.md` | `labs/ai/adversarial-ai/` |
 | 加密劫持 | 规划中 | 案例化演示 / 本机模拟 | `docs/design/project-scope-and-security-content.md` | `labs/ai/cryptojacking/` |
-| Prompt 注入 | 后端受控 API | 确定性提示词路由模拟器 / 可交互演示 | `apps/server/src/services/prompt-injection-lab.ts`、`apps/server/tests/prompt-injection-lab.test.ts`、`labs/ai/prompt-injection/meta.json` | `labs/ai/prompt-injection/` |
+| Prompt 注入 | 前端固定样例工作台 | 确定性提示词路由模拟器 / 前端固定选择器 / 可交互演示 | `apps/web/src/views/PromptInjectionLabView.vue`、`apps/web/src/api/prompt-injection-lab.ts`、`apps/web/src/labs/prompt-injection.ts`、`apps/server/src/services/prompt-injection-lab.ts`、`apps/server/tests/prompt-injection-lab.test.ts`、`labs/ai/prompt-injection/meta.json` | `labs/ai/prompt-injection/` |
 
 ## 12. 客户端攻击
 

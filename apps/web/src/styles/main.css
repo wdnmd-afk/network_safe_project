@@ -764,6 +764,7 @@ td small {
 .session-fixation-workbench,
 .port-scan-workbench,
 .dns-hijack-workbench,
+.prompt-injection-workbench,
 .ssrf-workbench {
   display: grid;
   gap: 1rem;
@@ -833,6 +834,7 @@ td small {
 .session-fixation-status-panel,
 .port-scan-status-panel,
 .dns-hijack-status-panel,
+.prompt-injection-status-panel,
 .ssrf-status-panel {
   display: grid;
   gap: 0.85rem;

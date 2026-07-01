@@ -2,7 +2,7 @@
 
 ## 1. 当前状态
 
-当前 `ai/prompt-injection` 处于 `in-progress` 状态，修复版已有后端确定性路由 API 和服务端 API 测试，没有前端页面或只读验证脚本。
+当前 `ai/prompt-injection` 处于 `in-progress` 状态，修复版已有前端固定样例工作台、后端确定性路由 API 和服务端 API 测试，没有只读验证脚本。
 
 ## 2. 当前修复策略
 
@@ -18,6 +18,12 @@
 
 ```text
 POST /api/labs/ai/prompt-injection/fixed/evaluate
+```
+
+当前页面：
+
+```text
+/labs/ai/prompt-injection/fixed
 ```
 
 修复版对固定风险样例返回阻断结果，并对固定正常文档问答样例返回安全教学回答。

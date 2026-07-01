@@ -4,7 +4,7 @@
 
 本实验用于学习 Prompt 注入中的指令边界风险，不是真实 AI 攻击工具。
 
-当前首版后端已使用确定性提示词路由模拟器，帮助学习者观察：
+当前首版已使用前端固定样例工作台和后端确定性提示词路由模拟器，帮助学习者观察：
 
 - 攻击方为什么关注系统指令、检索内容、用户意图和工具调用之间的优先级。
 - 外部内容如果被错误当成高优先级指令，为什么会让业务目标偏离。
@@ -25,12 +25,13 @@
 - 手动验证说明。
 - 脚本目录边界说明。
 - 后端确定性提示词路由 API。
+- 前端固定样例观察工作台。
+- 前端固定 key 请求体测试。
 - 服务端 API 差异测试。
 - 统一事件日志安全摘要写入。
 
 当前不包含：
 
-- 前端页面。
 - 数据库迁移。
 - 自动化验证脚本。
 - `exploit.py`。
@@ -65,7 +66,12 @@
 - 漏洞版：`POST /api/labs/ai/prompt-injection/vuln/evaluate`
 - 修复版：`POST /api/labs/ai/prompt-injection/fixed/evaluate`
 
-当前没有 web 或 scripts 入口。
+当前登记 web 入口：
+
+- 漏洞版：`/labs/ai/prompt-injection/vuln`
+- 修复版：`/labs/ai/prompt-injection/fixed`
+
+当前没有 scripts 入口。
 
 ## 5. 当前学习信号
 
@@ -82,4 +88,4 @@
 
 ## 6. 下一步
 
-下一步建议接入前端固定样例观察工作台。页面只能提交固定 `scenarioKey`、固定 `instructionSourceKey` 和固定 `defensePolicyKey`，仍不得提供任意提示词输入框、外部 AI 调用或脚本入口。
+下一步建议补齐页面级验证或只读一致性验证脚本。当前页面只能提交固定 `scenarioKey`、固定 `instructionSourceKey` 和固定 `defensePolicyKey`，仍不得提供任意提示词输入框、外部 AI 调用或脚本入口。

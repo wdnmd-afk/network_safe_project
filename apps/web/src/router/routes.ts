@@ -378,4 +378,20 @@ export const routes: RouteRecordRaw[] = [
       variant: "fixed",
     },
   },
+  {
+    path: "/labs/ai/prompt-injection/vuln",
+    name: "lab-ai-prompt-injection-vuln",
+    component: () => import("../views/PromptInjectionLabView.vue"),
+    props: {
+      variant: "vuln",
+    },
+  },
+  {
+    path: "/labs/ai/prompt-injection/fixed",
+    name: "lab-ai-prompt-injection-fixed",
+    component: () => import("../views/PromptInjectionLabView.vue"),
+    props: {
+      variant: "fixed",
+    },
+  },
 ];

@@ -136,7 +136,7 @@
 
 | 实验 | 状态 | 推荐模式 | 当前规划落点 | 后续目录 |
 |---|---|---|---|---|
-| Prompt 注入 | 后端受控 API | 确定性提示词路由模拟器 / 可交互演示 | `apps/server/src/services/prompt-injection-lab.ts`、`apps/server/tests/prompt-injection-lab.test.ts`、`labs/ai/prompt-injection/meta.json` | `labs/ai/prompt-injection/` |
+| Prompt 注入 | 前端固定样例工作台 | 确定性提示词路由模拟器 / 前端固定选择器 / 可交互演示 | `apps/web/src/views/PromptInjectionLabView.vue`、`apps/web/src/api/prompt-injection-lab.ts`、`apps/web/src/labs/prompt-injection.ts`、`apps/server/src/services/prompt-injection-lab.ts`、`apps/server/tests/prompt-injection-lab.test.ts`、`labs/ai/prompt-injection/meta.json` | `labs/ai/prompt-injection/` |
 | AI 驱动攻击 | 延后 | 案例化演示 | `docs/design/project-scope-and-security-content.md` | `labs/ai/ai-driven-attacks/` |
 | Deepfake | 不做真实生成 | 案例化演示 | `docs/design/project-scope-and-security-content.md` | `labs/ai/deepfake/` |
 | 对抗性 AI | 延后 | 案例化演示 | `docs/design/project-scope-and-security-content.md` | `labs/ai/adversarial-ai/` |
@@ -149,9 +149,10 @@
 - 日志：只记录输入长度、风险类别、命中样例和学习信号。
 - 当前已补齐执行文档：`docs/execution/2026-07-01-ai-prompt-injection-lab.md`。
 - 当前已建立后端受控 API：`POST /api/labs/ai/prompt-injection/:variant/evaluate`。
-- 当前只登记 docs 和 api 入口，不登记 web 或 scripts 入口。
-- 当前 API 仍只接受固定 `scenarioKey`、固定 `instructionSourceKey` 和固定 `defensePolicyKey`。
-- 下一步切片建议：接入前端固定样例观察工作台，仍不提供任意提示词输入框、外部 AI 调用或脚本入口。
+- 当前已接入前端固定样例观察工作台：`/labs/ai/prompt-injection/vuln`、`/labs/ai/prompt-injection/fixed`。
+- 当前只登记 docs、web 和 api 入口，不登记 scripts 入口。
+- 当前页面和 API 仍只接受固定 `scenarioKey`、固定 `instructionSourceKey` 和固定 `defensePolicyKey`。
+- 下一步切片建议：补齐页面级验证或只读一致性验证脚本，仍不提供任意提示词输入框、外部 AI 调用或攻击脚本入口。
 
 禁止：
 
@@ -240,7 +241,7 @@
 
 推荐后续按以下切片推进：
 
-1. `ai/prompt-injection` 前端固定样例观察工作台。
+1. `ai/prompt-injection` 页面级验证或只读一致性验证脚本。
 2. `social/phishing` 案例化执行文档。
 3. `supply-chain/dependency-confusion` 模拟实验执行文档。
 4. `infrastructure/misconfiguration` 模拟实验执行文档。

@@ -7,7 +7,7 @@
   "mode": "interactive",
   "severity": "high",
   "difficulty": "intermediate",
-  "summary": "通过后端确定性提示词路由 API 学习外部内容、检索片段、用户意图和工具调用之间的指令边界风险。",
+  "summary": "通过前端固定样例工作台和后端确定性提示词路由 API 学习外部内容、检索片段、用户意图和工具调用之间的指令边界风险。",
   "status": "in-progress",
   "phase": "phase-2",
   "tags": ["ai", "prompt-injection", "llm-security", "deterministic-simulation"],
@@ -21,7 +21,7 @@
   "variants": [
     {
       "key": "vuln",
-      "title": "漏洞版 API",
+      "title": "漏洞版工作台",
       "enabled": true,
       "description": "使用固定样例展示外部内容被错误提升为高优先级指令后的学习信号。",
       "entryKey": "vuln-entry",
@@ -30,7 +30,7 @@
     },
     {
       "key": "fixed",
-      "title": "修复版 API",
+      "title": "修复版工作台",
       "enabled": true,
       "description": "使用固定样例展示指令分层、检索隔离、工具允许列表和输出策略校验的防御信号。",
       "entryKey": "fixed-entry",
@@ -39,7 +39,20 @@
     }
   ],
   "entrypoints": {
-    "web": [],
+    "web": [
+      {
+        "key": "vuln-entry",
+        "path": "/labs/ai/prompt-injection/vuln",
+        "description": "漏洞版固定样例指令边界观察工作台",
+        "variant": "vuln"
+      },
+      {
+        "key": "fixed-entry",
+        "path": "/labs/ai/prompt-injection/fixed",
+        "description": "修复版固定样例策略审计复盘工作台",
+        "variant": "fixed"
+      }
+    ],
     "api": [
       {
         "key": "prompt-injection-vuln-evaluate",
@@ -59,7 +72,7 @@
       {
         "key": "overview",
         "path": "labs/ai/prompt-injection/README.md",
-        "description": "Prompt 注入 planned 实验总说明"
+        "description": "Prompt 注入实验总说明"
       },
       {
         "key": "attack-steps",
@@ -74,7 +87,7 @@
       {
         "key": "manual-verification",
         "path": "labs/ai/prompt-injection/docs/manual-verification.md",
-        "description": "后端 API 阶段入口、元数据和边界验证方式"
+        "description": "前端工作台、后端 API、元数据和边界验证方式"
       }
     ]
   },
@@ -97,8 +110,8 @@
     }
   },
   "prerequisites": [
-    "已阅读 Prompt 注入实验执行文档、目录与 planned 元数据执行文档、后端确定性路由 API 执行文档",
-    "理解当前 in-progress 状态表示后端 API 已接入，但尚未提供前端页面或脚本入口",
+    "已阅读 Prompt 注入实验执行文档、目录与 planned 元数据执行文档、后端确定性路由 API 执行文档和前端工作台执行文档",
+    "理解当前 in-progress 状态表示后端 API 和前端固定样例工作台已接入，但尚未提供脚本入口",
     "理解本实验首版只允许固定样例和确定性路由模拟，不调用外部 AI 或真实工具"
   ],
   "paths": {
@@ -113,13 +126,13 @@
   "sortOrder": 300,
   "estimatedMinutes": 25,
   "safeBoundaries": [
-    "in-progress 状态仅表示本项目内 Prompt 注入后端确定性路由 API 已接入，不表示提供真实 AI 攻击能力",
-    "当前只登记 docs 和 api 入口，不登记 web 或 scripts 入口",
+    "in-progress 状态仅表示本项目内 Prompt 注入前端固定样例工作台和后端确定性路由 API 已接入，不表示提供真实 AI 攻击能力",
+    "当前只登记 docs、web 和 api 入口，不登记 scripts 入口",
     "当前不调用外部 AI、云模型、本地大模型、第三方推理接口或真实工具调用",
     "当前不接收任意提示词正文、真实系统提示词、模型配置、工具参数、URL、密钥或外部目标",
     "当前不生成钓鱼文本、恶意代码、绕过策略、仿冒身份内容、可投递攻击素材、完整危险提示词或危险样例库",
     "当前不保存完整用户提示词、完整系统提示词、完整检索片段、真实模型输出、Cookie、token 或凭据",
     "当前不提供 exploit.py、Prompt 注入攻击脚本、任意提示词执行器或可复用绕过模板"
   ],
-  "notes": "Prompt 注入后端确定性路由 API 已接入：当前包含元数据、文档、服务端受控 API 和 API 测试证据；仍不提供 exploit.py、web 页面、scripts 入口、外部 AI 调用、完整危险提示词或任意提示词执行器。"
+  "notes": "Prompt 注入前端固定样例工作台和后端确定性路由 API 已接入：当前包含元数据、文档、前端页面、前端单元测试、服务端受控 API 和 API 测试证据；仍不提供 exploit.py、scripts 入口、外部 AI 调用、完整危险提示词或任意提示词执行器。"
 }

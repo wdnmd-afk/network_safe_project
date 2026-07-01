@@ -551,7 +551,7 @@ test("dns hijack metadata is ready controlled DNS simulation", async () => {
   assert.match(result.value.notes, /不提供 exploit\.py/);
 });
 
-test("prompt injection metadata exposes controlled api without web or scripts", async () => {
+test("prompt injection metadata exposes controlled web and api without scripts", async () => {
   const metadata = await readFixture("labs/ai/prompt-injection/meta.json");
   const result = validateLabMetadata(metadata);
 
@@ -559,7 +559,13 @@ test("prompt injection metadata exposes controlled api without web or scripts", 
   assert.equal(result.value.id, "ai.prompt-injection");
   assert.equal(result.value.status, "in-progress");
   assert.equal(result.value.mode, "interactive");
-  assert.deepEqual(result.value.entrypoints.web, []);
+  assert.deepEqual(
+    result.value.entrypoints.web.map((entrypoint) => entrypoint.path),
+    [
+      "/labs/ai/prompt-injection/vuln",
+      "/labs/ai/prompt-injection/fixed",
+    ],
+  );
   assert.deepEqual(
     result.value.entrypoints.api.map((entrypoint) => entrypoint.path),
     [
@@ -598,10 +604,10 @@ test("prompt injection metadata exposes controlled api without web or scripts", 
   );
   assert.ok(
     result.value.safeBoundaries.some((boundary) =>
-      boundary.includes("当前只登记 docs 和 api 入口"),
+      boundary.includes("当前只登记 docs、web 和 api 入口"),
     ),
   );
-  assert.match(result.value.notes, /后端确定性路由 API 已接入/);
+  assert.match(result.value.notes, /前端固定样例工作台和后端确定性路由 API 已接入/);
   assert.match(result.value.notes, /不提供 exploit\.py/);
 });
 
