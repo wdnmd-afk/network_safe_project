@@ -1,3 +1,23 @@
+# 2026-07-01 最新进展：Prompt 注入实验执行文档
+
+本轮已为下一项 AI / 新型攻击实验 `ai/prompt-injection` 补齐单独实现执行文档：
+
+- 新增执行文档：`docs/execution/2026-07-01-ai-prompt-injection-lab.md`。
+- 将首版定位为“确定性提示词路由模拟器”，用于学习外部内容、检索片段、用户意图和工具调用之间的指令边界风险。
+- 明确后续实现只允许固定 `scenarioKey`、固定 `instructionSourceKey` 和固定 `defensePolicyKey`，不接收任意提示词正文、真实系统提示词、模型配置、工具参数、URL、密钥或外部目标。
+- 明确首版不调用外部 AI、云模型、本地大模型、第三方推理接口或真实工具调用。
+- 明确不生成钓鱼文本、恶意代码、绕过策略、仿冒身份内容、可投递攻击素材、完整危险提示词或危险样例库。
+- 明确事件日志只记录场景 key、来源 key、防御策略 key、输入长度、风险类别、命中固定样例、策略状态和学习信号，不保存完整提示词、完整检索片段、真实模型输出、Cookie、token 或凭据。
+- 更新 `docs/design/next-wave-security-labs.md`，将 `ai/prompt-injection` 从规划中推进到已有执行文档，并把下一步切片调整为目录与 planned 元数据。
+- 同步 `docs/TODO.md` 顶部进度和旧 AI / 新型攻击清单中的 Prompt 注入状态。
+
+验证情况：
+
+- `git diff --check -- docs/execution/2026-07-01-ai-prompt-injection-lab.md docs/design/next-wave-security-labs.md docs/TODO.md docs/execution/security-lab-master-goal.md` 未发现空白错误，仅有 `docs/TODO.md`、`docs/design/next-wave-security-labs.md` 与 `docs/execution/security-lab-master-goal.md` 的既有 LF/CRLF 提示。
+- `rg -n "[ \t]+$" -- docs/execution/2026-07-01-ai-prompt-injection-lab.md docs/design/next-wave-security-labs.md docs/TODO.md docs/execution/security-lab-master-goal.md` 未发现目标文件行尾空白。
+- 安全关键词扫描仅命中文档中的禁止性说明、历史进度或路径 / 信号名，未发现外部 AI 调用、危险提示词正文、可复用绕过模板、真实工具执行或攻击脚本实现。
+- 下一项建议：进入 `ai/prompt-injection` 目录与 planned 元数据切片，先只登记 docs 入口，不创建后端 API、前端页面或 Prompt 注入脚本。
+
 # 2026-07-01 最新进展：DNS 劫持 ready 收口
 
 本轮已按主计划完成标准对 `network/dns-hijack` 做 ready 收口审计：

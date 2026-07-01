@@ -136,7 +136,7 @@
 
 | 实验 | 状态 | 推荐模式 | 当前规划落点 | 后续目录 |
 |---|---|---|---|---|
-| Prompt 注入 | 规划中 | 可交互演示 | `docs/design/next-wave-security-labs.md` | `labs/ai/prompt-injection/` |
+| Prompt 注入 | 已有执行文档 | 确定性提示词路由模拟器 / 可交互演示 | `docs/execution/2026-07-01-ai-prompt-injection-lab.md` | `labs/ai/prompt-injection/` |
 | AI 驱动攻击 | 延后 | 案例化演示 | `docs/design/project-scope-and-security-content.md` | `labs/ai/ai-driven-attacks/` |
 | Deepfake | 不做真实生成 | 案例化演示 | `docs/design/project-scope-and-security-content.md` | `labs/ai/deepfake/` |
 | 对抗性 AI | 延后 | 案例化演示 | `docs/design/project-scope-and-security-content.md` | `labs/ai/adversarial-ai/` |
@@ -147,6 +147,8 @@
 - 漏洞版：检索片段或用户输入覆盖系统意图，导致输出越界。
 - 修复版：指令分层、工具允许列表、检索隔离和输出策略校验。
 - 日志：只记录输入长度、风险类别、命中样例和学习信号。
+- 当前已补齐执行文档：`docs/execution/2026-07-01-ai-prompt-injection-lab.md`。
+- 下一步切片建议：创建 `labs/ai/prompt-injection/` 标准目录和 `planned` 元数据，只登记 docs 入口。
 
 禁止：
 
@@ -235,7 +237,7 @@
 
 推荐后续按以下切片推进：
 
-1. `ai/prompt-injection` 实现执行文档。
+1. `ai/prompt-injection` 目录与 planned 元数据。
 2. `social/phishing` 案例化执行文档。
 3. `supply-chain/dependency-confusion` 模拟实验执行文档。
 4. `infrastructure/misconfiguration` 模拟实验执行文档。
