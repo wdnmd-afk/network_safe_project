@@ -1,3 +1,26 @@
+# 2026-07-01 最新进展：Prompt 注入后端确定性路由 API
+
+本轮已将 `ai/prompt-injection` 从 planned 文档入口推进到后端受控 API 阶段：
+
+- 新增执行文档：`docs/execution/2026-07-01-ai-prompt-injection-virtual-router-api.md`。
+- 新增 `apps/server/src/services/prompt-injection-lab.ts`，使用固定 `scenarioKey`、固定 `instructionSourceKey` 和固定 `defensePolicyKey` 返回确定性路由结果。
+- 新增 `POST /api/labs/ai/prompt-injection/:variant/evaluate`，漏洞版 / 修复版均写入统一事件日志。
+- 新增 `apps/server/tests/prompt-injection-lab.test.ts`，覆盖漏洞版风险信号、修复版阻断、安全问答、未知 key 脱敏和路由日志摘要。
+- 事件日志只记录固定 key、输入摘要长度、风险类别、命中固定样例、策略状态和学习信号，不保存完整用户提示词、完整系统提示词、完整检索片段、真实模型输出、URL、密钥、Cookie、token 或凭据。
+- `labs/ai/prompt-injection/meta.json` 已更新为 `in-progress`，当前只登记 docs 和 api 入口，不登记 web 或 scripts 入口。
+- Prompt 注入 README、漏洞版说明、修复版说明、mock 说明、攻击步骤、修复说明、手动验证和脚本目录边界说明已同步当前状态。
+- 共享元数据测试、服务端 health / registry 测试和下一波实验规划已同步。
+- 当前仍不提供前端页面、`exploit.py`、`verify.ts`、外部 AI 调用、真实工具调用、完整危险提示词或任意提示词执行器。
+
+验证情况：
+
+- `pnpm --filter @network-safe/server test -- tests/prompt-injection-lab.test.ts tests/health.test.ts tests/lab-registry.test.ts` 通过；该命令实际运行服务端全量测试，178 项通过。
+- `pnpm --filter @network-safe/shared test` 通过，30 项测试通过。
+- `git diff --cached --check` 通过。
+- `rg -n "[ \t]+$" -- <本轮目标文件>` 未发现目标文件行尾空白。
+- Prompt 注入安全关键词扫描仅命中文档中的禁止性说明、字段名、localhost 测试 URL、历史进度或路径 / 学习信号名，未发现外部 AI 调用、危险提示词正文、可复用绕过模板、真实工具执行或攻击脚本实现。
+- 下一项建议：进入 `ai/prompt-injection` 前端固定样例观察工作台切片，仍不提供任意提示词输入框、外部 AI 调用或脚本入口。
+
 # 2026-07-01 最新进展：Prompt 注入目录与 planned 元数据
 
 本轮已按执行文档建立 `ai/prompt-injection` 的 planned 文档入口：

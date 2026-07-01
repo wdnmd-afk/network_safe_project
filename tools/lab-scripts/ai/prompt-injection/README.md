@@ -1,6 +1,8 @@
 # Prompt 注入脚本目录
 
-当前目录仅作为 `ai/prompt-injection` planned 阶段的脚本边界说明。
+当前目录仅作为 `ai/prompt-injection` in-progress 阶段的脚本边界说明。
+
+当前已有后端确定性路由 API 和服务端 API 测试，但本目录仍不提供脚本入口。
 
 当前不提供：
 

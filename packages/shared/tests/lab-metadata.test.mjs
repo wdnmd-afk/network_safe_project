@@ -551,16 +551,22 @@ test("dns hijack metadata is ready controlled DNS simulation", async () => {
   assert.match(result.value.notes, /不提供 exploit\.py/);
 });
 
-test("prompt injection metadata is planned docs-only interactive lab", async () => {
+test("prompt injection metadata exposes controlled api without web or scripts", async () => {
   const metadata = await readFixture("labs/ai/prompt-injection/meta.json");
   const result = validateLabMetadata(metadata);
 
   assert.equal(result.ok, true);
   assert.equal(result.value.id, "ai.prompt-injection");
-  assert.equal(result.value.status, "planned");
+  assert.equal(result.value.status, "in-progress");
   assert.equal(result.value.mode, "interactive");
   assert.deepEqual(result.value.entrypoints.web, []);
-  assert.deepEqual(result.value.entrypoints.api, []);
+  assert.deepEqual(
+    result.value.entrypoints.api.map((entrypoint) => entrypoint.path),
+    [
+      "/api/labs/ai/prompt-injection/vuln/evaluate",
+      "/api/labs/ai/prompt-injection/fixed/evaluate",
+    ],
+  );
   assert.deepEqual(result.value.entrypoints.scripts, []);
   assert.deepEqual(
     result.value.entrypoints.docs.map((entrypoint) => entrypoint.path),
@@ -576,10 +582,14 @@ test("prompt injection metadata is planned docs-only interactive lab", async () 
     result.value.verification.manual.stepsDocPath,
     "labs/ai/prompt-injection/docs/manual-verification.md",
   );
-  assert.equal(result.value.verification.automation.supported, false);
+  assert.equal(result.value.verification.automation.supported, true);
+  assert.deepEqual(result.value.verification.automation.apiTest, {
+    enabled: true,
+    specPath: "apps/server/tests/prompt-injection-lab.test.ts",
+  });
   assert.deepEqual(
     result.value.variants.map((variant) => variant.supportsAutomation),
-    [false, false],
+    [true, true],
   );
   assert.ok(
     result.value.safeBoundaries.some((boundary) =>
@@ -588,10 +598,10 @@ test("prompt injection metadata is planned docs-only interactive lab", async () 
   );
   assert.ok(
     result.value.safeBoundaries.some((boundary) =>
-      boundary.includes("当前只登记 docs 入口"),
+      boundary.includes("当前只登记 docs 和 api 入口"),
     ),
   );
-  assert.match(result.value.notes, /planned 入口已建立/);
+  assert.match(result.value.notes, /后端确定性路由 API 已接入/);
   assert.match(result.value.notes, /不提供 exploit\.py/);
 });
 

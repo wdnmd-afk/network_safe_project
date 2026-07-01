@@ -88,6 +88,11 @@ import {
   type PortScanVariantKey,
 } from "./services/port-scan-lab.js";
 import {
+  createPromptInjectionLabService,
+  type PromptInjectionLabService,
+  type PromptInjectionVariantKey,
+} from "./services/prompt-injection-lab.js";
+import {
   createPrivilegeEscalationLabService,
   type PrivilegeEscalationLabService,
   type PrivilegeEscalationVariantKey,
@@ -145,6 +150,7 @@ type CreateAppOptions = {
   xpathInjectionLabService?: XpathInjectionLabService;
   pathTraversalLabService?: PathTraversalLabService;
   portScanLabService?: PortScanLabService;
+  promptInjectionLabService?: PromptInjectionLabService;
   privilegeEscalationLabService?: PrivilegeEscalationLabService;
   sessionFixationLabService?: SessionFixationLabService;
   sqlInjectionLabService?: SqlInjectionLabService;
@@ -224,6 +230,8 @@ export function createApp(options: CreateAppOptions = {}) {
     options.pathTraversalLabService ?? createPathTraversalLabService();
   const portScanLabService =
     options.portScanLabService ?? createPortScanLabService();
+  const promptInjectionLabService =
+    options.promptInjectionLabService ?? createPromptInjectionLabService();
   const privilegeEscalationLabService =
     options.privilegeEscalationLabService ??
     createPrivilegeEscalationLabService();
@@ -515,6 +523,12 @@ export function createApp(options: CreateAppOptions = {}) {
   }
 
   function readPortScanVariantKey(value: unknown): PortScanVariantKey | "" {
+    return value === "vuln" || value === "fixed" ? value : "";
+  }
+
+  function readPromptInjectionVariantKey(
+    value: unknown,
+  ): PromptInjectionVariantKey | "" {
     return value === "vuln" || value === "fixed" ? value : "";
   }
 
@@ -1012,6 +1026,34 @@ export function createApp(options: CreateAppOptions = {}) {
       certificateStatus: input.resolution.certificateStatus,
       anomalyDetected: input.resolution.anomalyDetected,
       matchedControlledSample: input.resolution.matchedControlledSample,
+      signal: input.signal,
+    };
+  }
+
+  function summarizePromptInjectionInput(input: {
+    scenarioKey: string;
+    instructionSourceKey: string;
+    defensePolicyKey: string;
+    routing: {
+      inputLength: number;
+      riskCategory: string;
+      matchedControlledSample: boolean;
+      instructionPriority: string;
+      toolRequestStatus: string;
+      outputPolicyStatus: string;
+    };
+    signal: string;
+  }) {
+    return {
+      scenarioKey: input.scenarioKey,
+      instructionSourceKey: input.instructionSourceKey,
+      defensePolicyKey: input.defensePolicyKey,
+      inputLength: input.routing.inputLength,
+      riskCategory: input.routing.riskCategory,
+      matchedControlledSample: input.routing.matchedControlledSample,
+      instructionPriority: input.routing.instructionPriority,
+      toolRequestStatus: input.routing.toolRequestStatus,
+      outputPolicyStatus: input.routing.outputPolicyStatus,
       signal: input.signal,
     };
   }
@@ -3235,6 +3277,97 @@ export function createApp(options: CreateAppOptions = {}) {
             : result.status === "blocked"
               ? "medium"
               : "low",
+        });
+
+        res.status(responseStatus).json({
+          status: result.status,
+          result,
+        });
+      } catch (error) {
+        next(error);
+      }
+    },
+  );
+
+  app.post(
+    "/api/labs/ai/prompt-injection/:variant/evaluate",
+    async (req, res, next) => {
+      try {
+        const currentUser = await readCurrentUser(req);
+
+        if (!currentUser.ok) {
+          res.status(currentUser.status).json(currentUser.body);
+          return;
+        }
+
+        const variantKey = readPromptInjectionVariantKey(req.params.variant);
+        const scenarioKey = readRequiredString(req.body?.scenarioKey);
+        const instructionSourceKey = readRequiredString(
+          req.body?.instructionSourceKey,
+        );
+        const defensePolicyKey = readRequiredString(req.body?.defensePolicyKey);
+
+        if (!variantKey) {
+          res.status(404).json({
+            status: "error",
+            message: "prompt injection variant not found",
+          });
+          return;
+        }
+
+        if (!scenarioKey || !instructionSourceKey || !defensePolicyKey) {
+          res.status(400).json({
+            status: "error",
+            message:
+              "scenarioKey, instructionSourceKey and defensePolicyKey are required",
+          });
+          return;
+        }
+
+        const result = await promptInjectionLabService.evaluateRoute({
+          userId: currentUser.user.id,
+          variantKey,
+          scenarioKey,
+          instructionSourceKey,
+          defensePolicyKey,
+        });
+        const responseStatus = result.status === "blocked" ? 403 : 200;
+        const riskyPromptRoute =
+          result.routing.riskCategory !== "safe-reference" &&
+          result.routing.matchedControlledSample;
+
+        await recordLabEventSafely({
+          traceId: readOptionalTraceId(req),
+          userId: currentUser.user.id,
+          labKey: "ai.prompt-injection",
+          variantKey,
+          phase:
+            result.status === "blocked"
+              ? "defense"
+              : riskyPromptRoute
+                ? "attack"
+                : "normal",
+          eventType: result.status === "blocked" ? "blocked" : "success",
+          actorPerspective: riskyPromptRoute ? "attacker" : "user",
+          method: req.method,
+          path: req.path,
+          inputSummary: summarizePromptInjectionInput({
+            scenarioKey: result.scenarioKey,
+            instructionSourceKey: result.instructionSourceKey,
+            defensePolicyKey: result.defensePolicyKey,
+            routing: result.routing,
+            signal: result.signal,
+          }),
+          decision: result.decision,
+          signal: result.signal,
+          statusCode: responseStatus,
+          message: result.message,
+          riskLevel:
+            result.status === "blocked"
+              ? "medium"
+              : riskyPromptRoute
+                ? "high"
+                : "low",
         });
 
         res.status(responseStatus).json({

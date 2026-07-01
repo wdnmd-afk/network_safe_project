@@ -2,7 +2,7 @@
 
 ## 1. mock 目标
 
-后续 mock 数据只用于确定性提示词路由模拟，不用于调用真实 AI。
+当前后端 API 使用内存固定样例做确定性提示词路由模拟，不用于调用真实 AI。
 
 允许规划的 mock 内容：
 
@@ -25,6 +25,6 @@ mock 目录不得保存：
 - 钓鱼文本、恶意代码、绕过策略或仿冒身份内容。
 - API Key、token、Cookie、密钥、凭据或外部目标。
 
-## 3. 后续数据原则
+## 3. 当前数据原则
 
-后续若需要新增固定样例，应优先使用短标签和摘要字段，例如 `instruction-override`、`retrieval-contamination`、`tool-overreach`。不要把危险提示词正文写入仓库。
+当前固定样例使用短标签和摘要字段，例如 `instruction-override`、`retrieval-contamination`、`tool-overreach`。后续若需要新增固定样例，必须继续使用摘要字段，不得把危险提示词正文写入仓库。
