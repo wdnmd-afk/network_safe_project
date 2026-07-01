@@ -2,7 +2,7 @@
 
 ## 1. 当前状态
 
-当前为 `in-progress` 后端 API 阶段，已实现漏洞版 `POST /api/labs/network/dns-hijack/vuln/resolve`，尚未实现漏洞版页面。
+当前为 `in-progress` 前端工作台阶段，已实现漏洞版页面 `/labs/network/dns-hijack/vuln` 和漏洞版 `POST /api/labs/network/dns-hijack/vuln/resolve`。
 
 ## 2. 漏洞版目标
 
@@ -15,6 +15,7 @@
 - 证书状态是否变为 `mismatch`。
 - 后端学习信号是否为 `dns-hijack-resolution-misdirected` 或 `dns-hijack-certificate-mismatch-visible`。
 - 统一事件日志是否只记录固定样例摘要，不保存真实域名、真实 IP 或真实 DNS 响应。
+- 前端页面是否只提交固定 `domainKey` 和固定 `resolverProfile`。
 
 ## 3. 攻击方视角
 

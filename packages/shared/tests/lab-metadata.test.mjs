@@ -475,7 +475,7 @@ test("port scan metadata is ready virtual workbench simulation", async () => {
   assert.match(result.value.notes, /不提供 exploit\.py/);
 });
 
-test("dns hijack metadata declares controlled api entries", async () => {
+test("dns hijack metadata declares controlled web and api entries", async () => {
   const metadata = await readFixture("labs/network/dns-hijack/meta.json");
   const result = validateLabMetadata(metadata);
 
@@ -483,7 +483,13 @@ test("dns hijack metadata declares controlled api entries", async () => {
   assert.equal(result.value.id, "network.dns-hijack");
   assert.equal(result.value.status, "in-progress");
   assert.equal(result.value.mode, "simulation");
-  assert.deepEqual(result.value.entrypoints.web, []);
+  assert.deepEqual(
+    result.value.entrypoints.web.map((entrypoint) => entrypoint.path),
+    [
+      "/labs/network/dns-hijack/vuln",
+      "/labs/network/dns-hijack/fixed",
+    ],
+  );
   assert.deepEqual(
     result.value.entrypoints.api.map((entrypoint) => entrypoint.path),
     [
@@ -521,7 +527,8 @@ test("dns hijack metadata declares controlled api entries", async () => {
       boundary.includes("不请求真实外部 DNS"),
     ),
   );
-  assert.match(result.value.notes, /尚未提供 web\/scripts 入口/);
+  assert.match(result.value.notes, /前端工作台阶段/);
+  assert.match(result.value.notes, /尚未提供 scripts 入口/);
   assert.match(result.value.notes, /不提供 exploit\.py/);
 });
 

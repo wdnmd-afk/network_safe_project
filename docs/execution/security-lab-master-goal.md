@@ -1,3 +1,27 @@
+# 2026-07-01 最新进展：DNS 劫持前端固定样例观察工作台
+
+本轮已将 `network/dns-hijack` 从后端受控 API 阶段推进到前端工作台阶段：
+
+- 新增执行文档：`docs/execution/2026-07-01-network-dns-hijack-frontend-workbench.md`。
+- 新增 `apps/web/src/api/dns-hijack-lab.ts`，前端只提交 `domainKey` 和 `resolverProfile`。
+- 新增 `apps/web/src/labs/dns-hijack.ts`，定义固定域名样例、固定解析视角、学习信号文案、学习进度和验证记录载荷。
+- 新增 `apps/web/src/views/DnsHijackLabView.vue`，提供漏洞版 / 修复版固定样例观察工作台。
+- 新增 `/labs/network/dns-hijack/vuln` 与 `/labs/network/dns-hijack/fixed` 路由。
+- 页面只提供固定域名样例和固定解析视角选择器，不提供任意域名、DNS 服务器、IP、代理、网络接口或端口输入。
+- `labs/network/dns-hijack/meta.json` 已登记 web 入口，状态仍保持 `in-progress`，scripts 入口仍为空。
+- DNS 劫持 README、漏洞版说明、修复版说明、攻击步骤、手动验证、下一波实验规划和共享元数据测试已同步当前状态。
+
+验证情况：
+
+- `pnpm --filter @network-safe/web exec vitest run tests/dns-hijack-api.test.ts tests/dns-hijack-lab.test.ts tests/router.test.ts` 通过，3 个测试文件、9 项测试通过。
+- `pnpm --filter @network-safe/web exec vue-tsc -p tsconfig.json --noEmit` 通过。
+- `pnpm --filter @network-safe/shared test` 通过，29 项测试通过。
+- `pnpm --filter @network-safe/server test -- tests/health.test.ts tests/lab-registry.test.ts` 通过；该命令实际运行服务端全量测试，169 项通过。
+- `git diff --check` 通过；仅出现 Windows 下 LF 将转换为 CRLF 的提示。
+- `rg -n "[ \t]+$" -- <本轮目标文件>` 无命中。
+- 真实 DNS / 系统命令扫描无命中；任意输入关键词扫描只命中固定 `domainKey` 选择器和测试中的反向断言。
+- 下一项建议为 `network/dns-hijack` 补齐页面级验证或只读一致性验证脚本，仍不创建真实 DNS 查询脚本或系统网络配置能力。
+
 # 2026-07-01 最新进展：DNS 劫持后端受控内存解析 API
 
 本轮已将 `network/dns-hijack` 从 planned 文档入口推进到后端受控 API 阶段：

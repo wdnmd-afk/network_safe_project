@@ -2,7 +2,7 @@
 
 ## 1. 当前状态
 
-当前为 `in-progress` 后端 API 阶段，已实现修复版 `POST /api/labs/network/dns-hijack/fixed/resolve`，尚未实现修复版页面。
+当前为 `in-progress` 前端工作台阶段，已实现修复版页面 `/labs/network/dns-hijack/fixed` 和修复版 `POST /api/labs/network/dns-hijack/fixed/resolve`。
 
 ## 2. 修复版目标
 
@@ -15,6 +15,7 @@
 - 异常解析是否被阻断或记录审计信号。
 - 后端学习信号是否为 `dns-hijack-trusted-resolution-restored` 或 `dns-hijack-anomaly-blocked`。
 - 统一事件日志是否只记录固定样例摘要，不保存真实域名、真实 IP 或真实 DNS 响应。
+- 前端页面是否只提交固定 `domainKey` 和固定 `resolverProfile`。
 
 ## 3. 防御方视角
 

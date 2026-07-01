@@ -23,12 +23,13 @@
 - 手动验证说明。
 - 脚本目录边界说明。
 - 后端受控内存解析 API。
+- 前端固定样例观察工作台。
 - 统一事件日志写入。
 - 服务端 API 差异测试。
+- 前端 API client、实验模型和路由测试。
 
 当前不包含：
 
-- 前端页面。
 - 数据库迁移。
 - `exploit.py`。
 - `verify.ts`。
@@ -54,10 +55,12 @@
 - 攻击步骤：`labs/network/dns-hijack/docs/attack-steps.md`
 - 修复说明：`labs/network/dns-hijack/docs/fix-notes.md`
 - 手动验证：`labs/network/dns-hijack/docs/manual-verification.md`
+- 漏洞版页面：`/labs/network/dns-hijack/vuln`
+- 修复版页面：`/labs/network/dns-hijack/fixed`
 - 漏洞版 API：`POST /api/labs/network/dns-hijack/vuln/resolve`
 - 修复版 API：`POST /api/labs/network/dns-hijack/fixed/resolve`
 
-当前没有页面或脚本入口。
+当前没有脚本入口。
 
 ## 5. 后续学习信号规划
 
@@ -72,4 +75,4 @@
 
 ## 6. 下一步
 
-下一步建议进入前端工作台切片，仍只允许固定 `domainKey` 和固定 `resolverProfile`，不请求真实 DNS，不创建 DNS 脚本。
+下一步建议进入页面级验证或只读一致性验证切片，仍只允许固定 `domainKey` 和固定 `resolverProfile`，不请求真实 DNS，不创建真实 DNS 查询脚本。

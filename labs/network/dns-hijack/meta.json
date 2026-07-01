@@ -39,7 +39,20 @@
     }
   ],
   "entrypoints": {
-    "web": [],
+    "web": [
+      {
+        "key": "vuln-entry",
+        "path": "/labs/network/dns-hijack/vuln",
+        "description": "漏洞版固定域名样例错误虚拟解析观察工作台",
+        "variant": "vuln"
+      },
+      {
+        "key": "fixed-entry",
+        "path": "/labs/network/dns-hijack/fixed",
+        "description": "修复版可信解析与异常审计复盘工作台",
+        "variant": "fixed"
+      }
+    ],
     "api": [
       {
         "key": "vuln-resolve-api",
@@ -105,7 +118,7 @@
   },
   "prerequisites": [
     "已阅读 DNS 劫持 / 污染实验执行文档、目录与 planned 元数据执行文档和后端受控内存解析 API 执行文档",
-    "理解当前 in-progress 阶段已接入后端受控 API，但尚未提供页面或脚本",
+    "理解当前 in-progress 阶段已接入前端固定样例工作台和后端受控 API，但尚未提供脚本",
     "理解本实验首版只允许固定内存解析表，不修改本机 DNS、hosts、代理、路由或防火墙"
   ],
   "paths": {
@@ -120,12 +133,13 @@
   "sortOrder": 211,
   "estimatedMinutes": 25,
   "safeBoundaries": [
-    "当前 in-progress 阶段仅提供后端受控 API、文档和元数据入口，不提供页面、脚本或真实 DNS 查询能力",
+    "当前 in-progress 阶段仅提供前端固定样例工作台、后端受控 API、文档和元数据入口，不提供脚本或真实 DNS 查询能力",
+    "页面只提供固定域名样例和固定解析视角选择器，不提供任意域名、DNS 服务器、IP、代理、网络接口或端口输入",
     "API 只使用固定内存解析表、固定域名样例和固定解析视角，不接收任意域名、DNS 服务器、IP、代理、网络接口或端口参数",
     "不修改本机 DNS、hosts、代理、路由、防火墙或系统网络配置",
     "不请求真实外部 DNS、DoH、DoT 或公共解析服务",
     "不实现真实 DNS 投毒、DNS 劫持、DNS 隧道、流量转发或中间人代理",
     "事件日志只记录域名样例 key、固定解析视角、解析结果类别、证书状态、异常审计结论和学习信号，不保存真实域名访问记录、真实 IP、真实证书、Cookie、token 或凭据"
   ],
-  "notes": "DNS 劫持 / 污染实验当前为 in-progress 后端 API 阶段：已建立标准目录、元数据、基础说明和后端受控内存解析 API，尚未提供 web/scripts 入口，也不提供 exploit.py、真实 DNS 查询脚本或系统网络配置修改能力。"
+  "notes": "DNS 劫持 / 污染实验当前为 in-progress 前端工作台阶段：已建立标准目录、元数据、基础说明、后端受控内存解析 API 和前端固定样例观察页面，尚未提供 scripts 入口，也不提供 exploit.py、真实 DNS 查询脚本或系统网络配置修改能力。"
 }
