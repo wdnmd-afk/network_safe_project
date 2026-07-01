@@ -346,4 +346,20 @@ export const routes: RouteRecordRaw[] = [
       variant: "fixed",
     },
   },
+  {
+    path: "/labs/network/port-scan/vuln",
+    name: "lab-network-port-scan-vuln",
+    component: () => import("../views/PortScanLabView.vue"),
+    props: {
+      variant: "vuln",
+    },
+  },
+  {
+    path: "/labs/network/port-scan/fixed",
+    name: "lab-network-port-scan-fixed",
+    component: () => import("../views/PortScanLabView.vue"),
+    props: {
+      variant: "fixed",
+    },
+  },
 ];
