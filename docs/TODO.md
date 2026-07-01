@@ -1,3 +1,23 @@
+# 2026-07-01 最新进展：端口扫描只读一致性验证
+
+- [x] 新增执行文档 `docs/execution/2026-07-01-network-port-scan-readonly-verification.md`。
+- [x] 新增 `tools/lab-scripts/network/port-scan/verify.ts`，只读取仓库内端口扫描元数据、文档和相关实现文件。
+- [x] 验证脚本确认 web 入口、API 入口、脚本入口、Playwright 证据、服务端 API 测试证据和安全边界一致。
+- [x] `labs/network/port-scan/meta.json` 已登记 `port-scan-verify` 脚本入口，并启用 `verification.automation.scriptVerification`。
+- [x] 更新端口扫描 README、攻击步骤、修复说明、手动验证、脚本目录说明和下一波实验规划。
+- [x] 共享元数据测试已同步端口扫描脚本入口和自动化证据断言。
+- [x] 首次运行只读脚本时发现标准文档缺少精确边界短语，已补强 README 后重跑通过。
+
+验证记录：
+
+- `pnpm --filter @network-safe/web exec tsx ../../tools/lab-scripts/network/port-scan/verify.ts` 通过，报告 `ok: true`。
+- `pnpm --filter @network-safe/shared test` 通过，28 项测试通过。
+- `pnpm --filter @network-safe/web exec vitest run tests/port-scan-api.test.ts tests/port-scan-lab.test.ts tests/router.test.ts` 通过，3 个测试文件、9 项测试通过。
+- `pnpm --filter @network-safe/testing test` 通过，9 项测试通过。
+- `pnpm --filter @network-safe/server test -- tests/health.test.ts tests/lab-registry.test.ts` 通过；该命令实际运行服务端全量测试，161 项通过。
+- 本轮仍未新增 `exploit.py`、真实端口扫描脚本、真实网络探测或通用扫描器能力。
+- 下一项建议：按完成标准对 `network/port-scan` 做 ready 收口审计，确认是否可从 `in-progress` 推进到 `ready`。
+
 # 2026-07-01 最新进展：端口扫描 Playwright 页面级验证
 
 - [x] 新增执行文档 `docs/execution/2026-07-01-network-port-scan-playwright-verification.md`。

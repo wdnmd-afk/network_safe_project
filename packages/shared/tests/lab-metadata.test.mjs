@@ -427,7 +427,14 @@ test("port scan metadata is in-progress virtual workbench simulation", async () 
       "/api/labs/network/port-scan/fixed/scan",
     ],
   );
-  assert.deepEqual(result.value.entrypoints.scripts, []);
+  assert.deepEqual(result.value.entrypoints.scripts, [
+    {
+      key: "port-scan-verify",
+      language: "ts",
+      path: "tools/lab-scripts/network/port-scan/verify.ts",
+      description: "本机只读端口扫描元数据、文档与虚拟边界一致性验证",
+    },
+  ]);
   assert.deepEqual(
     result.value.entrypoints.docs.map((entrypoint) => entrypoint.path),
     [
@@ -448,8 +455,8 @@ test("port scan metadata is in-progress virtual workbench simulation", async () 
     specPath: "apps/server/tests/port-scan-lab.test.ts",
   });
   assert.deepEqual(result.value.verification.automation.scriptVerification, {
-    enabled: false,
-    scriptKeys: [],
+    enabled: true,
+    scriptKeys: ["port-scan-verify"],
   });
   assert.deepEqual(
     result.value.variants.map((variant) => variant.supportsAutomation),

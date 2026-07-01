@@ -26,6 +26,7 @@
 - 前端 API client 与实验模型测试。
 - 服务端 API 测试。
 - Playwright 页面级差异验证。
+- 本机只读一致性验证脚本。
 
 当前不包含：
 
@@ -33,9 +34,13 @@
 - `exploit.py`。
 - 真实端口扫描脚本。
 
+当前不提供 exploit.py 或真实扫描脚本。
+
 ## 3. 安全边界
 
 本实验首版只允许使用固定虚拟资产表和虚拟端口状态。
+
+只读验证要求持续成立：不扫描局域网、网段、外部 IP、域名或用户输入主机；不调用真实 socket、系统命令或扫描工具；事件日志不保存真实 IP、真实主机名、真实服务 banner、凭据、token 或 Cookie。
 
 禁止：
 
@@ -53,6 +58,7 @@
 - 修复版页面：`/labs/network/port-scan/fixed`
 - 漏洞版 API：`POST /api/labs/network/port-scan/vuln/scan`
 - 修复版 API：`POST /api/labs/network/port-scan/fixed/scan`
+- 只读验证脚本：`tools/lab-scripts/network/port-scan/verify.ts`
 
 请求体只允许使用：
 
@@ -77,4 +83,4 @@
 
 ## 6. 下一步
 
-下一步可在执行文档约束下补齐只读一致性验证脚本或 ready 收口审计，仍不创建真实扫描脚本。
+下一步可在执行文档约束下进行 ready 收口审计，仍不创建真实扫描脚本。
