@@ -7,7 +7,7 @@
   "mode": "simulation",
   "severity": "medium",
   "difficulty": "beginner",
-  "summary": "通过固定虚拟资产表和受控 API 学习开放端口暴露面侦察风险与最小暴露面治理思路。",
+  "summary": "通过固定虚拟资产表、受控 API 和前端工作台学习开放端口暴露面侦察风险与最小暴露面治理思路。",
   "status": "in-progress",
   "phase": "phase-2",
   "tags": ["network", "port-scan", "exposure-surface", "simulation"],
@@ -39,7 +39,20 @@
     }
   ],
   "entrypoints": {
-    "web": [],
+    "web": [
+      {
+        "key": "vuln-entry",
+        "path": "/labs/network/port-scan/vuln",
+        "description": "漏洞版虚拟资产暴露面观察工作台",
+        "variant": "vuln"
+      },
+      {
+        "key": "fixed-entry",
+        "path": "/labs/network/port-scan/fixed",
+        "description": "修复版最小暴露面治理复盘工作台",
+        "variant": "fixed"
+      }
+    ],
     "api": [
       {
         "key": "vuln-scan-api",
@@ -76,7 +89,7 @@
       {
         "key": "manual-verification",
         "path": "labs/network/port-scan/docs/manual-verification.md",
-        "description": "API 接入阶段文档、元数据和边界验证方式"
+        "description": "前端工作台、API、元数据和边界验证方式"
       }
     ]
   },
@@ -95,8 +108,8 @@
     "automation": {
       "supported": true,
       "playwright": {
-        "enabled": false,
-        "specPath": ""
+        "enabled": true,
+        "specPath": "packages/testing/tests/e2e/platform.spec.mjs"
       },
       "apiTest": {
         "enabled": true,
@@ -109,8 +122,8 @@
     }
   },
   "prerequisites": [
-    "已阅读端口扫描暴露面实验执行文档和虚拟资产观察 API 执行文档",
-    "理解当前仅接入后端受控 API，尚未接入前端页面或脚本入口",
+    "已阅读端口扫描暴露面实验执行文档、虚拟资产观察 API 执行文档和前端工作台执行文档",
+    "理解当前已接入前端页面和后端受控 API，尚未接入脚本入口",
     "理解本实验首版只使用固定虚拟资产表，不执行真实网络探测"
   ],
   "paths": {
@@ -125,11 +138,11 @@
   "sortOrder": 210,
   "estimatedMinutes": 30,
   "safeBoundaries": [
-    "当前仅提供后端受控 API 和文档入口，不提供页面或脚本入口",
-    "API 只使用固定虚拟资产表和虚拟端口状态，不扫描局域网、网段、外部 IP、域名或用户输入主机",
+    "当前仅提供前端工作台、后端受控 API 和文档入口，不提供脚本入口",
+    "页面和 API 只使用固定虚拟资产表和虚拟端口状态，不扫描局域网、网段、外部 IP、域名或用户输入主机",
     "不调用真实 socket、系统命令、PowerShell、nmap、Test-NetConnection、ping、tracert 或类似探测工具",
     "不做并发扫描、压力探测、服务漏洞识别、认证绕过或利用",
     "事件日志只记录虚拟目标 key、虚拟端口数量、暴露面评分和学习信号，不保存真实 IP、主机名、banner、凭据、token 或 Cookie"
   ],
-  "notes": "端口扫描暴露面实验当前已接入后端受控 API，仍不提供 exploit.py、扫描脚本、真实 socket 探测或通用扫描器能力。"
+  "notes": "端口扫描暴露面实验当前已接入前端工作台和后端受控 API，仍不提供 exploit.py、扫描脚本、真实 socket 探测或通用扫描器能力。"
 }

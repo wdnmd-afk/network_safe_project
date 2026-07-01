@@ -405,7 +405,7 @@ test("ldap injection metadata exposes virtual workbench pages, virtual api and c
   assert.match(result.value.notes, /不提供 exploit\.py 或 LDAP 查询脚本/);
 });
 
-test("port scan metadata is in-progress api-only simulation", async () => {
+test("port scan metadata is in-progress virtual workbench simulation", async () => {
   const metadata = await readFixture("labs/network/port-scan/meta.json");
   const result = validateLabMetadata(metadata);
 
@@ -413,7 +413,13 @@ test("port scan metadata is in-progress api-only simulation", async () => {
   assert.equal(result.value.id, "network.port-scan");
   assert.equal(result.value.status, "in-progress");
   assert.equal(result.value.mode, "simulation");
-  assert.deepEqual(result.value.entrypoints.web, []);
+  assert.deepEqual(
+    result.value.entrypoints.web.map((entrypoint) => entrypoint.path),
+    [
+      "/labs/network/port-scan/vuln",
+      "/labs/network/port-scan/fixed",
+    ],
+  );
   assert.deepEqual(
     result.value.entrypoints.api.map((entrypoint) => entrypoint.path),
     [
@@ -433,6 +439,10 @@ test("port scan metadata is in-progress api-only simulation", async () => {
   );
   assert.equal(result.value.verification.manual.supported, true);
   assert.equal(result.value.verification.automation.supported, true);
+  assert.deepEqual(result.value.verification.automation.playwright, {
+    enabled: true,
+    specPath: "packages/testing/tests/e2e/platform.spec.mjs",
+  });
   assert.deepEqual(result.value.verification.automation.apiTest, {
     enabled: true,
     specPath: "apps/server/tests/port-scan-lab.test.ts",

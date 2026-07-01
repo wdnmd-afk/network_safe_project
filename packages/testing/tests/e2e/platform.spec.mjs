@@ -237,3 +237,69 @@ test("登录用户可以对比 LDAP 漏洞版扩大范围与修复版阻断", as
   ).toBeVisible();
   await expect(page.getByText("虚拟受限成员记录")).toHaveCount(0);
 });
+
+test("登录用户可以对比端口扫描漏洞版暴露面与修复版收敛", async ({ page }) => {
+  await page.goto("/login");
+
+  await page.getByLabel("用户名").fill("demo_user");
+  await page.getByLabel("密码").fill("Demo@123456");
+  await page.getByRole("button", { name: "登录" }).click();
+
+  await expect(page.getByRole("heading", { name: "账户中心" })).toBeVisible();
+
+  await page.goto("/labs/network/port-scan/vuln");
+  await expect(page.getByRole("heading", { name: "端口扫描漏洞版" })).toBeVisible();
+  await expect(page.getByRole("textbox")).toHaveCount(0);
+
+  await page.getByRole("button", { name: "后台管理节点" }).click();
+  await page.getByRole("button", { name: "观察暴露面" }).click();
+
+  const vulnStatusPanel = page.locator(".port-scan-status-panel");
+
+  await expect(page.getByText("漏洞版管理面公开可见")).toBeVisible();
+  await expect(
+    vulnStatusPanel.locator(".status-metric strong").filter({
+      hasText: /^accepted$/,
+    }),
+  ).toBeVisible();
+  await expect(
+    vulnStatusPanel.locator(".inspection-grid div").filter({
+      hasText: "暴露面评分",
+    }).locator("dd"),
+  ).toHaveText("155");
+  await expect(
+    vulnStatusPanel.locator(".inspection-grid div").filter({
+      hasText: "高风险端口",
+    }).locator("dd"),
+  ).toHaveText("3");
+  await expect(page.getByText("3306/tcp · 数据库服务")).toBeVisible();
+  await expect(page.getByText("public / critical")).toBeVisible();
+
+  await page.goto("/labs/network/port-scan/fixed");
+  await expect(page.getByRole("heading", { name: "端口扫描修复版" })).toBeVisible();
+  await expect(page.getByRole("textbox")).toHaveCount(0);
+
+  await page.getByRole("button", { name: "后台管理节点" }).click();
+  await page.getByRole("button", { name: "观察暴露面" }).click();
+
+  const fixedStatusPanel = page.locator(".port-scan-status-panel");
+
+  await expect(page.getByText("修复版暴露面已收敛")).toBeVisible();
+  await expect(
+    fixedStatusPanel.locator(".status-metric strong").filter({
+      hasText: /^accepted$/,
+    }),
+  ).toBeVisible();
+  await expect(
+    fixedStatusPanel.locator(".inspection-grid div").filter({
+      hasText: "公开端口数量",
+    }).locator("dd"),
+  ).toHaveText("0");
+  await expect(
+    fixedStatusPanel.locator(".inspection-grid div").filter({
+      hasText: "高风险端口",
+    }).locator("dd"),
+  ).toHaveText("0");
+  await expect(page.getByText("3306/tcp · 数据库服务")).toBeVisible();
+  await expect(page.getByText("internal-only / medium").first()).toBeVisible();
+});
