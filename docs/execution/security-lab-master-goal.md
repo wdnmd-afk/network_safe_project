@@ -1,3 +1,26 @@
+# 2026-07-02 最新进展：Prompt 注入只读一致性验证
+
+本轮已将 `ai/prompt-injection` 从页面级 Playwright 验证阶段推进到只读一致性验证阶段：
+
+- 新增执行文档：`docs/execution/2026-07-02-ai-prompt-injection-readonly-verification.md`。
+- 新增 `tools/lab-scripts/ai/prompt-injection/verify.ts`，只读取仓库内 Prompt 注入元数据、文档、前端、后端和测试文件，输出一致性验证报告。
+- 验证脚本校验 `ai.prompt-injection` 仍保持 `interactive` / `in-progress`，不提前标记 `ready`。
+- 验证脚本校验 web 入口只包含漏洞版 / 修复版固定样例工作台，API 入口只包含漏洞版 / 修复版 `evaluate` 接口。
+- 验证脚本校验 scripts 入口只登记 `prompt-injection-verify`，并确认不存在 `exploit.py`。
+- 验证脚本校验自动化证据包含 Playwright、服务端 API 测试和只读脚本验证。
+- 验证脚本扫描相关实现文件，确认未引入外部 AI SDK、模型配置、命令执行、外部 URL 或任意提示词输入框。
+- `labs/ai/prompt-injection/meta.json` 已登记只读脚本入口和 `scriptVerification` 自动化证据，状态仍保持 `in-progress`。
+- Prompt 注入 README、漏洞版 / 修复版说明、攻击步骤、修复说明、手动验证、脚本目录说明、`docs/TODO.md`、下一波实验规划和共享元数据测试已同步只读验证状态。
+
+验证情况：
+- `pnpm --filter @network-safe/web exec tsx ../../tools/lab-scripts/ai/prompt-injection/verify.ts` 通过，报告 `ok: true`。
+- `pnpm --filter @network-safe/shared test` 通过，30 项测试通过。
+- `pnpm --filter @network-safe/testing test` 通过，9 项测试通过。
+- `pnpm --filter @network-safe/web exec vitest run tests/prompt-injection-api.test.ts tests/prompt-injection-lab.test.ts tests/router.test.ts` 通过，3 个测试文件、9 项测试通过。
+- `pnpm --filter @network-safe/server test -- tests/prompt-injection-lab.test.ts tests/health.test.ts tests/lab-registry.test.ts` 通过；该命令实际运行服务端全量测试，178 项通过。
+- `pnpm --filter @network-safe/testing e2e -- --grep "Prompt 注入"` 通过，1 个 Playwright 用例通过。
+- 下一项建议：按完成标准对 `ai/prompt-injection` 做 ready 收口审计，仍不提供 `exploit.py`、任意提示词输入框、外部 AI 调用或攻击脚本入口。
+
 # 2026-07-02 最新进展：Prompt 注入 Playwright 页面级验证
 
 本轮已将 `ai/prompt-injection` 从前端固定样例工作台阶段推进到页面级 Playwright 验证阶段：
