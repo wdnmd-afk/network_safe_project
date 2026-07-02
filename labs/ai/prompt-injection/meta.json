@@ -103,6 +103,10 @@
     },
     "automation": {
       "supported": true,
+      "playwright": {
+        "enabled": true,
+        "specPath": "packages/testing/tests/e2e/platform.spec.mjs"
+      },
       "apiTest": {
         "enabled": true,
         "specPath": "apps/server/tests/prompt-injection-lab.test.ts"
@@ -110,7 +114,7 @@
     }
   },
   "prerequisites": [
-    "已阅读 Prompt 注入实验执行文档、目录与 planned 元数据执行文档、后端确定性路由 API 执行文档和前端工作台执行文档",
+    "已阅读 Prompt 注入实验执行文档、目录与 planned 元数据执行文档、后端确定性路由 API 执行文档、前端工作台执行文档和页面级验证执行文档",
     "理解当前 in-progress 状态表示后端 API 和前端固定样例工作台已接入，但尚未提供脚本入口",
     "理解本实验首版只允许固定样例和确定性路由模拟，不调用外部 AI 或真实工具"
   ],
@@ -134,5 +138,5 @@
     "当前不保存完整用户提示词、完整系统提示词、完整检索片段、真实模型输出、Cookie、token 或凭据",
     "当前不提供 exploit.py、Prompt 注入攻击脚本、任意提示词执行器或可复用绕过模板"
   ],
-  "notes": "Prompt 注入前端固定样例工作台和后端确定性路由 API 已接入：当前包含元数据、文档、前端页面、前端单元测试、服务端受控 API 和 API 测试证据；仍不提供 exploit.py、scripts 入口、外部 AI 调用、完整危险提示词或任意提示词执行器。"
+  "notes": "Prompt 注入前端固定样例工作台和后端确定性路由 API 已接入：当前包含元数据、文档、前端页面、前端单元测试、Playwright 页面验证、服务端受控 API 和 API 测试证据；仍不提供 exploit.py、scripts 入口、外部 AI 调用、完整危险提示词或任意提示词执行器。"
 }

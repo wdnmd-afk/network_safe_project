@@ -589,6 +589,10 @@ test("prompt injection metadata exposes controlled web and api without scripts",
     "labs/ai/prompt-injection/docs/manual-verification.md",
   );
   assert.equal(result.value.verification.automation.supported, true);
+  assert.deepEqual(result.value.verification.automation.playwright, {
+    enabled: true,
+    specPath: "packages/testing/tests/e2e/platform.spec.mjs",
+  });
   assert.deepEqual(result.value.verification.automation.apiTest, {
     enabled: true,
     specPath: "apps/server/tests/prompt-injection-lab.test.ts",
@@ -607,7 +611,7 @@ test("prompt injection metadata exposes controlled web and api without scripts",
       boundary.includes("当前只登记 docs、web 和 api 入口"),
     ),
   );
-  assert.match(result.value.notes, /前端固定样例工作台和后端确定性路由 API 已接入/);
+  assert.match(result.value.notes, /Playwright 页面验证/);
   assert.match(result.value.notes, /不提供 exploit\.py/);
 });
 
