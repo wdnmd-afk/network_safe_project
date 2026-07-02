@@ -241,7 +241,7 @@
 
 | 实验 | 状态 | 推荐模式 | 当前规划落点 | 后续目录 |
 |---|---|---|---|---|
-| 配置错误利用 | 规划中 | 本机模拟 / 静态配置分析 | `docs/design/next-wave-security-labs.md` | `labs/infrastructure/misconfiguration/` |
+| 配置错误利用 | 执行文档阶段 | 本机模拟 / 静态配置分析 / 固定配置审计样例 | `docs/execution/2026-07-02-infrastructure-misconfiguration-lab.md` | `labs/infrastructure/misconfiguration/` |
 | 云安全漏洞 | 延后 | 案例化演示 / 本机模拟 | `docs/design/project-scope-and-security-content.md` | `labs/infrastructure/cloud-security/` |
 | IoT 攻击 | 延后 | 案例化演示 / 本机模拟 | `docs/design/project-scope-and-security-content.md` | `labs/infrastructure/iot/` |
 | 容器逃逸 | 不做真实复现 | 案例化演示 | `docs/design/project-scope-and-security-content.md` | `labs/infrastructure/container-escape/` |
@@ -252,6 +252,9 @@
 - 使用静态配置片段。
 - 漏洞版展示调试端口、默认凭据提示、目录索引、过宽 CORS 等风险信号。
 - 修复版展示最小暴露面、默认关闭、认证要求和配置审计。
+- 当前已补齐执行文档：`docs/execution/2026-07-02-infrastructure-misconfiguration-lab.md`。
+- 当前只规划固定配置片段、固定暴露面信号、固定审计策略和受控学习路径，不创建实验目录、元数据、页面、API、脚本或真实配置文件。
+- 下一步切片建议：进入 `infrastructure/misconfiguration` 目录与 `planned` 元数据，先只登记 docs 入口。
 
 禁止修改真实 nginx、MySQL、Node、系统服务或云账号配置。
 
@@ -259,7 +262,7 @@
 
 推荐后续按以下切片推进：
 
-1. `infrastructure/misconfiguration` 模拟实验执行文档。
+1. `infrastructure/misconfiguration` 目录与 `planned` 元数据。
 2. 后续社会工程学扩展案例的边界设计。
 3. 后续供应链扩展案例的边界设计。
 

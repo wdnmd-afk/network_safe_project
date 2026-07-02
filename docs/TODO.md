@@ -1,3 +1,21 @@
+# 2026-07-02 最新进展：配置错误利用实验执行文档
+
+- [x] 新增执行文档 `docs/execution/2026-07-02-infrastructure-misconfiguration-lab.md`。
+- [x] 将 `infrastructure/misconfiguration` 首版定位为“静态配置风险审计器”，只使用固定配置片段、固定暴露面信号和固定审计策略观察配置错误风险。
+- [x] 明确攻击方视角只用于理解调试入口、默认凭据提示、目录索引、过宽 CORS、公开管理状态页和详细错误信息等风险信号，不用于扫描、枚举或连接真实服务。
+- [x] 明确后续只允许固定 `configCaseKey` 和固定 `auditPolicyKey`，实现前仍需按共享类型、元数据规范和服务设计确认字段名。
+- [x] 明确不修改真实 nginx、MySQL、Node、Windows 服务、系统防火墙、代理、hosts、证书或云账号配置。
+- [x] 明确不读取真实 `.env`、本机配置文件、服务配置、云凭据、数据库连接串、token、Cookie 或密码。
+- [x] 同步 `docs/design/next-wave-security-labs.md`，将配置错误利用从“规划中”推进到“执行文档阶段”，并把下一步切片改为目录与 `planned` 元数据。
+- [x] 当前不创建 `labs/infrastructure/misconfiguration/`、`tools/lab-scripts/infrastructure/misconfiguration/`、页面、API、元数据或脚本。
+
+验证记录：
+
+- `git diff --check -- docs/execution/2026-07-02-infrastructure-misconfiguration-lab.md docs/design/next-wave-security-labs.md docs/TODO.md docs/execution/security-lab-master-goal.md` 通过，仅保留 Windows 环境下 LF/CRLF 提示。
+- `rg -n "[ \t]+$" -- docs/execution/2026-07-02-infrastructure-misconfiguration-lab.md docs/design/next-wave-security-labs.md docs/TODO.md docs/execution/security-lab-master-goal.md` 无命中。
+- 安全关键词扫描通过：本轮危险命令窄扫描无命中；宽泛安全词仅命中禁止性说明、既有历史边界和本轮安全边界说明，未新增真实配置修改、真实服务扫描、真实凭据读取、真实管理接口连接或可复用利用流程。
+- 下一项建议：进入 `infrastructure/misconfiguration` 目录与 `planned` 元数据切片，先只登记 docs 入口，不创建扫描器、利用脚本、真实配置文件或真实服务连接能力。
+
 # 2026-07-02 最新进展：依赖混淆 simulation ready 收口
 
 - [x] 新增执行文档 `docs/execution/2026-07-02-supply-chain-dependency-confusion-ready-closeout.md`。
@@ -1704,7 +1722,7 @@
 
 | 内容 | 状态 | 落地方式 | 当前落点 | 未来代码位置 |
 |---|---|---|---|---|
-| 配置错误利用 | 规划中 | 本机模拟 / 案例化演示 | `docs/design/project-scope-and-security-content.md` | `labs/infrastructure/misconfiguration/` |
+| 配置错误利用 | 执行文档阶段 | 本机模拟 / 静态配置分析 / 固定配置审计样例 | `docs/execution/2026-07-02-infrastructure-misconfiguration-lab.md` | `labs/infrastructure/misconfiguration/` |
 | 容器逃逸 | 不做真实复现 | 案例化演示 | `docs/design/project-scope-and-security-content.md` | `labs/infrastructure/container-escape/` |
 | 云安全漏洞 | 规划中 | 案例化演示 / 本机模拟 | `docs/design/project-scope-and-security-content.md` | `labs/infrastructure/cloud-security/` |
 | IoT 攻击 | 规划中 | 案例化演示 / 本机模拟 | `docs/design/project-scope-and-security-content.md` | `labs/infrastructure/iot/` |

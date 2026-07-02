@@ -1,3 +1,24 @@
+# 2026-07-02 最新进展：配置错误利用实验执行文档
+
+本轮已为基础设施实验 `infrastructure/misconfiguration` 补齐单独实现执行文档：
+
+- 新增执行文档：`docs/execution/2026-07-02-infrastructure-misconfiguration-lab.md`。
+- 将首版定位为“静态配置风险审计器”，只使用固定配置片段、固定暴露面信号和固定审计策略观察配置错误风险。
+- 攻击方视角只用于理解调试入口、默认凭据提示、目录索引、过宽 CORS、公开管理状态页和详细错误信息等风险信号，不用于扫描、枚举或连接真实服务。
+- 明确后续只允许固定 `configCaseKey` 和固定 `auditPolicyKey`，实现前仍需按共享类型、元数据规范和服务设计确认字段名。
+- 明确不修改真实 nginx、MySQL、Node、Windows 服务、系统防火墙、代理、hosts、证书或云账号配置。
+- 明确不读取真实 `.env`、本机配置文件、服务配置、云凭据、数据库连接串、token、Cookie 或密码。
+- 同步 `docs/design/next-wave-security-labs.md`，将配置错误利用从“规划中”推进到“执行文档阶段”，并把下一步切片改为目录与 `planned` 元数据。
+- 当前不创建 `labs/infrastructure/misconfiguration/`、`tools/lab-scripts/infrastructure/misconfiguration/`、页面、API、元数据或脚本。
+
+验证记录：
+
+- `git diff --check -- docs/execution/2026-07-02-infrastructure-misconfiguration-lab.md docs/design/next-wave-security-labs.md docs/TODO.md docs/execution/security-lab-master-goal.md` 通过，仅保留 Windows 环境下 LF/CRLF 提示。
+- `rg -n "[ \t]+$" -- docs/execution/2026-07-02-infrastructure-misconfiguration-lab.md docs/design/next-wave-security-labs.md docs/TODO.md docs/execution/security-lab-master-goal.md` 无命中。
+- 安全关键词扫描通过：本轮危险命令窄扫描无命中；宽泛安全词仅命中禁止性说明、既有历史边界和本轮安全边界说明，未新增真实配置修改、真实服务扫描、真实凭据读取、真实管理接口连接或可复用利用流程。
+
+下一项建议：进入 `infrastructure/misconfiguration` 目录与 `planned` 元数据切片，先只登记 docs 入口，不创建扫描器、利用脚本、真实配置文件或真实服务连接能力。
+
 # 2026-07-02 最新进展：依赖混淆 simulation ready 收口
 
 本轮已将供应链实验 `supply-chain/dependency-confusion` 从只读一致性验证阶段推进到 simulation ready 收口：
