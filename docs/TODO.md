@@ -1,3 +1,22 @@
+# 2026-07-02 最新进展：Prompt 注入 Playwright 页面级验证
+
+- [x] 新增执行文档 `docs/execution/2026-07-02-ai-prompt-injection-playwright-verification.md`。
+- [x] 在 `packages/testing/tests/e2e/platform.spec.mjs` 新增 Prompt 注入漏洞版 / 修复版页面差异验证。
+- [x] Playwright 用例登录 `demo_user` 后只操作固定场景和固定来源，不提供任意提示词输入框、模型配置、URL、API key 或真实工具参数输入。
+- [x] 漏洞版断言固定检索资料被错误抬高为指令来源，并校验 `accepted`、`retrieval-contamination`、`confused`、`missing` 和策略未阻断状态。
+- [x] 修复版断言策略护栏阻断检索污染样例，并校验 `blocked`、`isolated`、`blocked` 和策略阻断状态。
+- [x] 修复版同时验证固定文档问答安全路径，校验 `accepted`、`safe-reference`、`applied` 和策略未阻断状态。
+- [x] `labs/ai/prompt-injection/meta.json` 已登记 Playwright 页面验证证据，scripts 入口仍保持为空。
+- [x] Prompt 注入 README、手动验证文档、脚本目录边界说明、下一波实验规划和共享元数据测试已同步页面级验证状态。
+
+验证记录：
+- `pnpm --filter @network-safe/testing e2e -- --grep "Prompt 注入"` 通过，1 个 Playwright 用例通过。
+- `pnpm --filter @network-safe/testing test` 通过，9 项测试通过。
+- `pnpm --filter @network-safe/shared test` 通过，30 项测试通过。
+- `pnpm --filter @network-safe/web exec vitest run tests/prompt-injection-api.test.ts tests/prompt-injection-lab.test.ts tests/router.test.ts` 通过，3 个测试文件、9 项测试通过。
+- `pnpm --filter @network-safe/server test -- tests/prompt-injection-lab.test.ts tests/health.test.ts tests/lab-registry.test.ts` 通过；该命令实际运行服务端全量测试，178 项通过。
+- 下一项建议：为 `ai/prompt-injection` 补齐只读一致性验证脚本，仍不提供 `exploit.py`、任意提示词输入框、外部 AI 调用或攻击脚本入口。
+
 # 2026-07-01 最新进展：Prompt 注入前端固定样例工作台
 
 - [x] 新增执行文档 `docs/execution/2026-07-01-ai-prompt-injection-frontend-workbench.md`。
@@ -1363,7 +1382,7 @@
 | Deepfake | 规划中 | 案例化演示 | `docs/design/project-scope-and-security-content.md` | `labs/ai/deepfake/` |
 | 对抗性 AI | 规划中 | 案例化演示 | `docs/design/project-scope-and-security-content.md` | `labs/ai/adversarial-ai/` |
 | 加密劫持 | 规划中 | 案例化演示 / 本机模拟 | `docs/design/project-scope-and-security-content.md` | `labs/ai/cryptojacking/` |
-| Prompt 注入 | 前端固定样例工作台 | 确定性提示词路由模拟器 / 前端固定选择器 / 可交互演示 | `apps/web/src/views/PromptInjectionLabView.vue`、`apps/web/src/api/prompt-injection-lab.ts`、`apps/web/src/labs/prompt-injection.ts`、`apps/server/src/services/prompt-injection-lab.ts`、`apps/server/tests/prompt-injection-lab.test.ts`、`labs/ai/prompt-injection/meta.json` | `labs/ai/prompt-injection/` |
+| Prompt 注入 | 页面级验证 | 确定性提示词路由模拟器 / 前端固定选择器 / Playwright 差异验证 / 可交互演示 | `apps/web/src/views/PromptInjectionLabView.vue`、`apps/web/src/api/prompt-injection-lab.ts`、`apps/web/src/labs/prompt-injection.ts`、`packages/testing/tests/e2e/platform.spec.mjs`、`apps/server/src/services/prompt-injection-lab.ts`、`apps/server/tests/prompt-injection-lab.test.ts`、`labs/ai/prompt-injection/meta.json` | `labs/ai/prompt-injection/` |
 
 ## 12. 客户端攻击
 

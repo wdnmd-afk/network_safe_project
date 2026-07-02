@@ -24,8 +24,9 @@
   - `POST /api/labs/ai/prompt-injection/fixed/evaluate`
 - `entrypoints.scripts` 为空数组。
 - `verification.automation.supported` 为 `true`。
+- `verification.automation.playwright.specPath` 为 `packages/testing/tests/e2e/platform.spec.mjs`。
 - `verification.automation.apiTest.specPath` 为 `apps/server/tests/prompt-injection-lab.test.ts`。
-- `variants[].supportsAutomation` 均为 `true`，表示 API 差异验证已覆盖，不表示存在攻击脚本自动化。
+- `variants[].supportsAutomation` 均为 `true`，表示页面 / API 差异验证已覆盖，不表示存在攻击脚本自动化。
 
 ## 3. 文档检查
 
@@ -49,6 +50,13 @@
 - `apps/web/src/labs/prompt-injection.ts`
 
 页面不得提供任意提示词正文、真实系统提示词、模型配置、工具参数、URL、密钥或外部目标输入框。
+
+页面级 Playwright 验证应覆盖：
+
+- 漏洞版固定客服知识库样例出现 `prompt-injection-retrieval-poisoning-visible`。
+- 修复版同一固定样例出现 `prompt-injection-policy-guardrail-applied`。
+- 修复版固定文档问答样例出现 `prompt-injection-safe-answer-returned`。
+- 漏洞版 / 修复版页面均不出现文本输入框。
 
 ## 5. 后端 API 检查
 

@@ -27,13 +27,14 @@
 - 后端确定性提示词路由 API。
 - 前端固定样例观察工作台。
 - 前端固定 key 请求体测试。
+- Playwright 页面差异验证。
 - 服务端 API 差异测试。
 - 统一事件日志安全摘要写入。
 
 当前不包含：
 
 - 数据库迁移。
-- 自动化验证脚本。
+- 只读验证脚本。
 - `exploit.py`。
 - 外部 AI、模型服务或真实工具调用。
 
@@ -60,6 +61,8 @@
 - 实现执行文档：`docs/execution/2026-07-01-ai-prompt-injection-lab.md`
 - 目录与 planned 元数据执行文档：`docs/execution/2026-07-01-ai-prompt-injection-directory-metadata.md`
 - 后端 API 执行文档：`docs/execution/2026-07-01-ai-prompt-injection-virtual-router-api.md`
+- 前端工作台执行文档：`docs/execution/2026-07-01-ai-prompt-injection-frontend-workbench.md`
+- 页面级验证执行文档：`docs/execution/2026-07-02-ai-prompt-injection-playwright-verification.md`
 
 当前登记 API 入口：
 
@@ -88,4 +91,4 @@
 
 ## 6. 下一步
 
-下一步建议补齐页面级验证或只读一致性验证脚本。当前页面只能提交固定 `scenarioKey`、固定 `instructionSourceKey` 和固定 `defensePolicyKey`，仍不得提供任意提示词输入框、外部 AI 调用或脚本入口。
+下一步建议补齐只读一致性验证脚本。当前页面只能提交固定 `scenarioKey`、固定 `instructionSourceKey` 和固定 `defensePolicyKey`，仍不得提供任意提示词输入框、外部 AI 调用或脚本入口。
