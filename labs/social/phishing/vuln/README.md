@@ -15,11 +15,11 @@
 
 ## 当前状态
 
-当前仅为 planned 文档入口：
+当前已接入后端固定案例 API：
 
+- `POST /api/labs/social/phishing/vuln/review` 只读取固定 `caseKey`、`reviewModeKey` 和 `defenseChecklistKey`。
+- 统一事件日志只记录固定 key、风险标签数量、建议动作和学习信号。
 - 没有前端页面。
-- 没有后端 API。
-- 没有事件日志写入。
 - 没有攻击脚本。
 
 ## 禁止能力
@@ -28,4 +28,3 @@
 - 不提供真实登录页、真实链接、真实附件或真实品牌素材。
 - 不提供邮件标题库、正文模板库、群发脚本或投递参数。
 - 不收集邮箱、凭据、验证码、Cookie 或 token。
-

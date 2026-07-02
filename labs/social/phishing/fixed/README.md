@@ -16,14 +16,15 @@
 
 ## 当前状态
 
-当前仅为 planned 文档入口：
+当前已接入后端固定案例 API：
 
+- `POST /api/labs/social/phishing/fixed/review` 只读取固定 `caseKey`、`reviewModeKey` 和 `defenseChecklistKey`。
+- 修复版固定风险案例会返回阻断 / 举报 / 隔离建议。
+- 固定安全案例会返回 `phishing-safe-message-accepted`，用于验证正常消息仍可放行。
 - 没有前端页面。
-- 没有后端 API。
 - 没有自动化验证脚本。
 - 没有真实收件箱或第三方平台连接。
 
 ## 安全边界
 
 修复版只讨论识别和处置流程，不连接真实邮件系统，不处理真实邮件内容，不保存真实凭据或外部目标。
-

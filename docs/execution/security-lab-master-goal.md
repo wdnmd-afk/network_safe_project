@@ -1,3 +1,25 @@
+# 2026-07-02 最新进展：网络钓鱼识别后端固定案例 API
+
+本轮已将社会工程学实验 `social/phishing` 从 planned 元数据阶段推进到后端固定案例 API 阶段：
+
+- 新增执行文档：`docs/execution/2026-07-02-social-phishing-fixed-case-api.md`。
+- 新增后端固定案例服务：`apps/server/src/services/phishing-lab.ts`。
+- 新增受控 API：`POST /api/labs/social/phishing/:variant/review`。
+- API 只读取固定 `caseKey`、固定 `reviewModeKey` 和固定 `defenseChecklistKey`。
+- 漏洞版固定风险案例返回错误放行倾向和攻击方观察信号；修复版固定风险案例返回阻断 / 举报 / 隔离建议；固定安全案例保持可接受。
+- API 已写入统一事件日志，日志只记录固定 key、风险标签数量、建议动作、是否命中固定案例和学习信号，不保存任意邮件正文、真实邮箱、真实 URL、真实附件、凭据、Cookie 或 token。
+- 新增服务端测试：`apps/server/tests/phishing-lab.test.ts`，覆盖漏洞版误判、修复版阻断、安全消息放行、未知 key 不回显和日志摘要脱敏。
+- `labs/social/phishing/meta.json` 已更新为 `in-progress`，只登记 docs 和 api 入口，不登记 web 或 scripts 入口。
+- 当前仍不提供前端页面、`exploit.py`、`verify.ts`、真实邮件发送、真实凭据收集、模板生成或第三方平台调用。
+
+验证情况：
+- `pnpm --filter @network-safe/shared test` 通过，31 项测试通过。
+- `pnpm --filter @network-safe/server test -- tests/phishing-lab.test.ts tests/health.test.ts tests/lab-registry.test.ts` 通过；该命令实际运行服务端全量测试，186 项测试通过。
+- `git diff --check` 未发现空白错误，仅有 Windows 下 LF 将转换为 CRLF 的提示。
+- `rg -n "[ \t]+$" -- <本轮目标文件>` 未发现目标文件行尾空白。
+- 网络钓鱼安全关键词扫描仅命中禁止性说明、字段名 / 学习信号、既有认证与 JWT 代码、测试中的本地 `127.0.0.1` URL 和脱敏反向断言，未发现真实邮件发送、凭据收集、可投递模板包或第三方平台调用实现。
+- 下一项建议：进入 `social/phishing` 前端仿真收件箱工作台切片，只使用固定案例、固定观察模式和固定检查清单。
+
 # 2026-07-02 最新进展：网络钓鱼识别 planned 元数据
 
 本轮已将社会工程学实验 `social/phishing` 从执行文档阶段推进到 planned 元数据阶段：

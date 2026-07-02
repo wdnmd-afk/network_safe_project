@@ -1,3 +1,22 @@
+# 2026-07-02 最新进展：网络钓鱼识别后端固定案例 API
+
+- [x] 新增执行文档 `docs/execution/2026-07-02-social-phishing-fixed-case-api.md`。
+- [x] 新增 `apps/server/src/services/phishing-lab.ts`，只处理固定 `caseKey`、`reviewModeKey` 和 `defenseChecklistKey`。
+- [x] 新增 `POST /api/labs/social/phishing/:variant/review`，支持漏洞版误判观察和修复版识别复盘。
+- [x] API 已接入统一事件日志，日志只记录固定 key、风险标签数量、建议动作、是否命中固定案例和学习信号。
+- [x] 新增 `apps/server/tests/phishing-lab.test.ts`，覆盖漏洞版误判、修复版阻断、安全消息放行、未知 key 不回显和日志摘要脱敏。
+- [x] 将 `labs/social/phishing/meta.json` 更新为 `in-progress`，登记漏洞版 / 修复版 API 入口和 API 测试证据，web / scripts 入口仍为空。
+- [x] 更新网络钓鱼 README、漏洞版 / 修复版说明、固定案例说明、攻击步骤、修复说明、手动验证、共享元数据测试、服务端 registry / health 测试和下一波实验规划。
+- [x] 当前仍不提供前端页面、`exploit.py`、`verify.ts`、真实邮件发送、真实凭据收集、模板生成或第三方平台调用。
+
+验证记录：
+- `pnpm --filter @network-safe/shared test` 通过，31 项测试通过。
+- `pnpm --filter @network-safe/server test -- tests/phishing-lab.test.ts tests/health.test.ts tests/lab-registry.test.ts` 通过；该命令实际运行服务端全量测试，186 项测试通过。
+- `git diff --check` 未发现空白错误，仅有 Windows 下 LF 将转换为 CRLF 的提示。
+- `rg -n "[ \t]+$" -- <本轮目标文件>` 未发现目标文件行尾空白。
+- 网络钓鱼安全关键词扫描仅命中禁止性说明、字段名 / 学习信号、既有认证与 JWT 代码、测试中的本地 `127.0.0.1` URL 和脱敏反向断言，未发现真实邮件发送、凭据收集、可投递模板包或第三方平台调用实现。
+- 下一项建议：进入 `social/phishing` 前端仿真收件箱工作台切片，只使用固定案例、固定观察模式和固定检查清单。
+
 # 2026-07-02 最新进展：网络钓鱼识别 planned 元数据
 
 - [x] 新增执行文档 `docs/execution/2026-07-02-social-phishing-directory-metadata.md`。
@@ -1421,7 +1440,7 @@
 
 | 内容 | 状态 | 落地方式 | 当前落点 | 未来代码位置 |
 |---|---|---|---|---|
-| 网络钓鱼 | planned | 案例化演示 / 仿真页面 / 固定线索卡 / 识别训练 | `docs/execution/2026-07-02-social-phishing-lab.md`、`labs/social/phishing/meta.json` | `labs/social/phishing/` |
+| 网络钓鱼 | 进行中 | 案例化演示 / 仿真页面 / 固定线索卡 / 识别训练 / 受控 API | `labs/social/phishing/`、`apps/server/src/services/phishing-lab.ts`、`apps/server/tests/phishing-lab.test.ts`、`docs/execution/2026-07-02-social-phishing-fixed-case-api.md` | `labs/social/phishing/` |
 | 鱼叉式钓鱼 | 规划中 | 案例化演示 | `docs/design/project-scope-and-security-content.md` | `labs/social/spear-phishing/` |
 | 捕鲸攻击 | 规划中 | 案例化演示 | `docs/design/project-scope-and-security-content.md` | `labs/social/whaling/` |
 | 短信钓鱼 | 规划中 | 案例化演示 | `docs/design/project-scope-and-security-content.md` | `labs/social/smishing/` |
