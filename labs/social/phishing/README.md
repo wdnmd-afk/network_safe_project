@@ -4,7 +4,7 @@
 
 本实验用于学习网络钓鱼中常见的识别线索：相似域名、紧急语气、凭据请求、附件诱导、品牌仿冒和异常业务上下文。
 
-当前状态为 `in-progress`，已建立文档、元数据入口、前端固定案例工作台和后端固定案例 `review` API。当前目标是做一个固定案例的仿真收件箱识别训练，而不是邮件发送器或模板生成器。
+当前状态为 `in-progress`，已建立文档、元数据入口、前端固定案例工作台、后端固定案例 `review` API 和本机只读一致性验证脚本。当前目标是做一个固定案例的仿真收件箱识别训练，而不是邮件发送器或模板生成器。
 
 ## 当前范围
 
@@ -15,8 +15,8 @@
 - 已实现前端 API client 和固定案例模型：`apps/web/src/api/phishing-lab.ts`、`apps/web/src/labs/phishing.ts`。
 - 已实现后端固定案例评估服务：`apps/server/src/services/phishing-lab.ts`。
 - 已实现受控 API：`POST /api/labs/social/phishing/:variant/review`。
-- 已接入统一事件日志安全摘要、服务端 API 测试和前端模型 / API / 路由测试。
-- 当前未实现自动化脚本或页面级 Playwright 验证。
+- 已接入统一事件日志安全摘要、服务端 API 测试、前端模型 / API / 路由测试和本机只读一致性验证。
+- 当前未实现页面级 Playwright 验证，也未进入 case-study ready 收口。
 
 ## 固定案例方向
 
@@ -44,6 +44,14 @@
 
 页面和 API 不读取任意邮件正文、真实邮箱、真实链接、真实附件、验证码、Cookie、token 或凭据。
 
+## 只读验证脚本
+
+当前唯一脚本入口：
+
+- `tools/lab-scripts/social/phishing/verify.ts`
+
+该脚本只读取仓库内元数据、文档、前端、后端和测试文件，验证固定入口、安全边界和自动化证据一致性。它不发起 HTTP 请求，不发送邮件、短信或消息，不连接第三方平台，也不读取 `.env`、Cookie、token、验证码或凭据。
+
 ## 安全边界
 
 - 不发送真实邮件、短信、消息或链接。
@@ -55,5 +63,4 @@
 ## 后续切片
 
 1. Playwright 页面差异验证。
-2. 本机只读一致性验证脚本。
-3. case-study ready 收口审计。
+2. case-study ready 收口审计。

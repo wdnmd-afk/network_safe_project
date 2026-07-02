@@ -1,3 +1,25 @@
+# 2026-07-02 最新进展：网络钓鱼识别只读一致性验证
+
+本轮已将社会工程学实验 `social/phishing` 从前端仿真收件箱工作台阶段推进到本机只读一致性验证阶段：
+
+- 新增执行文档：`docs/execution/2026-07-02-social-phishing-readonly-verification.md`。
+- 新增只读验证脚本：`tools/lab-scripts/social/phishing/verify.ts`。
+- 脚本只读取仓库内元数据、文档、前端、后端和测试文件，不发起 HTTP 请求，不发送邮件、短信或消息，不连接第三方平台或收件箱服务。
+- `labs/social/phishing/meta.json` 已登记 `phishing-verify` scripts 入口和 `scriptVerification` 自动化证据，状态仍保持 `in-progress`。
+- `variants[].supportsAutomation` 仍为 `false`，避免把只读脚本误标为攻击脚本自动化。
+- 网络钓鱼 README、攻击步骤、修复说明、手动验证、脚本目录说明、共享元数据测试和下一波实验规划已同步只读验证状态。
+- 当前仍不提供 `exploit.py`、真实邮件 / 短信 / 消息投递、真实邮箱或凭据收集、可投递模板生成、第三方平台调用或攻击脚本。
+
+验证情况：
+- `pnpm --filter @network-safe/web exec tsx ../../tools/lab-scripts/social/phishing/verify.ts` 通过，报告 `ok: true`。
+- `pnpm --filter @network-safe/shared test` 通过，31 项测试通过。
+- `pnpm --filter @network-safe/web exec vitest run tests/phishing-api.test.ts tests/phishing-lab.test.ts tests/router.test.ts` 通过，3 个测试文件、9 项测试通过。
+- `pnpm --filter @network-safe/server test -- tests/phishing-lab.test.ts tests/health.test.ts tests/lab-registry.test.ts` 通过，实际执行服务端测试 186 项通过。
+- `git diff --check` 通过，仅保留 Windows 环境下 LF/CRLF 提示。
+- `rg -n "[ \t]+$" -- <本轮目标文件>` 无命中。
+- 网络钓鱼安全关键词扫描仅命中禁止性说明、脚本检查片段、测试反向断言、`local-session-token`、API client `token` 参数、学习信号 `credential-request` 和历史记录，未发现真实投递、凭据收集、模板生成或第三方平台调用实现。
+- 下一项建议：按 case-study ready 例外标准对 `social/phishing` 做收口审计；若不补页面级 Playwright，则需明确 API 差异验证和只读一致性验证作为两类自动化证据。
+
 # 2026-07-02 最新进展：网络钓鱼识别前端仿真收件箱工作台
 
 本轮已将社会工程学实验 `social/phishing` 从后端固定案例 API 阶段推进到前端仿真收件箱工作台阶段：

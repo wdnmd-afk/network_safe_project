@@ -45,6 +45,12 @@ POST /api/labs/social/phishing/:variant/review
 - `reviewModeKey: "reporting-flow"`
 - `defenseChecklistKey: "report-isolate-confirm"`
 
+当前已实现本机只读一致性验证：
+
+- `tools/lab-scripts/social/phishing/verify.ts`
+
+该脚本只验证仓库内元数据、文档、前端、后端和测试文件的一致性，不发送真实邮件、短信或消息，也不连接第三方平台。
+
 ## 4. 成功观察信号
 
 - 能指出至少一个被忽略的域名或来源一致性问题。

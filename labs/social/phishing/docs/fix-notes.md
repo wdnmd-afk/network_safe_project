@@ -4,7 +4,7 @@
 
 网络钓鱼识别的首版防御目标是建立稳定的核验流程，让学习者能从固定案例中识别风险线索，并选择举报、隔离、二次确认或放行。
 
-本实验当前处于 `in-progress`，已接入前端固定案例工作台和后端固定案例 `review` API。以下内容作为当前页面和 API 的共同约束。
+本实验当前处于 `in-progress`，已接入前端固定案例工作台、后端固定案例 `review` API 和本机只读一致性验证脚本。以下内容作为当前页面、API 和脚本验证的共同约束。
 
 ## 2. 固定检查清单
 
@@ -62,3 +62,5 @@ POST /api/labs/social/phishing/:variant/review
 - 自动化验证至少覆盖两类证据。
 - 文档明确禁止真实服务连接、真实凭据、对外攻击脚本、payload 库和任意执行器。
 - `variants[].supportsAutomation` 不得因页面或只读验证存在而误标为攻击脚本自动化。
+
+当前只读脚本 `tools/lab-scripts/social/phishing/verify.ts` 只能作为自动化证据之一，不能替代最终 ready 收口审计。

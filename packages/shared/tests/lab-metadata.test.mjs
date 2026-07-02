@@ -637,7 +637,7 @@ test("prompt injection metadata is ready controlled prompt injection simulation"
   assert.match(result.value.notes, /不提供 exploit\.py/);
 });
 
-test("phishing metadata is in-progress fixed-case API case-study", async () => {
+test("phishing metadata is in-progress fixed-case workbench case-study", async () => {
   const metadata = await readFixture("labs/social/phishing/meta.json");
   const result = validateLabMetadata(metadata);
 
@@ -656,7 +656,14 @@ test("phishing metadata is in-progress fixed-case API case-study", async () => {
       "/api/labs/social/phishing/fixed/review",
     ],
   );
-  assert.deepEqual(result.value.entrypoints.scripts, []);
+  assert.deepEqual(result.value.entrypoints.scripts, [
+    {
+      key: "phishing-verify",
+      language: "ts",
+      path: "tools/lab-scripts/social/phishing/verify.ts",
+      description: "本机只读网络钓鱼元数据、文档与固定案例边界一致性验证",
+    },
+  ]);
   assert.deepEqual(
     result.value.entrypoints.docs.map((entrypoint) => entrypoint.path),
     [
@@ -676,6 +683,10 @@ test("phishing metadata is in-progress fixed-case API case-study", async () => {
     enabled: true,
     specPath: "apps/server/tests/phishing-lab.test.ts",
   });
+  assert.deepEqual(result.value.verification.automation.scriptVerification, {
+    enabled: true,
+    scriptKeys: ["phishing-verify"],
+  });
   assert.deepEqual(
     result.value.variants.map((variant) => variant.supportsAutomation),
     [false, false],
@@ -693,6 +704,8 @@ test("phishing metadata is in-progress fixed-case API case-study", async () => {
   assert.match(result.value.notes, /case-study/);
   assert.match(result.value.notes, /in-progress/);
   assert.match(result.value.notes, /review API/);
+  assert.match(result.value.notes, /只读一致性验证/);
+  assert.match(result.value.notes, /不提供 exploit\.py/);
 });
 
 test("command injection metadata declares web, api and script verification entries", async () => {

@@ -69,7 +69,14 @@
         "description": "修复版固定案例识别复盘接口"
       }
     ],
-    "scripts": [],
+    "scripts": [
+      {
+        "key": "phishing-verify",
+        "language": "ts",
+        "path": "tools/lab-scripts/social/phishing/verify.ts",
+        "description": "本机只读网络钓鱼元数据、文档与固定案例边界一致性验证"
+      }
+    ],
     "docs": [
       {
         "key": "overview",
@@ -117,14 +124,14 @@
         "specPath": "apps/server/tests/phishing-lab.test.ts"
       },
       "scriptVerification": {
-        "enabled": false,
-        "scriptKeys": []
+        "enabled": true,
+        "scriptKeys": ["phishing-verify"]
       }
     }
   },
   "prerequisites": [
-    "已阅读网络钓鱼识别实验执行文档、目录与 planned 元数据执行文档和后端固定案例 API 执行文档",
-    "理解当前只建立前端固定案例工作台和后端固定案例 API，不提供脚本入口",
+    "已阅读网络钓鱼识别实验执行文档、目录与 planned 元数据执行文档、后端固定案例 API 执行文档、前端工作台执行文档和只读一致性验证执行文档",
+    "理解当前只建立前端固定案例工作台、后端固定案例 API 和只读一致性验证脚本，不提供攻击脚本入口",
     "理解本实验首版只允许固定 caseKey、reviewModeKey 和 defenseChecklistKey"
   ],
   "paths": {
@@ -139,7 +146,8 @@
   "sortOrder": 400,
   "estimatedMinutes": 20,
   "safeBoundaries": [
-    "当前已接入 case-study 前端固定案例工作台和后端固定案例 API，但不表示网络钓鱼识别实验已经具备 ready 闭环",
+    "当前已接入 case-study 前端固定案例工作台、后端固定案例 API 和只读一致性验证脚本，但不表示网络钓鱼识别实验已经具备 ready 闭环",
+    "scripts 入口仅表示本机只读一致性验证，不表示提供攻击脚本、投递器或模板生成器",
     "不发送真实邮件、短信、消息或链接",
     "不收集真实邮箱、真实凭据、验证码、Cookie 或 token",
     "不连接第三方邮件、短信、社交平台、投递服务或收件箱服务",
@@ -147,5 +155,5 @@
     "页面和 API 只读取固定 caseKey、reviewModeKey 和 defenseChecklistKey，不读取任意邮件正文、真实邮箱、真实 URL 或真实附件",
     "不提供 exploit.py，后续脚本目录仅允许只读一致性验证"
   ],
-  "notes": "网络钓鱼识别当前为 case-study / in-progress：已包含元数据、文档入口、前端固定案例工作台、后端固定案例 review API、统一事件日志安全摘要、前端单元测试和 API 测试；当前仍不提供真实投递、凭据收集、模板生成、第三方平台调用或攻击脚本。"
+  "notes": "网络钓鱼识别当前为 case-study / in-progress：已包含元数据、文档入口、前端固定案例工作台、后端固定案例 review API、统一事件日志安全摘要、前端单元测试、API 测试和本机只读一致性验证；当前仍不提供 exploit.py、真实投递、凭据收集、模板生成、第三方平台调用或攻击脚本。"
 }
