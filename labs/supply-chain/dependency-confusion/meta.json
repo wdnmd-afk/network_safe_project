@@ -116,8 +116,8 @@
     "automation": {
       "supported": true,
       "playwright": {
-        "enabled": false,
-        "specPath": ""
+        "enabled": true,
+        "specPath": "packages/testing/tests/e2e/platform.spec.mjs"
       },
       "apiTest": {
         "enabled": true,
@@ -147,6 +147,7 @@
   "estimatedMinutes": 25,
   "safeBoundaries": [
     "当前 in-progress 状态仅表示标准目录、基础文档、元数据入口、前端固定选择器工作台和后端受控 resolve API 已建立，不表示实验已经 ready",
+    "当前已登记 Playwright 页面级差异验证证据，但不表示存在攻击脚本或真实依赖解析能力",
     "不运行真实依赖安装、登录、下载、打包或发布命令",
     "不访问真实 npm、pnpm、PyPI、Maven、私有 registry 或镜像源",
     "不发布真实包，不创建真实投毒包、包归档、发布脚本或生命周期脚本",
@@ -154,5 +155,5 @@
     "不保存完整 manifest、真实包名清单、真实 registry 地址、token、Cookie、凭据、内部组织名或本机路径",
     "当前登记 docs、web 和 api 入口，不登记 scripts 入口，不提供 exploit.py"
   ],
-  "notes": "依赖混淆当前为 simulation / in-progress：已建立目录、基础文档、docs 入口、前端固定选择器工作台和后端受控 resolve API；页面和 API 只使用固定 manifestKey、registryScenarioKey 和 resolutionPolicyKey，并写入统一事件日志安全摘要。当前仍不提供脚本入口、安装流程、registry 连接、发布流程、生命周期脚本、exploit.py 或攻击脚本。"
+  "notes": "依赖混淆当前为 simulation / in-progress：已建立目录、基础文档、docs 入口、前端固定选择器工作台、后端受控 resolve API 和 Playwright 页面级差异验证；页面和 API 只使用固定 manifestKey、registryScenarioKey 和 resolutionPolicyKey，并写入统一事件日志安全摘要。当前仍不提供脚本入口、安装流程、registry 连接、发布流程、生命周期脚本、exploit.py 或攻击脚本。"
 }

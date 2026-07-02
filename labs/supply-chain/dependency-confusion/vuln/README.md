@@ -4,7 +4,7 @@
 
 本变体用于观察依赖混淆中的错误解析倾向：当私有依赖未使用 scope、未固定私有 registry、缺少 lockfile 或缺少来源审计时，解析链路可能偏向不可信来源。
 
-当前为 `in-progress`：前端已提供固定选择器工作台，后端已提供受控 `resolve` API，仍不存在脚本入口或 ready 收口。
+当前为 `in-progress`：前端已提供固定选择器工作台，后端已提供受控 `resolve` API，Playwright 已覆盖漏洞版固定公共来源选择页面信号，仍不存在脚本入口或 ready 收口。
 
 ## 当前观察方式
 
@@ -31,6 +31,8 @@
 
 - `dependency-confusion-public-source-selected`
 - `dependency-confusion-private-scope-missing`
+
+页面级验证已确认漏洞版“未绑定 scope”固定样例会展示错误公共来源选择、`accepted` 决策、`public-registry` 来源、`untrusted` 信任状态、`missing` scope 状态和 `missing` lockfile 状态。
 
 当前入口：
 

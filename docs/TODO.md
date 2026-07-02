@@ -1,3 +1,27 @@
+# 2026-07-02 最新进展：依赖混淆页面级差异验证
+
+- [x] 新增执行文档 `docs/execution/2026-07-02-supply-chain-dependency-confusion-playwright-verification.md`。
+- [x] 更新 `packages/testing/tests/e2e/platform.spec.mjs`，新增依赖混淆页面级 Playwright 差异验证。
+- [x] Playwright 覆盖漏洞版“未绑定 scope”固定样例，断言错误公共来源选择、`accepted` 决策、`public-registry` 来源、`untrusted` 信任状态、`missing` scope 状态和 `missing` lockfile 状态。
+- [x] Playwright 覆盖修复版“私有 scope”“完整性审计”“混合来源”三条固定路径，断言私有来源固定、完整性阻断和正常公开依赖审计放行。
+- [x] Playwright 断言漏洞版和修复版页面均不存在文本输入框，继续避免任意包名、真实 registry URL、`.npmrc`、token、lockfile、安装或发布参数输入。
+- [x] 更新 `labs/supply-chain/dependency-confusion/meta.json`，登记 Playwright 自动化证据，状态仍保持 `in-progress`，scripts 入口仍为空，`variants[].supportsAutomation` 仍为 `false`。
+- [x] 更新共享元数据测试、依赖混淆 README、漏洞版 / 修复版说明、手动验证、脚本目录边界说明和下一波实验规划。
+- [x] 当前仍不提供 `exploit.py`、`verify.ts`、真实安装、真实发布、registry 连接、凭据读取、生命周期脚本、任意包名输入、真实 registry URL 输入或攻击脚本。
+
+验证记录：
+
+- `pnpm --filter @network-safe/testing test` 通过，9 项测试通过。
+- `pnpm --filter @network-safe/testing e2e -- --grep "依赖混淆"` 通过，1 项 Playwright 测试通过。
+- `pnpm --filter @network-safe/shared test` 通过，32 项测试通过。
+- `pnpm --filter @network-safe/web exec vitest run tests/dependency-confusion-api.test.ts tests/dependency-confusion-lab.test.ts tests/router.test.ts` 通过，3 个测试文件、9 项测试通过。
+- `pnpm --filter @network-safe/server test -- tests/dependency-confusion-lab.test.ts tests/health.test.ts tests/lab-registry.test.ts` 通过；该命令按当前服务端测试脚本实际运行全量服务端测试，195 项通过。
+- `git diff --check` 通过，仅保留 Windows 环境下 LF/CRLF 提示。
+- `rg -n "[ \t]+$" -- <本轮目标文件>` 无命中。
+- `rg --files tools/lab-scripts/supply-chain/dependency-confusion` 确认脚本目录当前仍只包含 README。
+- 依赖混淆页面验证安全关键词扫描仅命中禁止性说明、元数据安全边界、历史共享元数据断言和既有 CSRF token 页面文案，未发现本轮新增真实安装、真实发布、registry 连接、凭据读取、生命周期脚本、命令执行或攻击脚本实现。
+- 下一项建议：为 `supply-chain/dependency-confusion` 补齐只读一致性验证脚本或执行 ready 收口审计，仍不创建真实安装、发布、registry 连接或攻击脚本能力。
+
 # 2026-07-02 最新进展：依赖混淆前端解析观察工作台
 
 - [x] 新增执行文档 `docs/execution/2026-07-02-supply-chain-dependency-confusion-frontend-workbench.md`。

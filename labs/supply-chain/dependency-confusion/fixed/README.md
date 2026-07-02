@@ -4,7 +4,7 @@
 
 本变体用于学习依赖混淆的修复与审计思路：通过 scope 约束、私有 registry 绑定、lockfile、完整性校验和安装源审计，让依赖解析来源可解释、可复核、可阻断。
 
-当前为 `in-progress`：前端已提供固定选择器工作台，后端已提供受控 `resolve` API，仍不存在脚本入口或 ready 收口。
+当前为 `in-progress`：前端已提供固定选择器工作台，后端已提供受控 `resolve` API，Playwright 已覆盖私有 scope 固定、完整性阻断和正常公开依赖审计放行页面信号，仍不存在脚本入口或 ready 收口。
 
 ## 当前复盘方式
 
@@ -33,6 +33,8 @@
 - `dependency-confusion-lockfile-integrity-blocked`
 - `dependency-confusion-private-scope-pinned`
 - `dependency-confusion-safe-public-package-accepted`
+
+页面级验证已确认修复版固定样例会展示 `private-registry` / `trusted` / `pinned` / `verified` 私有来源固定路径、`blocked-audit` / `blocked` / `mismatch` 完整性阻断路径，以及 `mixed-audited` / `audited` 正常公开依赖审计放行路径。
 
 当前入口：
 

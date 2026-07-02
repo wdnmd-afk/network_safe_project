@@ -503,3 +503,150 @@ test("登录用户可以对比 Prompt 注入漏洞版边界混淆与修复版策
     }).locator("dd"),
   ).toHaveText("否");
 });
+
+test("登录用户可以对比依赖混淆漏洞版公共来源与修复版审计路径", async ({ page }) => {
+  await page.goto("/login");
+
+  await page.getByLabel("用户名").fill("demo_user");
+  await page.getByLabel("密码").fill("Demo@123456");
+  await page.getByRole("button", { name: "登录" }).click();
+
+  await expect(page.getByRole("heading", { name: "账户中心" })).toBeVisible();
+
+  await page.goto("/labs/supply-chain/dependency-confusion/vuln");
+  await expect(
+    page.getByRole("heading", { name: "依赖混淆解析风险观察版" }),
+  ).toBeVisible();
+  await expect(page.getByRole("textbox")).toHaveCount(0);
+
+  await page.getByRole("button", { name: "未绑定 scope" }).click();
+  await page.getByRole("button", { name: "观察解析结果" }).click();
+
+  const vulnStatusPanel = page.locator(".dependency-confusion-status-panel");
+
+  await expect(page.getByText("漏洞版选择了伪公共来源")).toBeVisible();
+  await expect(
+    page.getByText(
+      "漏洞版偏向伪公共来源，展示未绑定 scope 和缺少审计时的依赖混淆风险。",
+    ),
+  ).toBeVisible();
+  await expect(
+    vulnStatusPanel.locator(".status-metric strong").filter({
+      hasText: /^accepted$/,
+    }),
+  ).toBeVisible();
+  await expect(
+    vulnStatusPanel.locator(".inspection-grid div").filter({
+      hasText: "解析来源",
+    }).locator("dd"),
+  ).toHaveText("public-registry");
+  await expect(
+    vulnStatusPanel.locator(".inspection-grid div").filter({
+      hasText: "来源信任",
+    }).locator("dd"),
+  ).toHaveText("untrusted");
+  await expect(
+    vulnStatusPanel.locator(".inspection-grid div").filter({
+      hasText: "scope 状态",
+    }).locator("dd"),
+  ).toHaveText("missing");
+  await expect(
+    vulnStatusPanel.locator(".inspection-grid div").filter({
+      hasText: "lockfile 状态",
+    }).locator("dd"),
+  ).toHaveText("missing");
+
+  await page.goto("/labs/supply-chain/dependency-confusion/fixed");
+  await expect(
+    page.getByRole("heading", { name: "依赖混淆来源审计复盘版" }),
+  ).toBeVisible();
+  await expect(page.getByRole("textbox")).toHaveCount(0);
+
+  await page.getByRole("button", { name: "私有 scope" }).click();
+  await page.getByRole("button", { name: "观察解析结果" }).click();
+
+  const fixedStatusPanel = page.locator(".dependency-confusion-status-panel");
+
+  await expect(page.getByText("修复版私有 scope 已固定")).toBeVisible();
+  await expect(
+    page.getByText(
+      "修复版将私有 scope 固定到可信来源，解析结果保持在受控边界内。",
+    ),
+  ).toBeVisible();
+  await expect(
+    fixedStatusPanel.locator(".status-metric strong").filter({
+      hasText: /^accepted$/,
+    }),
+  ).toBeVisible();
+  await expect(
+    fixedStatusPanel.locator(".inspection-grid div").filter({
+      hasText: "解析来源",
+    }).locator("dd"),
+  ).toHaveText("private-registry");
+  await expect(
+    fixedStatusPanel.locator(".inspection-grid div").filter({
+      hasText: "来源信任",
+    }).locator("dd"),
+  ).toHaveText("trusted");
+  await expect(
+    fixedStatusPanel.locator(".inspection-grid div").filter({
+      hasText: "scope 状态",
+    }).locator("dd"),
+  ).toHaveText("pinned");
+  await expect(
+    fixedStatusPanel.locator(".inspection-grid div").filter({
+      hasText: "lockfile 状态",
+    }).locator("dd"),
+  ).toHaveText("verified");
+
+  await page.getByRole("button", { name: "完整性审计" }).click();
+  await page.getByRole("button", { name: "观察解析结果" }).click();
+
+  await expect(page.getByText("修复版完整性审计已阻断")).toBeVisible();
+  await expect(
+    page.getByText("修复版通过固定 lockfile 完整性审计阻断异常解析结果。"),
+  ).toBeVisible();
+  await expect(
+    fixedStatusPanel.locator(".status-metric strong").filter({
+      hasText: /^blocked$/,
+    }),
+  ).toBeVisible();
+  await expect(
+    fixedStatusPanel.locator(".inspection-grid div").filter({
+      hasText: "解析来源",
+    }).locator("dd"),
+  ).toHaveText("blocked-audit");
+  await expect(
+    fixedStatusPanel.locator(".inspection-grid div").filter({
+      hasText: "来源信任",
+    }).locator("dd"),
+  ).toHaveText("blocked");
+  await expect(
+    fixedStatusPanel.locator(".inspection-grid div").filter({
+      hasText: "lockfile 状态",
+    }).locator("dd"),
+  ).toHaveText("mismatch");
+
+  await page.getByRole("button", { name: "混合来源" }).click();
+  await page.getByRole("button", { name: "观察解析结果" }).click();
+
+  await expect(page.getByText("正常公开依赖已审计放行")).toBeVisible();
+  await expect(
+    page.getByText("修复版保留正常公开依赖路径，同时审计私有来源边界。"),
+  ).toBeVisible();
+  await expect(
+    fixedStatusPanel.locator(".status-metric strong").filter({
+      hasText: /^accepted$/,
+    }),
+  ).toBeVisible();
+  await expect(
+    fixedStatusPanel.locator(".inspection-grid div").filter({
+      hasText: "解析来源",
+    }).locator("dd"),
+  ).toHaveText("mixed-audited");
+  await expect(
+    fixedStatusPanel.locator(".inspection-grid div").filter({
+      hasText: "来源信任",
+    }).locator("dd"),
+  ).toHaveText("audited");
+});

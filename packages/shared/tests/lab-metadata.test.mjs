@@ -760,8 +760,8 @@ test("dependency confusion metadata is in-progress fixed workbench simulation", 
   );
   assert.equal(result.value.verification.automation.supported, true);
   assert.deepEqual(result.value.verification.automation.playwright, {
-    enabled: false,
-    specPath: "",
+    enabled: true,
+    specPath: "packages/testing/tests/e2e/platform.spec.mjs",
   });
   assert.deepEqual(result.value.verification.automation.apiTest, {
     enabled: true,
@@ -788,6 +788,7 @@ test("dependency confusion metadata is in-progress fixed workbench simulation", 
   assert.match(result.value.notes, /in-progress/);
   assert.match(result.value.notes, /前端固定选择器工作台/);
   assert.match(result.value.notes, /后端受控 resolve API/);
+  assert.match(result.value.notes, /Playwright 页面级差异验证/);
   assert.match(result.value.notes, /exploit\.py/);
 });
 
