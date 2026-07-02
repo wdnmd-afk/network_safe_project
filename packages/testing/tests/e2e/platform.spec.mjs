@@ -398,3 +398,108 @@ test("登录用户可以对比 DNS 劫持漏洞版错误解析与修复版阻断
     }).locator("dd"),
   ).toHaveText("否");
 });
+
+test("登录用户可以对比 Prompt 注入漏洞版边界混淆与修复版策略护栏", async ({ page }) => {
+  await page.goto("/login");
+
+  await page.getByLabel("用户名").fill("demo_user");
+  await page.getByLabel("密码").fill("Demo@123456");
+  await page.getByRole("button", { name: "登录" }).click();
+
+  await expect(page.getByRole("heading", { name: "账户中心" })).toBeVisible();
+
+  await page.goto("/labs/ai/prompt-injection/vuln");
+  await expect(page.getByRole("heading", { name: "Prompt 注入漏洞版" })).toBeVisible();
+  await expect(page.getByRole("textbox")).toHaveCount(0);
+
+  await page.getByRole("button", { name: "客服知识库" }).click();
+  await page.getByRole("button", { name: "观察路由结果" }).click();
+
+  const vulnStatusPanel = page.locator(".prompt-injection-status-panel");
+
+  await expect(page.getByText("漏洞版检索污染信号可见")).toBeVisible();
+  await expect(page.getByText("漏洞版把固定检索资料摘要错误抬高为指令来源")).toBeVisible();
+  await expect(
+    vulnStatusPanel.locator(".status-metric strong").filter({
+      hasText: /^accepted$/,
+    }),
+  ).toBeVisible();
+  await expect(
+    vulnStatusPanel.locator(".inspection-grid div").filter({
+      hasText: "风险类别",
+    }).locator("dd").first(),
+  ).toHaveText("retrieval-contamination");
+  await expect(
+    vulnStatusPanel.locator(".inspection-grid div").filter({
+      hasText: "指令优先级",
+    }).locator("dd"),
+  ).toHaveText("confused");
+  await expect(
+    vulnStatusPanel.locator(".inspection-grid div").filter({
+      hasText: "输出策略状态",
+    }).locator("dd"),
+  ).toHaveText("missing");
+  await expect(
+    vulnStatusPanel.locator(".inspection-grid div").filter({
+      hasText: "策略阻断",
+    }).locator("dd"),
+  ).toHaveText("否");
+
+  await page.goto("/labs/ai/prompt-injection/fixed");
+  await expect(page.getByRole("heading", { name: "Prompt 注入修复版" })).toBeVisible();
+  await expect(page.getByRole("textbox")).toHaveCount(0);
+
+  await page.getByRole("button", { name: "客服知识库" }).click();
+  await page.getByRole("button", { name: "观察路由结果" }).click();
+
+  const fixedStatusPanel = page.locator(".prompt-injection-status-panel");
+
+  await expect(page.getByText("修复版策略护栏已生效")).toBeVisible();
+  await expect(page.getByText("修复版将外部内容保留为低优先级资料")).toBeVisible();
+  await expect(
+    fixedStatusPanel.locator(".status-metric strong").filter({
+      hasText: /^blocked$/,
+    }),
+  ).toBeVisible();
+  await expect(
+    fixedStatusPanel.locator(".inspection-grid div").filter({
+      hasText: "指令优先级",
+    }).locator("dd"),
+  ).toHaveText("isolated");
+  await expect(
+    fixedStatusPanel.locator(".inspection-grid div").filter({
+      hasText: "输出策略状态",
+    }).locator("dd"),
+  ).toHaveText("blocked");
+  await expect(
+    fixedStatusPanel.locator(".inspection-grid div").filter({
+      hasText: "策略阻断",
+    }).locator("dd"),
+  ).toHaveText("是");
+
+  await page.getByRole("button", { name: "文档问答" }).click();
+  await page.getByRole("button", { name: "观察路由结果" }).click();
+
+  await expect(page.getByText("修复版安全回答已返回")).toBeVisible();
+  await expect(page.getByText("修复版在固定文档范围内返回安全教学回答")).toBeVisible();
+  await expect(
+    fixedStatusPanel.locator(".status-metric strong").filter({
+      hasText: /^accepted$/,
+    }),
+  ).toBeVisible();
+  await expect(
+    fixedStatusPanel.locator(".inspection-grid div").filter({
+      hasText: "风险类别",
+    }).locator("dd").first(),
+  ).toHaveText("safe-reference");
+  await expect(
+    fixedStatusPanel.locator(".inspection-grid div").filter({
+      hasText: "输出策略状态",
+    }).locator("dd"),
+  ).toHaveText("applied");
+  await expect(
+    fixedStatusPanel.locator(".inspection-grid div").filter({
+      hasText: "策略阻断",
+    }).locator("dd"),
+  ).toHaveText("否");
+});
