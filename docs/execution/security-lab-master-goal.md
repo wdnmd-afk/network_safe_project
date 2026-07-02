@@ -1,3 +1,23 @@
+# 2026-07-02 最新进展：依赖混淆实验执行文档
+
+本轮已为供应链实验 `supply-chain/dependency-confusion` 补齐单独实现执行文档：
+
+- 新增执行文档：`docs/execution/2026-07-02-supply-chain-dependency-confusion-lab.md`。
+- 将首版定位为“依赖解析风险观察器”，只使用固定 manifest、伪 registry 元数据和固定解析策略观察供应链解析风险。
+- 攻击方视角只用于理解私有包名与公共包名冲突、scope 缺失、registry 解析优先级和 lockfile 缺失等风险信号，不用于构造真实投毒能力。
+- 明确后续只允许固定 `manifestKey`、固定 `registryScenarioKey` 和固定 `resolutionPolicyKey`，实现前仍需按共享类型、元数据规范和服务设计确认字段名。
+- 明确不运行真实安装命令、不访问真实 registry、不发布真实包、不创建投毒包或生命周期脚本、不读取 `.npmrc` / registry token / CI 凭据。
+- 同步 `docs/design/next-wave-security-labs.md`，将依赖混淆从“规划中”推进到“执行文档阶段”，并把下一步切片改为目录与 `planned` 元数据。
+- 当前不创建 `labs/supply-chain/dependency-confusion/`、`tools/lab-scripts/supply-chain/dependency-confusion/`、页面、API、元数据或脚本。
+
+验证记录：
+
+- `git diff --check -- <本轮目标文件>` 通过，仅保留 Windows 环境下 LF/CRLF 提示。
+- `rg -n "[ \t]+$" -- <本轮目标文件>` 无命中。
+- 依赖混淆安全关键词扫描仅命中禁止性说明、固定 key 建议、风险说明和后续测试文件名建议，未新增真实安装、真实发布、registry 连接、凭据读取、生命周期脚本生成或可复用投毒流程。
+
+下一项建议：进入 `supply-chain/dependency-confusion` 目录与 `planned` 元数据切片，先只登记 docs 入口，不创建安装、发布、registry 连接或攻击脚本能力。
+
 # 2026-07-02 最新进展：网络钓鱼识别 case-study ready 收口
 
 本轮正在按主计划完成标准和 case-study ready 例外标准对社会工程学实验 `social/phishing` 做 ready 收口审计：
