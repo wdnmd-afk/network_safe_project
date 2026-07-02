@@ -9,7 +9,7 @@ test("lab registry scans phase-one metadata files", async () => {
 
   assert.equal(labs.length, 22);
   assert.equal(labs[0]?.id, "ai.prompt-injection");
-  assert.equal(labs[0]?.status, "in-progress");
+  assert.equal(labs[0]?.status, "ready");
   assert.equal(labs[1]?.id, "auth.brute-force");
   assert.ok(
     labs.some(

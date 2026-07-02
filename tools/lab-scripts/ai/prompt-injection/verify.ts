@@ -273,8 +273,8 @@ export function runPromptInjectionConsistencyVerification(): PromptInjectionCons
       "metadata-basic-state",
       metadata.id === "ai.prompt-injection" &&
         metadata.mode === "interactive" &&
-        metadata.status === "in-progress",
-      "Prompt injection metadata should remain ai.prompt-injection / interactive / in-progress.",
+        metadata.status === "ready",
+      "Prompt injection metadata should be ai.prompt-injection / interactive / ready.",
     ),
   );
   checks.push(
@@ -401,7 +401,7 @@ export function runPromptInjectionConsistencyVerification(): PromptInjectionCons
       "This script only reads Prompt injection metadata, docs, tests, and implementation files in this repository.",
       "This script does not send HTTP requests, call external AI, call local models, execute tools, read .env, or run system commands.",
       "The script entrypoint is a read-only consistency verifier and is not an exploit script or prompt execution harness.",
-      "The lab remains in-progress until a separate ready closeout audit is completed.",
+      "The lab is ready only inside this repository's fixed-sample learning boundary.",
     ],
   };
 }

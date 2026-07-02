@@ -551,13 +551,13 @@ test("dns hijack metadata is ready controlled DNS simulation", async () => {
   assert.match(result.value.notes, /不提供 exploit\.py/);
 });
 
-test("prompt injection metadata exposes controlled web, api and read-only script verification", async () => {
+test("prompt injection metadata is ready controlled prompt injection simulation", async () => {
   const metadata = await readFixture("labs/ai/prompt-injection/meta.json");
   const result = validateLabMetadata(metadata);
 
   assert.equal(result.ok, true);
   assert.equal(result.value.id, "ai.prompt-injection");
-  assert.equal(result.value.status, "in-progress");
+  assert.equal(result.value.status, "ready");
   assert.equal(result.value.mode, "interactive");
   assert.deepEqual(
     result.value.entrypoints.web.map((entrypoint) => entrypoint.path),
@@ -627,7 +627,13 @@ test("prompt injection metadata exposes controlled web, api and read-only script
       boundary.includes("只读 scripts 验证入口"),
     ),
   );
+  assert.ok(
+    result.value.safeBoundaries.some((boundary) =>
+      boundary.includes("ready 状态仅表示"),
+    ),
+  );
   assert.match(result.value.notes, /只读一致性验证/);
+  assert.match(result.value.notes, /按 ready 收口/);
   assert.match(result.value.notes, /不提供 exploit\.py/);
 });
 

@@ -90,7 +90,7 @@ test("GET /api/labs returns scanned lab metadata list", async () => {
   assert.ok(
     body.items.some(
       (item) =>
-        item.id === "ai.prompt-injection" && item.status === "in-progress",
+        item.id === "ai.prompt-injection" && item.status === "ready",
     ),
   );
   assert.ok(
