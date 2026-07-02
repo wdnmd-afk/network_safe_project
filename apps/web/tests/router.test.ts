@@ -59,6 +59,8 @@ describe("SafeMart 路由清单", () => {
       "/labs/network/dns-hijack/fixed",
       "/labs/ai/prompt-injection/vuln",
       "/labs/ai/prompt-injection/fixed",
+      "/labs/social/phishing/vuln",
+      "/labs/social/phishing/fixed",
     ]);
   });
 });

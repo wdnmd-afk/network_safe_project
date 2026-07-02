@@ -765,6 +765,7 @@ td small {
 .port-scan-workbench,
 .dns-hijack-workbench,
 .prompt-injection-workbench,
+.phishing-workbench,
 .ssrf-workbench {
   display: grid;
   gap: 1rem;
@@ -835,6 +836,7 @@ td small {
 .port-scan-status-panel,
 .dns-hijack-status-panel,
 .prompt-injection-status-panel,
+.phishing-status-panel,
 .ssrf-status-panel {
   display: grid;
   gap: 0.85rem;

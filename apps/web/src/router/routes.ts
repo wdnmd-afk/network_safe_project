@@ -394,4 +394,20 @@ export const routes: RouteRecordRaw[] = [
       variant: "fixed",
     },
   },
+  {
+    path: "/labs/social/phishing/vuln",
+    name: "lab-social-phishing-vuln",
+    component: () => import("../views/PhishingLabView.vue"),
+    props: {
+      variant: "vuln",
+    },
+  },
+  {
+    path: "/labs/social/phishing/fixed",
+    name: "lab-social-phishing-fixed",
+    component: () => import("../views/PhishingLabView.vue"),
+    props: {
+      variant: "fixed",
+    },
+  },
 ];
