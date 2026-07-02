@@ -28,6 +28,11 @@ import {
   type DnsHijackVariantKey,
 } from "./services/dns-hijack-lab.js";
 import {
+  createDependencyConfusionLabService,
+  type DependencyConfusionLabService,
+  type DependencyConfusionVariantKey,
+} from "./services/dependency-confusion-lab.js";
+import {
   createNosqlInjectionLabService,
   type NosqlInjectionLabService,
   type NosqlInjectionVariantKey,
@@ -143,6 +148,7 @@ type CreateAppOptions = {
   commandInjectionLabService?: CommandInjectionLabService;
   crlfInjectionLabService?: CrlfInjectionLabService;
   csrfLabService?: CsrfLabService;
+  dependencyConfusionLabService?: DependencyConfusionLabService;
   dnsHijackLabService?: DnsHijackLabService;
   fileUploadLabService?: FileUploadLabService;
   infoDisclosureLabService?: InfoDisclosureLabService;
@@ -213,6 +219,9 @@ export function createApp(options: CreateAppOptions = {}) {
   const crlfInjectionLabService =
     options.crlfInjectionLabService ?? createCrlfInjectionLabService();
   const csrfLabService = options.csrfLabService ?? createCsrfLabService();
+  const dependencyConfusionLabService =
+    options.dependencyConfusionLabService ??
+    createDependencyConfusionLabService();
   const dnsHijackLabService =
     options.dnsHijackLabService ?? createDnsHijackLabService();
   const fileUploadLabService =
@@ -467,6 +476,12 @@ export function createApp(options: CreateAppOptions = {}) {
   }
 
   function readCsrfVariantKey(value: unknown): CsrfVariantKey | "" {
+    return value === "vuln" || value === "fixed" ? value : "";
+  }
+
+  function readDependencyConfusionVariantKey(
+    value: unknown,
+  ): DependencyConfusionVariantKey | "" {
     return value === "vuln" || value === "fixed" ? value : "";
   }
 
@@ -1096,6 +1111,40 @@ export function createApp(options: CreateAppOptions = {}) {
       checklistApplied: input.inspection.checklistApplied,
       recommendedAction: input.inspection.recommendedAction,
       riskLevel: input.inspection.riskLevel,
+      signal: input.signal,
+    };
+  }
+
+  function summarizeDependencyConfusionInput(input: {
+    manifestKey: string;
+    registryScenarioKey: string;
+    resolutionPolicyKey: string;
+    resolution: {
+      resolvedSource: string;
+      sourceTrust: string;
+      packageScopeStatus: string;
+      lockfileStatus: string;
+      matchedControlledSample: boolean;
+      riskIndicatorCount: number;
+      riskIndicators: string[];
+      auditActions: string[];
+      recommendedAction: string;
+    };
+    signal: string;
+  }) {
+    return {
+      manifestKey: input.manifestKey,
+      registryScenarioKey: input.registryScenarioKey,
+      resolutionPolicyKey: input.resolutionPolicyKey,
+      resolvedSource: input.resolution.resolvedSource,
+      sourceTrust: input.resolution.sourceTrust,
+      packageScopeStatus: input.resolution.packageScopeStatus,
+      lockfileStatus: input.resolution.lockfileStatus,
+      matchedControlledSample: input.resolution.matchedControlledSample,
+      riskIndicatorCount: input.resolution.riskIndicatorCount,
+      riskIndicators: input.resolution.riskIndicators,
+      auditActions: input.resolution.auditActions,
+      recommendedAction: input.resolution.recommendedAction,
       signal: input.signal,
     };
   }
@@ -3410,6 +3459,111 @@ export function createApp(options: CreateAppOptions = {}) {
               : riskyPromptRoute
                 ? "high"
                 : "low",
+        });
+
+        res.status(responseStatus).json({
+          status: result.status,
+          result,
+        });
+      } catch (error) {
+        next(error);
+      }
+    },
+  );
+
+  app.post(
+    "/api/labs/supply-chain/dependency-confusion/:variant/resolve",
+    async (req, res, next) => {
+      try {
+        const currentUser = await readCurrentUser(req);
+
+        if (!currentUser.ok) {
+          res.status(currentUser.status).json(currentUser.body);
+          return;
+        }
+
+        const variantKey = readDependencyConfusionVariantKey(
+          req.params.variant,
+        );
+        const manifestKey = readRequiredString(req.body?.manifestKey);
+        const registryScenarioKey = readRequiredString(
+          req.body?.registryScenarioKey,
+        );
+        const resolutionPolicyKey = readRequiredString(
+          req.body?.resolutionPolicyKey,
+        );
+
+        if (!variantKey) {
+          res.status(404).json({
+            status: "error",
+            message: "dependency confusion variant not found",
+          });
+          return;
+        }
+
+        if (!manifestKey || !registryScenarioKey || !resolutionPolicyKey) {
+          res.status(400).json({
+            status: "error",
+            message:
+              "manifestKey, registryScenarioKey and resolutionPolicyKey are required",
+          });
+          return;
+        }
+
+        const result = await dependencyConfusionLabService.resolveDependency({
+          userId: currentUser.user.id,
+          variantKey,
+          manifestKey,
+          registryScenarioKey,
+          resolutionPolicyKey,
+        });
+        const responseStatus = result.status === "blocked" ? 403 : 200;
+        const riskyResolution =
+          result.resolution.riskIndicatorCount > 0 &&
+          result.resolution.matchedControlledSample;
+        const defenseAudit =
+          variantKey === "fixed" &&
+          result.resolution.auditActions.includes("source-audited");
+
+        await recordLabEventSafely({
+          traceId: readOptionalTraceId(req),
+          userId: currentUser.user.id,
+          labKey: "supply-chain.dependency-confusion",
+          variantKey,
+          phase:
+            result.status === "blocked"
+              ? "defense"
+              : variantKey === "vuln" && riskyResolution
+                ? "attack"
+                : defenseAudit
+                  ? "defense"
+                  : "normal",
+          eventType: result.status === "blocked" ? "blocked" : "success",
+          actorPerspective:
+            result.status === "blocked" ||
+            (variantKey === "vuln" && riskyResolution)
+              ? "attacker"
+              : defenseAudit
+                ? "system"
+                : "user",
+          method: req.method,
+          path: req.path,
+          inputSummary: summarizeDependencyConfusionInput({
+            manifestKey: result.manifestKey,
+            registryScenarioKey: result.registryScenarioKey,
+            resolutionPolicyKey: result.resolutionPolicyKey,
+            resolution: result.resolution,
+            signal: result.signal,
+          }),
+          decision: result.decision,
+          signal: result.signal,
+          statusCode: responseStatus,
+          message: result.message,
+          riskLevel: riskyResolution
+            ? "high"
+            : result.status === "blocked" || defenseAudit
+              ? "medium"
+              : "low",
         });
 
         res.status(responseStatus).json({

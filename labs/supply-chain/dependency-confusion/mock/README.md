@@ -2,11 +2,11 @@
 
 ## 当前状态
 
-当前目录只记录后续固定模拟数据的边界，不存放真实包、包归档、lockfile、registry 导出或依赖缓存。
+当前目录只记录固定模拟数据的边界，不存放真实包、包归档、lockfile、registry 导出或依赖缓存。
 
-## 后续固定样例
+## 当前固定样例
 
-建议后续只使用以下固定 key：
+当前后端受控 `resolve` API 只使用以下固定 key：
 
 - `unscoped-internal-name`
 - `scoped-private-package`

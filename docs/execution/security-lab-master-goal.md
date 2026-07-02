@@ -1,3 +1,28 @@
+# 2026-07-02 最新进展：依赖混淆后端固定解析 API
+
+本轮已将供应链实验 `supply-chain/dependency-confusion` 从 planned 元数据阶段推进到后端 API 阶段：
+
+- 新增执行文档：`docs/execution/2026-07-02-supply-chain-dependency-confusion-fixed-resolve-api.md`。
+- 新增后端固定解析服务：`apps/server/src/services/dependency-confusion-lab.ts`。
+- 新增受控 API：`POST /api/labs/supply-chain/dependency-confusion/:variant/resolve`。
+- API 只读取固定 `manifestKey`、固定 `registryScenarioKey` 和固定 `resolutionPolicyKey`。
+- 漏洞版固定样例返回错误公共来源选择和 scope 缺失学习信号；修复版固定样例返回私有 scope 固定、来源审计、lockfile 完整性阻断或正常公开依赖可接受信号。
+- API 已写入统一事件日志，日志只记录固定 key、来源类别、风险标签数量、审计动作、是否命中固定样例和学习信号，不保存完整 manifest、真实包名、registry 地址、`.npmrc`、token、Cookie、凭据、内部组织名或本机路径。
+- 新增服务端测试：`apps/server/tests/dependency-confusion-lab.test.ts`，覆盖漏洞版公共来源选择、修复版私有 scope 固定、lockfile 完整性阻断、正常公开依赖可接受、未知 key 不回显和日志摘要脱敏。
+- `labs/supply-chain/dependency-confusion/meta.json` 已更新为 `in-progress`，只登记 docs 和 api 入口，不登记 web 或 scripts 入口。
+- 当前仍不提供前端页面、`exploit.py`、`verify.ts`、真实安装、真实发布、registry 连接、凭据读取、生命周期脚本或攻击脚本。
+
+验证记录：
+
+- `pnpm --filter @network-safe/shared test` 通过，32 项测试通过。
+- `pnpm --filter @network-safe/server test -- tests/dependency-confusion-lab.test.ts tests/health.test.ts tests/lab-registry.test.ts` 通过；该命令实际运行服务端全量测试，195 项通过。
+- `pnpm --filter @network-safe/server exec tsc -p tsconfig.json --noEmit` 通过。
+- `git diff --check` 通过，仅保留 Windows 环境下 LF/CRLF 提示。
+- `rg -n "[ \t]+$" -- <本轮目标文件>` 无命中。
+- 依赖混淆服务实现窄危险能力扫描无命中；目标范围危险关键词扫描仅命中测试中的反向脱敏断言和禁止性说明。
+
+下一项建议：进入 `supply-chain/dependency-confusion` 前端依赖解析观察工作台切片，只提供固定样例选择器，不提供任意包名、registry URL、token、安装或发布入口。
+
 # 2026-07-02 最新进展：依赖混淆 planned 元数据
 
 本轮已将供应链实验 `supply-chain/dependency-confusion` 从执行文档阶段推进到 planned 元数据阶段：

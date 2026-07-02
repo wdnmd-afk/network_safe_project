@@ -114,7 +114,7 @@ test("GET /api/labs returns scanned lab metadata list", async () => {
     body.items.some(
       (item) =>
         item.id === "supply-chain.dependency-confusion" &&
-        item.status === "planned",
+        item.status === "in-progress",
     ),
   );
   assert.ok(body.items.some((item) => item.id === "web.xss"));

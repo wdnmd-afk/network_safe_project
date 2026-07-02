@@ -17,16 +17,16 @@
 
 ## 3. 当前入口状态
 
-当前只建立文档和元数据入口：
+当前已建立文档、元数据入口和后端受控 `resolve` API：
 
 - `labs/supply-chain/dependency-confusion/meta.json`
 - `labs/supply-chain/dependency-confusion/README.md`
 - `tools/lab-scripts/supply-chain/dependency-confusion/README.md`
+- `POST /api/labs/supply-chain/dependency-confusion/:variant/resolve`
 
 当前未实现：
 
 - 前端页面。
-- 后端 API。
 - `exploit.py`。
 - `verify.ts`。
 - 真实安装、发布、下载或登录流程。

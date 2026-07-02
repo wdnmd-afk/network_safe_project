@@ -1,3 +1,24 @@
+# 2026-07-02 最新进展：依赖混淆后端固定解析 API
+
+- [x] 新增执行文档 `docs/execution/2026-07-02-supply-chain-dependency-confusion-fixed-resolve-api.md`。
+- [x] 新增 `apps/server/src/services/dependency-confusion-lab.ts`，只处理固定 `manifestKey`、`registryScenarioKey` 和 `resolutionPolicyKey`。
+- [x] 新增 `POST /api/labs/supply-chain/dependency-confusion/:variant/resolve`，支持漏洞版错误来源观察和修复版来源审计复盘。
+- [x] API 已接入统一事件日志，日志只记录固定 key、来源类别、风险标签数量、审计动作、是否命中固定样例和学习信号。
+- [x] 新增 `apps/server/tests/dependency-confusion-lab.test.ts`，覆盖漏洞版公共来源选择、修复版私有 scope 固定、lockfile 完整性阻断、正常公开依赖可接受、未知 key 不回显和日志摘要脱敏。
+- [x] 将 `labs/supply-chain/dependency-confusion/meta.json` 更新为 `in-progress`，只登记 docs 和 api 入口，不登记 web 或 scripts 入口。
+- [x] 更新依赖混淆 README、漏洞版 / 修复版说明、固定模拟数据说明、攻击步骤、修复说明、手动验证和脚本目录说明。
+- [x] 当前仍不提供前端页面、`exploit.py`、`verify.ts`、真实安装、真实发布、registry 连接、凭据读取、生命周期脚本或攻击脚本。
+
+验证记录：
+
+- `pnpm --filter @network-safe/shared test` 通过，32 项测试通过。
+- `pnpm --filter @network-safe/server test -- tests/dependency-confusion-lab.test.ts tests/health.test.ts tests/lab-registry.test.ts` 通过；该命令实际运行服务端全量测试，195 项通过。
+- `pnpm --filter @network-safe/server exec tsc -p tsconfig.json --noEmit` 通过。
+- `git diff --check` 通过，仅保留 Windows 环境下 LF/CRLF 提示。
+- `rg -n "[ \t]+$" -- <本轮目标文件>` 无命中。
+- 依赖混淆服务实现窄危险能力扫描无命中；目标范围危险关键词扫描仅命中测试中的反向脱敏断言和禁止性说明。
+- 下一项建议：进入 `supply-chain/dependency-confusion` 前端依赖解析观察工作台切片，只提供固定样例选择器，不提供任意包名、registry URL、token、安装或发布入口。
+
 # 2026-07-02 最新进展：依赖混淆 planned 元数据
 
 - [x] 新增执行文档 `docs/execution/2026-07-02-supply-chain-dependency-confusion-directory-metadata.md`。
@@ -1564,7 +1585,7 @@
 
 | 内容 | 状态 | 落地方式 | 当前落点 | 未来代码位置 |
 |---|---|---|---|---|
-| 依赖混淆 | planned 元数据 | 本机模拟 / 案例化演示 / 固定 manifest / 伪 registry 元数据 / docs-only 元数据 | `labs/supply-chain/dependency-confusion/meta.json`、`tools/lab-scripts/supply-chain/dependency-confusion/README.md`、`docs/execution/2026-07-02-supply-chain-dependency-confusion-directory-metadata.md` | `labs/supply-chain/dependency-confusion/` |
+| 依赖混淆 | 后端 API 阶段 | 本机模拟 / 案例化演示 / 固定 manifest / 伪 registry 元数据 / 受控 resolve API / 事件日志安全摘要 | `apps/server/src/services/dependency-confusion-lab.ts`、`apps/server/tests/dependency-confusion-lab.test.ts`、`labs/supply-chain/dependency-confusion/meta.json`、`docs/execution/2026-07-02-supply-chain-dependency-confusion-fixed-resolve-api.md` | `labs/supply-chain/dependency-confusion/` |
 | 恶意包注入 | 规划中 | 案例化演示 / 脚本实验 | `docs/design/project-scope-and-security-content.md` | `labs/supply-chain/malicious-package/` |
 | 更新投毒 | 规划中 | 案例化演示 | `docs/design/project-scope-and-security-content.md` | `labs/supply-chain/update-poisoning/` |
 | 硬件供应链 | 规划中 | 案例化演示 | `docs/design/project-scope-and-security-content.md` | `labs/supply-chain/hardware/` |

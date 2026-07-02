@@ -719,7 +719,7 @@ test("phishing metadata is ready fixed-case workbench case-study", async () => {
   assert.match(result.value.notes, /不提供 exploit\.py/);
 });
 
-test("dependency confusion metadata is planned docs-only simulation", async () => {
+test("dependency confusion metadata is in-progress api-only simulation", async () => {
   const metadata = await readFixture(
     "labs/supply-chain/dependency-confusion/meta.json",
   );
@@ -727,10 +727,16 @@ test("dependency confusion metadata is planned docs-only simulation", async () =
 
   assert.equal(result.ok, true);
   assert.equal(result.value.id, "supply-chain.dependency-confusion");
-  assert.equal(result.value.status, "planned");
+  assert.equal(result.value.status, "in-progress");
   assert.equal(result.value.mode, "simulation");
   assert.deepEqual(result.value.entrypoints.web, []);
-  assert.deepEqual(result.value.entrypoints.api, []);
+  assert.deepEqual(
+    result.value.entrypoints.api.map((entrypoint) => entrypoint.path),
+    [
+      "/api/labs/supply-chain/dependency-confusion/vuln/resolve",
+      "/api/labs/supply-chain/dependency-confusion/fixed/resolve",
+    ],
+  );
   assert.deepEqual(result.value.entrypoints.scripts, []);
   assert.deepEqual(
     result.value.entrypoints.docs.map((entrypoint) => entrypoint.path),
@@ -746,14 +752,14 @@ test("dependency confusion metadata is planned docs-only simulation", async () =
     result.value.verification.manual.stepsDocPath,
     "labs/supply-chain/dependency-confusion/docs/manual-verification.md",
   );
-  assert.equal(result.value.verification.automation.supported, false);
+  assert.equal(result.value.verification.automation.supported, true);
   assert.deepEqual(result.value.verification.automation.playwright, {
     enabled: false,
     specPath: "",
   });
   assert.deepEqual(result.value.verification.automation.apiTest, {
-    enabled: false,
-    specPath: "",
+    enabled: true,
+    specPath: "apps/server/tests/dependency-confusion-lab.test.ts",
   });
   assert.deepEqual(result.value.verification.automation.scriptVerification, {
     enabled: false,
@@ -773,8 +779,9 @@ test("dependency confusion metadata is planned docs-only simulation", async () =
       boundary.includes("不读取 .npmrc"),
     ),
   );
-  assert.match(result.value.notes, /planned/);
-  assert.match(result.value.notes, /不提供页面、API/);
+  assert.match(result.value.notes, /in-progress/);
+  assert.match(result.value.notes, /后端受控 resolve API/);
+  assert.match(result.value.notes, /不提供前端页面/);
   assert.match(result.value.notes, /exploit\.py/);
 });
 

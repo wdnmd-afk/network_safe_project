@@ -4,15 +4,17 @@
 
 本实验用于学习供应链中的依赖混淆风险：私有包名与公共包名冲突、scope 缺失、registry 解析优先级不清晰、lockfile 缺失和安装源审计不足，都可能让依赖解析链路偏向错误来源。
 
-当前状态为 `planned`，只建立标准目录、元数据和文档入口。这里的 planned 不表示已经存在页面、API、脚本、安装流程或包发布能力。
+当前状态为 `in-progress`，已建立标准目录、元数据、文档入口和后端受控 `resolve` API。这里的 in-progress 不表示已经存在前端页面、脚本、安装流程、registry 连接或包发布能力。
 
 ## 当前范围
 
 - 已建立 `supply-chain.dependency-confusion` 元数据。
 - 已建立漏洞版 / 修复版说明目录。
 - 已建立攻击方观察、修复说明和手动验证文档。
+- 已接入后端受控固定解析 API：`POST /api/labs/supply-chain/dependency-confusion/:variant/resolve`。
+- API 只读取固定 `manifestKey`、`registryScenarioKey` 和 `resolutionPolicyKey`，并写入统一事件日志安全摘要。
 - 已建立脚本目录说明，但不提供 `exploit.py` 或 `verify.ts`。
-- 元数据当前只登记 docs 入口，不登记 web、api 或 scripts 入口。
+- 元数据当前只登记 docs 和 api 入口，不登记 web 或 scripts 入口。
 - 当前不运行真实依赖安装，不访问真实 registry，不发布真实包，不创建生命周期脚本。
 
 ## 固定样例方向
@@ -29,23 +31,25 @@
 - `private-scope-pinned`：私有 scope 被固定到可信来源。
 - `lockfile-integrity-mismatch`：固定 lockfile 摘要与伪元数据不一致。
 
-这些样例只作为学习标签和风险说明使用，不连接真实包生态。
+这些样例只作为学习标签、API 固定 key 和风险说明使用，不连接真实包生态。
 
-## 后续入口规划
+## 当前 API 入口
 
-后续 API 规划为：
+当前 API 为：
 
 ```text
 POST /api/labs/supply-chain/dependency-confusion/:variant/resolve
 ```
 
-后续请求体只允许固定字段：
+请求体只允许固定字段：
 
 - `manifestKey`
 - `registryScenarioKey`
 - `resolutionPolicyKey`
 
-实现前仍需再次按共享类型、元数据规范和服务设计确认字段名，不允许用猜测字段兜底。
+漏洞版用于观察错误来源选择和 scope 缺失风险，修复版用于观察私有来源固定、来源审计、lockfile 完整性阻断和正常公开依赖可接受路径。
+
+API 不读取任何额外字段。即使请求体携带真实包名、registry URL、`.npmrc`、token 或 lockfile 内容，也不会进入解析流程或事件日志摘要。
 
 ## 安全边界
 
@@ -59,8 +63,8 @@ POST /api/labs/supply-chain/dependency-confusion/:variant/resolve
 
 ## 后续切片
 
-1. 后端固定解析服务和受控 `resolve` API。
-2. 前端依赖解析观察工作台。
-3. 服务端、前端和路由测试。
+1. 前端依赖解析观察工作台。
+2. 前端 API client、模型和路由测试。
+3. 页面级差异验证。
 4. 只读一致性验证脚本。
 5. 按 simulation ready 标准收口。

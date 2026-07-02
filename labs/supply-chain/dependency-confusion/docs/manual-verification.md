@@ -1,20 +1,33 @@
 # 依赖混淆手动验证
 
-## 1. 当前 planned 验证
+## 1. 当前 in-progress API 验证
 
-当前只验证目录、文档和元数据入口，不验证页面、API 或脚本。
+当前验证目录、文档、元数据入口和后端受控 API，不验证页面或脚本。
 
 应确认：
 
 - `labs/supply-chain/dependency-confusion/meta.json` 存在。
-- `status` 为 `planned`。
+- `status` 为 `in-progress`。
 - `mode` 为 `simulation`。
 - `entrypoints.docs` 只登记真实存在的文档入口。
-- `entrypoints.web`、`entrypoints.api`、`entrypoints.scripts` 均为空数组。
-- `verification.automation.supported` 为 `false`。
+- `entrypoints.api` 登记漏洞版 / 修复版 `resolve` 接口。
+- `entrypoints.web`、`entrypoints.scripts` 均为空数组。
+- `verification.automation.supported` 为 `true`，当前证据来自服务端 API 测试。
 - `variants[].supportsAutomation` 均为 `false`。
 - `tools/lab-scripts/supply-chain/dependency-confusion/README.md` 存在。
 - 当前不存在 `exploit.py` 或 `verify.ts`。
+
+API 手动观察可使用固定请求体：
+
+```json
+{
+  "manifestKey": "unscoped-internal-name",
+  "registryScenarioKey": "public-name-collision",
+  "resolutionPolicyKey": "prefer-public-latest"
+}
+```
+
+当前只允许固定 key，不允许传入真实包名、真实 registry URL、真实 lockfile 或凭据。
 
 ## 2. 安全边界验证
 
@@ -26,9 +39,9 @@
 - `.npmrc`、`.yarnrc`、`.pypirc`、环境变量 token、CI 凭据或真实依赖缓存读取。
 - 完整 manifest、真实包名清单、真实 registry 地址、凭据、内部组织名或本机路径保存。
 
-## 3. 后续实现验证预期
+## 3. 当前 API 验证预期
 
-后续进入 API 和页面切片后，至少应验证：
+当前 API 切片至少应验证：
 
 - 漏洞版固定样例能观察错误来源选择。
 - 修复版固定样例能观察 scope 绑定、来源审计或 lockfile 完整性阻断。
@@ -40,7 +53,7 @@
 
 ```text
 pnpm --filter @network-safe/shared test
-pnpm --filter @network-safe/server test -- tests/health.test.ts tests/lab-registry.test.ts
+pnpm --filter @network-safe/server test -- tests/dependency-confusion-lab.test.ts tests/health.test.ts tests/lab-registry.test.ts
 ```
 
 并配合：
@@ -53,4 +66,4 @@ rg --files tools/lab-scripts/supply-chain/dependency-confusion labs/supply-chain
 
 ## 5. 禁止误判
 
-当前 planned 阶段不能因为目录存在就标记为 ready。只有后续补齐受控 API、前端入口、统一事件日志、测试或只读验证脚本，并完成收口审计后，才能考虑推进状态。
+当前 in-progress 阶段不能因为后端 API 存在就标记为 ready。只有后续补齐前端入口、页面验证、只读验证脚本，并完成收口审计后，才能考虑推进状态。
