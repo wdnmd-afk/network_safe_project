@@ -1,3 +1,24 @@
+# 2026-07-02 最新进展：Prompt 注入 ready 收口
+
+- [x] 新增执行文档 `docs/execution/2026-07-02-ai-prompt-injection-ready-closeout.md`。
+- [x] 按主计划完成标准逐项审计 `ai/prompt-injection`，确认漏洞版、修复版、攻击方观察路径、防御方阻断 / 安全问答路径、引导式页面、统一事件日志安全摘要、文档、元数据和自动化验证均有证据闭环。
+- [x] 将 `labs/ai/prompt-injection/meta.json` 从 `in-progress` 更新为 `ready`，并补充 ready 状态仅代表本项目内固定样例学习闭环完成，不表示提供真实 AI 攻击能力。
+- [x] 更新 `tools/lab-scripts/ai/prompt-injection/verify.ts`，只读一致性验证脚本改为校验 `ready` 状态。
+- [x] 更新共享元数据测试、Prompt 注入 README、漏洞版 / 修复版说明、攻击步骤、修复说明、手动验证、脚本目录说明、下一波实验规划和主目标进度。
+- [x] 当前仍不提供 `exploit.py`、Prompt 注入攻击脚本、任意提示词输入框、外部 AI 调用、真实工具调用、完整危险提示词或可复用绕过模板。
+
+验证记录：
+- `pnpm --filter @network-safe/web exec tsx ../../tools/lab-scripts/ai/prompt-injection/verify.ts` 通过，报告 `ok: true`。
+- `pnpm --filter @network-safe/shared test` 通过，30 项测试通过。
+- `pnpm --filter @network-safe/testing test` 通过，9 项测试通过。
+- `pnpm --filter @network-safe/web exec vitest run tests/prompt-injection-api.test.ts tests/prompt-injection-lab.test.ts tests/router.test.ts` 通过，3 个测试文件、9 项测试通过。
+- `pnpm --filter @network-safe/server test -- tests/prompt-injection-lab.test.ts tests/health.test.ts tests/lab-registry.test.ts` 通过；该命令实际运行服务端全量测试，178 项通过。
+- `pnpm --filter @network-safe/testing e2e -- --grep "Prompt 注入"` 通过，1 个 Playwright 用例通过。
+- `git diff --check -- <本轮目标文件>` 通过；仅出现 Windows 下 LF 将转换为 CRLF 的提示。
+- `rg -n "[ \t]+$" -- <本轮目标文件>` 未发现目标文件行尾空白。
+- Prompt 注入安全关键词扫描仅命中历史进度、只读脚本禁止片段清单和本地 `127.0.0.1` 测试 URL，未发现外部 AI 调用、任意提示词输入器、真实工具执行或攻击脚本实现。
+- 下一项建议：进入 `social/phishing` 网络钓鱼识别实验执行文档切片，优先做案例化 / 仿真页面，不发送真实邮件、不收集真实凭据、不生成可投递模板包。
+
 # 2026-07-02 最新进展：Prompt 注入只读一致性验证
 
 - [x] 新增执行文档 `docs/execution/2026-07-02-ai-prompt-injection-readonly-verification.md`。
@@ -1403,7 +1424,7 @@
 | Deepfake | 规划中 | 案例化演示 | `docs/design/project-scope-and-security-content.md` | `labs/ai/deepfake/` |
 | 对抗性 AI | 规划中 | 案例化演示 | `docs/design/project-scope-and-security-content.md` | `labs/ai/adversarial-ai/` |
 | 加密劫持 | 规划中 | 案例化演示 / 本机模拟 | `docs/design/project-scope-and-security-content.md` | `labs/ai/cryptojacking/` |
-| Prompt 注入 | 只读一致性验证 | 确定性提示词路由模拟器 / 前端固定选择器 / Playwright 差异验证 / 只读脚本验证 / 可交互演示 | `apps/web/src/views/PromptInjectionLabView.vue`、`apps/web/src/api/prompt-injection-lab.ts`、`apps/web/src/labs/prompt-injection.ts`、`packages/testing/tests/e2e/platform.spec.mjs`、`tools/lab-scripts/ai/prompt-injection/verify.ts`、`apps/server/src/services/prompt-injection-lab.ts`、`apps/server/tests/prompt-injection-lab.test.ts`、`labs/ai/prompt-injection/meta.json` | `labs/ai/prompt-injection/` |
+| Prompt 注入 | ready | 确定性提示词路由模拟器 / 前端固定选择器 / Playwright 差异验证 / 只读脚本验证 / 可交互演示 / 事件日志安全摘要 | `apps/web/src/views/PromptInjectionLabView.vue`、`apps/web/src/api/prompt-injection-lab.ts`、`apps/web/src/labs/prompt-injection.ts`、`packages/testing/tests/e2e/platform.spec.mjs`、`tools/lab-scripts/ai/prompt-injection/verify.ts`、`apps/server/src/services/prompt-injection-lab.ts`、`apps/server/tests/prompt-injection-lab.test.ts`、`labs/ai/prompt-injection/meta.json`、`docs/execution/2026-07-02-ai-prompt-injection-ready-closeout.md` | `labs/ai/prompt-injection/` |
 
 ## 12. 客户端攻击
 

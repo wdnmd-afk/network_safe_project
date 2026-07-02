@@ -2,9 +2,9 @@
 
 ## 1. 当前状态
 
-当前 `ai/prompt-injection` 处于 `in-progress` 状态，已有前端固定样例工作台、后端确定性路由 API、只读一致性验证脚本、文档和元数据入口。
+当前 `ai/prompt-injection` 处于 `ready` 状态，已有前端固定样例工作台、后端确定性路由 API、只读一致性验证脚本、事件日志安全摘要、文档和元数据入口。
 
-本阶段不提供攻击脚本、模型调用或任意提示词执行器。
+ready 只表示本项目内固定样例学习闭环完成；本阶段仍不提供攻击脚本、模型调用或任意提示词执行器。
 
 ## 2. 攻击方观察路径
 
@@ -44,7 +44,7 @@
 
 当前可手动检查文档、元数据、前端工作台和后端 API：
 
-- `meta.json` 是否为 `in-progress`。
+- `meta.json` 是否为 `ready`。
 - `entrypoints.api` 是否只登记漏洞版 / 修复版 `evaluate` 接口。
 - `entrypoints.web` 是否只登记漏洞版 / 修复版固定样例工作台。
 - `entrypoints.scripts` 是否只登记 `prompt-injection-verify` 只读一致性验证脚本。

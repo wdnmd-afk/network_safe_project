@@ -136,7 +136,7 @@
 
 | 实验 | 状态 | 推荐模式 | 当前规划落点 | 后续目录 |
 |---|---|---|---|---|
-| Prompt 注入 | 只读一致性验证 | 确定性提示词路由模拟器 / 前端固定选择器 / Playwright 差异验证 / 只读脚本验证 / 可交互演示 | `apps/web/src/views/PromptInjectionLabView.vue`、`apps/web/src/api/prompt-injection-lab.ts`、`apps/web/src/labs/prompt-injection.ts`、`packages/testing/tests/e2e/platform.spec.mjs`、`tools/lab-scripts/ai/prompt-injection/verify.ts`、`apps/server/src/services/prompt-injection-lab.ts`、`apps/server/tests/prompt-injection-lab.test.ts`、`labs/ai/prompt-injection/meta.json` | `labs/ai/prompt-injection/` |
+| Prompt 注入 | ready | 确定性提示词路由模拟器 / 前端固定选择器 / Playwright 差异验证 / 只读脚本验证 / 可交互演示 / 事件日志安全摘要 | `apps/web/src/views/PromptInjectionLabView.vue`、`apps/web/src/api/prompt-injection-lab.ts`、`apps/web/src/labs/prompt-injection.ts`、`packages/testing/tests/e2e/platform.spec.mjs`、`tools/lab-scripts/ai/prompt-injection/verify.ts`、`apps/server/src/services/prompt-injection-lab.ts`、`apps/server/tests/prompt-injection-lab.test.ts`、`labs/ai/prompt-injection/meta.json`、`docs/execution/2026-07-02-ai-prompt-injection-ready-closeout.md` | `labs/ai/prompt-injection/` |
 | AI 驱动攻击 | 延后 | 案例化演示 | `docs/design/project-scope-and-security-content.md` | `labs/ai/ai-driven-attacks/` |
 | Deepfake | 不做真实生成 | 案例化演示 | `docs/design/project-scope-and-security-content.md` | `labs/ai/deepfake/` |
 | 对抗性 AI | 延后 | 案例化演示 | `docs/design/project-scope-and-security-content.md` | `labs/ai/adversarial-ai/` |
@@ -152,8 +152,9 @@
 - 当前已接入前端固定样例观察工作台：`/labs/ai/prompt-injection/vuln`、`/labs/ai/prompt-injection/fixed`。
 - 当前已接入 Playwright 页面差异验证：`packages/testing/tests/e2e/platform.spec.mjs`。
 - 当前已接入只读一致性验证脚本：`tools/lab-scripts/ai/prompt-injection/verify.ts`。
+- 当前已完成 ready 收口审计：`docs/execution/2026-07-02-ai-prompt-injection-ready-closeout.md`。
 - 当前页面和 API 仍只接受固定 `scenarioKey`、固定 `instructionSourceKey` 和固定 `defensePolicyKey`。
-- 下一步切片建议：按完成标准做 ready 收口审计，仍不提供任意提示词输入框、外部 AI 调用或攻击脚本入口。
+- 下一步切片建议：进入 `social/phishing` 网络钓鱼识别实验执行文档，优先保持案例化 / 仿真页面边界，不发送真实邮件、不收集真实凭据、不生成可投递模板包。
 
 禁止：
 

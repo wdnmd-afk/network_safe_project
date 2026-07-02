@@ -1,3 +1,28 @@
+# 2026-07-02 最新进展：Prompt 注入 ready 收口
+
+本轮已按主计划完成标准对 `ai/prompt-injection` 做 ready 收口审计：
+
+- 新增执行文档：`docs/execution/2026-07-02-ai-prompt-injection-ready-closeout.md`。
+- 逐项确认漏洞版可运行、修复版可运行、攻击方观察路径清晰、防御方阻断 / 安全问答路径清晰、页面提供固定样例引导式交互。
+- 确认后端 `POST /api/labs/ai/prompt-injection/:variant/evaluate` 已写入统一事件日志，日志只记录固定 key、输入摘要长度、风险类别、策略状态、路由摘要和学习信号。
+- 确认文档已覆盖攻击方观察步骤、修复说明、安全边界、手动验证和只读脚本验证。
+- 确认自动化证据包含服务端 API 测试、前端单元测试、Playwright 页面差异验证和只读一致性验证脚本。
+- 将 `labs/ai/prompt-injection/meta.json` 从 `in-progress` 更新为 `ready`，并补充 ready 状态仅代表本项目内固定样例学习闭环完成，不表示提供真实 AI 攻击能力。
+- 更新只读验证脚本、共享元数据测试、Prompt 注入场景文档、`docs/TODO.md` 和下一波实验规划。
+- 当前仍不提供 `exploit.py`、Prompt 注入攻击脚本、任意提示词输入框、外部 AI 调用、真实工具调用、完整危险提示词或可复用绕过模板。
+
+验证情况：
+- `pnpm --filter @network-safe/web exec tsx ../../tools/lab-scripts/ai/prompt-injection/verify.ts` 通过，报告 `ok: true`。
+- `pnpm --filter @network-safe/shared test` 通过，30 项测试通过。
+- `pnpm --filter @network-safe/testing test` 通过，9 项测试通过。
+- `pnpm --filter @network-safe/web exec vitest run tests/prompt-injection-api.test.ts tests/prompt-injection-lab.test.ts tests/router.test.ts` 通过，3 个测试文件、9 项测试通过。
+- `pnpm --filter @network-safe/server test -- tests/prompt-injection-lab.test.ts tests/health.test.ts tests/lab-registry.test.ts` 通过；该命令实际运行服务端全量测试，178 项通过。
+- `pnpm --filter @network-safe/testing e2e -- --grep "Prompt 注入"` 通过，1 个 Playwright 用例通过。
+- `git diff --check -- <本轮目标文件>` 通过；仅出现 Windows 下 LF 将转换为 CRLF 的提示。
+- `rg -n "[ \t]+$" -- <本轮目标文件>` 未发现目标文件行尾空白。
+- Prompt 注入安全关键词扫描仅命中历史进度、只读脚本禁止片段清单和本地 `127.0.0.1` 测试 URL，未发现外部 AI 调用、任意提示词输入器、真实工具执行或攻击脚本实现。
+- 下一项建议：进入 `social/phishing` 网络钓鱼识别实验执行文档切片，优先做案例化 / 仿真页面，不发送真实邮件、不收集真实凭据、不生成可投递模板包。
+
 # 2026-07-02 最新进展：Prompt 注入只读一致性验证
 
 本轮已将 `ai/prompt-injection` 从页面级 Playwright 验证阶段推进到只读一致性验证阶段：

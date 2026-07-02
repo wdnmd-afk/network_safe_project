@@ -2,7 +2,7 @@
 
 ## 1. 验证目标
 
-当前验证确认 `in-progress` 阶段的目录、元数据、前端工作台、后端 API、只读一致性验证脚本和安全边界一致。
+当前验证确认 `ready` 阶段的目录、元数据、前端工作台、后端 API、只读一致性验证脚本、事件日志安全摘要和安全边界一致。
 
 本阶段只验证只读脚本入口，不验证也不提供攻击脚本。
 
@@ -14,7 +14,7 @@
 - `category` 为 `ai`。
 - `subcategory` 为 `prompt-injection`。
 - `mode` 为 `interactive`。
-- `status` 为 `in-progress`。
+- `status` 为 `ready`。
 - `entrypoints.docs` 登记真实文档入口。
 - `entrypoints.web` 只登记：
   - `/labs/ai/prompt-injection/vuln`

@@ -12,7 +12,9 @@
 
 ## 2. 当前状态
 
-当前状态为 `in-progress`。
+当前状态为 `ready`。
+
+`ready` 只表示本项目内固定样例工作台、后端确定性路由 API、统一事件日志安全摘要、自动化验证和安全边界文档已经形成学习闭环，不表示提供真实 AI 攻击能力。
 
 当前已包含：
 
@@ -64,6 +66,7 @@
 - 前端工作台执行文档：`docs/execution/2026-07-01-ai-prompt-injection-frontend-workbench.md`
 - 页面级验证执行文档：`docs/execution/2026-07-02-ai-prompt-injection-playwright-verification.md`
 - 只读一致性验证执行文档：`docs/execution/2026-07-02-ai-prompt-injection-readonly-verification.md`
+- ready 收口执行文档：`docs/execution/2026-07-02-ai-prompt-injection-ready-closeout.md`
 
 当前登记 API 入口：
 
@@ -92,6 +95,6 @@
 - `prompt-injection-boundary-verified`
 - `prompt-injection-sample-blocked`
 
-## 6. 下一步
+## 6. ready 收口结论
 
-下一步建议按完成标准做 ready 收口审计。当前页面只能提交固定 `scenarioKey`、固定 `instructionSourceKey` 和固定 `defensePolicyKey`，脚本也只读取仓库内固定文件；仍不得提供任意提示词输入框、外部 AI 调用或攻击脚本入口。
+当前已按完成标准完成 ready 收口审计。页面只能提交固定 `scenarioKey`、固定 `instructionSourceKey` 和固定 `defensePolicyKey`，脚本也只读取仓库内固定文件；后续若扩展新样例或新 AI 安全实验，必须另写执行文档，并且仍不得提供任意提示词输入框、外部 AI 调用或攻击脚本入口。
