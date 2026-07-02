@@ -551,7 +551,7 @@ test("dns hijack metadata is ready controlled DNS simulation", async () => {
   assert.match(result.value.notes, /不提供 exploit\.py/);
 });
 
-test("prompt injection metadata exposes controlled web and api without scripts", async () => {
+test("prompt injection metadata exposes controlled web, api and read-only script verification", async () => {
   const metadata = await readFixture("labs/ai/prompt-injection/meta.json");
   const result = validateLabMetadata(metadata);
 
@@ -573,7 +573,14 @@ test("prompt injection metadata exposes controlled web and api without scripts",
       "/api/labs/ai/prompt-injection/fixed/evaluate",
     ],
   );
-  assert.deepEqual(result.value.entrypoints.scripts, []);
+  assert.deepEqual(result.value.entrypoints.scripts, [
+    {
+      key: "prompt-injection-verify",
+      language: "ts",
+      path: "tools/lab-scripts/ai/prompt-injection/verify.ts",
+      description: "本机只读 Prompt 注入元数据、文档与固定样例边界一致性验证",
+    },
+  ]);
   assert.deepEqual(
     result.value.entrypoints.docs.map((entrypoint) => entrypoint.path),
     [
@@ -597,6 +604,10 @@ test("prompt injection metadata exposes controlled web and api without scripts",
     enabled: true,
     specPath: "apps/server/tests/prompt-injection-lab.test.ts",
   });
+  assert.deepEqual(result.value.verification.automation.scriptVerification, {
+    enabled: true,
+    scriptKeys: ["prompt-injection-verify"],
+  });
   assert.deepEqual(
     result.value.variants.map((variant) => variant.supportsAutomation),
     [true, true],
@@ -608,10 +619,15 @@ test("prompt injection metadata exposes controlled web and api without scripts",
   );
   assert.ok(
     result.value.safeBoundaries.some((boundary) =>
-      boundary.includes("当前只登记 docs、web 和 api 入口"),
+      boundary.includes("scripts 入口不表示提供攻击脚本"),
     ),
   );
-  assert.match(result.value.notes, /Playwright 页面验证/);
+  assert.ok(
+    result.value.safeBoundaries.some((boundary) =>
+      boundary.includes("只读 scripts 验证入口"),
+    ),
+  );
+  assert.match(result.value.notes, /只读一致性验证/);
   assert.match(result.value.notes, /不提供 exploit\.py/);
 });
 

@@ -67,7 +67,14 @@
         "description": "修复版确定性提示词路由防御接口"
       }
     ],
-    "scripts": [],
+    "scripts": [
+      {
+        "key": "prompt-injection-verify",
+        "language": "ts",
+        "path": "tools/lab-scripts/ai/prompt-injection/verify.ts",
+        "description": "本机只读 Prompt 注入元数据、文档与固定样例边界一致性验证"
+      }
+    ],
     "docs": [
       {
         "key": "overview",
@@ -110,12 +117,16 @@
       "apiTest": {
         "enabled": true,
         "specPath": "apps/server/tests/prompt-injection-lab.test.ts"
+      },
+      "scriptVerification": {
+        "enabled": true,
+        "scriptKeys": ["prompt-injection-verify"]
       }
     }
   },
   "prerequisites": [
-    "已阅读 Prompt 注入实验执行文档、目录与 planned 元数据执行文档、后端确定性路由 API 执行文档、前端工作台执行文档和页面级验证执行文档",
-    "理解当前 in-progress 状态表示后端 API 和前端固定样例工作台已接入，但尚未提供脚本入口",
+    "已阅读 Prompt 注入实验执行文档、目录与 planned 元数据执行文档、后端确定性路由 API 执行文档、前端工作台执行文档、页面级验证执行文档和只读一致性验证执行文档",
+    "理解当前 in-progress 状态表示后端 API、前端固定样例工作台和只读一致性验证脚本已接入，但尚未完成 ready 收口",
     "理解本实验首版只允许固定样例和确定性路由模拟，不调用外部 AI 或真实工具"
   ],
   "paths": {
@@ -130,13 +141,13 @@
   "sortOrder": 300,
   "estimatedMinutes": 25,
   "safeBoundaries": [
-    "in-progress 状态仅表示本项目内 Prompt 注入前端固定样例工作台和后端确定性路由 API 已接入，不表示提供真实 AI 攻击能力",
-    "当前只登记 docs、web 和 api 入口，不登记 scripts 入口",
+    "in-progress 状态仅表示本项目内 Prompt 注入前端固定样例工作台、后端确定性路由 API 和只读一致性验证脚本已接入，不表示提供真实 AI 攻击能力",
+    "当前只登记 docs、web、api 和只读 scripts 验证入口，scripts 入口不表示提供攻击脚本",
     "当前不调用外部 AI、云模型、本地大模型、第三方推理接口或真实工具调用",
     "当前不接收任意提示词正文、真实系统提示词、模型配置、工具参数、URL、密钥或外部目标",
     "当前不生成钓鱼文本、恶意代码、绕过策略、仿冒身份内容、可投递攻击素材、完整危险提示词或危险样例库",
     "当前不保存完整用户提示词、完整系统提示词、完整检索片段、真实模型输出、Cookie、token 或凭据",
     "当前不提供 exploit.py、Prompt 注入攻击脚本、任意提示词执行器或可复用绕过模板"
   ],
-  "notes": "Prompt 注入前端固定样例工作台和后端确定性路由 API 已接入：当前包含元数据、文档、前端页面、前端单元测试、Playwright 页面验证、服务端受控 API 和 API 测试证据；仍不提供 exploit.py、scripts 入口、外部 AI 调用、完整危险提示词或任意提示词执行器。"
+  "notes": "Prompt 注入前端固定样例工作台、后端确定性路由 API 和只读一致性验证脚本已接入：当前包含元数据、文档、前端页面、前端单元测试、Playwright 页面验证、服务端受控 API、API 测试证据和本机只读一致性验证；仍不提供 exploit.py、外部 AI 调用、完整危险提示词或任意提示词执行器。"
 }
