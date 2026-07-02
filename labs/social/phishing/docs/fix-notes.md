@@ -4,7 +4,7 @@
 
 网络钓鱼识别的首版防御目标是建立稳定的核验流程，让学习者能从固定案例中识别风险线索，并选择举报、隔离、二次确认或放行。
 
-本实验当前处于 `in-progress`，已接入前端固定案例工作台、后端固定案例 `review` API 和本机只读一致性验证脚本。以下内容作为当前页面、API 和脚本验证的共同约束。
+本实验当前处于 `ready`，已接入前端固定案例工作台、后端固定案例 `review` API、统一事件日志安全摘要、服务端 API 差异测试和本机只读一致性验证脚本。以下内容作为当前页面、API 和脚本验证的共同约束。
 
 ## 2. 固定检查清单
 
@@ -53,14 +53,14 @@ POST /api/labs/social/phishing/:variant/review
 
 不得记录完整邮件正文、真实邮箱、真实链接、真实附件、凭据、验证码、Cookie 或 token。
 
-## 5. 后续 ready 边界
+## 5. ready 收口边界
 
-如果后续标记为 `ready`，必须满足 case-study ready 例外标准：
+当前已按 case-study ready 例外标准收口：
 
 - 保持 `mode: "case-study"`。
 - 漏洞版与修复版都有可访问学习入口。
-- 自动化验证至少覆盖两类证据。
+- 自动化验证覆盖两类证据：服务端 API 差异测试和本机只读一致性验证。
 - 文档明确禁止真实服务连接、真实凭据、对外攻击脚本、payload 库和任意执行器。
 - `variants[].supportsAutomation` 不得因页面或只读验证存在而误标为攻击脚本自动化。
 
-当前只读脚本 `tools/lab-scripts/social/phishing/verify.ts` 只能作为自动化证据之一，不能替代最终 ready 收口审计。
+当前只读脚本 `tools/lab-scripts/social/phishing/verify.ts` 只作为自动化证据之一，不发起 HTTP 请求，不读取 `.env`，不连接第三方服务。

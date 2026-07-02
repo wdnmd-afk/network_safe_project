@@ -637,13 +637,13 @@ test("prompt injection metadata is ready controlled prompt injection simulation"
   assert.match(result.value.notes, /不提供 exploit\.py/);
 });
 
-test("phishing metadata is in-progress fixed-case workbench case-study", async () => {
+test("phishing metadata is ready fixed-case workbench case-study", async () => {
   const metadata = await readFixture("labs/social/phishing/meta.json");
   const result = validateLabMetadata(metadata);
 
   assert.equal(result.ok, true);
   assert.equal(result.value.id, "social.phishing");
-  assert.equal(result.value.status, "in-progress");
+  assert.equal(result.value.status, "ready");
   assert.equal(result.value.mode, "case-study");
   assert.deepEqual(
     result.value.entrypoints.web.map((entrypoint) => entrypoint.path),
@@ -691,6 +691,10 @@ test("phishing metadata is in-progress fixed-case workbench case-study", async (
     result.value.variants.map((variant) => variant.supportsAutomation),
     [false, false],
   );
+  assert.deepEqual(result.value.verification.automation.playwright, {
+    enabled: false,
+    specPath: "",
+  });
   assert.ok(
     result.value.safeBoundaries.some((boundary) =>
       boundary.includes("不发送真实邮件"),
@@ -701,9 +705,16 @@ test("phishing metadata is in-progress fixed-case workbench case-study", async (
       boundary.includes("不提供 exploit.py"),
     ),
   );
+  assert.ok(
+    result.value.safeBoundaries.some(
+      (boundary) =>
+        boundary.includes("case-study") && boundary.includes("ready"),
+    ),
+  );
   assert.match(result.value.notes, /case-study/);
-  assert.match(result.value.notes, /in-progress/);
+  assert.match(result.value.notes, /ready/);
   assert.match(result.value.notes, /review API/);
+  assert.match(result.value.notes, /API 差异测试/);
   assert.match(result.value.notes, /只读一致性验证/);
   assert.match(result.value.notes, /不提供 exploit\.py/);
 });

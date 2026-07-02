@@ -1,3 +1,27 @@
+# 2026-07-02 最新进展：网络钓鱼识别 case-study ready 收口
+
+本轮正在按主计划完成标准和 case-study ready 例外标准对社会工程学实验 `social/phishing` 做 ready 收口审计：
+
+- 新增执行文档：`docs/execution/2026-07-02-social-phishing-ready-closeout.md`。
+- 将 `labs/social/phishing/meta.json` 从 `in-progress` 更新为 `ready`，并补充 ready 状态仅代表本项目内固定案例学习闭环完成。
+- 更新 `tools/lab-scripts/social/phishing/verify.ts`，只读一致性验证脚本改为校验 `ready` 状态和 case-study ready 边界。
+- 更新共享元数据测试，确认网络钓鱼仍保持 `mode: "case-study"`、`variants[].supportsAutomation` 均为 `false`，自动化证据来自服务端 API 差异测试和只读一致性验证。
+- 同步网络钓鱼 README、漏洞版 / 修复版说明、攻击步骤、修复说明、手动验证和脚本目录说明。
+- 当前仍不提供 `exploit.py`、真实邮件 / 短信 / 消息投递、真实邮箱或凭据收集、可投递模板生成、第三方平台调用、收件箱连接或攻击脚本。
+
+验证记录：
+
+- `pnpm --filter @network-safe/web exec tsx ../../tools/lab-scripts/social/phishing/verify.ts` 通过，报告 `ok: true`。
+- `pnpm --filter @network-safe/shared test` 通过，31 项测试通过。
+- `pnpm --filter @network-safe/web exec vitest run tests/phishing-api.test.ts tests/phishing-lab.test.ts tests/router.test.ts` 通过，3 个测试文件、9 项测试通过。
+- `pnpm --filter @network-safe/server test -- tests/phishing-lab.test.ts tests/health.test.ts tests/lab-registry.test.ts` 通过，实际执行服务端测试 186 项通过。
+- 服务端 health / registry 测试已同步 `social.phishing` 的 `ready` 状态断言。
+- `git diff --check -- <本轮目标文件>` 通过，仅保留 Windows 环境下 LF/CRLF 提示。
+- `rg -n "[ \t]+$" -- <本轮目标文件>` 无命中。
+- 网络钓鱼安全关键词扫描仅命中禁止性说明、测试反向断言、API client `token` 参数、学习信号 `credential-request`、只读脚本检查片段和既有非 phishing 认证字段；实现文件窄扫描未发现真实投递、凭据收集、模板生成或第三方平台调用实现。
+
+下一项建议：进入 `supply-chain/dependency-confusion` 或 `infrastructure/misconfiguration` 的单独执行文档切片，继续保持受控案例化 / 本机模拟边界。
+
 # 2026-07-02 最新进展：网络钓鱼识别只读一致性验证
 
 本轮已将社会工程学实验 `social/phishing` 从前端仿真收件箱工作台阶段推进到本机只读一致性验证阶段：
@@ -18,7 +42,7 @@
 - `git diff --check` 通过，仅保留 Windows 环境下 LF/CRLF 提示。
 - `rg -n "[ \t]+$" -- <本轮目标文件>` 无命中。
 - 网络钓鱼安全关键词扫描仅命中禁止性说明、脚本检查片段、测试反向断言、`local-session-token`、API client `token` 参数、学习信号 `credential-request` 和历史记录，未发现真实投递、凭据收集、模板生成或第三方平台调用实现。
-- 下一项建议：按 case-study ready 例外标准对 `social/phishing` 做收口审计；若不补页面级 Playwright，则需明确 API 差异验证和只读一致性验证作为两类自动化证据。
+- 后续已按 case-study ready 例外标准完成 `social/phishing` 收口审计；当前 ready 证据明确来自 API 差异验证和只读一致性验证两类自动化证据。
 
 # 2026-07-02 最新进展：网络钓鱼识别前端仿真收件箱工作台
 

@@ -4,7 +4,7 @@
 
 当前目录用于 `social/phishing` 的脚本边界说明和本机只读一致性验证。
 
-`social/phishing` 首版定位为 `case-study`，当前只登记本机只读一致性验证脚本，不登记攻击脚本、投递脚本或模板生成脚本。
+`social/phishing` 首版定位为 `case-study`，当前已按 ready 例外标准收口。这里的 ready 只代表本项目内固定案例学习闭环完成，当前只登记本机只读一致性验证脚本，不登记攻击脚本、投递脚本或模板生成脚本。
 
 当前唯一脚本入口：
 
@@ -14,6 +14,7 @@
 
 - 读取 `labs/social/phishing/meta.json`。
 - 检查文档入口是否存在。
+- 检查元数据保持 `case-study` / `ready`。
 - 检查固定案例 key、风险标签和安全边界是否一致。
 - 检查不存在 `exploit.py`、发送能力、凭据收集能力或模板生成能力。
 

@@ -15,12 +15,13 @@
 
 ## 当前状态
 
-当前已接入后端固定案例 API：
+当前已按 case-study ready 标准完成固定案例学习闭环：
 
 - 前端入口：`/labs/social/phishing/vuln`。
 - `POST /api/labs/social/phishing/vuln/review` 只读取固定 `caseKey`、`reviewModeKey` 和 `defenseChecklistKey`。
 - 统一事件日志只记录固定 key、风险标签数量、建议动作和学习信号。
-- 没有攻击脚本。
+- 服务端 API 测试和只读一致性验证脚本用于证明误判观察版与修复版差异。
+- 没有 `exploit.py`、投递脚本、模板生成器或攻击脚本。
 
 ## 禁止能力
 

@@ -268,8 +268,8 @@ export function runPhishingConsistencyVerification(): PhishingConsistencyReport 
       "metadata-basic-state",
       metadata.id === "social.phishing" &&
         metadata.mode === "case-study" &&
-        metadata.status === "in-progress",
-      "网络钓鱼元数据应保持 social.phishing / case-study / in-progress。",
+        metadata.status === "ready",
+      "网络钓鱼元数据应保持 social.phishing / case-study / ready。",
     ),
   );
   checks.push(
@@ -318,6 +318,20 @@ export function runPhishingConsistencyVerification(): PhishingConsistencyReport 
         ) &&
         metadata.variants.every((variant) => !variant.supportsAutomation),
       "自动化应登记服务端 API 测试和本机只读一致性验证脚本，变体仍不登记攻击脚本自动化。",
+    ),
+  );
+  checks.push(
+    createCheck(
+      "case-study-ready-boundary",
+      metadata.safeBoundaries.some(
+        (boundary) =>
+          boundary.includes("case-study") && boundary.includes("ready"),
+      ) &&
+        metadata.notes.includes("ready") &&
+        metadata.notes.includes("只读一致性验证") &&
+        metadata.notes.includes("不提供") &&
+        metadata.notes.includes("exploit.py"),
+      "网络钓鱼 ready 元数据应说明 case-study ready 边界、只读验证证据和不提供 exploit.py。",
     ),
   );
   checks.push(
@@ -395,7 +409,7 @@ export function runPhishingConsistencyVerification(): PhishingConsistencyReport 
       "本脚本不发起 HTTP 请求，不发送邮件、短信或消息，不连接第三方平台或收件箱服务。",
       "本脚本不读取 .env、Cookie、token、验证码或凭据，不接收任意邮箱、正文、链接、附件或模板。",
       "本脚本入口是只读一致性验证，不是 exploit.py、投递器、模板生成器或攻击脚本。",
-      "当前实验仍保持 in-progress，后续 ready 收口需要单独审计。",
+      "当前实验已按 case-study ready 例外收口，ready 仅代表本项目内固定案例学习闭环完成。",
     ],
   };
 }

@@ -107,8 +107,7 @@ test("GET /api/labs returns scanned lab metadata list", async () => {
   );
   assert.ok(
     body.items.some(
-      (item) =>
-        item.id === "social.phishing" && item.status === "in-progress",
+      (item) => item.id === "social.phishing" && item.status === "ready",
     ),
   );
   assert.ok(body.items.some((item) => item.id === "web.xss"));

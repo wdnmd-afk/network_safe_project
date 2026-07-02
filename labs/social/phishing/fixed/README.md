@@ -16,13 +16,13 @@
 
 ## 当前状态
 
-当前已接入后端固定案例 API：
+当前已按 case-study ready 标准完成固定案例学习闭环：
 
 - 前端入口：`/labs/social/phishing/fixed`。
 - `POST /api/labs/social/phishing/fixed/review` 只读取固定 `caseKey`、`reviewModeKey` 和 `defenseChecklistKey`。
 - 修复版固定风险案例会返回阻断 / 举报 / 隔离建议。
 - 固定安全案例会返回 `phishing-safe-message-accepted`，用于验证正常消息仍可放行。
-- 没有自动化验证脚本。
+- 当前只登记本机只读一致性验证脚本，不登记攻击脚本自动化。
 - 没有真实收件箱或第三方平台连接。
 
 ## 安全边界
