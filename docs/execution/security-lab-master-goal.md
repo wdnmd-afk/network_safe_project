@@ -1,3 +1,25 @@
+# 2026-07-02 最新进展：网络钓鱼识别 planned 元数据
+
+本轮已将社会工程学实验 `social/phishing` 从执行文档阶段推进到 planned 元数据阶段：
+
+- 新增执行文档：`docs/execution/2026-07-02-social-phishing-directory-metadata.md`。
+- 建立 `labs/social/phishing/` 标准目录。
+- 新增 `labs/social/phishing/meta.json`，状态为 `planned`，模式为 `case-study`。
+- 新增 README、误判观察版说明、识别复盘版说明、固定案例说明、攻击方观察步骤、修复说明和手动验证文档。
+- 新增 `tools/lab-scripts/social/phishing/README.md`，当前只说明脚本边界，不提供 `exploit.py` 或 `verify.ts`。
+- 元数据当前只登记 docs 入口，不登记 web、api 或 scripts 入口。
+- 当前不创建邮件发送、凭据收集、模板生成、第三方平台调用或攻击脚本能力。
+- 更新共享元数据测试和服务端 health / registry 测试，确认本地元数据总数从 22 增加到 23，并确认 `social.phishing` 为 planned 条目。
+
+验证情况：
+- `pnpm --filter @network-safe/shared test` 通过，31 项测试通过。
+- `pnpm --filter @network-safe/server test -- tests/health.test.ts tests/lab-registry.test.ts` 通过；该命令实际运行服务端全量测试，178 项通过。
+- `git diff --check` 未发现空白错误，仅有既有 LF/CRLF 提示。
+- `rg -n "[ \t]+$" -- <本轮目标文件>` 未发现目标文件行尾空白。
+- 网络钓鱼识别安全关键词扫描仅命中禁止性说明、历史进度和本地 `127.0.0.1` 测试 URL，未发现真实邮件发送、凭据收集、可投递模板包或第三方平台调用实现。
+- `rg --files tools/lab-scripts/social/phishing labs/social/phishing` 确认当前脚本目录只包含 README，场景目录只包含元数据和文档。
+- 下一项建议：进入 `social/phishing` 后端固定案例 API 切片，只读取固定 `caseKey`、固定 `reviewModeKey` 和固定 `defenseChecklistKey`，并接入统一事件日志安全摘要。
+
 # 2026-07-02 最新进展：网络钓鱼识别实验执行文档
 
 本轮已为下一项社会工程学实验 `social/phishing` 补齐单独实现执行文档：

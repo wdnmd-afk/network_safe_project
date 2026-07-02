@@ -1,0 +1,123 @@
+{
+  "id": "social.phishing",
+  "slug": "phishing",
+  "title": "网络钓鱼识别",
+  "category": "social",
+  "subcategory": "phishing",
+  "mode": "case-study",
+  "severity": "high",
+  "difficulty": "beginner",
+  "summary": "通过固定仿真收件箱线索卡学习相似域名、紧急语气、凭据请求、附件诱导和品牌仿冒等网络钓鱼风险信号。",
+  "status": "planned",
+  "phase": "phase-3",
+  "tags": ["social", "phishing", "case-study", "email-security", "awareness"],
+  "knowledgePoints": [
+    "社会工程学诱导线索",
+    "相似域名识别",
+    "凭据请求风险",
+    "附件诱导风险",
+    "举报与隔离流程"
+  ],
+  "variants": [
+    {
+      "key": "vuln",
+      "title": "误判观察版",
+      "enabled": true,
+      "description": "使用固定线索卡展示只看显示名、主题或紧急程度时可能产生的错误放行倾向。",
+      "entryKey": "vuln-docs",
+      "expectedOutcome": "观察 phishing-lookalike-domain-overlooked、phishing-credential-request-visible 或 phishing-attachment-risk-visible 等学习信号。",
+      "supportsAutomation": false
+    },
+    {
+      "key": "fixed",
+      "title": "识别复盘版",
+      "enabled": true,
+      "description": "使用同一批固定线索卡展示逐项检查、举报、隔离和二次确认的防御流程。",
+      "entryKey": "fixed-docs",
+      "expectedOutcome": "观察 phishing-reporting-flow-applied、phishing-safe-message-accepted 或 phishing-case-boundary-verified 等学习信号。",
+      "supportsAutomation": false
+    }
+  ],
+  "entrypoints": {
+    "web": [],
+    "api": [],
+    "scripts": [],
+    "docs": [
+      {
+        "key": "overview",
+        "path": "labs/social/phishing/README.md",
+        "description": "网络钓鱼识别实验总说明"
+      },
+      {
+        "key": "attack-steps",
+        "path": "labs/social/phishing/docs/attack-steps.md",
+        "description": "攻击方视角观察步骤与安全边界"
+      },
+      {
+        "key": "fix-notes",
+        "path": "labs/social/phishing/docs/fix-notes.md",
+        "description": "网络钓鱼识别、举报、隔离和二次确认修复说明"
+      },
+      {
+        "key": "manual-verification",
+        "path": "labs/social/phishing/docs/manual-verification.md",
+        "description": "planned 文档入口、元数据和边界验证方式"
+      }
+    ]
+  },
+  "verification": {
+    "manual": {
+      "supported": true,
+      "stepsDocPath": "labs/social/phishing/docs/manual-verification.md",
+      "expectedSignals": [
+        "phishing-lookalike-domain-overlooked",
+        "phishing-credential-request-visible",
+        "phishing-attachment-risk-visible",
+        "phishing-reporting-flow-applied",
+        "phishing-safe-message-accepted",
+        "phishing-case-boundary-verified"
+      ]
+    },
+    "automation": {
+      "supported": false,
+      "playwright": {
+        "enabled": false,
+        "specPath": ""
+      },
+      "apiTest": {
+        "enabled": false,
+        "specPath": ""
+      },
+      "scriptVerification": {
+        "enabled": false,
+        "scriptKeys": []
+      }
+    }
+  },
+  "prerequisites": [
+    "已阅读网络钓鱼识别实验执行文档和目录与 planned 元数据执行文档",
+    "理解当前只建立案例化文档入口，不提供可运行页面、API 或脚本",
+    "理解本实验首版只允许固定案例 key、线索卡和识别清单"
+  ],
+  "paths": {
+    "root": "labs/social/phishing",
+    "readme": "labs/social/phishing/README.md",
+    "vuln": "labs/social/phishing/vuln",
+    "fixed": "labs/social/phishing/fixed",
+    "mock": "labs/social/phishing/mock",
+    "docs": "labs/social/phishing/docs",
+    "scripts": "tools/lab-scripts/social/phishing"
+  },
+  "sortOrder": 400,
+  "estimatedMinutes": 20,
+  "safeBoundaries": [
+    "当前仅做 case-study planned 元数据和文档入口，不表示网络钓鱼识别实验已经可运行",
+    "不发送真实邮件、短信、消息或链接",
+    "不收集真实邮箱、真实凭据、验证码、Cookie 或 token",
+    "不连接第三方邮件、短信、社交平台、投递服务或收件箱服务",
+    "不生成可投递邮件模板包、标题库、正文模板库、群发脚本或攻击脚本",
+    "不提供 exploit.py，后续脚本目录仅允许只读一致性验证"
+  ],
+  "notes": "网络钓鱼识别当前为 planned：仅包含元数据、文档入口和安全边界说明；后续实现必须继续保持 case-study 边界，不提供真实投递、凭据收集、模板生成或攻击脚本。"
+}
+

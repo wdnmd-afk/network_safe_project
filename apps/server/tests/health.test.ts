@@ -86,7 +86,7 @@ test("GET /api/labs returns scanned lab metadata list", async () => {
   };
 
   assert.equal(response.status, 200);
-  assert.equal(body.total, 22);
+  assert.equal(body.total, 23);
   assert.ok(
     body.items.some(
       (item) =>
@@ -103,6 +103,12 @@ test("GET /api/labs returns scanned lab metadata list", async () => {
     body.items.some(
       (item) =>
         item.id === "network.port-scan" && item.status === "ready",
+    ),
+  );
+  assert.ok(
+    body.items.some(
+      (item) =>
+        item.id === "social.phishing" && item.status === "planned",
     ),
   );
   assert.ok(body.items.some((item) => item.id === "web.xss"));

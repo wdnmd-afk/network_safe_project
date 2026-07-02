@@ -112,7 +112,7 @@
 
 | 实验 | 状态 | 推荐模式 | 当前规划落点 | 后续目录 |
 |---|---|---|---|---|
-| 网络钓鱼 | 执行文档 | 案例化演示 / 仿真页面 / 固定线索卡 / 识别训练 | `docs/execution/2026-07-02-social-phishing-lab.md` | `labs/social/phishing/` |
+| 网络钓鱼 | planned | 案例化演示 / 仿真页面 / 固定线索卡 / 识别训练 | `docs/execution/2026-07-02-social-phishing-lab.md`、`labs/social/phishing/meta.json` | `labs/social/phishing/` |
 | 鱼叉式钓鱼 | 延后 | 案例化演示 | `docs/design/project-scope-and-security-content.md` | `labs/social/spear-phishing/` |
 | 短信钓鱼 | 延后 | 案例化演示 | `docs/design/project-scope-and-security-content.md` | `labs/social/smishing/` |
 | 商业邮件诈骗 | 延后 | 案例化演示 | `docs/design/project-scope-and-security-content.md` | `labs/social/bec/` |
@@ -125,7 +125,8 @@
 - 防御方视角：如何检查发件人、链接、证书、域名和凭据请求。
 - 复盘：学习者逐项标注风险线索。
 - 当前已补齐执行文档：`docs/execution/2026-07-02-social-phishing-lab.md`。
-- 下一步切片建议：建立 `labs/social/phishing/` 目录与 `planned` 元数据，先只登记 docs 入口，不创建邮件发送、凭据收集、模板生成或攻击脚本能力。
+- 当前已建立 `labs/social/phishing/` 目录与 `planned` 元数据：`labs/social/phishing/meta.json`。
+- 下一步切片建议：进入后端固定案例 API，只接受固定 `caseKey`、固定 `reviewModeKey` 和固定 `defenseChecklistKey`，并接入统一事件日志安全摘要。
 
 禁止：
 
@@ -156,7 +157,7 @@
 - 当前已接入只读一致性验证脚本：`tools/lab-scripts/ai/prompt-injection/verify.ts`。
 - 当前已完成 ready 收口审计：`docs/execution/2026-07-02-ai-prompt-injection-ready-closeout.md`。
 - 当前页面和 API 仍只接受固定 `scenarioKey`、固定 `instructionSourceKey` 和固定 `defensePolicyKey`。
-- 下一步切片建议：进入 `social/phishing` 网络钓鱼识别实验执行文档，优先保持案例化 / 仿真页面边界，不发送真实邮件、不收集真实凭据、不生成可投递模板包。
+- 下一步切片建议：继续推进 `social/phishing` 后端固定案例 API，优先保持案例化 / 仿真页面边界，不发送真实邮件、不收集真实凭据、不生成可投递模板包。
 
 禁止：
 
@@ -245,8 +246,8 @@
 
 推荐后续按以下切片推进：
 
-1. `ai/prompt-injection` ready 收口审计。
-2. `social/phishing` 案例化执行文档。
+1. `social/phishing` 后端固定案例 API。
+2. `social/phishing` 前端仿真收件箱工作台。
 3. `supply-chain/dependency-confusion` 模拟实验执行文档。
 4. `infrastructure/misconfiguration` 模拟实验执行文档。
 
