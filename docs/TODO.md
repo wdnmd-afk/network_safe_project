@@ -1,3 +1,22 @@
+# 2026-07-02 最新进展：依赖混淆只读一致性验证
+
+- [x] 新增执行文档 `docs/execution/2026-07-02-supply-chain-dependency-confusion-readonly-verification.md`。
+- [x] 新增 `tools/lab-scripts/supply-chain/dependency-confusion/verify.ts`，只读取仓库内依赖混淆元数据、文档、前端、后端和测试文件，并输出 JSON 一致性报告。
+- [x] `labs/supply-chain/dependency-confusion/meta.json` 已登记 `dependency-confusion-verify` scripts 入口和 `scriptVerification` 自动化证据，状态仍保持 `in-progress`。
+- [x] `variants[].supportsAutomation` 仍为 `false`，避免把只读验证脚本误标为攻击脚本自动化。
+- [x] 只读脚本校验 web / api / docs / scripts 入口、固定 key、前端固定请求体、Playwright 无文本输入框断言、统一事件日志入口和供应链安全边界。
+- [x] 更新共享元数据测试、依赖混淆 README、漏洞版 / 修复版说明、攻击步骤、手动验证、脚本目录边界说明和下一波实验规划。
+- [x] 当前仍不提供 `exploit.py`、真实安装、真实发布、registry 连接、凭据读取、生命周期脚本、任意包名输入、真实 registry URL 输入或攻击脚本。
+
+验证记录：
+
+- `pnpm --filter @network-safe/web exec tsx ../../tools/lab-scripts/supply-chain/dependency-confusion/verify.ts` 通过，报告 `ok: true`。
+- `pnpm --filter @network-safe/shared test` 通过，32 项测试通过。
+- `pnpm --filter @network-safe/web exec vitest run tests/dependency-confusion-api.test.ts tests/dependency-confusion-lab.test.ts tests/router.test.ts` 通过，3 个测试文件、9 项测试通过。
+- `pnpm --filter @network-safe/testing test` 通过，9 项测试通过。
+- `pnpm --filter @network-safe/server test -- tests/dependency-confusion-lab.test.ts tests/health.test.ts tests/lab-registry.test.ts` 通过；该命令按当前服务端测试脚本实际运行全量服务端测试，195 项通过。
+- 下一项建议：对 `supply-chain/dependency-confusion` 执行 ready 收口审计，仍不创建真实安装、发布、registry 连接或攻击脚本能力。
+
 # 2026-07-02 最新进展：依赖混淆页面级差异验证
 
 - [x] 新增执行文档 `docs/execution/2026-07-02-supply-chain-dependency-confusion-playwright-verification.md`。
