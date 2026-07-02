@@ -4,7 +4,7 @@
 
 本实验用于学习供应链中的依赖混淆风险：私有包名与公共包名冲突、scope 缺失、registry 解析优先级不清晰、lockfile 缺失和安装源审计不足，都可能让依赖解析链路偏向错误来源。
 
-当前状态为 `in-progress`，已建立标准目录、元数据、文档入口、前端固定选择器工作台、后端受控 `resolve` API 和 Playwright 页面级差异验证。这里的 in-progress 不表示已经存在脚本、安装流程、registry 连接或包发布能力，也不表示已完成 ready 收口。
+当前状态为 `in-progress`，已建立标准目录、元数据、文档入口、前端固定选择器工作台、后端受控 `resolve` API、Playwright 页面级差异验证和本机只读一致性验证。这里的 in-progress 不表示已经存在攻击脚本、安装流程、registry 连接或包发布能力，也不表示已完成 ready 收口。
 
 ## 当前范围
 
@@ -15,8 +15,8 @@
 - 已接入后端受控固定解析 API：`POST /api/labs/supply-chain/dependency-confusion/:variant/resolve`。
 - API 只读取固定 `manifestKey`、`registryScenarioKey` 和 `resolutionPolicyKey`，并写入统一事件日志安全摘要。
 - 已接入 Playwright 页面级差异验证，覆盖漏洞版错误公共来源选择、修复版私有 scope 固定、修复版完整性阻断和正常公开依赖审计放行。
-- 已建立脚本目录说明，但不提供 `exploit.py` 或 `verify.ts`。
-- 元数据当前登记 docs、web 和 api 入口，不登记 scripts 入口。
+- 已接入本机只读一致性验证脚本：`tools/lab-scripts/supply-chain/dependency-confusion/verify.ts`。
+- 元数据当前登记 docs、web、api 和只读 scripts 入口。
 - 当前不运行真实依赖安装，不访问真实 registry，不发布真实包，不创建生命周期脚本。
 
 ## 固定样例方向
@@ -76,5 +76,4 @@ API 不读取任何额外字段。即使请求体携带真实包名、registry U
 
 ## 后续切片
 
-1. 只读一致性验证脚本。
-2. 按 simulation ready 标准收口。
+1. 按 simulation ready 标准收口。

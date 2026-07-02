@@ -1,8 +1,8 @@
 # 依赖混淆手动验证
 
-## 1. 当前 in-progress 页面与 API 验证
+## 1. 当前 in-progress 页面、API 与只读脚本验证
 
-当前验证目录、文档、元数据入口、前端固定选择器工作台和后端受控 API，不验证脚本。
+当前验证目录、文档、元数据入口、前端固定选择器工作台、后端受控 API、Playwright 页面级差异验证和本机只读一致性验证脚本。
 
 应确认：
 
@@ -12,12 +12,14 @@
 - `entrypoints.docs` 只登记真实存在的文档入口。
 - `entrypoints.web` 登记漏洞版 / 修复版页面入口。
 - `entrypoints.api` 登记漏洞版 / 修复版 `resolve` 接口。
-- `entrypoints.scripts` 为空数组。
-- `verification.automation.supported` 为 `true`，当前证据来自服务端 API 测试和 Playwright 页面级差异验证。
+- `entrypoints.scripts` 只登记 `dependency-confusion-verify`。
+- `verification.automation.supported` 为 `true`，当前证据来自服务端 API 测试、Playwright 页面级差异验证和本机只读一致性验证。
 - `verification.automation.playwright.enabled` 为 `true`，`specPath` 指向 `packages/testing/tests/e2e/platform.spec.mjs`。
+- `verification.automation.scriptVerification.enabled` 为 `true`，`scriptKeys` 只包含 `dependency-confusion-verify`。
 - `variants[].supportsAutomation` 均为 `false`。
 - `tools/lab-scripts/supply-chain/dependency-confusion/README.md` 存在。
-- 当前不存在 `exploit.py` 或 `verify.ts`。
+- `tools/lab-scripts/supply-chain/dependency-confusion/verify.ts` 存在，且只读取仓库内文件并输出一致性报告。
+- 当前不存在 `exploit.py`。
 
 API 手动观察可使用固定请求体：
 
@@ -69,10 +71,19 @@ Playwright 页面级验证应覆盖：
 - 前端请求体只包含 `manifestKey`、`registryScenarioKey` 和 `resolutionPolicyKey`。
 - 事件日志只保存固定 key、来源类别、风险标签、审计动作和学习信号。
 
+只读一致性验证应确认：
+
+- 元数据、文档入口、web 入口、api 入口和只读 scripts 入口一致。
+- 前端请求体只包含固定 `manifestKey`、`registryScenarioKey` 和 `resolutionPolicyKey`。
+- Playwright 覆盖漏洞版 / 修复版固定路径并断言页面没有文本输入框。
+- 实现文件没有真实安装、发布、registry URL、任意包名输入、包归档、生命周期脚本或命令执行能力。
+- 脚本目录不提供 `exploit.py`。
+
 ## 4. 当前最小验证命令
 
 ```text
 pnpm --filter @network-safe/shared test
+pnpm --filter @network-safe/web exec tsx ../../tools/lab-scripts/supply-chain/dependency-confusion/verify.ts
 pnpm --filter @network-safe/testing test
 pnpm --filter @network-safe/testing e2e -- --grep "依赖混淆"
 pnpm --filter @network-safe/web exec vitest run tests/dependency-confusion-api.test.ts tests/dependency-confusion-lab.test.ts tests/router.test.ts
@@ -90,4 +101,4 @@ rg --files tools/lab-scripts/supply-chain/dependency-confusion labs/supply-chain
 
 ## 5. 禁止误判
 
-当前 in-progress 阶段不能因为前端工作台、后端 API 和页面级验证存在就标记为 ready。只有后续补齐只读验证脚本，并完成收口审计后，才能考虑推进状态。
+当前 in-progress 阶段不能因为前端工作台、后端 API、页面级验证和只读验证脚本存在就标记为 ready。只有后续完成收口审计后，才能考虑推进状态。

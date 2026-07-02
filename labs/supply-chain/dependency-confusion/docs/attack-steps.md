@@ -17,7 +17,7 @@
 
 ## 3. 当前入口状态
 
-当前已建立文档、元数据入口、前端固定选择器工作台和后端受控 `resolve` API：
+当前已建立文档、元数据入口、前端固定选择器工作台、后端受控 `resolve` API 和本机只读一致性验证：
 
 - `labs/supply-chain/dependency-confusion/meta.json`
 - `labs/supply-chain/dependency-confusion/README.md`
@@ -25,12 +25,14 @@
 - `/labs/supply-chain/dependency-confusion/vuln`
 - `/labs/supply-chain/dependency-confusion/fixed`
 - `POST /api/labs/supply-chain/dependency-confusion/:variant/resolve`
+- `tools/lab-scripts/supply-chain/dependency-confusion/verify.ts`
 
 当前未实现：
 
 - `exploit.py`。
-- `verify.ts`。
 - 真实安装、发布、下载或登录流程。
+
+`verify.ts` 只读取仓库内文件做一致性检查，不构造包、不安装依赖、不访问 registry，也不作为攻击脚本使用。
 
 ## 4. 成功观察信号
 

@@ -743,7 +743,14 @@ test("dependency confusion metadata is in-progress fixed workbench simulation", 
       "/api/labs/supply-chain/dependency-confusion/fixed/resolve",
     ],
   );
-  assert.deepEqual(result.value.entrypoints.scripts, []);
+  assert.deepEqual(result.value.entrypoints.scripts, [
+    {
+      key: "dependency-confusion-verify",
+      language: "ts",
+      path: "tools/lab-scripts/supply-chain/dependency-confusion/verify.ts",
+      description: "本机只读依赖混淆元数据、文档与固定样例边界一致性验证",
+    },
+  ]);
   assert.deepEqual(
     result.value.entrypoints.docs.map((entrypoint) => entrypoint.path),
     [
@@ -768,8 +775,8 @@ test("dependency confusion metadata is in-progress fixed workbench simulation", 
     specPath: "apps/server/tests/dependency-confusion-lab.test.ts",
   });
   assert.deepEqual(result.value.verification.automation.scriptVerification, {
-    enabled: false,
-    scriptKeys: [],
+    enabled: true,
+    scriptKeys: ["dependency-confusion-verify"],
   });
   assert.deepEqual(
     result.value.variants.map((variant) => variant.supportsAutomation),
@@ -789,6 +796,7 @@ test("dependency confusion metadata is in-progress fixed workbench simulation", 
   assert.match(result.value.notes, /前端固定选择器工作台/);
   assert.match(result.value.notes, /后端受控 resolve API/);
   assert.match(result.value.notes, /Playwright 页面级差异验证/);
+  assert.match(result.value.notes, /只读一致性验证/);
   assert.match(result.value.notes, /exploit\.py/);
 });
 
