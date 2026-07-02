@@ -1,0 +1,129 @@
+{
+  "id": "supply-chain.dependency-confusion",
+  "slug": "dependency-confusion",
+  "title": "依赖混淆",
+  "category": "supply-chain",
+  "subcategory": "dependency-confusion",
+  "mode": "simulation",
+  "severity": "high",
+  "difficulty": "intermediate",
+  "summary": "通过固定 manifest 摘要、伪 registry 元数据和固定解析策略学习私有包名与公共包名冲突、scope 缺失、lockfile 缺失和安装源审计不足带来的供应链风险。",
+  "status": "planned",
+  "phase": "phase-3",
+  "tags": [
+    "supply-chain",
+    "dependency-confusion",
+    "registry",
+    "lockfile",
+    "simulation"
+  ],
+  "knowledgePoints": [
+    "依赖解析优先级风险",
+    "私有包命名与 scope 约束",
+    "私有 registry 绑定",
+    "lockfile 与完整性校验",
+    "安装源审计"
+  ],
+  "variants": [
+    {
+      "key": "vuln",
+      "title": "解析风险观察版",
+      "enabled": true,
+      "description": "使用固定 manifest 摘要和伪 registry 元数据展示未绑定 scope、缺少来源审计或缺少 lockfile 时可能出现的错误解析倾向。",
+      "entryKey": "vuln-entry",
+      "expectedOutcome": "后续通过受控解析 API 观察 dependency-confusion-public-source-selected 或 dependency-confusion-private-scope-missing 等学习信号。",
+      "supportsAutomation": false
+    },
+    {
+      "key": "fixed",
+      "title": "来源审计复盘版",
+      "enabled": true,
+      "description": "使用同一批固定样例展示 scope 约束、私有 registry 绑定、lockfile 完整性校验和安装源审计的防御流程。",
+      "entryKey": "fixed-entry",
+      "expectedOutcome": "后续通过受控解析 API 观察 dependency-confusion-private-scope-pinned、dependency-confusion-registry-source-audited 或 dependency-confusion-lockfile-integrity-blocked 等学习信号。",
+      "supportsAutomation": false
+    }
+  ],
+  "entrypoints": {
+    "web": [],
+    "api": [],
+    "scripts": [],
+    "docs": [
+      {
+        "key": "overview",
+        "path": "labs/supply-chain/dependency-confusion/README.md",
+        "description": "依赖混淆实验总说明"
+      },
+      {
+        "key": "attack-steps",
+        "path": "labs/supply-chain/dependency-confusion/docs/attack-steps.md",
+        "description": "攻击方视角观察步骤与安全边界"
+      },
+      {
+        "key": "fix-notes",
+        "path": "labs/supply-chain/dependency-confusion/docs/fix-notes.md",
+        "description": "依赖来源收敛、scope 绑定和完整性校验修复说明"
+      },
+      {
+        "key": "manual-verification",
+        "path": "labs/supply-chain/dependency-confusion/docs/manual-verification.md",
+        "description": "planned 元数据、文档入口和供应链安全边界验证方式"
+      }
+    ]
+  },
+  "verification": {
+    "manual": {
+      "supported": true,
+      "stepsDocPath": "labs/supply-chain/dependency-confusion/docs/manual-verification.md",
+      "expectedSignals": [
+        "dependency-confusion-public-source-selected",
+        "dependency-confusion-private-scope-missing",
+        "dependency-confusion-registry-source-audited",
+        "dependency-confusion-lockfile-integrity-blocked",
+        "dependency-confusion-private-scope-pinned",
+        "dependency-confusion-boundary-verified"
+      ]
+    },
+    "automation": {
+      "supported": false,
+      "playwright": {
+        "enabled": false,
+        "specPath": ""
+      },
+      "apiTest": {
+        "enabled": false,
+        "specPath": ""
+      },
+      "scriptVerification": {
+        "enabled": false,
+        "scriptKeys": []
+      }
+    }
+  },
+  "prerequisites": [
+    "已阅读依赖混淆实验执行文档和目录与 planned 元数据执行文档",
+    "理解当前 planned 状态只表示文档和元数据入口已建立，不表示存在页面、API 或脚本能力",
+    "理解本实验首版后续只能使用固定 manifestKey、registryScenarioKey 和 resolutionPolicyKey"
+  ],
+  "paths": {
+    "root": "labs/supply-chain/dependency-confusion",
+    "readme": "labs/supply-chain/dependency-confusion/README.md",
+    "vuln": "labs/supply-chain/dependency-confusion/vuln",
+    "fixed": "labs/supply-chain/dependency-confusion/fixed",
+    "mock": "labs/supply-chain/dependency-confusion/mock",
+    "docs": "labs/supply-chain/dependency-confusion/docs",
+    "scripts": "tools/lab-scripts/supply-chain/dependency-confusion"
+  },
+  "sortOrder": 500,
+  "estimatedMinutes": 25,
+  "safeBoundaries": [
+    "当前 planned 状态仅表示标准目录、基础文档和元数据入口已建立，不表示实验已经可运行",
+    "不运行真实依赖安装、登录、下载、打包或发布命令",
+    "不访问真实 npm、pnpm、PyPI、Maven、私有 registry 或镜像源",
+    "不发布真实包，不创建真实投毒包、包归档、发布脚本或生命周期脚本",
+    "不读取 .npmrc、.yarnrc、.pypirc、环境变量 token、registry 凭据、CI 凭据或真实依赖缓存",
+    "不保存完整 manifest、真实包名清单、真实 registry 地址、token、Cookie、凭据、内部组织名或本机路径",
+    "当前不登记 web、api 或 scripts 入口，不提供 exploit.py"
+  ],
+  "notes": "依赖混淆当前为 simulation / planned：本轮只建立目录、基础文档和 docs-only 元数据入口，不提供页面、API、安装流程、registry 连接、发布流程、生命周期脚本、exploit.py 或攻击脚本。"
+}

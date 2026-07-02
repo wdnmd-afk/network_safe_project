@@ -174,7 +174,7 @@
 
 | 实验 | 状态 | 推荐模式 | 当前规划落点 | 后续目录 |
 |---|---|---|---|---|
-| 依赖混淆 | 执行文档阶段 | 本机模拟 / 案例化演示 / 固定 manifest / 伪 registry 元数据 | `docs/execution/2026-07-02-supply-chain-dependency-confusion-lab.md` | `labs/supply-chain/dependency-confusion/` |
+| 依赖混淆 | planned 元数据 | 本机模拟 / 案例化演示 / 固定 manifest / 伪 registry 元数据 / docs-only 元数据 | `labs/supply-chain/dependency-confusion/meta.json`、`tools/lab-scripts/supply-chain/dependency-confusion/README.md`、`docs/execution/2026-07-02-supply-chain-dependency-confusion-directory-metadata.md` | `labs/supply-chain/dependency-confusion/` |
 | 恶意包注入 | 延后 | 案例化演示 | `docs/design/project-scope-and-security-content.md` | `labs/supply-chain/malicious-package/` |
 | 更新投毒 | 延后 | 案例化演示 | `docs/design/project-scope-and-security-content.md` | `labs/supply-chain/update-poisoning/` |
 | 硬件供应链 | 延后 | 案例化演示 | `docs/design/project-scope-and-security-content.md` | `labs/supply-chain/hardware/` |
@@ -185,7 +185,8 @@
 - 漏洞版展示私有包名与公共包名冲突的解析风险。
 - 修复版展示 scope、私有 registry、lockfile、完整性校验和安装源审计。
 - 当前已补齐执行文档：`docs/execution/2026-07-02-supply-chain-dependency-confusion-lab.md`。
-- 下一步切片建议：建立 `labs/supply-chain/dependency-confusion/` 目录与 `planned` 元数据，只登记 docs 入口，不创建安装、发布、registry 连接或攻击脚本能力。
+- 当前已建立 `labs/supply-chain/dependency-confusion/` 目录与 `planned` 元数据，只登记 docs 入口，不创建安装、发布、registry 连接或攻击脚本能力。
+- 下一步切片建议：进入后端固定解析 API，仍只读取固定 `manifestKey`、固定 `registryScenarioKey` 和固定 `resolutionPolicyKey`，并接入统一事件日志安全摘要。
 
 禁止：
 
@@ -253,7 +254,7 @@
 
 推荐后续按以下切片推进：
 
-1. `supply-chain/dependency-confusion` 目录与 `planned` 元数据。
+1. `supply-chain/dependency-confusion` 后端固定解析 API。
 2. `infrastructure/misconfiguration` 模拟实验执行文档。
 3. 后续社会工程学扩展案例的边界设计。
 

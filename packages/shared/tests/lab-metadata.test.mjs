@@ -719,6 +719,65 @@ test("phishing metadata is ready fixed-case workbench case-study", async () => {
   assert.match(result.value.notes, /不提供 exploit\.py/);
 });
 
+test("dependency confusion metadata is planned docs-only simulation", async () => {
+  const metadata = await readFixture(
+    "labs/supply-chain/dependency-confusion/meta.json",
+  );
+  const result = validateLabMetadata(metadata);
+
+  assert.equal(result.ok, true);
+  assert.equal(result.value.id, "supply-chain.dependency-confusion");
+  assert.equal(result.value.status, "planned");
+  assert.equal(result.value.mode, "simulation");
+  assert.deepEqual(result.value.entrypoints.web, []);
+  assert.deepEqual(result.value.entrypoints.api, []);
+  assert.deepEqual(result.value.entrypoints.scripts, []);
+  assert.deepEqual(
+    result.value.entrypoints.docs.map((entrypoint) => entrypoint.path),
+    [
+      "labs/supply-chain/dependency-confusion/README.md",
+      "labs/supply-chain/dependency-confusion/docs/attack-steps.md",
+      "labs/supply-chain/dependency-confusion/docs/fix-notes.md",
+      "labs/supply-chain/dependency-confusion/docs/manual-verification.md",
+    ],
+  );
+  assert.equal(result.value.verification.manual.supported, true);
+  assert.equal(
+    result.value.verification.manual.stepsDocPath,
+    "labs/supply-chain/dependency-confusion/docs/manual-verification.md",
+  );
+  assert.equal(result.value.verification.automation.supported, false);
+  assert.deepEqual(result.value.verification.automation.playwright, {
+    enabled: false,
+    specPath: "",
+  });
+  assert.deepEqual(result.value.verification.automation.apiTest, {
+    enabled: false,
+    specPath: "",
+  });
+  assert.deepEqual(result.value.verification.automation.scriptVerification, {
+    enabled: false,
+    scriptKeys: [],
+  });
+  assert.deepEqual(
+    result.value.variants.map((variant) => variant.supportsAutomation),
+    [false, false],
+  );
+  assert.ok(
+    result.value.safeBoundaries.some((boundary) =>
+      boundary.includes("不访问真实 npm"),
+    ),
+  );
+  assert.ok(
+    result.value.safeBoundaries.some((boundary) =>
+      boundary.includes("不读取 .npmrc"),
+    ),
+  );
+  assert.match(result.value.notes, /planned/);
+  assert.match(result.value.notes, /不提供页面、API/);
+  assert.match(result.value.notes, /exploit\.py/);
+});
+
 test("command injection metadata declares web, api and script verification entries", async () => {
   const metadata = await readFixture("labs/web/command-injection/meta.json");
   const result = validateLabMetadata(metadata);

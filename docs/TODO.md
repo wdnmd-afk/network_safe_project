@@ -1,3 +1,24 @@
+# 2026-07-02 最新进展：依赖混淆 planned 元数据
+
+- [x] 新增执行文档 `docs/execution/2026-07-02-supply-chain-dependency-confusion-directory-metadata.md`。
+- [x] 建立 `labs/supply-chain/dependency-confusion/` 标准目录。
+- [x] 新增 `labs/supply-chain/dependency-confusion/meta.json`，状态为 `planned`，模式为 `simulation`。
+- [x] 新增依赖混淆 README、解析风险观察版说明、来源审计复盘版说明、固定模拟数据说明、攻击方观察步骤、修复说明和手动验证文档。
+- [x] 新增 `tools/lab-scripts/supply-chain/dependency-confusion/README.md`，当前只说明脚本边界，不提供 `exploit.py` 或 `verify.ts`。
+- [x] 元数据当前只登记 docs 入口，`entrypoints.web`、`entrypoints.api`、`entrypoints.scripts` 均为空数组。
+- [x] `verification.automation.supported` 为 `false`，`variants[].supportsAutomation` 均为 `false`。
+- [x] 更新共享元数据测试和服务端 health / registry 测试，确认本地元数据总数从 23 增加到 24，并确认 `supply-chain.dependency-confusion` 为 planned 条目。
+
+验证记录：
+
+- `pnpm --filter @network-safe/shared test` 通过，32 项测试通过。
+- `pnpm --filter @network-safe/server test -- tests/health.test.ts tests/lab-registry.test.ts` 通过；该命令实际运行服务端全量测试，186 项通过。
+- `git diff --check -- <本轮目标文件>` 通过，仅保留 Windows 环境下 LF/CRLF 提示。
+- `rg -n "[ \t]+$" -- <本轮目标文件>` 无命中。
+- `rg --files tools/lab-scripts/supply-chain/dependency-confusion labs/supply-chain/dependency-confusion` 确认当前脚本目录只包含 README，场景目录只包含元数据和文档。
+- 依赖混淆供应链危险实现标记扫描未发现真实发布、登录、registry 网络请求、动态执行、子进程调用或生命周期脚本实现。
+- 下一项建议：进入 `supply-chain/dependency-confusion` 后端固定解析 API 切片，只读取固定 `manifestKey`、固定 `registryScenarioKey` 和固定 `resolutionPolicyKey`，并接入统一事件日志安全摘要。
+
 # 2026-07-02 最新进展：依赖混淆实验执行文档
 
 - [x] 新增执行文档 `docs/execution/2026-07-02-supply-chain-dependency-confusion-lab.md`。
@@ -1543,7 +1564,7 @@
 
 | 内容 | 状态 | 落地方式 | 当前落点 | 未来代码位置 |
 |---|---|---|---|---|
-| 依赖混淆 | 执行文档阶段 | 本机模拟 / 案例化演示 / 固定 manifest / 伪 registry 元数据 | `docs/execution/2026-07-02-supply-chain-dependency-confusion-lab.md` | `labs/supply-chain/dependency-confusion/` |
+| 依赖混淆 | planned 元数据 | 本机模拟 / 案例化演示 / 固定 manifest / 伪 registry 元数据 / docs-only 元数据 | `labs/supply-chain/dependency-confusion/meta.json`、`tools/lab-scripts/supply-chain/dependency-confusion/README.md`、`docs/execution/2026-07-02-supply-chain-dependency-confusion-directory-metadata.md` | `labs/supply-chain/dependency-confusion/` |
 | 恶意包注入 | 规划中 | 案例化演示 / 脚本实验 | `docs/design/project-scope-and-security-content.md` | `labs/supply-chain/malicious-package/` |
 | 更新投毒 | 规划中 | 案例化演示 | `docs/design/project-scope-and-security-content.md` | `labs/supply-chain/update-poisoning/` |
 | 硬件供应链 | 规划中 | 案例化演示 | `docs/design/project-scope-and-security-content.md` | `labs/supply-chain/hardware/` |
