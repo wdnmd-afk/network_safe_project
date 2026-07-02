@@ -1,14 +1,15 @@
 # 依赖混淆手动验证
 
-## 1. 当前 in-progress 页面、API 与只读脚本验证
+## 1. 当前 ready 页面、API 与只读脚本验证
 
 当前验证目录、文档、元数据入口、前端固定选择器工作台、后端受控 API、Playwright 页面级差异验证和本机只读一致性验证脚本。
 
 应确认：
 
 - `labs/supply-chain/dependency-confusion/meta.json` 存在。
-- `status` 为 `in-progress`。
+- `status` 为 `ready`。
 - `mode` 为 `simulation`。
+- ready 只代表本项目内固定样例学习闭环完成，不代表存在攻击脚本、真实依赖解析能力或真实包生态连接能力。
 - `entrypoints.docs` 只登记真实存在的文档入口。
 - `entrypoints.web` 登记漏洞版 / 修复版页面入口。
 - `entrypoints.api` 登记漏洞版 / 修复版 `resolve` 接口。
@@ -101,4 +102,4 @@ rg --files tools/lab-scripts/supply-chain/dependency-confusion labs/supply-chain
 
 ## 5. 禁止误判
 
-当前 in-progress 阶段不能因为前端工作台、后端 API、页面级验证和只读验证脚本存在就标记为 ready。只有后续完成收口审计后，才能考虑推进状态。
+当前 ready 状态不能被理解为供应链攻击工具完成。它只表示固定样例页面、受控 API、事件日志安全摘要、Playwright 页面差异验证、只读一致性验证和文档边界已经形成学习闭环；仍禁止新增真实安装、发布、registry 连接、凭据读取、生命周期脚本、包归档或 `exploit.py`。

@@ -1,3 +1,27 @@
+# 2026-07-02 最新进展：依赖混淆 simulation ready 收口
+
+- [x] 新增执行文档 `docs/execution/2026-07-02-supply-chain-dependency-confusion-ready-closeout.md`。
+- [x] 按主计划完成标准审计 `supply-chain/dependency-confusion` 当前证据：漏洞版 / 修复版页面、受控 `resolve` API、统一事件日志安全摘要、Playwright 页面差异验证、只读一致性验证和场景文档均已形成固定样例学习闭环。
+- [x] 将 `labs/supply-chain/dependency-confusion/meta.json` 从 `in-progress` 更新为 `ready`，并补充 ready 状态仅代表本项目内固定样例学习闭环完成。
+- [x] 更新 `tools/lab-scripts/supply-chain/dependency-confusion/verify.ts`，只读一致性验证脚本改为校验 `ready` 状态和 simulation ready 边界。
+- [x] 更新共享元数据测试、服务端 health / registry 测试和依赖混淆页面状态文案。
+- [x] 同步依赖混淆 README、漏洞版 / 修复版说明、攻击步骤、修复说明、手动验证、脚本目录边界说明和下一波实验规划。
+- [x] `variants[].supportsAutomation` 仍为 `false`，避免把 Playwright、API 测试或只读验证脚本误标为攻击脚本自动化。
+- [x] 当前仍不提供 `exploit.py`、真实安装、真实发布、registry 连接、凭据读取、生命周期脚本、包归档、任意包名输入、真实 registry URL 输入或攻击脚本。
+
+验证记录：
+
+- `pnpm --filter @network-safe/web exec tsx ../../tools/lab-scripts/supply-chain/dependency-confusion/verify.ts` 通过，报告 `ok: true`。
+- `pnpm --filter @network-safe/shared test` 通过，32 项测试通过。
+- `pnpm --filter @network-safe/web exec vitest run tests/dependency-confusion-api.test.ts tests/dependency-confusion-lab.test.ts tests/router.test.ts` 通过，3 个测试文件、9 项测试通过。
+- `pnpm --filter @network-safe/server test -- tests/dependency-confusion-lab.test.ts tests/health.test.ts tests/lab-registry.test.ts` 通过；该命令按当前服务端测试脚本实际运行全量服务端测试，195 项通过。
+- `pnpm --filter @network-safe/testing test` 通过，9 项测试通过。
+- `pnpm --filter @network-safe/testing e2e -- --grep "依赖混淆"` 通过，1 项 Playwright 测试通过。
+- `git diff --check` 通过，仅保留 Windows 环境下 LF/CRLF 提示。
+- `rg -n "[ \t]+$" -- <本轮目标文件>` 无命中。
+- 依赖混淆实现文件安全关键词扫描无命中；文档和脚本目录宽扫描仅命中禁止性说明、固定字段、验证脚本反向检查片段和安全边界说明。
+- 下一项建议：进入 `infrastructure/misconfiguration` 模拟实验执行文档，仍不修改真实 nginx、MySQL、Node、系统服务或云账号配置。
+
 # 2026-07-02 最新进展：依赖混淆只读一致性验证
 
 - [x] 新增执行文档 `docs/execution/2026-07-02-supply-chain-dependency-confusion-readonly-verification.md`。

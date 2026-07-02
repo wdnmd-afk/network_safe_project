@@ -139,7 +139,7 @@ const statusRows = computed(() => [
   },
   {
     label: "脚本入口",
-    value: "当前不提供",
+    value: "只读验证脚本已登记",
   },
 ]);
 

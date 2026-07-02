@@ -7,8 +7,8 @@
   "mode": "simulation",
   "severity": "high",
   "difficulty": "intermediate",
-  "summary": "通过前端固定选择器工作台、后端受控固定解析 API、固定 manifest 摘要、伪 registry 元数据、固定解析策略和本机只读一致性验证学习私有包名与公共包名冲突、scope 缺失、lockfile 缺失和安装源审计不足带来的供应链风险。",
-  "status": "in-progress",
+  "summary": "通过前端固定选择器工作台、后端受控固定解析 API、固定 manifest 摘要、伪 registry 元数据、固定解析策略、Playwright 页面差异验证和本机只读一致性验证学习私有包名与公共包名冲突、scope 缺失、lockfile 缺失和安装源审计不足带来的供应链风险。",
+  "status": "ready",
   "phase": "phase-3",
   "tags": [
     "supply-chain",
@@ -139,8 +139,8 @@
     }
   },
   "prerequisites": [
-    "已阅读依赖混淆实验执行文档、目录与 planned 元数据执行文档、后端固定解析 API 执行文档、前端解析观察工作台执行文档、页面级差异验证执行文档和只读一致性验证执行文档",
-    "理解当前 in-progress 状态只表示文档、元数据、前端固定选择器工作台、后端受控 resolve API、Playwright 页面验证和只读一致性验证已建立，不表示存在攻击脚本能力或 ready 收口",
+    "已阅读依赖混淆实验执行文档、目录与 planned 元数据执行文档、后端固定解析 API 执行文档、前端解析观察工作台执行文档、页面级差异验证执行文档、只读一致性验证执行文档和 ready 收口执行文档",
+    "理解当前 ready 状态只表示本项目内固定样例学习闭环完成，不表示存在攻击脚本能力、真实依赖解析能力或真实包生态连接能力",
     "理解本实验首版 API 只能使用固定 manifestKey、registryScenarioKey 和 resolutionPolicyKey"
   ],
   "paths": {
@@ -155,9 +155,10 @@
   "sortOrder": 500,
   "estimatedMinutes": 25,
   "safeBoundaries": [
-    "当前 in-progress 状态仅表示标准目录、基础文档、元数据入口、前端固定选择器工作台、后端受控 resolve API、Playwright 页面验证和只读一致性验证已建立，不表示实验已经 ready",
-    "当前已登记 Playwright 页面级差异验证证据，但不表示存在攻击脚本或真实依赖解析能力",
-    "当前已登记只读一致性验证脚本，但该脚本只读取仓库内文件，不发起 HTTP 请求，不安装、下载、打包或发布依赖",
+    "ready 状态仅表示标准目录、基础文档、元数据入口、前端固定选择器工作台、后端受控 resolve API、Playwright 页面验证和只读一致性验证已在本项目固定样例学习边界内形成闭环",
+    "已按 simulation ready 收口，但不表示存在攻击脚本、真实依赖解析能力或真实包生态连接能力",
+    "已登记 Playwright 页面级差异验证证据，但不表示存在攻击脚本或真实依赖解析能力",
+    "已登记只读一致性验证脚本，但该脚本只读取仓库内文件，不发起 HTTP 请求，不安装、下载、打包或发布依赖",
     "不运行真实依赖安装、登录、下载、打包或发布命令",
     "不访问真实 npm、pnpm、PyPI、Maven、私有 registry 或镜像源",
     "不发布真实包，不创建真实投毒包、包归档、发布脚本或生命周期脚本",
@@ -165,5 +166,5 @@
     "不保存完整 manifest、真实包名清单、真实 registry 地址、token、Cookie、凭据、内部组织名或本机路径",
     "当前登记 docs、web、api 和只读 verify.ts 入口，不提供 exploit.py"
   ],
-  "notes": "依赖混淆当前为 simulation / in-progress：已建立目录、基础文档、docs 入口、前端固定选择器工作台、后端受控 resolve API、Playwright 页面级差异验证和本机只读一致性验证；页面和 API 只使用固定 manifestKey、registryScenarioKey 和 resolutionPolicyKey，并写入统一事件日志安全摘要。当前只登记只读 verify.ts，不提供安装流程、registry 连接、发布流程、生命周期脚本、exploit.py 或攻击脚本。"
+  "notes": "依赖混淆当前为 simulation / ready：已按 ready 收口审计确认目录、基础文档、docs 入口、前端固定选择器工作台、后端受控 resolve API、Playwright 页面级差异验证和本机只读一致性验证形成固定样例学习闭环；页面和 API 只使用固定 manifestKey、registryScenarioKey 和 resolutionPolicyKey，并写入统一事件日志安全摘要。当前只登记只读 verify.ts，variants[].supportsAutomation 仍为 false，不提供安装流程、registry 连接、发布流程、生命周期脚本、exploit.py 或攻击脚本。"
 }

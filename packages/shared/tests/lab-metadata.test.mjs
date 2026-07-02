@@ -719,7 +719,7 @@ test("phishing metadata is ready fixed-case workbench case-study", async () => {
   assert.match(result.value.notes, /不提供 exploit\.py/);
 });
 
-test("dependency confusion metadata is in-progress fixed workbench simulation", async () => {
+test("dependency confusion metadata is ready fixed workbench simulation", async () => {
   const metadata = await readFixture(
     "labs/supply-chain/dependency-confusion/meta.json",
   );
@@ -727,7 +727,7 @@ test("dependency confusion metadata is in-progress fixed workbench simulation", 
 
   assert.equal(result.ok, true);
   assert.equal(result.value.id, "supply-chain.dependency-confusion");
-  assert.equal(result.value.status, "in-progress");
+  assert.equal(result.value.status, "ready");
   assert.equal(result.value.mode, "simulation");
   assert.deepEqual(
     result.value.entrypoints.web.map((entrypoint) => entrypoint.path),
@@ -792,11 +792,18 @@ test("dependency confusion metadata is in-progress fixed workbench simulation", 
       boundary.includes("不读取 .npmrc"),
     ),
   );
-  assert.match(result.value.notes, /in-progress/);
+  assert.ok(
+    result.value.safeBoundaries.some((boundary) =>
+      boundary.includes("ready 状态仅表示"),
+    ),
+  );
+  assert.match(result.value.notes, /ready/);
+  assert.match(result.value.notes, /ready 收口审计/);
   assert.match(result.value.notes, /前端固定选择器工作台/);
   assert.match(result.value.notes, /后端受控 resolve API/);
   assert.match(result.value.notes, /Playwright 页面级差异验证/);
   assert.match(result.value.notes, /只读一致性验证/);
+  assert.match(result.value.notes, /supportsAutomation 仍为 false/);
   assert.match(result.value.notes, /exploit\.py/);
 });
 

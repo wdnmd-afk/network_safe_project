@@ -318,8 +318,8 @@ export function runDependencyConfusionConsistencyVerification(): DependencyConfu
       "metadata-basic-state",
       metadata.id === "supply-chain.dependency-confusion" &&
         metadata.mode === "simulation" &&
-        metadata.status === "in-progress",
-      "依赖混淆元数据应保持 supply-chain.dependency-confusion / simulation / in-progress。",
+        metadata.status === "ready",
+      "依赖混淆元数据应保持 supply-chain.dependency-confusion / simulation / ready。",
     ),
   );
   checks.push(
@@ -370,6 +370,25 @@ export function runDependencyConfusionConsistencyVerification(): DependencyConfu
         ) &&
         metadata.variants.every((variant) => !variant.supportsAutomation),
       "自动化应登记 Playwright 页面验证、服务端 API 测试和本机只读一致性验证脚本，变体仍不登记攻击脚本自动化。",
+    ),
+  );
+  checks.push(
+    createCheck(
+      "simulation-ready-boundary",
+      metadata.safeBoundaries.some(
+        (boundary) =>
+          boundary.includes("ready 状态仅表示") &&
+          boundary.includes("固定样例学习边界"),
+      ) &&
+        metadata.safeBoundaries.some((boundary) =>
+          boundary.includes("不提供 exploit.py"),
+        ) &&
+        metadata.notes.includes("ready 收口审计") &&
+        metadata.notes.includes("只读一致性验证") &&
+        metadata.notes.includes("variants[].supportsAutomation 仍为 false") &&
+        metadata.notes.includes("不提供") &&
+        metadata.notes.includes("exploit.py"),
+      "依赖混淆 ready 元数据应说明固定样例学习边界、只读验证证据和不提供 exploit.py。",
     ),
   );
   checks.push(
@@ -470,7 +489,7 @@ export function runDependencyConfusionConsistencyVerification(): DependencyConfu
       "本脚本不发起 HTTP 请求，不安装、下载、打包或发布依赖，不访问真实 registry。",
       "本脚本不读取 .env、.npmrc、Cookie、token、registry 凭据、CI 凭据或真实依赖缓存。",
       "本脚本入口是只读一致性验证，不是 exploit.py、安装器、发布器、包归档生成器或攻击脚本。",
-      "当前实验仍为 in-progress，ready 收口需要后续单独审计。",
+      "当前实验已按 simulation ready 收口，ready 仅代表本项目内固定样例学习闭环完成。",
     ],
   };
 }

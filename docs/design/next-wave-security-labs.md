@@ -174,7 +174,7 @@
 
 | 实验 | 状态 | 推荐模式 | 当前规划落点 | 后续目录 |
 |---|---|---|---|---|
-| 依赖混淆 | 只读验证阶段 | 本机模拟 / 案例化演示 / 固定 manifest / 伪 registry 元数据 / 前端固定选择器 / 受控 resolve API / Playwright 页面差异验证 / 只读脚本验证 / 事件日志安全摘要 | `apps/web/src/views/DependencyConfusionLabView.vue`、`apps/web/src/api/dependency-confusion-lab.ts`、`apps/web/src/labs/dependency-confusion.ts`、`apps/server/src/services/dependency-confusion-lab.ts`、`apps/server/tests/dependency-confusion-lab.test.ts`、`packages/testing/tests/e2e/platform.spec.mjs`、`tools/lab-scripts/supply-chain/dependency-confusion/verify.ts`、`labs/supply-chain/dependency-confusion/meta.json`、`docs/execution/2026-07-02-supply-chain-dependency-confusion-readonly-verification.md` | `labs/supply-chain/dependency-confusion/` |
+| 依赖混淆 | ready | 本机模拟 / 案例化演示 / 固定 manifest / 伪 registry 元数据 / 前端固定选择器 / 受控 resolve API / Playwright 页面差异验证 / 只读脚本验证 / simulation ready 收口 / 事件日志安全摘要 | `apps/web/src/views/DependencyConfusionLabView.vue`、`apps/web/src/api/dependency-confusion-lab.ts`、`apps/web/src/labs/dependency-confusion.ts`、`apps/server/src/services/dependency-confusion-lab.ts`、`apps/server/tests/dependency-confusion-lab.test.ts`、`packages/testing/tests/e2e/platform.spec.mjs`、`tools/lab-scripts/supply-chain/dependency-confusion/verify.ts`、`labs/supply-chain/dependency-confusion/meta.json`、`docs/execution/2026-07-02-supply-chain-dependency-confusion-ready-closeout.md` | `labs/supply-chain/dependency-confusion/` |
 | 恶意包注入 | 延后 | 案例化演示 | `docs/design/project-scope-and-security-content.md` | `labs/supply-chain/malicious-package/` |
 | 更新投毒 | 延后 | 案例化演示 | `docs/design/project-scope-and-security-content.md` | `labs/supply-chain/update-poisoning/` |
 | 硬件供应链 | 延后 | 案例化演示 | `docs/design/project-scope-and-security-content.md` | `labs/supply-chain/hardware/` |
@@ -190,7 +190,8 @@
 - 当前已接入前端依赖解析观察工作台：`/labs/supply-chain/dependency-confusion/vuln`、`/labs/supply-chain/dependency-confusion/fixed`，只提供固定样例选择器，不提供任意包名、registry URL、token、安装或发布入口。
 - 当前已接入 Playwright 页面级差异验证：`packages/testing/tests/e2e/platform.spec.mjs`，覆盖漏洞版错误公共来源选择、修复版私有 scope 固定、修复版完整性阻断和正常公开依赖审计放行。
 - 当前已接入本机只读一致性验证脚本：`tools/lab-scripts/supply-chain/dependency-confusion/verify.ts`，只读取仓库内文件，不安装、下载、打包或发布依赖，不访问真实 registry。
-- 下一步切片建议：执行 ready 收口审计，仍不创建真实安装、发布、registry 连接或攻击脚本能力。
+- 当前已完成 simulation ready 收口审计：`docs/execution/2026-07-02-supply-chain-dependency-confusion-ready-closeout.md`。ready 只代表本项目内固定样例学习闭环完成，仍不创建真实安装、发布、registry 连接或攻击脚本能力。
+- 下一步切片建议：进入 `infrastructure/misconfiguration` 模拟实验执行文档。
 
 禁止：
 
@@ -258,9 +259,9 @@
 
 推荐后续按以下切片推进：
 
-1. `supply-chain/dependency-confusion` ready 收口审计。
-2. `infrastructure/misconfiguration` 模拟实验执行文档。
-3. 后续社会工程学扩展案例的边界设计。
+1. `infrastructure/misconfiguration` 模拟实验执行文档。
+2. 后续社会工程学扩展案例的边界设计。
+3. 后续供应链扩展案例的边界设计。
 
 每个切片完成后都必须同步 `docs/TODO.md` 和 `docs/execution/security-lab-master-goal.md`。
 

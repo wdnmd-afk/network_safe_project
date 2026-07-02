@@ -4,7 +4,7 @@
 
 当前目录只用于 `supply-chain/dependency-confusion` 的脚本边界说明。
 
-`supply-chain/dependency-confusion` 当前为 `in-progress`，已登记文档入口、前端固定选择器工作台、后端受控 API 入口、Playwright 页面级差异验证证据和本机只读一致性验证脚本。这里的 in-progress 不表示存在攻击脚本、安装流程或发布流程。
+`supply-chain/dependency-confusion` 当前为 `ready`，已登记文档入口、前端固定选择器工作台、后端受控 API 入口、Playwright 页面级差异验证证据和本机只读一致性验证脚本，并已完成 simulation ready 收口审计。这里的 ready 只表示本项目内固定样例学习闭环完成，不表示存在攻击脚本、安装流程、真实 registry 连接或发布流程。
 
 当前不提供：
 

@@ -4,7 +4,7 @@
 
 本实验用于学习供应链中的依赖混淆风险：私有包名与公共包名冲突、scope 缺失、registry 解析优先级不清晰、lockfile 缺失和安装源审计不足，都可能让依赖解析链路偏向错误来源。
 
-当前状态为 `in-progress`，已建立标准目录、元数据、文档入口、前端固定选择器工作台、后端受控 `resolve` API、Playwright 页面级差异验证和本机只读一致性验证。这里的 in-progress 不表示已经存在攻击脚本、安装流程、registry 连接或包发布能力，也不表示已完成 ready 收口。
+当前状态为 `ready`，已建立标准目录、元数据、文档入口、前端固定选择器工作台、后端受控 `resolve` API、Playwright 页面级差异验证和本机只读一致性验证，并已按 simulation ready 标准完成收口审计。这里的 ready 只表示本项目内固定样例学习闭环完成，不表示已经存在攻击脚本、真实安装流程、registry 连接或包发布能力。
 
 ## 当前范围
 
@@ -16,6 +16,7 @@
 - API 只读取固定 `manifestKey`、`registryScenarioKey` 和 `resolutionPolicyKey`，并写入统一事件日志安全摘要。
 - 已接入 Playwright 页面级差异验证，覆盖漏洞版错误公共来源选择、修复版私有 scope 固定、修复版完整性阻断和正常公开依赖审计放行。
 - 已接入本机只读一致性验证脚本：`tools/lab-scripts/supply-chain/dependency-confusion/verify.ts`。
+- 已完成 ready 收口审计：`docs/execution/2026-07-02-supply-chain-dependency-confusion-ready-closeout.md`。
 - 元数据当前登记 docs、web、api 和只读 scripts 入口。
 - 当前不运行真实依赖安装，不访问真实 registry，不发布真实包，不创建生命周期脚本。
 
@@ -76,4 +77,4 @@ API 不读取任何额外字段。即使请求体携带真实包名、registry U
 
 ## 后续切片
 
-1. 按 simulation ready 标准收口。
+1. 如需扩展更多供应链案例，必须另写执行文档并重新评估真实包生态连接、脚本能力和日志安全边界。
