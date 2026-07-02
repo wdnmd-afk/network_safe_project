@@ -83,6 +83,11 @@ import {
   type PathTraversalVariantKey,
 } from "./services/path-traversal-lab.js";
 import {
+  createPhishingLabService,
+  type PhishingLabService,
+  type PhishingVariantKey,
+} from "./services/phishing-lab.js";
+import {
   createPortScanLabService,
   type PortScanLabService,
   type PortScanVariantKey,
@@ -149,6 +154,7 @@ type CreateAppOptions = {
   nosqlInjectionLabService?: NosqlInjectionLabService;
   xpathInjectionLabService?: XpathInjectionLabService;
   pathTraversalLabService?: PathTraversalLabService;
+  phishingLabService?: PhishingLabService;
   portScanLabService?: PortScanLabService;
   promptInjectionLabService?: PromptInjectionLabService;
   privilegeEscalationLabService?: PrivilegeEscalationLabService;
@@ -228,6 +234,8 @@ export function createApp(options: CreateAppOptions = {}) {
     options.xpathInjectionLabService ?? createXpathInjectionLabService();
   const pathTraversalLabService =
     options.pathTraversalLabService ?? createPathTraversalLabService();
+  const phishingLabService =
+    options.phishingLabService ?? createPhishingLabService();
   const portScanLabService =
     options.portScanLabService ?? createPortScanLabService();
   const promptInjectionLabService =
@@ -519,6 +527,10 @@ export function createApp(options: CreateAppOptions = {}) {
   }
 
   function readPathTraversalVariantKey(value: unknown): PathTraversalVariantKey | "" {
+    return value === "vuln" || value === "fixed" ? value : "";
+  }
+
+  function readPhishingVariantKey(value: unknown): PhishingVariantKey | "" {
     return value === "vuln" || value === "fixed" ? value : "";
   }
 
@@ -1054,6 +1066,36 @@ export function createApp(options: CreateAppOptions = {}) {
       instructionPriority: input.routing.instructionPriority,
       toolRequestStatus: input.routing.toolRequestStatus,
       outputPolicyStatus: input.routing.outputPolicyStatus,
+      signal: input.signal,
+    };
+  }
+
+  function summarizePhishingInput(input: {
+    caseKey: string;
+    reviewModeKey: string;
+    defenseChecklistKey: string;
+    inspection: {
+      indicatorCount: number;
+      riskIndicators: string[];
+      matchedControlledCase: boolean;
+      surfaceBias: boolean;
+      checklistApplied: boolean;
+      recommendedAction: string;
+      riskLevel: string;
+    };
+    signal: string;
+  }) {
+    return {
+      caseKey: input.caseKey,
+      reviewModeKey: input.reviewModeKey,
+      defenseChecklistKey: input.defenseChecklistKey,
+      indicatorCount: input.inspection.indicatorCount,
+      riskIndicators: input.inspection.riskIndicators,
+      matchedControlledCase: input.inspection.matchedControlledCase,
+      surfaceBias: input.inspection.surfaceBias,
+      checklistApplied: input.inspection.checklistApplied,
+      recommendedAction: input.inspection.recommendedAction,
+      riskLevel: input.inspection.riskLevel,
       signal: input.signal,
     };
   }
@@ -3368,6 +3410,96 @@ export function createApp(options: CreateAppOptions = {}) {
               : riskyPromptRoute
                 ? "high"
                 : "low",
+        });
+
+        res.status(responseStatus).json({
+          status: result.status,
+          result,
+        });
+      } catch (error) {
+        next(error);
+      }
+    },
+  );
+
+  app.post(
+    "/api/labs/social/phishing/:variant/review",
+    async (req, res, next) => {
+      try {
+        const currentUser = await readCurrentUser(req);
+
+        if (!currentUser.ok) {
+          res.status(currentUser.status).json(currentUser.body);
+          return;
+        }
+
+        const variantKey = readPhishingVariantKey(req.params.variant);
+        const caseKey = readRequiredString(req.body?.caseKey);
+        const reviewModeKey = readRequiredString(req.body?.reviewModeKey);
+        const defenseChecklistKey = readRequiredString(
+          req.body?.defenseChecklistKey,
+        );
+
+        if (!variantKey) {
+          res.status(404).json({
+            status: "error",
+            message: "phishing variant not found",
+          });
+          return;
+        }
+
+        if (!caseKey || !reviewModeKey || !defenseChecklistKey) {
+          res.status(400).json({
+            status: "error",
+            message:
+              "caseKey, reviewModeKey and defenseChecklistKey are required",
+          });
+          return;
+        }
+
+        const result = await phishingLabService.reviewCase({
+          userId: currentUser.user.id,
+          variantKey,
+          caseKey,
+          reviewModeKey,
+          defenseChecklistKey,
+        });
+        const responseStatus = result.status === "blocked" ? 403 : 200;
+        const riskyCase =
+          result.inspection.indicatorCount > 0 &&
+          result.inspection.matchedControlledCase;
+
+        await recordLabEventSafely({
+          traceId: readOptionalTraceId(req),
+          userId: currentUser.user.id,
+          labKey: "social.phishing",
+          variantKey,
+          phase:
+            result.status === "blocked"
+              ? "defense"
+              : variantKey === "vuln" && riskyCase
+                ? "attack"
+                : "normal",
+          eventType: result.status === "blocked" ? "blocked" : "success",
+          actorPerspective:
+            result.status === "blocked" ||
+            (variantKey === "vuln" && riskyCase)
+              ? "attacker"
+              : "user",
+          method: req.method,
+          path: req.path,
+          inputSummary: summarizePhishingInput({
+            caseKey: result.caseKey,
+            reviewModeKey: result.reviewModeKey,
+            defenseChecklistKey: result.defenseChecklistKey,
+            inspection: result.inspection,
+            signal: result.signal,
+          }),
+          decision: result.decision,
+          signal: result.signal,
+          statusCode: responseStatus,
+          message: result.message,
+          riskLevel: riskyCase ? result.inspection.riskLevel : "low",
         });
 
         res.status(responseStatus).json({

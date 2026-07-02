@@ -637,16 +637,22 @@ test("prompt injection metadata is ready controlled prompt injection simulation"
   assert.match(result.value.notes, /不提供 exploit\.py/);
 });
 
-test("phishing metadata is planned docs-only case-study", async () => {
+test("phishing metadata is in-progress fixed-case API case-study", async () => {
   const metadata = await readFixture("labs/social/phishing/meta.json");
   const result = validateLabMetadata(metadata);
 
   assert.equal(result.ok, true);
   assert.equal(result.value.id, "social.phishing");
-  assert.equal(result.value.status, "planned");
+  assert.equal(result.value.status, "in-progress");
   assert.equal(result.value.mode, "case-study");
   assert.deepEqual(result.value.entrypoints.web, []);
-  assert.deepEqual(result.value.entrypoints.api, []);
+  assert.deepEqual(
+    result.value.entrypoints.api.map((entrypoint) => entrypoint.path),
+    [
+      "/api/labs/social/phishing/vuln/review",
+      "/api/labs/social/phishing/fixed/review",
+    ],
+  );
   assert.deepEqual(result.value.entrypoints.scripts, []);
   assert.deepEqual(
     result.value.entrypoints.docs.map((entrypoint) => entrypoint.path),
@@ -662,7 +668,11 @@ test("phishing metadata is planned docs-only case-study", async () => {
     result.value.verification.manual.stepsDocPath,
     "labs/social/phishing/docs/manual-verification.md",
   );
-  assert.equal(result.value.verification.automation.supported, false);
+  assert.equal(result.value.verification.automation.supported, true);
+  assert.deepEqual(result.value.verification.automation.apiTest, {
+    enabled: true,
+    specPath: "apps/server/tests/phishing-lab.test.ts",
+  });
   assert.deepEqual(
     result.value.variants.map((variant) => variant.supportsAutomation),
     [false, false],
@@ -678,7 +688,8 @@ test("phishing metadata is planned docs-only case-study", async () => {
     ),
   );
   assert.match(result.value.notes, /case-study/);
-  assert.match(result.value.notes, /planned/);
+  assert.match(result.value.notes, /in-progress/);
+  assert.match(result.value.notes, /review API/);
 });
 
 test("command injection metadata declares web, api and script verification entries", async () => {
