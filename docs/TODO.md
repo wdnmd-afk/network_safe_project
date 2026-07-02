@@ -1,3 +1,26 @@
+# 2026-07-02 最新进展：依赖混淆前端解析观察工作台
+
+- [x] 新增执行文档 `docs/execution/2026-07-02-supply-chain-dependency-confusion-frontend-workbench.md`。
+- [x] 新增 `apps/web/src/api/dependency-confusion-lab.ts`，前端只提交固定 `manifestKey`、`registryScenarioKey` 和 `resolutionPolicyKey`。
+- [x] 新增 `apps/web/src/labs/dependency-confusion.ts`，定义固定 manifest 摘要、固定伪 registry 场景、固定解析策略、学习信号文案、学习进度和验证记录载荷。
+- [x] 新增 `apps/web/src/views/DependencyConfusionLabView.vue`，提供解析风险观察版 / 来源审计复盘版固定选择器工作台。
+- [x] 新增 `/labs/supply-chain/dependency-confusion/vuln` 与 `/labs/supply-chain/dependency-confusion/fixed` 路由。
+- [x] 页面只提供固定 manifest、固定伪 registry 场景和固定解析策略选择器，不提供任意包名、真实 registry URL、`.npmrc`、token、lockfile、安装命令、发布命令或生命周期脚本输入。
+- [x] `labs/supply-chain/dependency-confusion/meta.json` 已登记 web 入口，状态仍保持 `in-progress`，scripts 入口仍为空，`variants[].supportsAutomation` 仍为 `false`。
+- [x] 更新依赖混淆 README、漏洞版 / 修复版说明、攻击步骤、修复说明、手动验证、脚本目录说明、共享元数据测试和下一波实验规划。
+- [x] 当前仍不提供 `exploit.py`、`verify.ts`、真实安装、真实发布、registry 连接、凭据读取、生命周期脚本或攻击脚本。
+
+验证记录：
+
+- `pnpm --filter @network-safe/web exec vitest run tests/dependency-confusion-api.test.ts tests/dependency-confusion-lab.test.ts tests/router.test.ts` 通过，3 个测试文件、9 项测试通过。
+- `pnpm --filter @network-safe/web exec vue-tsc -p tsconfig.json --noEmit` 通过。
+- `pnpm --filter @network-safe/shared test` 通过，32 项测试通过。
+- `pnpm --filter @network-safe/server test -- tests/dependency-confusion-lab.test.ts tests/health.test.ts tests/lab-registry.test.ts` 通过，实际执行服务端测试 195 项通过。
+- `git diff --check` 通过。
+- `rg -n "[ \t]+$" -- <本轮目标文件>` 无命中。
+- 依赖混淆前端和文档安全关键词扫描仅命中禁止性说明、固定字段名、测试反向断言、API client `token` 参数和学习信号名，未发现真实安装、真实发布、registry 连接、凭据读取、生命周期脚本或攻击脚本实现。
+- 下一项建议：为 `supply-chain/dependency-confusion` 补齐页面级差异验证或只读一致性验证脚本，仍不提供 `exploit.py`、真实安装、真实发布、registry 连接、凭据读取或生命周期脚本。
+
 # 2026-07-02 最新进展：依赖混淆后端固定解析 API
 
 - [x] 新增执行文档 `docs/execution/2026-07-02-supply-chain-dependency-confusion-fixed-resolve-api.md`。
@@ -1585,7 +1608,7 @@
 
 | 内容 | 状态 | 落地方式 | 当前落点 | 未来代码位置 |
 |---|---|---|---|---|
-| 依赖混淆 | 后端 API 阶段 | 本机模拟 / 案例化演示 / 固定 manifest / 伪 registry 元数据 / 受控 resolve API / 事件日志安全摘要 | `apps/server/src/services/dependency-confusion-lab.ts`、`apps/server/tests/dependency-confusion-lab.test.ts`、`labs/supply-chain/dependency-confusion/meta.json`、`docs/execution/2026-07-02-supply-chain-dependency-confusion-fixed-resolve-api.md` | `labs/supply-chain/dependency-confusion/` |
+| 依赖混淆 | 前端工作台阶段 | 本机模拟 / 案例化演示 / 固定 manifest / 伪 registry 元数据 / 前端固定选择器 / 受控 resolve API / 事件日志安全摘要 | `apps/web/src/views/DependencyConfusionLabView.vue`、`apps/web/src/api/dependency-confusion-lab.ts`、`apps/web/src/labs/dependency-confusion.ts`、`apps/server/src/services/dependency-confusion-lab.ts`、`apps/server/tests/dependency-confusion-lab.test.ts`、`labs/supply-chain/dependency-confusion/meta.json`、`docs/execution/2026-07-02-supply-chain-dependency-confusion-frontend-workbench.md` | `labs/supply-chain/dependency-confusion/` |
 | 恶意包注入 | 规划中 | 案例化演示 / 脚本实验 | `docs/design/project-scope-and-security-content.md` | `labs/supply-chain/malicious-package/` |
 | 更新投毒 | 规划中 | 案例化演示 | `docs/design/project-scope-and-security-content.md` | `labs/supply-chain/update-poisoning/` |
 | 硬件供应链 | 规划中 | 案例化演示 | `docs/design/project-scope-and-security-content.md` | `labs/supply-chain/hardware/` |

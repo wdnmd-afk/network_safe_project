@@ -4,7 +4,7 @@
 
 当前目录只用于 `supply-chain/dependency-confusion` 的脚本边界说明。
 
-`supply-chain/dependency-confusion` 当前为 `in-progress`，已登记文档入口和后端受控 API 入口，但不登记脚本入口。这里的 in-progress 不表示存在攻击脚本、验证脚本、安装流程或发布流程。
+`supply-chain/dependency-confusion` 当前为 `in-progress`，已登记文档入口、前端固定选择器工作台和后端受控 API 入口，但不登记脚本入口。这里的 in-progress 不表示存在攻击脚本、验证脚本、安装流程或发布流程。
 
 当前不提供：
 

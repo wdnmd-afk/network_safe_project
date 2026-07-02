@@ -1,3 +1,29 @@
+# 2026-07-02 最新进展：依赖混淆前端解析观察工作台
+
+本轮已将供应链实验 `supply-chain/dependency-confusion` 从后端 API 阶段推进到前端固定选择器工作台阶段：
+
+- 新增执行文档：`docs/execution/2026-07-02-supply-chain-dependency-confusion-frontend-workbench.md`。
+- 新增前端 API client：`apps/web/src/api/dependency-confusion-lab.ts`。
+- 新增前端固定样例模型：`apps/web/src/labs/dependency-confusion.ts`。
+- 新增前端工作台页面：`apps/web/src/views/DependencyConfusionLabView.vue`。
+- 新增 `/labs/supply-chain/dependency-confusion/vuln` 与 `/labs/supply-chain/dependency-confusion/fixed` 路由。
+- 页面只提供固定 manifest、固定伪 registry 场景和固定解析策略选择器；请求体只提交固定 `manifestKey`、`registryScenarioKey` 和 `resolutionPolicyKey`。
+- 页面展示后端判定、学习信号、解析来源、来源信任、scope 状态、lockfile 状态、风险标签、审计动作、推荐动作和复盘清单。
+- `labs/supply-chain/dependency-confusion/meta.json` 已登记 web 入口，状态仍保持 `in-progress`，scripts 入口仍为空，`variants[].supportsAutomation` 仍为 `false`。
+- 当前仍不提供 `exploit.py`、`verify.ts`、真实安装、真实发布、registry 连接、凭据读取、生命周期脚本、任意包名输入、真实 registry URL 输入或攻击脚本。
+
+验证记录：
+
+- `pnpm --filter @network-safe/web exec vitest run tests/dependency-confusion-api.test.ts tests/dependency-confusion-lab.test.ts tests/router.test.ts` 通过，3 个测试文件、9 项测试通过。
+- `pnpm --filter @network-safe/web exec vue-tsc -p tsconfig.json --noEmit` 通过。
+- `pnpm --filter @network-safe/shared test` 通过，32 项测试通过。
+- `pnpm --filter @network-safe/server test -- tests/dependency-confusion-lab.test.ts tests/health.test.ts tests/lab-registry.test.ts` 通过；该命令实际运行服务端全量测试，195 项通过。
+- `git diff --check` 通过。
+- `rg -n "[ \t]+$" -- <本轮目标文件>` 无命中。
+- 依赖混淆前端和文档安全关键词扫描仅命中禁止性说明、固定字段名、测试反向断言、API client `token` 参数和学习信号名，未发现真实安装、真实发布、registry 连接、凭据读取、生命周期脚本或攻击脚本实现。
+
+下一项建议：为 `supply-chain/dependency-confusion` 补齐页面级差异验证或只读一致性验证脚本，继续保持不提供 `exploit.py`、真实安装、真实发布、registry 连接、凭据读取或生命周期脚本的边界。
+
 # 2026-07-02 最新进展：依赖混淆后端固定解析 API
 
 本轮已将供应链实验 `supply-chain/dependency-confusion` 从 planned 元数据阶段推进到后端 API 阶段：

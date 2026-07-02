@@ -410,4 +410,20 @@ export const routes: RouteRecordRaw[] = [
       variant: "fixed",
     },
   },
+  {
+    path: "/labs/supply-chain/dependency-confusion/vuln",
+    name: "lab-supply-chain-dependency-confusion-vuln",
+    component: () => import("../views/DependencyConfusionLabView.vue"),
+    props: {
+      variant: "vuln",
+    },
+  },
+  {
+    path: "/labs/supply-chain/dependency-confusion/fixed",
+    name: "lab-supply-chain-dependency-confusion-fixed",
+    component: () => import("../views/DependencyConfusionLabView.vue"),
+    props: {
+      variant: "fixed",
+    },
+  },
 ];

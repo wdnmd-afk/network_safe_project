@@ -4,9 +4,15 @@
 
 本变体用于学习依赖混淆的修复与审计思路：通过 scope 约束、私有 registry 绑定、lockfile、完整性校验和安装源审计，让依赖解析来源可解释、可复核、可阻断。
 
-当前为 `in-progress`：后端已提供受控 `resolve` API，仍不存在前端页面或脚本入口。
+当前为 `in-progress`：前端已提供固定选择器工作台，后端已提供受控 `resolve` API，仍不存在脚本入口或 ready 收口。
 
 ## 当前复盘方式
+
+前端入口：
+
+```text
+/labs/supply-chain/dependency-confusion/fixed
+```
 
 修复版 API 只允许使用固定样例 key：
 
@@ -33,6 +39,8 @@
 ```text
 POST /api/labs/supply-chain/dependency-confusion/fixed/resolve
 ```
+
+前端页面只会向该接口提交 `manifestKey`、`registryScenarioKey` 和 `resolutionPolicyKey`，不提交真实包名、registry 地址、`.npmrc`、token、lockfile、安装命令或发布命令。
 
 ## 禁止能力
 

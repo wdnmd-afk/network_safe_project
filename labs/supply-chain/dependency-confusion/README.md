@@ -4,17 +4,18 @@
 
 本实验用于学习供应链中的依赖混淆风险：私有包名与公共包名冲突、scope 缺失、registry 解析优先级不清晰、lockfile 缺失和安装源审计不足，都可能让依赖解析链路偏向错误来源。
 
-当前状态为 `in-progress`，已建立标准目录、元数据、文档入口和后端受控 `resolve` API。这里的 in-progress 不表示已经存在前端页面、脚本、安装流程、registry 连接或包发布能力。
+当前状态为 `in-progress`，已建立标准目录、元数据、文档入口、前端固定选择器工作台和后端受控 `resolve` API。这里的 in-progress 不表示已经存在脚本、安装流程、registry 连接或包发布能力，也不表示已完成 ready 收口。
 
 ## 当前范围
 
 - 已建立 `supply-chain.dependency-confusion` 元数据。
 - 已建立漏洞版 / 修复版说明目录。
 - 已建立攻击方观察、修复说明和手动验证文档。
+- 已接入前端固定选择器工作台：`/labs/supply-chain/dependency-confusion/vuln`、`/labs/supply-chain/dependency-confusion/fixed`。
 - 已接入后端受控固定解析 API：`POST /api/labs/supply-chain/dependency-confusion/:variant/resolve`。
 - API 只读取固定 `manifestKey`、`registryScenarioKey` 和 `resolutionPolicyKey`，并写入统一事件日志安全摘要。
 - 已建立脚本目录说明，但不提供 `exploit.py` 或 `verify.ts`。
-- 元数据当前只登记 docs 和 api 入口，不登记 web 或 scripts 入口。
+- 元数据当前登记 docs、web 和 api 入口，不登记 scripts 入口。
 - 当前不运行真实依赖安装，不访问真实 registry，不发布真实包，不创建生命周期脚本。
 
 ## 固定样例方向
@@ -51,6 +52,17 @@ POST /api/labs/supply-chain/dependency-confusion/:variant/resolve
 
 API 不读取任何额外字段。即使请求体携带真实包名、registry URL、`.npmrc`、token 或 lockfile 内容，也不会进入解析流程或事件日志摘要。
 
+## 当前前端入口
+
+当前页面入口为：
+
+```text
+/labs/supply-chain/dependency-confusion/vuln
+/labs/supply-chain/dependency-confusion/fixed
+```
+
+页面只提供固定 manifest、固定伪 registry 场景和固定解析策略选择器。页面不提供任意包名、真实 registry 地址、`.npmrc`、token、lockfile、安装命令、发布命令或生命周期脚本输入。
+
 ## 安全边界
 
 - 不运行真实依赖安装、登录、下载、打包或发布命令。
@@ -63,8 +75,6 @@ API 不读取任何额外字段。即使请求体携带真实包名、registry U
 
 ## 后续切片
 
-1. 前端依赖解析观察工作台。
-2. 前端 API client、模型和路由测试。
-3. 页面级差异验证。
-4. 只读一致性验证脚本。
-5. 按 simulation ready 标准收口。
+1. 页面级差异验证。
+2. 只读一致性验证脚本。
+3. 按 simulation ready 标准收口。

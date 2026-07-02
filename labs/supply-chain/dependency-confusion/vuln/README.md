@@ -4,9 +4,15 @@
 
 本变体用于观察依赖混淆中的错误解析倾向：当私有依赖未使用 scope、未固定私有 registry、缺少 lockfile 或缺少来源审计时，解析链路可能偏向不可信来源。
 
-当前为 `in-progress`：后端已提供受控 `resolve` API，仍不存在前端页面或脚本入口。
+当前为 `in-progress`：前端已提供固定选择器工作台，后端已提供受控 `resolve` API，仍不存在脚本入口或 ready 收口。
 
 ## 当前观察方式
+
+前端入口：
+
+```text
+/labs/supply-chain/dependency-confusion/vuln
+```
 
 漏洞版 API 只允许使用固定样例 key：
 
@@ -31,6 +37,8 @@
 ```text
 POST /api/labs/supply-chain/dependency-confusion/vuln/resolve
 ```
+
+前端页面只会向该接口提交 `manifestKey`、`registryScenarioKey` 和 `resolutionPolicyKey`，不提交真实包名、registry 地址、`.npmrc`、token、lockfile、安装命令或发布命令。
 
 ## 禁止能力
 
