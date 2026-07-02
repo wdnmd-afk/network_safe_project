@@ -112,7 +112,7 @@
 
 | 实验 | 状态 | 推荐模式 | 当前规划落点 | 后续目录 |
 |---|---|---|---|---|
-| 网络钓鱼 | 规划中 | 案例化演示 / 仿真页面 | `docs/design/next-wave-security-labs.md` | `labs/social/phishing/` |
+| 网络钓鱼 | 执行文档 | 案例化演示 / 仿真页面 / 固定线索卡 / 识别训练 | `docs/execution/2026-07-02-social-phishing-lab.md` | `labs/social/phishing/` |
 | 鱼叉式钓鱼 | 延后 | 案例化演示 | `docs/design/project-scope-and-security-content.md` | `labs/social/spear-phishing/` |
 | 短信钓鱼 | 延后 | 案例化演示 | `docs/design/project-scope-and-security-content.md` | `labs/social/smishing/` |
 | 商业邮件诈骗 | 延后 | 案例化演示 | `docs/design/project-scope-and-security-content.md` | `labs/social/bec/` |
@@ -124,6 +124,8 @@
 - 攻击方视角：邮件如何利用紧急语气、相似域名和表单诱导。
 - 防御方视角：如何检查发件人、链接、证书、域名和凭据请求。
 - 复盘：学习者逐项标注风险线索。
+- 当前已补齐执行文档：`docs/execution/2026-07-02-social-phishing-lab.md`。
+- 下一步切片建议：建立 `labs/social/phishing/` 目录与 `planned` 元数据，先只登记 docs 入口，不创建邮件发送、凭据收集、模板生成或攻击脚本能力。
 
 禁止：
 

@@ -1,3 +1,18 @@
+# 2026-07-02 最新进展：网络钓鱼识别实验执行文档
+
+- [x] 新增执行文档 `docs/execution/2026-07-02-social-phishing-lab.md`。
+- [x] 将 `social/phishing` 首版定位为“仿真收件箱识别训练”，用于学习相似域名、紧急语气、凭据请求、附件诱导和品牌仿冒等固定风险线索。
+- [x] 明确首版采用 `case-study` 模式，后续只使用固定案例 key、线索卡、风险标签和举报 / 隔离 / 二次确认等固定动作。
+- [x] 明确不发送真实邮件、短信或链接，不收集真实凭据，不连接第三方邮件 / 短信 / 社交平台，不生成可投递模板包，不提供攻击脚本。
+- [x] 明确后续切片顺序：目录与 planned 元数据、场景文档、后端固定案例 API、前端仿真收件箱、页面验证、只读一致性验证和 case-study ready 收口。
+- [x] 同步下一波实验规划、旧社会工程学清单和主目标进度。
+
+验证记录：
+- `git diff --check -- docs/execution/2026-07-02-social-phishing-lab.md docs/design/next-wave-security-labs.md docs/TODO.md docs/execution/security-lab-master-goal.md` 通过；仅出现 Windows 下 LF 将转换为 CRLF 的提示。
+- `rg -n "[ \t]+$" -- docs/execution/2026-07-02-social-phishing-lab.md docs/design/next-wave-security-labs.md docs/TODO.md docs/execution/security-lab-master-goal.md` 未发现目标文件行尾空白。
+- 网络钓鱼识别安全关键词扫描仅命中禁止性说明、风险说明和历史验证记录，未发现真实邮件发送能力、凭据收集能力、可投递模板包或第三方平台调用实现说明。
+- 下一项建议：进入 `social/phishing` 目录与 planned 元数据切片，先只登记 docs 入口，不创建邮件发送、凭据收集、模板生成或攻击脚本能力。
+
 # 2026-07-02 最新进展：Prompt 注入 ready 收口
 
 - [x] 新增执行文档 `docs/execution/2026-07-02-ai-prompt-injection-ready-closeout.md`。
@@ -1387,7 +1402,7 @@
 
 | 内容 | 状态 | 落地方式 | 当前落点 | 未来代码位置 |
 |---|---|---|---|---|
-| 网络钓鱼 | 规划中 | 案例化演示 / 仿真页面 | `docs/design/project-scope-and-security-content.md` | `labs/social/phishing/` |
+| 网络钓鱼 | 执行文档 | 案例化演示 / 仿真页面 / 固定线索卡 / 识别训练 | `docs/execution/2026-07-02-social-phishing-lab.md` | `labs/social/phishing/` |
 | 鱼叉式钓鱼 | 规划中 | 案例化演示 | `docs/design/project-scope-and-security-content.md` | `labs/social/spear-phishing/` |
 | 捕鲸攻击 | 规划中 | 案例化演示 | `docs/design/project-scope-and-security-content.md` | `labs/social/whaling/` |
 | 短信钓鱼 | 规划中 | 案例化演示 | `docs/design/project-scope-and-security-content.md` | `labs/social/smishing/` |
