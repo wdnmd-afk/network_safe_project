@@ -14,7 +14,12 @@
 4. 记录学习信号，例如 `phishing-lookalike-domain-overlooked` 或 `phishing-credential-request-visible`。
 5. 切换到识别复盘版，逐项检查同一案例中的防御线索。
 
-## 3. 当前后端观察入口
+## 3. 当前前端与后端观察入口
+
+当前已实现前端入口：
+
+- `/labs/social/phishing/vuln`
+- `/labs/social/phishing/fixed`
 
 当前已实现受控 API：
 

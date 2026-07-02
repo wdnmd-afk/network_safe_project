@@ -7,7 +7,7 @@
   "mode": "case-study",
   "severity": "high",
   "difficulty": "beginner",
-  "summary": "通过后端固定案例 API 和仿真收件箱线索卡学习相似域名、紧急语气、凭据请求、附件诱导和品牌仿冒等网络钓鱼风险信号。",
+  "summary": "通过前端仿真收件箱工作台、后端固定案例 API 和固定线索卡学习相似域名、紧急语气、凭据请求、附件诱导和品牌仿冒等网络钓鱼风险信号。",
   "status": "in-progress",
   "phase": "phase-3",
   "tags": ["social", "phishing", "case-study", "email-security", "awareness"],
@@ -24,7 +24,7 @@
       "title": "误判观察版",
       "enabled": true,
       "description": "使用固定线索卡展示只看显示名、主题或紧急程度时可能产生的错误放行倾向。",
-      "entryKey": "phishing-vuln-review",
+      "entryKey": "vuln-entry",
       "expectedOutcome": "通过受控 review API 观察 phishing-lookalike-domain-overlooked、phishing-credential-request-visible 或 phishing-attachment-risk-visible 等学习信号。",
       "supportsAutomation": false
     },
@@ -33,13 +33,26 @@
       "title": "识别复盘版",
       "enabled": true,
       "description": "使用同一批固定线索卡展示逐项检查、举报、隔离和二次确认的防御流程。",
-      "entryKey": "phishing-fixed-review",
+      "entryKey": "fixed-entry",
       "expectedOutcome": "通过受控 review API 观察 phishing-reporting-flow-applied、phishing-safe-message-accepted 或 phishing-case-boundary-verified 等学习信号。",
       "supportsAutomation": false
     }
   ],
   "entrypoints": {
-    "web": [],
+    "web": [
+      {
+        "key": "vuln-entry",
+        "path": "/labs/social/phishing/vuln",
+        "description": "误判观察版固定线索卡识别工作台",
+        "variant": "vuln"
+      },
+      {
+        "key": "fixed-entry",
+        "path": "/labs/social/phishing/fixed",
+        "description": "识别复盘版固定线索卡检查清单工作台",
+        "variant": "fixed"
+      }
+    ],
     "api": [
       {
         "key": "phishing-vuln-review",
@@ -76,7 +89,7 @@
       {
         "key": "manual-verification",
         "path": "labs/social/phishing/docs/manual-verification.md",
-        "description": "后端固定案例 API、元数据和边界验证方式"
+        "description": "前端工作台、后端固定案例 API、元数据和边界验证方式"
       }
     ]
   },
@@ -111,7 +124,7 @@
   },
   "prerequisites": [
     "已阅读网络钓鱼识别实验执行文档、目录与 planned 元数据执行文档和后端固定案例 API 执行文档",
-    "理解当前只建立后端固定案例 API，不提供前端页面或脚本入口",
+    "理解当前只建立前端固定案例工作台和后端固定案例 API，不提供脚本入口",
     "理解本实验首版只允许固定 caseKey、reviewModeKey 和 defenseChecklistKey"
   ],
   "paths": {
@@ -126,13 +139,13 @@
   "sortOrder": 400,
   "estimatedMinutes": 20,
   "safeBoundaries": [
-    "当前已接入 case-study 后端固定案例 API，但不表示网络钓鱼识别实验已经具备前端学习入口或 ready 闭环",
+    "当前已接入 case-study 前端固定案例工作台和后端固定案例 API，但不表示网络钓鱼识别实验已经具备 ready 闭环",
     "不发送真实邮件、短信、消息或链接",
     "不收集真实邮箱、真实凭据、验证码、Cookie 或 token",
     "不连接第三方邮件、短信、社交平台、投递服务或收件箱服务",
     "不生成可投递邮件模板包、标题库、正文模板库、群发脚本或攻击脚本",
-    "API 只读取固定 caseKey、reviewModeKey 和 defenseChecklistKey，不读取任意邮件正文、真实邮箱、真实 URL 或真实附件",
+    "页面和 API 只读取固定 caseKey、reviewModeKey 和 defenseChecklistKey，不读取任意邮件正文、真实邮箱、真实 URL 或真实附件",
     "不提供 exploit.py，后续脚本目录仅允许只读一致性验证"
   ],
-  "notes": "网络钓鱼识别当前为 case-study / in-progress：已包含元数据、文档入口、后端固定案例 review API、统一事件日志安全摘要和 API 测试；当前仍不提供前端页面、真实投递、凭据收集、模板生成、第三方平台调用或攻击脚本。"
+  "notes": "网络钓鱼识别当前为 case-study / in-progress：已包含元数据、文档入口、前端固定案例工作台、后端固定案例 review API、统一事件日志安全摘要、前端单元测试和 API 测试；当前仍不提供真实投递、凭据收集、模板生成、第三方平台调用或攻击脚本。"
 }

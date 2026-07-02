@@ -645,7 +645,10 @@ test("phishing metadata is in-progress fixed-case API case-study", async () => {
   assert.equal(result.value.id, "social.phishing");
   assert.equal(result.value.status, "in-progress");
   assert.equal(result.value.mode, "case-study");
-  assert.deepEqual(result.value.entrypoints.web, []);
+  assert.deepEqual(
+    result.value.entrypoints.web.map((entrypoint) => entrypoint.path),
+    ["/labs/social/phishing/vuln", "/labs/social/phishing/fixed"],
+  );
   assert.deepEqual(
     result.value.entrypoints.api.map((entrypoint) => entrypoint.path),
     [

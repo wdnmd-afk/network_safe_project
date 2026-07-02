@@ -1,3 +1,24 @@
+# 2026-07-02 最新进展：网络钓鱼识别前端仿真收件箱工作台
+
+- [x] 新增执行文档 `docs/execution/2026-07-02-social-phishing-frontend-workbench.md`。
+- [x] 新增 `apps/web/src/api/phishing-lab.ts`，前端只向后端提交固定 `caseKey`、`reviewModeKey` 和 `defenseChecklistKey`。
+- [x] 新增 `apps/web/src/labs/phishing.ts`，定义固定线索卡、观察模式、检查清单、学习信号文案、学习进度和验证记录载荷。
+- [x] 新增 `apps/web/src/views/PhishingLabView.vue`，提供误判观察版 / 识别复盘版固定案例工作台。
+- [x] 新增 `/labs/social/phishing/vuln` 与 `/labs/social/phishing/fixed` 路由。
+- [x] 页面只提供固定线索卡、固定观察模式和固定检查清单选择器，不提供任意邮件正文、真实邮箱、真实链接、真实附件、凭据或投递参数输入。
+- [x] `labs/social/phishing/meta.json` 已登记 web 入口，状态仍保持 `in-progress`，scripts 入口仍为空，`variants[].supportsAutomation` 仍为 `false`。
+- [x] 网络钓鱼 README、漏洞版 / 修复版说明、攻击步骤、修复说明、手动验证、共享元数据测试和下一波实验规划已同步前端工作台状态。
+
+验证记录：
+- `pnpm --filter @network-safe/web exec vitest run tests/phishing-api.test.ts tests/phishing-lab.test.ts tests/router.test.ts` 通过，3 个测试文件、9 项测试通过。
+- `pnpm --filter @network-safe/web exec vue-tsc -p tsconfig.json --noEmit` 通过。
+- `pnpm --filter @network-safe/shared test` 通过，31 项测试通过。
+- `pnpm --filter @network-safe/server test -- tests/phishing-lab.test.ts tests/health.test.ts tests/lab-registry.test.ts` 通过，实际执行服务端测试 186 项通过。
+- `git diff --check` 通过，仅保留 Windows 环境下 LF/CRLF 提示。
+- `rg -n "[ \t]+$" -- <本轮目标文件>` 无命中。
+- 网络钓鱼安全关键词扫描仅命中禁止性说明、测试反向断言、`local-session-token`、API client `token` 参数、学习信号 `credential-request` 和历史记录，未发现真实投递、凭据收集、模板生成或第三方平台调用实现。
+- 下一项建议：为 `social/phishing` 补齐页面级验证或只读一致性验证脚本，仍不提供 `exploit.py`、真实投递、凭据收集、模板生成或第三方平台调用。
+
 # 2026-07-02 最新进展：网络钓鱼识别后端固定案例 API
 
 - [x] 新增执行文档 `docs/execution/2026-07-02-social-phishing-fixed-case-api.md`。
@@ -1440,7 +1461,7 @@
 
 | 内容 | 状态 | 落地方式 | 当前落点 | 未来代码位置 |
 |---|---|---|---|---|
-| 网络钓鱼 | 进行中 | 案例化演示 / 仿真页面 / 固定线索卡 / 识别训练 / 受控 API | `labs/social/phishing/`、`apps/server/src/services/phishing-lab.ts`、`apps/server/tests/phishing-lab.test.ts`、`docs/execution/2026-07-02-social-phishing-fixed-case-api.md` | `labs/social/phishing/` |
+| 网络钓鱼 | 进行中 | 案例化演示 / 仿真页面 / 固定线索卡 / 识别训练 / 受控 API | `labs/social/phishing/`、`apps/web/src/views/PhishingLabView.vue`、`apps/web/src/api/phishing-lab.ts`、`apps/web/src/labs/phishing.ts`、`apps/server/src/services/phishing-lab.ts`、`apps/server/tests/phishing-lab.test.ts`、`docs/execution/2026-07-02-social-phishing-frontend-workbench.md` | `labs/social/phishing/` |
 | 鱼叉式钓鱼 | 规划中 | 案例化演示 | `docs/design/project-scope-and-security-content.md` | `labs/social/spear-phishing/` |
 | 捕鲸攻击 | 规划中 | 案例化演示 | `docs/design/project-scope-and-security-content.md` | `labs/social/whaling/` |
 | 短信钓鱼 | 规划中 | 案例化演示 | `docs/design/project-scope-and-security-content.md` | `labs/social/smishing/` |

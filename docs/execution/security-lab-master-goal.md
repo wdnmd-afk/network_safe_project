@@ -1,3 +1,27 @@
+# 2026-07-02 最新进展：网络钓鱼识别前端仿真收件箱工作台
+
+本轮已将社会工程学实验 `social/phishing` 从后端固定案例 API 阶段推进到前端仿真收件箱工作台阶段：
+
+- 新增执行文档：`docs/execution/2026-07-02-social-phishing-frontend-workbench.md`。
+- 新增前端 API client：`apps/web/src/api/phishing-lab.ts`。
+- 新增前端固定案例模型：`apps/web/src/labs/phishing.ts`。
+- 新增前端工作台页面：`apps/web/src/views/PhishingLabView.vue`。
+- 新增 `/labs/social/phishing/vuln` 与 `/labs/social/phishing/fixed` 路由。
+- 页面只提供固定线索卡、固定观察模式和固定检查清单选择器，不提供任意邮件正文、真实邮箱、真实链接、真实附件、凭据或投递参数输入。
+- 页面提交后仍只调用 `POST /api/labs/social/phishing/:variant/review`，请求体只包含固定 `caseKey`、固定 `reviewModeKey` 和固定 `defenseChecklistKey`。
+- `labs/social/phishing/meta.json` 已登记 web 入口，状态仍保持 `in-progress`，scripts 入口仍为空，`variants[].supportsAutomation` 仍为 `false`。
+- 当前仍不提供 `exploit.py`、`verify.ts`、真实邮件发送、真实凭据收集、模板生成或第三方平台调用。
+
+验证情况：
+- `pnpm --filter @network-safe/web exec vitest run tests/phishing-api.test.ts tests/phishing-lab.test.ts tests/router.test.ts` 通过，3 个测试文件、9 项测试通过。
+- `pnpm --filter @network-safe/web exec vue-tsc -p tsconfig.json --noEmit` 通过。
+- `pnpm --filter @network-safe/shared test` 通过，31 项测试通过。
+- `pnpm --filter @network-safe/server test -- tests/phishing-lab.test.ts tests/health.test.ts tests/lab-registry.test.ts` 通过，实际执行服务端测试 186 项通过。
+- `git diff --check` 通过，仅保留 Windows 环境下 LF/CRLF 提示。
+- `rg -n "[ \t]+$" -- <本轮目标文件>` 无命中。
+- 网络钓鱼安全关键词扫描仅命中禁止性说明、测试反向断言、`local-session-token`、API client `token` 参数、学习信号 `credential-request` 和历史记录，未发现真实投递、凭据收集、模板生成或第三方平台调用实现。
+- 下一项建议：为 `social/phishing` 补齐页面级验证或只读一致性验证脚本，仍不提供 `exploit.py`、真实投递、凭据收集、模板生成或第三方平台调用。
+
 # 2026-07-02 最新进展：网络钓鱼识别后端固定案例 API
 
 本轮已将社会工程学实验 `social/phishing` 从 planned 元数据阶段推进到后端固定案例 API 阶段：
