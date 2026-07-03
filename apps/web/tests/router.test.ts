@@ -61,6 +61,8 @@ describe("SafeMart 路由清单", () => {
       "/labs/ai/prompt-injection/fixed",
       "/labs/social/phishing/vuln",
       "/labs/social/phishing/fixed",
+      "/labs/social/spear-phishing/vuln",
+      "/labs/social/spear-phishing/fixed",
       "/labs/supply-chain/dependency-confusion/vuln",
       "/labs/supply-chain/dependency-confusion/fixed",
       "/labs/infrastructure/misconfiguration/vuln",

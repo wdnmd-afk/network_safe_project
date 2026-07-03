@@ -766,6 +766,7 @@ td small {
 .dns-hijack-workbench,
 .prompt-injection-workbench,
 .phishing-workbench,
+.spear-phishing-workbench,
 .dependency-confusion-workbench,
 .misconfiguration-workbench,
 .ssrf-workbench {
@@ -839,6 +840,7 @@ td small {
 .dns-hijack-status-panel,
 .prompt-injection-status-panel,
 .phishing-status-panel,
+.spear-phishing-status-panel,
 .dependency-confusion-status-panel,
 .misconfiguration-status-panel,
 .ssrf-status-panel {

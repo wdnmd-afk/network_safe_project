@@ -411,6 +411,22 @@ export const routes: RouteRecordRaw[] = [
     },
   },
   {
+    path: "/labs/social/spear-phishing/vuln",
+    name: "lab-social-spear-phishing-vuln",
+    component: () => import("../views/SpearPhishingLabView.vue"),
+    props: {
+      variant: "vuln",
+    },
+  },
+  {
+    path: "/labs/social/spear-phishing/fixed",
+    name: "lab-social-spear-phishing-fixed",
+    component: () => import("../views/SpearPhishingLabView.vue"),
+    props: {
+      variant: "fixed",
+    },
+  },
+  {
     path: "/labs/supply-chain/dependency-confusion/vuln",
     name: "lab-supply-chain-dependency-confusion-vuln",
     component: () => import("../views/DependencyConfusionLabView.vue"),
