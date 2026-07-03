@@ -6,9 +6,9 @@
 
 攻击方视角的核心问题是：针对性上下文、角色权威、紧急压力、业务熟悉感和审批链例外为什么会让学习者忽略二次确认。
 
-## 2. 当前 planned 观察范围
+## 2. 当前 in-progress 观察范围
 
-当前已建立目录、元数据、文档入口、固定虚构案例卡和后端受控 `review` API。当前后端 API 只能使用以下固定案例 key：
+当前已建立目录、元数据、文档入口、固定虚构案例卡、前端固定案例工作台和后端受控 `review` API。当前页面和后端 API 只能使用以下固定案例 key：
 
 - `executive-invoice-approval`
 - `vendor-payment-change`
@@ -17,28 +17,28 @@
 
 这些案例的详细边界见 `labs/social/spear-phishing/docs/fixed-cases.md`。它们只能展示线索卡、风险标签、流程节点和复盘问题，不能展示完整邮件正文、IM 对话、可复制标题、可投递附件名或真实链接。
 
-当前 API 字段只包括 `caseKey` 和 `verificationPolicyKey`。额外传入的正文、收件人、凭据、token 或链接不会进入服务结果或事件日志摘要。
+当前页面和 API 字段只包括 `caseKey` 和 `verificationPolicyKey`。页面不提供正文、收件人、凭据、token 或链接输入；额外传入这些字段也不会进入服务结果或事件日志摘要。
 
-## 3. 后续允许的观察步骤
+## 3. 当前允许的观察步骤
 
-后续实现时，可按以下学习路径设计：
+当前页面可按以下学习路径观察：
 
 1. 选择固定虚构案例 key。
 2. 观察案例中的角色压力、业务语境和流程例外。
 3. 标注可能被忽略的审批链、二次确认和最小授权问题。
-4. 调用漏洞版固定案例 API，查看误判观察版为什么会倾向错误放行。
+4. 通过漏洞版固定案例工作台调用受控 API，查看误判观察版为什么会倾向错误放行。
 5. 切换到流程核验复盘版，观察可信通道确认、审批链和隔离举报如何改变决策。
 
 ## 4. 成功观察信号
 
-后续可使用固定学习信号表达观察结果：
+当前使用固定学习信号表达观察结果：
 
 - `spear-phishing-context-trust-overweighted`
 - `spear-phishing-approval-chain-bypassed`
 - `spear-phishing-out-of-band-confirmation-required`
 - `spear-phishing-boundary-verified`
 
-这些信号只用于学习复盘。当前已有后端受控 API，尚未提供页面或脚本实现。
+这些信号只用于学习复盘。当前已有前端固定案例工作台和后端受控 API，尚未提供脚本实现。
 
 ## 5. 明确禁止
 

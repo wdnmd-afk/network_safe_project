@@ -1,3 +1,27 @@
+# 2026-07-03 最新进展：鱼叉式钓鱼前端固定案例工作台
+
+本轮已将社会工程学扩展案例 `social/spear-phishing` 从后端受控 API 阶段推进到前端固定案例工作台阶段：
+
+- 新增执行文档：`docs/execution/2026-07-03-social-spear-phishing-frontend-workbench.md`。
+- 新增前端 API client：`apps/web/src/api/spear-phishing-lab.ts`，只提交固定 `caseKey` 和 `verificationPolicyKey`。
+- 新增前端实验模型：`apps/web/src/labs/spear-phishing.ts`，集中维护四个固定虚构案例、五个固定核验策略、默认策略、学习进度和验证记录安全摘要。
+- 新增前端工作台页面：`apps/web/src/views/SpearPhishingLabView.vue`。
+- 新增路由：`/labs/social/spear-phishing/vuln` 与 `/labs/social/spear-phishing/fixed`。
+- 页面只提供固定案例选择器、固定核验策略选择器和固定样例按钮，不提供任意正文、真实人员、邮箱、链接、附件、凭据或投递参数输入。
+- 新增前端测试：`apps/web/tests/spear-phishing-api.test.ts` 与 `apps/web/tests/spear-phishing-lab.test.ts`，覆盖请求体边界、固定选项、默认策略、验证记录安全摘要和静态安全文案。
+- 更新 `labs/social/spear-phishing/meta.json`，状态保持 `in-progress`，登记 docs、web 和 api 入口，不登记 scripts 入口。
+- 同步鱼叉式钓鱼 README、漏洞版 / 修复版说明、固定案例、攻击步骤、修复说明、手动验证、脚本目录边界说明、共享元数据测试、下一波规划和 TODO。
+- 当前仍不提供 `verify.ts`、`exploit.py`、Playwright 页面差异验证、真实画像采集、真实投递、凭据收集、模板生成、第三方平台调用、跟踪链接、附件诱导文案、群发脚本或攻击脚本能力。
+
+验证记录：
+
+- `pnpm --filter @network-safe/web exec vitest run tests/spear-phishing-api.test.ts tests/spear-phishing-lab.test.ts tests/router.test.ts` 通过，3 个测试文件、9 项测试通过。
+- `pnpm --filter @network-safe/web exec vue-tsc -p tsconfig.json --noEmit` 通过。
+- `pnpm --filter @network-safe/shared test` 通过，34 项测试通过。
+- `pnpm --filter @network-safe/server test -- tests/spear-phishing-lab.test.ts tests/health.test.ts tests/lab-registry.test.ts` 通过；该命令按当前服务端测试脚本实际运行全量服务端测试，209 项通过。
+
+下一项建议：进入 `social/spear-phishing` 页面差异验证或只读一致性验证切片，继续保持 case-study 边界。
+
 # 2026-07-03 最新进展：鱼叉式钓鱼后端固定案例 API
 
 本轮已将社会工程学扩展案例 `social/spear-phishing` 从固定案例文档阶段推进到后端受控 API 阶段：

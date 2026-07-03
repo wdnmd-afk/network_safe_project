@@ -4,7 +4,7 @@
 
 当前目录只用于 `social/spear-phishing` 的脚本边界说明。
 
-`social/spear-phishing` 当前为 `case-study` / `in-progress`，已建立标准目录、基础文档、docs 元数据入口和后端受控 `review` API。当前不登记脚本入口，不提供 `exploit.py`、`verify.ts`、投递脚本、画像采集脚本、模板生成脚本或第三方平台连接脚本。
+`social/spear-phishing` 当前为 `case-study` / `in-progress`，已建立标准目录、基础文档、docs 元数据入口、前端固定案例工作台和后端受控 `review` API。当前不登记脚本入口，不提供 `exploit.py`、`verify.ts`、投递脚本、画像采集脚本、模板生成脚本或第三方平台连接脚本。
 
 ## 禁止能力
 
