@@ -1,3 +1,26 @@
+# 2026-07-03 最新进展：配置错误页面级差异验证
+
+- [x] 新增执行文档 `docs/execution/2026-07-03-infrastructure-misconfiguration-playwright-verification.md`。
+- [x] 更新 `packages/testing/tests/e2e/platform.spec.mjs`，新增配置错误页面级 Playwright 差异验证。
+- [x] 漏洞版覆盖固定“调试入口”和“CORS 策略”路径，断言调试入口可见、过宽 CORS、`debug-surface`、`visible`、`not-required`、`audit-missing`、`cross-origin-trust` 和 `too-broad` 等页面信号。
+- [x] 修复版覆盖固定“调试入口”“管理状态”“CORS 策略”和“错误信息”路径，断言暴露面收敛、管理入口认证阻断、CORS 收敛和安全错误信息分层。
+- [x] Playwright 断言漏洞版和修复版页面均不存在文本输入框，继续避免任意配置文本、主机、端口、路径、凭据、真实配置、扫描或连接入口。
+- [x] `labs/infrastructure/misconfiguration/meta.json` 已登记 Playwright 自动化证据，状态仍保持 `in-progress`，scripts 入口仍为空，`variants[].supportsAutomation` 仍为 `false`。
+- [x] 更新共享元数据测试、配置错误 README、手动验证文档、脚本目录边界说明和下一波规划文档。
+- [x] 当前仍不提供 `exploit.py`、`verify.ts`、真实配置读取、真实配置修改、真实服务扫描、真实管理接口连接、弱口令测试或服务枚举能力。
+
+验证记录：
+
+- `pnpm --filter @network-safe/testing e2e -- --grep "配置错误"` 通过，1 项 Playwright 测试通过。
+- `pnpm --filter @network-safe/testing test` 通过，9 项测试通过。
+- `pnpm --filter @network-safe/shared test` 通过，33 项测试通过。
+- `pnpm --filter @network-safe/web exec vitest run tests/misconfiguration-api.test.ts tests/misconfiguration-lab.test.ts tests/router.test.ts` 通过，3 个测试文件、10 项测试通过。
+- `pnpm --filter @network-safe/server test -- tests/misconfiguration-lab.test.ts tests/health.test.ts tests/lab-registry.test.ts` 通过；该命令按当前服务端测试脚本实际运行全量服务端测试，203 项通过。
+- `git diff --check -- <本轮目标文件>` 通过，仅保留 Windows 环境下 LF/CRLF 提示。
+- `rg -n "[ \t]+$" -- <本轮目标文件>` 无命中。
+- 配置错误页面验证安全关键词扫描通过：新增 Playwright 用例未命中真实配置读取、真实配置修改、真实服务扫描、真实管理接口连接、弱口令测试、服务枚举、脚本入口或可复用利用流程；文档命中均为禁止性说明、安全边界说明和固定样例说明。
+- 下一项建议：进入 `infrastructure/misconfiguration` 本机只读一致性验证，或执行 simulation ready 收口审计，继续保持不提供攻击脚本、真实配置读取、真实服务扫描、真实管理接口连接或配置修改能力。
+
 # 2026-07-03 最新进展：配置错误前端固定审计工作台
 
 - [x] 新增 `apps/web/src/views/MisconfigurationLabView.vue`，提供配置风险观察版和配置审计复盘版固定选择器工作台。

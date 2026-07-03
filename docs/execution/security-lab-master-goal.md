@@ -1,3 +1,30 @@
+# 2026-07-03 最新进展：配置错误页面级差异验证
+
+本轮已将基础设施实验 `infrastructure/misconfiguration` 从前端固定配置审计工作台阶段推进到页面级差异验证阶段：
+
+- 新增执行文档：`docs/execution/2026-07-03-infrastructure-misconfiguration-playwright-verification.md`。
+- 更新 Playwright 平台用例：`packages/testing/tests/e2e/platform.spec.mjs`。
+- 页面级验证登录本机演示账号，只访问 `/labs/infrastructure/misconfiguration/vuln` 与 `/labs/infrastructure/misconfiguration/fixed`，并只点击页面已有固定按钮。
+- 漏洞版覆盖“调试入口”和“CORS 策略”固定路径，验证调试面可见、过宽 CORS、`accepted` 决策、`debug-surface` 暴露面类别、`visible` 暴露状态、`not-required` 认证要求、`audit-missing` 审计动作、`cross-origin-trust` 暴露面类别和 `too-broad` CORS 状态。
+- 修复版覆盖“调试入口”“管理状态”“CORS 策略”和“错误信息”固定路径，验证暴露面收敛、管理入口认证阻断、CORS 收敛和安全错误信息分层。
+- Playwright 明确断言漏洞版和修复版页面均不存在文本输入框，继续避免任意配置文本、真实主机、真实端口、真实路径、真实凭据、真实配置、扫描或连接参数输入。
+- `labs/infrastructure/misconfiguration/meta.json` 已登记 Playwright 自动化证据，状态仍保持 `in-progress`，scripts 入口仍为空，`variants[].supportsAutomation` 仍为 `false`。
+- 已同步共享元数据测试、场景 README、手动验证文档、脚本目录边界说明、`docs/TODO.md` 和下一波实验规划。
+- 当前仍不提供 `exploit.py`、`verify.ts`、真实配置读取、真实配置修改、真实服务扫描、真实管理接口连接、弱口令测试或服务枚举能力。
+
+验证记录：
+
+- `pnpm --filter @network-safe/testing e2e -- --grep "配置错误"` 通过，1 项 Playwright 测试通过。
+- `pnpm --filter @network-safe/testing test` 通过，9 项测试通过。
+- `pnpm --filter @network-safe/shared test` 通过，33 项测试通过。
+- `pnpm --filter @network-safe/web exec vitest run tests/misconfiguration-api.test.ts tests/misconfiguration-lab.test.ts tests/router.test.ts` 通过，3 个测试文件、10 项测试通过。
+- `pnpm --filter @network-safe/server test -- tests/misconfiguration-lab.test.ts tests/health.test.ts tests/lab-registry.test.ts` 通过；该命令按当前服务端测试脚本实际运行全量服务端测试，203 项通过。
+- `git diff --check -- <本轮目标文件>` 通过，仅保留 Windows 环境下 LF/CRLF 提示。
+- `rg -n "[ \t]+$" -- <本轮目标文件>` 无命中。
+- 配置错误页面验证安全关键词扫描通过：新增 Playwright 用例未命中真实配置读取、真实配置修改、真实服务扫描、真实管理接口连接、弱口令测试、服务枚举、脚本入口或可复用利用流程；文档命中均为禁止性说明、安全边界说明和固定样例说明。
+
+下一项建议：为 `infrastructure/misconfiguration` 补齐本机只读一致性验证脚本，或执行 simulation ready 收口审计，继续保持不提供 `exploit.py`、真实配置读取、真实服务扫描、真实管理接口连接或配置修改能力。
+
 # 2026-07-03 最新进展：配置错误前端固定审计工作台
 
 本轮已将基础设施实验 `infrastructure/misconfiguration` 从后端受控 API 阶段推进到前端固定配置审计工作台阶段：

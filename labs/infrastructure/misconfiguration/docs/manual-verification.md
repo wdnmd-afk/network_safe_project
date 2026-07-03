@@ -16,7 +16,8 @@
 - `entrypoints.api` 包含：
   - `POST /api/labs/infrastructure/misconfiguration/vuln/audit`
   - `POST /api/labs/infrastructure/misconfiguration/fixed/audit`
-- `verification.automation.supported` 为 `true`，且仅启用 API 测试证据。
+- `verification.automation.supported` 为 `true`，已启用 API 测试证据和 Playwright 页面级差异验证。
+- `verification.automation.playwright.enabled` 为 `true`，`specPath` 为 `packages/testing/tests/e2e/platform.spec.mjs`。
 - `variants[].supportsAutomation` 均为 `false`。
 - 文档明确禁止真实配置读取、真实配置修改、真实服务扫描、真实管理接口连接和攻击脚本能力。
 
@@ -52,6 +53,8 @@
 当前可运行：
 
 ```text
+pnpm --filter @network-safe/testing e2e -- --grep "配置错误"
+pnpm --filter @network-safe/testing test
 pnpm --filter @network-safe/shared test
 pnpm --filter @network-safe/web exec vitest run tests/misconfiguration-api.test.ts tests/misconfiguration-lab.test.ts tests/router.test.ts
 pnpm --filter @network-safe/web exec vue-tsc -p tsconfig.json --noEmit
@@ -67,4 +70,4 @@ rg -n "[ \t]+$" -- <本轮目标文件>
 rg --files labs/infrastructure/misconfiguration tools/lab-scripts/infrastructure/misconfiguration
 ```
 
-in-progress 状态仅表示本项目内标准目录、元数据、基础文档入口、前端固定工作台和后端受控 API 建立完成，不表示提供真实配置审计、真实扫描、真实连接或攻击脚本能力。
+in-progress 状态仅表示本项目内标准目录、元数据、基础文档入口、前端固定工作台、后端受控 API 和 Playwright 页面级差异验证建立完成，不表示提供真实配置审计、真实扫描、真实连接或攻击脚本能力。

@@ -551,7 +551,7 @@ test("dns hijack metadata is ready controlled DNS simulation", async () => {
   assert.match(result.value.notes, /不提供 exploit\.py/);
 });
 
-test("misconfiguration metadata exposes fixed workbench and controlled audit api", async () => {
+test("misconfiguration metadata exposes fixed workbench, controlled audit api and playwright evidence", async () => {
   const metadata = await readFixture(
     "labs/infrastructure/misconfiguration/meta.json",
   );
@@ -592,8 +592,8 @@ test("misconfiguration metadata exposes fixed workbench and controlled audit api
   );
   assert.equal(result.value.verification.automation.supported, true);
   assert.deepEqual(result.value.verification.automation.playwright, {
-    enabled: false,
-    specPath: "",
+    enabled: true,
+    specPath: "packages/testing/tests/e2e/platform.spec.mjs",
   });
   assert.deepEqual(result.value.verification.automation.apiTest, {
     enabled: true,
@@ -620,6 +620,7 @@ test("misconfiguration metadata exposes fixed workbench and controlled audit api
   assert.match(result.value.notes, /in-progress/);
   assert.match(result.value.notes, /前端固定配置审计工作台/);
   assert.match(result.value.notes, /后端受控 audit API/);
+  assert.match(result.value.notes, /Playwright 页面级差异验证/);
   assert.match(result.value.notes, /固定 configCaseKey 和 auditPolicyKey/);
   assert.match(result.value.notes, /不登记 scripts 入口/);
   assert.match(result.value.notes, /不提供 exploit\.py/);

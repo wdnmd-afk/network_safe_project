@@ -4,7 +4,9 @@
 
 当前目录只用于 `infrastructure/misconfiguration` 的脚本边界说明。
 
-`infrastructure/misconfiguration` 当前为 `in-progress`，已登记文档入口、后端受控 API、标准目录和元数据，不提供攻击脚本、只读验证脚本、扫描脚本或配置修改脚本。
+`infrastructure/misconfiguration` 当前为 `in-progress`，已登记文档入口、后端受控 API、前端固定工作台、Playwright 页面级差异验证、标准目录和元数据，不提供攻击脚本、只读验证脚本、扫描脚本或配置修改脚本。
+
+Playwright 页面级差异验证位于 `packages/testing/tests/e2e/platform.spec.mjs`，只访问本项目固定页面并点击固定样例按钮；它不属于本目录 scripts 自动化入口，也不提供真实配置读取、扫描、连接或修改能力。
 
 当前不提供：
 
