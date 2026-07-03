@@ -809,7 +809,7 @@ test("phishing metadata is ready fixed-case workbench case-study", async () => {
   assert.match(result.value.notes, /不提供 exploit\.py/);
 });
 
-test("spear phishing metadata is in-progress api-only case-study", async () => {
+test("spear phishing metadata is in-progress web api case-study", async () => {
   const metadata = await readFixture("labs/social/spear-phishing/meta.json");
   const result = validateLabMetadata(metadata);
 
@@ -817,7 +817,13 @@ test("spear phishing metadata is in-progress api-only case-study", async () => {
   assert.equal(result.value.id, "social.spear-phishing");
   assert.equal(result.value.status, "in-progress");
   assert.equal(result.value.mode, "case-study");
-  assert.deepEqual(result.value.entrypoints.web, []);
+  assert.deepEqual(
+    result.value.entrypoints.web.map((entrypoint) => entrypoint.path),
+    [
+      "/labs/social/spear-phishing/vuln",
+      "/labs/social/spear-phishing/fixed",
+    ],
+  );
   assert.deepEqual(
     result.value.entrypoints.api.map((entrypoint) => entrypoint.path),
     [
@@ -880,6 +886,7 @@ test("spear phishing metadata is in-progress api-only case-study", async () => {
   );
   assert.match(result.value.notes, /case-study/);
   assert.match(result.value.notes, /in-progress/);
+  assert.match(result.value.notes, /前端固定案例工作台/);
   assert.match(result.value.notes, /受控 review API/);
   assert.match(result.value.notes, /exploit\.py/);
 });
