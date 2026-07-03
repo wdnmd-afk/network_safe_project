@@ -1,3 +1,31 @@
+# 2026-07-03 最新进展：鱼叉式钓鱼后端固定案例 API
+
+本轮已将社会工程学扩展案例 `social/spear-phishing` 从固定案例文档阶段推进到后端受控 API 阶段：
+
+- 新增执行文档：`docs/execution/2026-07-03-social-spear-phishing-fixed-case-api.md`。
+- 新增后端固定案例服务：`apps/server/src/services/spear-phishing-lab.ts`。
+- 新增受控 API：`POST /api/labs/social/spear-phishing/:variant/review`。
+- API 只读取固定 `caseKey` 与固定 `verificationPolicyKey`，不读取真实正文、邮箱、链接、凭据、token、人员或组织信息。
+- 漏洞版展示针对性上下文、角色权威、审批链绕过和业务熟悉感如何造成错误放行倾向。
+- 修复版展示可信通道二次确认、审批链复核、最小授权、隔离举报和日志复盘如何改变决策。
+- API 已写入统一事件日志，日志只记录固定 key、风险类别、建议动作、后端决策和学习信号，不保存真实人员、邮箱、链接、凭据、token 或正文。
+- 新增服务端测试：`apps/server/tests/spear-phishing-lab.test.ts`，覆盖漏洞版误判观察、修复版阻断、未知 key 脱敏阻断、登录要求和日志摘要脱敏。
+- 更新 `labs/social/spear-phishing/meta.json`，状态推进到 `in-progress`，只登记 docs 和 api 入口，不登记 web 或 scripts 入口。
+- 同步鱼叉式钓鱼 README、漏洞版 / 修复版说明、攻击步骤、修复说明、手动验证、脚本目录边界说明、共享元数据测试、服务端 health / registry 测试、下一波规划和 TODO。
+- 当前仍不提供前端页面、`verify.ts`、`exploit.py`、真实画像采集、真实投递、凭据收集、模板生成、第三方平台调用、跟踪链接、附件诱导文案、群发脚本或攻击脚本能力。
+
+验证记录：
+
+- `pnpm --filter @network-safe/shared test` 通过，34 项测试通过。
+- `pnpm --filter @network-safe/server test -- tests/spear-phishing-lab.test.ts tests/health.test.ts tests/lab-registry.test.ts` 通过；该命令按当前服务端测试脚本实际运行全量服务端测试，209 项通过。
+- `pnpm --filter @network-safe/server exec tsc -p tsconfig.json --noEmit` 通过。
+- `git diff --check -- <本轮目标文件>` 通过，仅保留 Windows 环境下 LF/CRLF 提示。
+- `rg -n "[ \t]+$" -- <本轮目标文件>` 无命中。
+- `Test-Path tools/lab-scripts/social/spear-phishing/exploit.py` 与 `Test-Path tools/lab-scripts/social/spear-phishing/verify.ts` 均返回 `False`。
+- 鱼叉式钓鱼安全关键词扫描命中均为禁止性说明、安全边界说明、测试反向断言、文档路径或固定测试数据，未发现真实投递、画像采集、凭据收集、模板生成、第三方平台调用或攻击脚本实现。
+
+下一项建议：进入 `social/spear-phishing` 前端固定案例工作台切片，只提供固定案例选择器和固定核验策略选择器，继续保持 case-study 边界。
+
 # 2026-07-03 最新进展：鱼叉式钓鱼固定案例文档
 
 本轮已将社会工程学扩展案例 `social/spear-phishing` 从 planned 元数据阶段推进到固定案例文档阶段：

@@ -1,3 +1,26 @@
+# 2026-07-03 最新进展：鱼叉式钓鱼后端固定案例 API
+
+- [x] 新增执行文档 `docs/execution/2026-07-03-social-spear-phishing-fixed-case-api.md`。
+- [x] 新增 `apps/server/src/services/spear-phishing-lab.ts`，只处理四个固定虚构 `caseKey` 和五个固定 `verificationPolicyKey`。
+- [x] 新增 `POST /api/labs/social/spear-phishing/:variant/review`，支持针对性误判观察版和流程核验复盘版。
+- [x] API 已接入登录校验和统一事件日志安全摘要，日志只记录固定 key、风险类别、建议动作、后端决策和学习信号。
+- [x] 未知 `caseKey` 或 `verificationPolicyKey` 会被阻断，并返回 `blocked-case` 或 `blocked-verification-policy`，不回显原始输入。
+- [x] 新增 `apps/server/tests/spear-phishing-lab.test.ts`，覆盖漏洞版误判观察、修复版阻断、未知 key 脱敏阻断、登录要求和日志摘要脱敏。
+- [x] 将 `labs/social/spear-phishing/meta.json` 从 `planned` 更新为 `in-progress`，只登记 docs 和 api 入口，不登记 web 或 scripts 入口。
+- [x] 同步鱼叉式钓鱼 README、漏洞版 / 修复版说明、攻击步骤、修复说明、手动验证、脚本目录边界说明、共享元数据测试、服务端 health / registry 测试和下一波规划文档。
+- [x] 当前仍不提供前端页面、`verify.ts`、`exploit.py`、真实画像采集、真实投递、凭据收集、模板生成、第三方平台调用、跟踪链接、附件诱导文案、群发脚本或攻击脚本能力。
+
+验证记录：
+
+- `pnpm --filter @network-safe/shared test` 通过，34 项测试通过。
+- `pnpm --filter @network-safe/server test -- tests/spear-phishing-lab.test.ts tests/health.test.ts tests/lab-registry.test.ts` 通过；该命令按当前服务端测试脚本实际运行全量服务端测试，209 项通过。
+- `pnpm --filter @network-safe/server exec tsc -p tsconfig.json --noEmit` 通过。
+- `git diff --check -- <本轮目标文件>` 通过，仅保留 Windows 环境下 LF/CRLF 提示。
+- `rg -n "[ \t]+$" -- <本轮目标文件>` 无命中。
+- `Test-Path tools/lab-scripts/social/spear-phishing/exploit.py` 与 `Test-Path tools/lab-scripts/social/spear-phishing/verify.ts` 均返回 `False`。
+- 鱼叉式钓鱼安全关键词扫描命中均为禁止性说明、安全边界说明、测试反向断言、文档路径或固定测试数据，未发现真实投递、画像采集、凭据收集、模板生成、第三方平台调用或攻击脚本实现。
+- 下一项建议：进入 `social/spear-phishing` 前端固定案例工作台切片，只提供固定案例选择器和固定核验策略选择器。
+
 # 2026-07-03 最新进展：鱼叉式钓鱼固定案例文档
 
 - [x] 新增执行文档 `docs/execution/2026-07-03-social-spear-phishing-fixed-cases.md`。
@@ -1859,7 +1882,7 @@
 | 内容 | 状态 | 落地方式 | 当前落点 | 未来代码位置 |
 |---|---|---|---|---|
 | 网络钓鱼 | ready | 案例化演示 / 仿真页面 / 固定线索卡 / 识别训练 / 受控 API / 只读脚本验证 / case-study ready 收口 | `labs/social/phishing/`、`apps/web/src/views/PhishingLabView.vue`、`apps/web/src/api/phishing-lab.ts`、`apps/web/src/labs/phishing.ts`、`tools/lab-scripts/social/phishing/verify.ts`、`apps/server/src/services/phishing-lab.ts`、`apps/server/tests/phishing-lab.test.ts`、`docs/execution/2026-07-02-social-phishing-ready-closeout.md` | `labs/social/phishing/` |
-| 鱼叉式钓鱼 | 规划中 | 案例化演示 | `docs/design/project-scope-and-security-content.md` | `labs/social/spear-phishing/` |
+| 鱼叉式钓鱼 | 进行中 | 案例化演示 / 固定线索卡 / 受控 review API / 事件日志安全摘要 | `labs/social/spear-phishing/meta.json`、`apps/server/src/services/spear-phishing-lab.ts`、`apps/server/tests/spear-phishing-lab.test.ts`、`docs/execution/2026-07-03-social-spear-phishing-fixed-case-api.md` | `labs/social/spear-phishing/` |
 | 捕鲸攻击 | 规划中 | 案例化演示 | `docs/design/project-scope-and-security-content.md` | `labs/social/whaling/` |
 | 短信钓鱼 | 规划中 | 案例化演示 | `docs/design/project-scope-and-security-content.md` | `labs/social/smishing/` |
 | 商业邮件诈骗 | 规划中 | 案例化演示 | `docs/design/project-scope-and-security-content.md` | `labs/social/bec/` |
