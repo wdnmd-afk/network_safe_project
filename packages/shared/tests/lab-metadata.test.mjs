@@ -809,16 +809,22 @@ test("phishing metadata is ready fixed-case workbench case-study", async () => {
   assert.match(result.value.notes, /不提供 exploit\.py/);
 });
 
-test("spear phishing metadata is planned docs-only case-study", async () => {
+test("spear phishing metadata is in-progress api-only case-study", async () => {
   const metadata = await readFixture("labs/social/spear-phishing/meta.json");
   const result = validateLabMetadata(metadata);
 
   assert.equal(result.ok, true);
   assert.equal(result.value.id, "social.spear-phishing");
-  assert.equal(result.value.status, "planned");
+  assert.equal(result.value.status, "in-progress");
   assert.equal(result.value.mode, "case-study");
   assert.deepEqual(result.value.entrypoints.web, []);
-  assert.deepEqual(result.value.entrypoints.api, []);
+  assert.deepEqual(
+    result.value.entrypoints.api.map((entrypoint) => entrypoint.path),
+    [
+      "/api/labs/social/spear-phishing/vuln/review",
+      "/api/labs/social/spear-phishing/fixed/review",
+    ],
+  );
   assert.deepEqual(result.value.entrypoints.scripts, []);
   assert.deepEqual(
     result.value.entrypoints.docs.map((entrypoint) => entrypoint.path),
@@ -835,14 +841,14 @@ test("spear phishing metadata is planned docs-only case-study", async () => {
     result.value.verification.manual.stepsDocPath,
     "labs/social/spear-phishing/docs/manual-verification.md",
   );
-  assert.equal(result.value.verification.automation.supported, false);
+  assert.equal(result.value.verification.automation.supported, true);
   assert.deepEqual(result.value.verification.automation.playwright, {
     enabled: false,
     specPath: "",
   });
   assert.deepEqual(result.value.verification.automation.apiTest, {
-    enabled: false,
-    specPath: "",
+    enabled: true,
+    specPath: "apps/server/tests/spear-phishing-lab.test.ts",
   });
   assert.deepEqual(result.value.verification.automation.scriptVerification, {
     enabled: false,
@@ -854,7 +860,7 @@ test("spear phishing metadata is planned docs-only case-study", async () => {
   );
   assert.ok(
     result.value.safeBoundaries.some((boundary) =>
-      boundary.includes("planned 状态仅表示"),
+      boundary.includes("in-progress 状态仅表示"),
     ),
   );
   assert.ok(
@@ -873,8 +879,8 @@ test("spear phishing metadata is planned docs-only case-study", async () => {
     ),
   );
   assert.match(result.value.notes, /case-study/);
-  assert.match(result.value.notes, /planned/);
-  assert.match(result.value.notes, /不提供页面/);
+  assert.match(result.value.notes, /in-progress/);
+  assert.match(result.value.notes, /受控 review API/);
   assert.match(result.value.notes, /exploit\.py/);
 });
 

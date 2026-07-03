@@ -36,7 +36,7 @@ test("lab registry scans phase-one metadata files", async () => {
   assert.ok(
     labs.some(
       (lab) =>
-        lab.id === "social.spear-phishing" && lab.status === "planned",
+        lab.id === "social.spear-phishing" && lab.status === "in-progress",
     ),
   );
   assert.ok(

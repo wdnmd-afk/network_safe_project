@@ -123,6 +123,11 @@ import {
   type SqlInjectionVariantKey,
 } from "./services/sql-injection-lab.js";
 import {
+  createSpearPhishingLabService,
+  type SpearPhishingLabService,
+  type SpearPhishingVariantKey,
+} from "./services/spear-phishing-lab.js";
+import {
   createSsrfLabService,
   type SsrfLabService,
   type SsrfVariantKey,
@@ -172,6 +177,7 @@ type CreateAppOptions = {
   privilegeEscalationLabService?: PrivilegeEscalationLabService;
   sessionFixationLabService?: SessionFixationLabService;
   sqlInjectionLabService?: SqlInjectionLabService;
+  spearPhishingLabService?: SpearPhishingLabService;
   ssrfLabService?: SsrfLabService;
   sstiLabService?: SstiLabService;
   xxeLabService?: XxeLabService;
@@ -264,6 +270,8 @@ export function createApp(options: CreateAppOptions = {}) {
     options.sessionFixationLabService ?? createSessionFixationLabService();
   const sqlInjectionLabService =
     options.sqlInjectionLabService ?? createSqlInjectionLabService();
+  const spearPhishingLabService =
+    options.spearPhishingLabService ?? createSpearPhishingLabService();
   const ssrfLabService = options.ssrfLabService ?? createSsrfLabService();
   const sstiLabService = options.sstiLabService ?? createSstiLabService();
   const xxeLabService = options.xxeLabService ?? createXxeLabService();
@@ -534,6 +542,12 @@ export function createApp(options: CreateAppOptions = {}) {
   }
 
   function readSqlInjectionVariantKey(value: unknown): SqlInjectionVariantKey | "" {
+    return value === "vuln" || value === "fixed" ? value : "";
+  }
+
+  function readSpearPhishingVariantKey(
+    value: unknown,
+  ): SpearPhishingVariantKey | "" {
     return value === "vuln" || value === "fixed" ? value : "";
   }
 
@@ -1125,6 +1139,38 @@ export function createApp(options: CreateAppOptions = {}) {
       checklistApplied: input.inspection.checklistApplied,
       recommendedAction: input.inspection.recommendedAction,
       riskLevel: input.inspection.riskLevel,
+      signal: input.signal,
+    };
+  }
+
+  function summarizeSpearPhishingInput(input: {
+    caseKey: string;
+    verificationPolicyKey: string;
+    assessment: {
+      riskIndicatorCount: number;
+      riskIndicators: string[];
+      matchedControlledCase: boolean;
+      contextTrustBias: boolean;
+      verificationApplied: boolean;
+      approvalChainRequired: boolean;
+      outOfBandRequired: boolean;
+      recommendedAction: string;
+      riskLevel: string;
+    };
+    signal: string;
+  }) {
+    return {
+      caseKey: input.caseKey,
+      verificationPolicyKey: input.verificationPolicyKey,
+      riskIndicatorCount: input.assessment.riskIndicatorCount,
+      riskIndicators: input.assessment.riskIndicators,
+      matchedControlledCase: input.assessment.matchedControlledCase,
+      contextTrustBias: input.assessment.contextTrustBias,
+      verificationApplied: input.assessment.verificationApplied,
+      approvalChainRequired: input.assessment.approvalChainRequired,
+      outOfBandRequired: input.assessment.outOfBandRequired,
+      recommendedAction: input.assessment.recommendedAction,
+      riskLevel: input.assessment.riskLevel,
       signal: input.signal,
     };
   }
@@ -3795,6 +3841,92 @@ export function createApp(options: CreateAppOptions = {}) {
           statusCode: responseStatus,
           message: result.message,
           riskLevel: riskyCase ? result.inspection.riskLevel : "low",
+        });
+
+        res.status(responseStatus).json({
+          status: result.status,
+          result,
+        });
+      } catch (error) {
+        next(error);
+      }
+    },
+  );
+
+  app.post(
+    "/api/labs/social/spear-phishing/:variant/review",
+    async (req, res, next) => {
+      try {
+        const currentUser = await readCurrentUser(req);
+
+        if (!currentUser.ok) {
+          res.status(currentUser.status).json(currentUser.body);
+          return;
+        }
+
+        const variantKey = readSpearPhishingVariantKey(req.params.variant);
+        const caseKey = readRequiredString(req.body?.caseKey);
+        const verificationPolicyKey = readRequiredString(
+          req.body?.verificationPolicyKey,
+        );
+
+        if (!variantKey) {
+          res.status(404).json({
+            status: "error",
+            message: "spear phishing variant not found",
+          });
+          return;
+        }
+
+        if (!caseKey || !verificationPolicyKey) {
+          res.status(400).json({
+            status: "error",
+            message: "caseKey and verificationPolicyKey are required",
+          });
+          return;
+        }
+
+        const result = await spearPhishingLabService.reviewCase({
+          userId: currentUser.user.id,
+          variantKey,
+          caseKey,
+          verificationPolicyKey,
+        });
+        const responseStatus = result.status === "blocked" ? 403 : 200;
+        const riskyCase =
+          result.assessment.riskIndicatorCount > 0 &&
+          result.assessment.matchedControlledCase;
+
+        await recordLabEventSafely({
+          traceId: readOptionalTraceId(req),
+          userId: currentUser.user.id,
+          labKey: "social.spear-phishing",
+          variantKey,
+          phase:
+            result.status === "blocked"
+              ? "defense"
+              : variantKey === "vuln" && riskyCase
+                ? "attack"
+                : "normal",
+          eventType: result.status === "blocked" ? "blocked" : "success",
+          actorPerspective:
+            result.status === "blocked" ||
+            (variantKey === "vuln" && riskyCase)
+              ? "attacker"
+              : "user",
+          method: req.method,
+          path: req.path,
+          inputSummary: summarizeSpearPhishingInput({
+            caseKey: result.caseKey,
+            verificationPolicyKey: result.verificationPolicyKey,
+            assessment: result.assessment,
+            signal: result.signal,
+          }),
+          decision: result.decision,
+          signal: result.signal,
+          statusCode: responseStatus,
+          message: result.message,
+          riskLevel: riskyCase ? result.assessment.riskLevel : "low",
         });
 
         res.status(responseStatus).json({

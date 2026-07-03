@@ -7,8 +7,8 @@
   "mode": "case-study",
   "severity": "high",
   "difficulty": "intermediate",
-  "summary": "通过固定虚构案例、线索卡和流程复盘学习针对性上下文、角色权威、审批链绕过和二次确认缺失带来的鱼叉式钓鱼误判风险。",
-  "status": "planned",
+  "summary": "通过固定虚构案例、后端受控 review API、线索卡和流程复盘学习针对性上下文、角色权威、审批链绕过和二次确认缺失带来的鱼叉式钓鱼误判风险。",
+  "status": "in-progress",
   "phase": "phase-3",
   "tags": [
     "social",
@@ -29,24 +29,39 @@
       "key": "vuln",
       "title": "针对性误判观察版",
       "enabled": true,
-      "description": "后续使用固定虚构线索卡展示针对性上下文、角色权威和业务熟悉感如何造成错误放行倾向。",
+      "description": "通过受控 review API 使用固定虚构线索卡展示针对性上下文、角色权威和业务熟悉感如何造成错误放行倾向。",
       "entryKey": "vuln-entry",
-      "expectedOutcome": "后续通过固定案例观察 spear-phishing-context-trust-overweighted、spear-phishing-approval-chain-bypassed 等学习信号。",
+      "expectedOutcome": "通过受控 review API 观察 spear-phishing-context-trust-overweighted、spear-phishing-approval-chain-bypassed 等学习信号。",
       "supportsAutomation": false
     },
     {
       "key": "fixed",
       "title": "流程核验复盘版",
       "enabled": true,
-      "description": "后续使用同一批固定虚构线索卡展示角色核验、可信通道二次确认、审批链和最小授权的防御流程。",
+      "description": "通过受控 review API 使用同一批固定虚构线索卡展示角色核验、可信通道二次确认、审批链和最小授权的防御流程。",
       "entryKey": "fixed-entry",
-      "expectedOutcome": "后续通过固定案例观察 spear-phishing-out-of-band-confirmation-required、spear-phishing-boundary-verified 等学习信号。",
+      "expectedOutcome": "通过受控 review API 观察 spear-phishing-out-of-band-confirmation-required、spear-phishing-boundary-verified 等学习信号。",
       "supportsAutomation": false
     }
   ],
   "entrypoints": {
     "web": [],
-    "api": [],
+    "api": [
+      {
+        "key": "spear-phishing-vuln-review",
+        "variant": "vuln",
+        "method": "POST",
+        "path": "/api/labs/social/spear-phishing/vuln/review",
+        "description": "漏洞版固定案例针对性误判观察接口"
+      },
+      {
+        "key": "spear-phishing-fixed-review",
+        "variant": "fixed",
+        "method": "POST",
+        "path": "/api/labs/social/spear-phishing/fixed/review",
+        "description": "修复版固定案例流程核验复盘接口"
+      }
+    ],
     "scripts": [],
     "docs": [
       {
@@ -88,14 +103,14 @@
       ]
     },
     "automation": {
-      "supported": false,
+      "supported": true,
       "playwright": {
         "enabled": false,
         "specPath": ""
       },
       "apiTest": {
-        "enabled": false,
-        "specPath": ""
+        "enabled": true,
+        "specPath": "apps/server/tests/spear-phishing-lab.test.ts"
       },
       "scriptVerification": {
         "enabled": false,
@@ -104,9 +119,9 @@
     }
   },
   "prerequisites": [
-    "已阅读鱼叉式钓鱼边界设计执行文档和目录与 planned 元数据执行文档",
-    "理解当前 planned 状态只表示目录、文档和元数据入口已建立，不表示页面、API、脚本或自动化验证已实现",
-    "理解本实验首版只能使用固定虚构案例、固定线索卡和固定防御流程复盘"
+    "已阅读鱼叉式钓鱼边界设计、目录与 planned 元数据、固定案例文档和后端固定案例 API 执行文档",
+    "理解当前 in-progress 状态只表示目录、文档、元数据入口和后端受控 review API 已建立，不表示页面、脚本或只读验证已实现",
+    "理解本实验首版只能使用固定虚构案例、固定线索卡、固定 verificationPolicyKey 和固定防御流程复盘"
   ],
   "paths": {
     "root": "labs/social/spear-phishing",
@@ -120,7 +135,7 @@
   "sortOrder": 410,
   "estimatedMinutes": 20,
   "safeBoundaries": [
-    "planned 状态仅表示标准目录、基础文档和 docs 元数据入口已建立，不表示页面、API、脚本或自动化验证已实现",
+    "in-progress 状态仅表示标准目录、文档、docs 元数据入口和后端受控 review API 已建立，不表示页面、脚本或只读验证已实现",
     "首版必须保持 case-study，只使用固定虚构案例、固定线索卡、固定风险标签和固定防御流程复盘",
     "不发送真实邮件、短信、消息或链接",
     "不采集真实姓名、真实邮箱、真实手机号、真实公司、真实部门、真实职位、社交账号、组织关系或公开资料",
@@ -128,7 +143,7 @@
     "不连接第三方邮件、短信、社交平台、CRM、HR、IM、企业通讯录、投递服务或收件箱服务",
     "不生成可投递标题库、正文模板库、IM 话术库、附件诱导文案、跟踪链接或群发脚本",
     "不提供 exploit.py、投递脚本、画像采集脚本、模板生成脚本或攻击脚本",
-    "后续若提供 API，只能读取固定案例 key 和固定检查策略 key，并且事件日志只能记录固定 key、风险类别、决策和学习信号"
+    "当前 API 只读取固定 caseKey 和 verificationPolicyKey，并且事件日志只能记录固定 key、风险类别、决策和学习信号"
   ],
-  "notes": "鱼叉式钓鱼当前为 case-study / planned：本轮只建立标准目录、基础文档和 docs 元数据入口，不提供页面、API、verify.ts、exploit.py、真实画像采集、真实投递、凭据收集、模板生成、第三方平台调用或攻击脚本。"
+  "notes": "鱼叉式钓鱼当前为 case-study / in-progress：已建立标准目录、基础文档、docs 元数据入口和后端受控 review API；当前仍不提供页面、verify.ts、exploit.py、真实画像采集、真实投递、凭据收集、模板生成、第三方平台调用或攻击脚本。"
 }

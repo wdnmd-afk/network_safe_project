@@ -120,7 +120,7 @@ test("GET /api/labs returns scanned lab metadata list", async () => {
   assert.ok(
     body.items.some(
       (item) =>
-        item.id === "social.spear-phishing" && item.status === "planned",
+        item.id === "social.spear-phishing" && item.status === "in-progress",
     ),
   );
   assert.ok(
