@@ -33,6 +33,11 @@ import {
   type DependencyConfusionVariantKey,
 } from "./services/dependency-confusion-lab.js";
 import {
+  createMisconfigurationLabService,
+  type MisconfigurationLabService,
+  type MisconfigurationVariantKey,
+} from "./services/misconfiguration-lab.js";
+import {
   createNosqlInjectionLabService,
   type NosqlInjectionLabService,
   type NosqlInjectionVariantKey,
@@ -157,6 +162,7 @@ type CreateAppOptions = {
   labEventLogsService?: LabEventLogsService;
   labRecapQuestionCompletionsService?: LabRecapQuestionCompletionsService;
   ldapInjectionLabService?: LdapInjectionLabService;
+  misconfigurationLabService?: MisconfigurationLabService;
   nosqlInjectionLabService?: NosqlInjectionLabService;
   xpathInjectionLabService?: XpathInjectionLabService;
   pathTraversalLabService?: PathTraversalLabService;
@@ -237,6 +243,8 @@ export function createApp(options: CreateAppOptions = {}) {
     createLabRecapQuestionCompletionsService();
   const ldapInjectionLabService =
     options.ldapInjectionLabService ?? createLdapInjectionLabService();
+  const misconfigurationLabService =
+    options.misconfigurationLabService ?? createMisconfigurationLabService();
   const nosqlInjectionLabService =
     options.nosqlInjectionLabService ?? createNosqlInjectionLabService();
   const xpathInjectionLabService =
@@ -482,6 +490,12 @@ export function createApp(options: CreateAppOptions = {}) {
   function readDependencyConfusionVariantKey(
     value: unknown,
   ): DependencyConfusionVariantKey | "" {
+    return value === "vuln" || value === "fixed" ? value : "";
+  }
+
+  function readMisconfigurationVariantKey(
+    value: unknown,
+  ): MisconfigurationVariantKey | "" {
     return value === "vuln" || value === "fixed" ? value : "";
   }
 
@@ -1145,6 +1159,38 @@ export function createApp(options: CreateAppOptions = {}) {
       riskIndicators: input.resolution.riskIndicators,
       auditActions: input.resolution.auditActions,
       recommendedAction: input.resolution.recommendedAction,
+      signal: input.signal,
+    };
+  }
+
+  function summarizeMisconfigurationInput(input: {
+    configCaseKey: string;
+    auditPolicyKey: string;
+    audit: {
+      exposureCategory: string;
+      exposureState: string;
+      authRequired: boolean;
+      corsPolicyStatus: string;
+      errorReportingStatus: string;
+      matchedControlledSample: boolean;
+      riskIndicatorCount: number;
+      riskIndicators: string[];
+      auditActions: string[];
+    };
+    signal: string;
+  }) {
+    return {
+      configCaseKey: input.configCaseKey,
+      auditPolicyKey: input.auditPolicyKey,
+      exposureCategory: input.audit.exposureCategory,
+      exposureState: input.audit.exposureState,
+      authRequired: input.audit.authRequired,
+      corsPolicyStatus: input.audit.corsPolicyStatus,
+      errorReportingStatus: input.audit.errorReportingStatus,
+      matchedControlledSample: input.audit.matchedControlledSample,
+      riskIndicatorCount: input.audit.riskIndicatorCount,
+      riskIndicators: input.audit.riskIndicators,
+      auditActions: input.audit.auditActions,
       signal: input.signal,
     };
   }
@@ -3560,6 +3606,101 @@ export function createApp(options: CreateAppOptions = {}) {
           statusCode: responseStatus,
           message: result.message,
           riskLevel: riskyResolution
+            ? "high"
+            : result.status === "blocked" || defenseAudit
+              ? "medium"
+              : "low",
+        });
+
+        res.status(responseStatus).json({
+          status: result.status,
+          result,
+        });
+      } catch (error) {
+        next(error);
+      }
+    },
+  );
+
+  app.post(
+    "/api/labs/infrastructure/misconfiguration/:variant/audit",
+    async (req, res, next) => {
+      try {
+        const currentUser = await readCurrentUser(req);
+
+        if (!currentUser.ok) {
+          res.status(currentUser.status).json(currentUser.body);
+          return;
+        }
+
+        const variantKey = readMisconfigurationVariantKey(req.params.variant);
+        const configCaseKey = readRequiredString(req.body?.configCaseKey);
+        const auditPolicyKey = readRequiredString(req.body?.auditPolicyKey);
+
+        if (!variantKey) {
+          res.status(404).json({
+            status: "error",
+            message: "misconfiguration variant not found",
+          });
+          return;
+        }
+
+        if (!configCaseKey || !auditPolicyKey) {
+          res.status(400).json({
+            status: "error",
+            message: "configCaseKey and auditPolicyKey are required",
+          });
+          return;
+        }
+
+        const result = await misconfigurationLabService.auditConfig({
+          userId: currentUser.user.id,
+          variantKey,
+          configCaseKey,
+          auditPolicyKey,
+        });
+        const responseStatus = result.status === "blocked" ? 403 : 200;
+        const riskyExposure =
+          result.audit.riskIndicatorCount > 0 &&
+          result.audit.matchedControlledSample;
+        const defenseAudit =
+          variantKey === "fixed" &&
+          result.audit.auditActions.some((action) => action !== "audit-missing");
+
+        await recordLabEventSafely({
+          traceId: readOptionalTraceId(req),
+          userId: currentUser.user.id,
+          labKey: "infrastructure.misconfiguration",
+          variantKey,
+          phase:
+            result.status === "blocked"
+              ? "defense"
+              : variantKey === "vuln" && riskyExposure
+                ? "attack"
+                : defenseAudit
+                  ? "defense"
+                  : "normal",
+          eventType: result.status === "blocked" ? "blocked" : "success",
+          actorPerspective:
+            result.status === "blocked" ||
+            (variantKey === "vuln" && riskyExposure)
+              ? "attacker"
+              : defenseAudit
+                ? "system"
+                : "user",
+          method: req.method,
+          path: req.path,
+          inputSummary: summarizeMisconfigurationInput({
+            configCaseKey: result.configCaseKey,
+            auditPolicyKey: result.auditPolicyKey,
+            audit: result.audit,
+            signal: result.signal,
+          }),
+          decision: result.decision,
+          signal: result.signal,
+          statusCode: responseStatus,
+          message: result.message,
+          riskLevel: riskyExposure
             ? "high"
             : result.status === "blocked" || defenseAudit
               ? "medium"

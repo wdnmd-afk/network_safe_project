@@ -1,3 +1,29 @@
+# 2026-07-03 最新进展：配置错误利用后端固定审计 API
+
+本轮已将基础设施实验 `infrastructure/misconfiguration` 从 planned 元数据阶段推进到后端受控 API 阶段：
+
+- 新增执行文档：`docs/execution/2026-07-03-infrastructure-misconfiguration-fixed-audit-api.md`。
+- 新增后端固定配置审计服务：`apps/server/src/services/misconfiguration-lab.ts`。
+- 新增受控 API：`POST /api/labs/infrastructure/misconfiguration/:variant/audit`。
+- API 只读取固定 `configCaseKey` 和固定 `auditPolicyKey`。
+- 漏洞版固定样例返回调试面可见、目录索引可见、过宽 CORS、公开管理状态页、详细错误信息外显或默认凭据提示可见等学习信号。
+- 修复版固定样例返回暴露面收敛、管理入口认证要求、CORS 收敛或安全错误信息等学习信号。
+- API 已写入统一事件日志，日志只记录固定 key、暴露面类别、风险标签数量、审计动作、是否命中固定样例和学习信号，不保存完整配置、真实主机、端口、路径、账号、密码、token、Cookie、证书或本机信息。
+- 新增服务端测试：`apps/server/tests/misconfiguration-lab.test.ts`，覆盖漏洞版风险信号、修复版收敛与阻断、未知 key 不回显、登录要求和日志摘要脱敏。
+- `labs/infrastructure/misconfiguration/meta.json` 已更新为 `in-progress`，只登记 docs 和 api 入口，不登记 web 或 scripts 入口。
+- 当前仍不提供前端页面、`exploit.py`、`verify.ts`、真实配置读取、真实配置修改、真实服务扫描、真实管理接口连接、弱口令测试或服务枚举能力。
+
+验证记录：
+
+- `pnpm --filter @network-safe/shared test` 通过，33 项测试通过。
+- `pnpm --filter @network-safe/server test -- tests/misconfiguration-lab.test.ts tests/health.test.ts tests/lab-registry.test.ts` 通过；该命令按当前服务端测试脚本实际运行全量服务端测试，203 项通过。
+- `pnpm --filter @network-safe/server exec tsc -p tsconfig.json --noEmit` 通过。
+- `git diff --check -- <本轮目标文件>` 通过，仅保留 Windows 环境下 LF/CRLF 提示。
+- `rg -n "[ \t]+$" -- <本轮目标文件>` 无命中。
+- 配置错误安全关键词扫描通过：服务实现未发现真实配置读取、真实配置修改、真实服务扫描、真实管理接口连接、命令执行、弱口令测试或服务枚举；测试命中仅为反向脱敏断言；文档命中为禁止性说明和安全边界说明。
+
+下一项建议：进入 `infrastructure/misconfiguration` 前端固定配置审计工作台切片，只提供固定样例选择器，不提供任意配置文本、主机、端口、路径、凭据、扫描或连接入口。
+
 # 2026-07-03 最新进展：配置错误利用 planned 元数据
 
 本轮已将基础设施实验 `infrastructure/misconfiguration` 从执行文档阶段推进到 planned 元数据阶段：

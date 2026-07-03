@@ -4,11 +4,11 @@
 
 配置审计复盘版用于从防御方视角理解如何收敛配置暴露面。
 
-当前仍处于 `planned` 阶段，本目录只说明后续修复版的学习目标和边界，不包含页面、API、真实配置修改、部署步骤或脚本。
+当前处于 `in-progress` 阶段，后端受控 `audit` API 已可返回修复版固定配置审计信号。本目录仍不包含页面、真实配置修改、部署步骤或脚本。
 
 ## 后续修复目标
 
-后续修复版只允许基于固定静态配置摘要展示：
+修复版只允许基于固定静态配置摘要展示：
 
 - 默认关闭调试入口、目录索引和公开状态页。
 - 管理入口需要认证、授权和来源限制。
@@ -25,6 +25,19 @@
 - `misconfiguration-cors-policy-restricted`
 - `misconfiguration-safe-error-reporting`
 - `misconfiguration-boundary-verified`
+
+## 当前 API 入口
+
+```text
+POST /api/labs/infrastructure/misconfiguration/fixed/audit
+```
+
+请求体只读取固定字段：
+
+- `configCaseKey`
+- `auditPolicyKey`
+
+修复版可观察暴露面收敛、管理入口认证要求、CORS 策略收敛和安全错误信息等结果；事件日志仍只记录固定摘要。
 
 ## 禁止内容
 

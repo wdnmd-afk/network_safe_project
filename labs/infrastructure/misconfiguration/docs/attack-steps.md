@@ -8,7 +8,7 @@
 
 ## 2. 固定观察步骤
 
-后续实现后，学习者只应在固定样例范围内观察：
+当前后端受控 API 已实现，学习者只应在固定样例范围内观察：
 
 1. 选择固定配置样例，例如 `debug-console-exposed` 或 `wildcard-cors-with-credentials`。
 2. 观察样例中是否存在调试入口、目录索引、公开管理状态页、过宽 CORS 或详细错误信息。
@@ -19,23 +19,24 @@
 
 ## 3. 当前入口状态
 
-当前只建立文档、目录和元数据入口：
+当前已建立文档、目录、元数据入口和后端受控 API：
 
 - `labs/infrastructure/misconfiguration/meta.json`
 - `labs/infrastructure/misconfiguration/README.md`
 - `tools/lab-scripts/infrastructure/misconfiguration/README.md`
+- `POST /api/labs/infrastructure/misconfiguration/vuln/audit`
+- `POST /api/labs/infrastructure/misconfiguration/fixed/audit`
 
 当前未实现：
 
 - 前端页面。
-- 后端 API。
 - `exploit.py`。
 - `verify.ts`。
 - 真实配置读取、真实服务扫描或真实管理接口连接。
 
 ## 4. 成功观察信号
 
-当前 planned 阶段，学习者应能说明：
+当前 API 阶段，学习者应能说明：
 
 - 为什么调试入口和管理状态页不应默认公开。
 - 为什么目录索引和详细错误信息可能泄露内部结构。

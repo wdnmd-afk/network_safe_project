@@ -4,7 +4,7 @@
 
 当前目录只用于 `infrastructure/misconfiguration` 的脚本边界说明。
 
-`infrastructure/misconfiguration` 当前为 `planned`，只登记文档入口、标准目录和元数据，不提供攻击脚本、只读验证脚本、扫描脚本或配置修改脚本。
+`infrastructure/misconfiguration` 当前为 `in-progress`，已登记文档入口、后端受控 API、标准目录和元数据，不提供攻击脚本、只读验证脚本、扫描脚本或配置修改脚本。
 
 当前不提供：
 

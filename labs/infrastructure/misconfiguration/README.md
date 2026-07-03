@@ -4,7 +4,7 @@
 
 本实验用于学习基础设施和应用部署中的配置错误风险：调试入口、目录索引、过宽 CORS、公开管理状态页、详细错误信息和默认凭据提示，都可能让攻击方推断服务边界、内部状态或后续攻击机会。
 
-当前状态为 `planned`，已建立标准目录、元数据和基础文档入口。这里的 planned 只表示本项目内固定静态配置片段学习路径已经登记，不表示已经存在页面、API、扫描器、真实配置审计能力或攻击脚本。
+当前状态为 `in-progress`，已建立标准目录、元数据、基础文档入口和后端受控 `audit` API。这里的 in-progress 只表示本项目内固定静态配置片段审计路径已经开始可测，不表示已经存在页面、扫描器、真实配置审计能力或攻击脚本。
 
 ## 当前范围
 
@@ -12,8 +12,9 @@
 - 已建立漏洞版 / 修复版说明目录。
 - 已建立攻击方观察、修复说明和手动验证文档。
 - 已建立脚本目录边界说明。
-- 元数据当前只登记 docs 入口。
-- 当前不登记 web、api 或 scripts 入口。
+- 已建立 `POST /api/labs/infrastructure/misconfiguration/:variant/audit` 后端受控接口。
+- 元数据当前登记 docs 和 api 入口。
+- 当前不登记 web 或 scripts 入口。
 - 当前不创建 `exploit.py` 或 `verify.ts`。
 
 ## 固定样例方向
@@ -39,7 +40,7 @@
 
 ## 当前入口状态
 
-当前只存在文档入口：
+当前存在文档入口和后端 API 入口：
 
 - `labs/infrastructure/misconfiguration/meta.json`
 - `labs/infrastructure/misconfiguration/README.md`
@@ -47,12 +48,13 @@
 - `labs/infrastructure/misconfiguration/docs/fix-notes.md`
 - `labs/infrastructure/misconfiguration/docs/manual-verification.md`
 - `tools/lab-scripts/infrastructure/misconfiguration/README.md`
+- `POST /api/labs/infrastructure/misconfiguration/vuln/audit`
+- `POST /api/labs/infrastructure/misconfiguration/fixed/audit`
 
 当前没有：
 
 - `/labs/infrastructure/misconfiguration/vuln`
 - `/labs/infrastructure/misconfiguration/fixed`
-- `POST /api/labs/infrastructure/misconfiguration/:variant/audit`
 - `tools/lab-scripts/infrastructure/misconfiguration/exploit.py`
 - `tools/lab-scripts/infrastructure/misconfiguration/verify.ts`
 
@@ -66,7 +68,5 @@
 
 ## 后续切片
 
-1. 建立后端固定配置审计服务和受控 `audit` API，只接受固定 `configCaseKey` 和固定 `auditPolicyKey`。
-2. 接入统一事件日志安全摘要，只记录固定 key、暴露面类别、风险标签、审计动作和学习信号。
-3. 建立前端固定配置审计工作台，只提供固定样例选择器。
-4. 补齐页面差异验证、本机只读一致性验证和 simulation ready 收口审计。
+1. 建立前端固定配置审计工作台，只提供固定样例选择器。
+2. 补齐页面差异验证、本机只读一致性验证和 simulation ready 收口审计。

@@ -1,3 +1,24 @@
+# 2026-07-03 最新进展：配置错误利用后端固定审计 API
+
+- [x] 新增执行文档 `docs/execution/2026-07-03-infrastructure-misconfiguration-fixed-audit-api.md`。
+- [x] 新增 `apps/server/src/services/misconfiguration-lab.ts`，只处理固定 `configCaseKey` 和固定 `auditPolicyKey`。
+- [x] 新增 `POST /api/labs/infrastructure/misconfiguration/:variant/audit`，支持配置风险观察版和配置审计复盘版。
+- [x] API 已接入统一事件日志，日志只记录固定 key、暴露面类别、风险标签数量、审计动作、是否命中固定样例和学习信号。
+- [x] 新增 `apps/server/tests/misconfiguration-lab.test.ts`，覆盖漏洞版调试面可见、修复版 CORS 收敛、修复版管理状态认证阻断、未知 key 不回显、登录要求和日志摘要脱敏。
+- [x] 将 `labs/infrastructure/misconfiguration/meta.json` 更新为 `in-progress`，只登记 docs 和 api 入口，不登记 web 或 scripts 入口。
+- [x] 更新配置错误 README、漏洞版 / 修复版说明、固定配置样例说明、攻击步骤、修复说明、手动验证和脚本目录边界说明。
+- [x] 当前仍不提供前端页面、`exploit.py`、`verify.ts`、真实配置读取、真实配置修改、真实服务扫描、真实管理接口连接、弱口令测试或服务枚举能力。
+
+验证记录：
+
+- `pnpm --filter @network-safe/shared test` 通过，33 项测试通过。
+- `pnpm --filter @network-safe/server test -- tests/misconfiguration-lab.test.ts tests/health.test.ts tests/lab-registry.test.ts` 通过；该命令按当前服务端测试脚本实际运行全量服务端测试，203 项通过。
+- `pnpm --filter @network-safe/server exec tsc -p tsconfig.json --noEmit` 通过。
+- `git diff --check -- <本轮目标文件>` 通过，仅保留 Windows 环境下 LF/CRLF 提示。
+- `rg -n "[ \t]+$" -- <本轮目标文件>` 无命中。
+- 配置错误安全关键词扫描通过：服务实现未发现真实配置读取、真实配置修改、真实服务扫描、真实管理接口连接、命令执行、弱口令测试或服务枚举；测试命中仅为反向脱敏断言；文档命中为禁止性说明和安全边界说明。
+- 下一项建议：进入 `infrastructure/misconfiguration` 前端固定配置审计工作台切片，只提供固定样例选择器，不提供任意配置文本、主机、端口、路径、凭据、扫描或连接入口。
+
 # 2026-07-03 最新进展：配置错误利用 planned 元数据
 
 - [x] 新增执行文档 `docs/execution/2026-07-03-infrastructure-misconfiguration-directory-metadata.md`。
@@ -1743,7 +1764,7 @@
 
 | 内容 | 状态 | 落地方式 | 当前落点 | 未来代码位置 |
 |---|---|---|---|---|
-| 配置错误利用 | planned 元数据阶段 | 本机模拟 / 静态配置分析 / 固定配置审计样例 / docs-only 元数据 | `labs/infrastructure/misconfiguration/meta.json`、`docs/execution/2026-07-03-infrastructure-misconfiguration-directory-metadata.md` | `labs/infrastructure/misconfiguration/` |
+| 配置错误利用 | 后端固定审计 API 阶段 | 本机模拟 / 静态配置分析 / 固定配置审计样例 / 受控 audit API / 事件日志安全摘要 | `labs/infrastructure/misconfiguration/meta.json`、`apps/server/src/services/misconfiguration-lab.ts`、`apps/server/tests/misconfiguration-lab.test.ts`、`docs/execution/2026-07-03-infrastructure-misconfiguration-fixed-audit-api.md` | `labs/infrastructure/misconfiguration/` |
 | 容器逃逸 | 不做真实复现 | 案例化演示 | `docs/design/project-scope-and-security-content.md` | `labs/infrastructure/container-escape/` |
 | 云安全漏洞 | 规划中 | 案例化演示 / 本机模拟 | `docs/design/project-scope-and-security-content.md` | `labs/infrastructure/cloud-security/` |
 | IoT 攻击 | 规划中 | 案例化演示 / 本机模拟 | `docs/design/project-scope-and-security-content.md` | `labs/infrastructure/iot/` |

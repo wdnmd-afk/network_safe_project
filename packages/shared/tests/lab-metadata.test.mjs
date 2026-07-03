@@ -551,7 +551,7 @@ test("dns hijack metadata is ready controlled DNS simulation", async () => {
   assert.match(result.value.notes, /不提供 exploit\.py/);
 });
 
-test("misconfiguration metadata is planned docs-only simulation", async () => {
+test("misconfiguration metadata exposes controlled audit api only", async () => {
   const metadata = await readFixture(
     "labs/infrastructure/misconfiguration/meta.json",
   );
@@ -559,10 +559,16 @@ test("misconfiguration metadata is planned docs-only simulation", async () => {
 
   assert.equal(result.ok, true);
   assert.equal(result.value.id, "infrastructure.misconfiguration");
-  assert.equal(result.value.status, "planned");
+  assert.equal(result.value.status, "in-progress");
   assert.equal(result.value.mode, "simulation");
   assert.deepEqual(result.value.entrypoints.web, []);
-  assert.deepEqual(result.value.entrypoints.api, []);
+  assert.deepEqual(
+    result.value.entrypoints.api.map((entrypoint) => entrypoint.path),
+    [
+      "/api/labs/infrastructure/misconfiguration/vuln/audit",
+      "/api/labs/infrastructure/misconfiguration/fixed/audit",
+    ],
+  );
   assert.deepEqual(result.value.entrypoints.scripts, []);
   assert.deepEqual(
     result.value.entrypoints.docs.map((entrypoint) => entrypoint.path),
@@ -578,14 +584,14 @@ test("misconfiguration metadata is planned docs-only simulation", async () => {
     result.value.verification.manual.stepsDocPath,
     "labs/infrastructure/misconfiguration/docs/manual-verification.md",
   );
-  assert.equal(result.value.verification.automation.supported, false);
+  assert.equal(result.value.verification.automation.supported, true);
   assert.deepEqual(result.value.verification.automation.playwright, {
     enabled: false,
     specPath: "",
   });
   assert.deepEqual(result.value.verification.automation.apiTest, {
-    enabled: false,
-    specPath: "",
+    enabled: true,
+    specPath: "apps/server/tests/misconfiguration-lab.test.ts",
   });
   assert.deepEqual(result.value.verification.automation.scriptVerification, {
     enabled: false,
@@ -605,8 +611,10 @@ test("misconfiguration metadata is planned docs-only simulation", async () => {
       boundary.includes("不提供 exploit.py"),
     ),
   );
-  assert.match(result.value.notes, /planned/);
-  assert.match(result.value.notes, /不登记 web、api 或 scripts 入口/);
+  assert.match(result.value.notes, /in-progress/);
+  assert.match(result.value.notes, /后端受控 audit API/);
+  assert.match(result.value.notes, /固定 configCaseKey 和 auditPolicyKey/);
+  assert.match(result.value.notes, /不登记 web 或 scripts 入口/);
   assert.match(result.value.notes, /不提供 exploit\.py/);
 });
 

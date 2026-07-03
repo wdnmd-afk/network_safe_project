@@ -8,7 +8,7 @@
   "severity": "high",
   "difficulty": "intermediate",
   "summary": "通过静态配置片段、固定暴露面信号和固定审计策略学习调试入口、目录索引、过宽 CORS、公开管理状态页、详细错误信息和默认凭据提示等配置错误风险。",
-  "status": "planned",
+  "status": "in-progress",
   "phase": "phase-3",
   "tags": [
     "infrastructure",
@@ -31,7 +31,7 @@
       "enabled": true,
       "description": "使用固定静态配置摘要展示调试入口、目录索引、过宽 CORS、公开管理状态页和详细错误信息等暴露面信号。",
       "entryKey": "vuln-entry",
-      "expectedOutcome": "后续通过受控 audit API 观察 misconfiguration-debug-surface-visible、misconfiguration-directory-index-visible 或 misconfiguration-cors-too-broad 等学习信号。",
+      "expectedOutcome": "通过受控 audit API 观察 misconfiguration-debug-surface-visible、misconfiguration-directory-index-visible 或 misconfiguration-cors-too-broad 等学习信号。",
       "supportsAutomation": false
     },
     {
@@ -40,13 +40,28 @@
       "enabled": true,
       "description": "使用同一批固定样例展示默认关闭、认证要求、最小权限 CORS、错误信息收敛和配置审计的防御流程。",
       "entryKey": "fixed-entry",
-      "expectedOutcome": "后续通过受控 audit API 观察 misconfiguration-exposure-reduced、misconfiguration-auth-required、misconfiguration-cors-policy-restricted 或 misconfiguration-safe-error-reporting 等学习信号。",
+      "expectedOutcome": "通过受控 audit API 观察 misconfiguration-exposure-reduced、misconfiguration-auth-required、misconfiguration-cors-policy-restricted 或 misconfiguration-safe-error-reporting 等学习信号。",
       "supportsAutomation": false
     }
   ],
   "entrypoints": {
     "web": [],
-    "api": [],
+    "api": [
+      {
+        "key": "misconfiguration-vuln-audit",
+        "variant": "vuln",
+        "method": "POST",
+        "path": "/api/labs/infrastructure/misconfiguration/vuln/audit",
+        "description": "配置风险观察版固定配置审计接口"
+      },
+      {
+        "key": "misconfiguration-fixed-audit",
+        "variant": "fixed",
+        "method": "POST",
+        "path": "/api/labs/infrastructure/misconfiguration/fixed/audit",
+        "description": "配置审计复盘版固定配置审计接口"
+      }
+    ],
     "scripts": [],
     "docs": [
       {
@@ -90,14 +105,14 @@
       ]
     },
     "automation": {
-      "supported": false,
+      "supported": true,
       "playwright": {
         "enabled": false,
         "specPath": ""
       },
       "apiTest": {
-        "enabled": false,
-        "specPath": ""
+        "enabled": true,
+        "specPath": "apps/server/tests/misconfiguration-lab.test.ts"
       },
       "scriptVerification": {
         "enabled": false,
@@ -106,9 +121,9 @@
     }
   },
   "prerequisites": [
-    "已阅读配置错误利用实验执行文档和目录与 planned 元数据执行文档",
-    "理解当前 planned 状态只表示标准目录、基础文档和元数据入口已建立，不表示实验已经可运行",
-    "理解后续实现只能使用固定 configCaseKey 和 auditPolicyKey，不读取或修改真实配置"
+    "已阅读配置错误利用实验执行文档、目录与 planned 元数据执行文档和后端固定审计 API 执行文档",
+    "理解当前 in-progress 状态只表示标准目录、基础文档、元数据入口和后端受控 audit API 已建立，不表示前端页面或脚本已经可用",
+    "理解当前 API 只能使用固定 configCaseKey 和 auditPolicyKey，不读取或修改真实配置"
   ],
   "paths": {
     "root": "labs/infrastructure/misconfiguration",
@@ -122,14 +137,14 @@
   "sortOrder": 600,
   "estimatedMinutes": 25,
   "safeBoundaries": [
-    "当前 planned 状态仅表示标准目录、基础文档和 docs 入口已建立，不表示存在页面、API、脚本或真实配置审计能力",
-    "只使用固定静态配置片段、固定暴露面信号和固定审计策略，不读取真实配置文件",
+    "当前 in-progress 状态仅表示标准目录、基础文档、docs 入口和后端受控 audit API 已建立，不表示存在前端页面、脚本或真实配置审计能力",
+    "后端 audit API 只使用固定静态配置片段、固定暴露面信号和固定审计策略，不读取真实配置文件",
     "不修改真实 nginx、MySQL、Node、Windows 服务、系统防火墙、代理、hosts、证书或云账号配置",
     "不读取真实 .env、本机配置文件、服务配置、云凭据、数据库连接串、token、Cookie 或密码",
     "不启动真实调试端口、管理端口、目录索引、公开状态页或跨域代理",
     "不扫描本机端口、局域网、外部 IP、域名、云资源或服务指纹",
-    "不提供 exploit.py、扫描器、弱口令测试、服务枚举或可复用利用流程",
-    "后续事件日志只允许记录固定 key、暴露面类别、风险标签、审计动作和学习信号，不保存完整配置、真实路径、真实服务地址、真实凭据或真实端口清单"
+    "不提供 exploit.py、verify.ts、扫描器、弱口令测试、服务枚举或可复用利用流程",
+    "事件日志只记录固定 key、暴露面类别、风险标签、审计动作和学习信号，不保存完整配置、真实路径、真实服务地址、真实凭据或真实端口清单"
   ],
-  "notes": "配置错误利用当前为 simulation / planned：本轮只建立标准目录、基础文档和 docs 元数据入口。当前不登记 web、api 或 scripts 入口，不提供 exploit.py、verify.ts、真实配置读取、真实服务扫描、真实管理接口连接或配置修改能力。"
+  "notes": "配置错误利用当前为 simulation / in-progress：已建立标准目录、基础文档、docs 元数据入口和后端受控 audit API。API 只读取固定 configCaseKey 和 auditPolicyKey，并写入统一事件日志安全摘要；当前不登记 web 或 scripts 入口，不提供 exploit.py、verify.ts、真实配置读取、真实服务扫描、真实管理接口连接或配置修改能力。"
 }

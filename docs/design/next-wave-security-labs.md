@@ -241,7 +241,7 @@
 
 | 实验 | 状态 | 推荐模式 | 当前规划落点 | 后续目录 |
 |---|---|---|---|---|
-| 配置错误利用 | planned 元数据阶段 | 本机模拟 / 静态配置分析 / 固定配置审计样例 / docs-only 元数据 | `labs/infrastructure/misconfiguration/meta.json`、`docs/execution/2026-07-03-infrastructure-misconfiguration-directory-metadata.md` | `labs/infrastructure/misconfiguration/` |
+| 配置错误利用 | 后端固定审计 API 阶段 | 本机模拟 / 静态配置分析 / 固定配置审计样例 / 受控 audit API / 事件日志安全摘要 | `labs/infrastructure/misconfiguration/meta.json`、`apps/server/src/services/misconfiguration-lab.ts`、`apps/server/tests/misconfiguration-lab.test.ts`、`docs/execution/2026-07-03-infrastructure-misconfiguration-fixed-audit-api.md` | `labs/infrastructure/misconfiguration/` |
 | 云安全漏洞 | 延后 | 案例化演示 / 本机模拟 | `docs/design/project-scope-and-security-content.md` | `labs/infrastructure/cloud-security/` |
 | IoT 攻击 | 延后 | 案例化演示 / 本机模拟 | `docs/design/project-scope-and-security-content.md` | `labs/infrastructure/iot/` |
 | 容器逃逸 | 不做真实复现 | 案例化演示 | `docs/design/project-scope-and-security-content.md` | `labs/infrastructure/container-escape/` |
@@ -253,9 +253,10 @@
 - 漏洞版展示调试端口、默认凭据提示、目录索引、过宽 CORS 等风险信号。
 - 修复版展示最小暴露面、默认关闭、认证要求和配置审计。
 - 当前已补齐执行文档：`docs/execution/2026-07-02-infrastructure-misconfiguration-lab.md`。
-- 当前已建立 `labs/infrastructure/misconfiguration/` 目录与 `planned` 元数据，只登记 docs 入口，不创建页面、API、scripts 入口或真实配置文件。
+- 当前已建立 `labs/infrastructure/misconfiguration/` 目录与 `in-progress` 元数据，只登记 docs 和 api 入口，不创建页面、scripts 入口或真实配置文件。
 - 当前已新增脚本目录边界说明：`tools/lab-scripts/infrastructure/misconfiguration/README.md`，不提供 `exploit.py` 或 `verify.ts`。
-- 下一步切片建议：进入后端固定配置审计 API，只读取固定 `configCaseKey` 和固定 `auditPolicyKey`，并接入统一事件日志安全摘要。
+- 当前已接入后端固定配置审计 API：`POST /api/labs/infrastructure/misconfiguration/:variant/audit`，只读取固定 `configCaseKey` 和固定 `auditPolicyKey`，并接入统一事件日志安全摘要。
+- 下一步切片建议：进入前端固定配置审计工作台，只提供固定样例选择器，不提供任意配置文本、主机、端口、路径、凭据、扫描或连接入口。
 
 禁止修改真实 nginx、MySQL、Node、系统服务或云账号配置。
 
@@ -263,7 +264,7 @@
 
 推荐后续按以下切片推进：
 
-1. `infrastructure/misconfiguration` 后端固定配置审计 API。
+1. `infrastructure/misconfiguration` 前端固定配置审计工作台。
 2. 后续社会工程学扩展案例的边界设计。
 3. 后续供应链扩展案例的边界设计。
 
