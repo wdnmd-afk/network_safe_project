@@ -504,6 +504,95 @@ test("登录用户可以对比 Prompt 注入漏洞版边界混淆与修复版策
   ).toHaveText("否");
 });
 
+test("登录用户可以对比鱼叉式钓鱼漏洞版误判与修复版核验", async ({ page }) => {
+  await page.goto("/login");
+
+  await page.getByLabel("用户名").fill("demo_user");
+  await page.getByLabel("密码").fill("Demo@123456");
+  await page.getByRole("button", { name: "登录" }).click();
+
+  await expect(page.getByRole("heading", { name: "账户中心" })).toBeVisible();
+
+  await page.goto("/labs/social/spear-phishing/vuln");
+  await expect(
+    page.getByRole("heading", { name: "鱼叉式钓鱼针对性误判观察版" }),
+  ).toBeVisible();
+  await expect(page.getByRole("textbox")).toHaveCount(0);
+  await expect(page.getByRole("combobox")).toHaveCount(2);
+
+  await page.getByRole("button", { name: "付款审批" }).click();
+  await page.getByRole("button", { name: "观察核验结果" }).click();
+
+  const vulnStatusPanel = page.locator(".spear-phishing-status-panel");
+
+  await expect(page.getByText("漏洞版只看角色权威和业务熟悉感")).toBeVisible();
+  await expect(
+    vulnStatusPanel.locator(".status-metric strong").filter({
+      hasText: /^accepted$/,
+    }),
+  ).toBeVisible();
+  await expect(
+    vulnStatusPanel.locator(".status-metric strong").filter({
+      hasText: /^漏洞版审批链绕过风险可见$/,
+    }),
+  ).toBeVisible();
+  await expect(
+    vulnStatusPanel.locator(".inspection-grid div").filter({
+      hasText: "风险标签",
+    }).locator("dd"),
+  ).toContainText("authority-pressure");
+  await expect(
+    vulnStatusPanel.locator(".inspection-grid div").filter({
+      hasText: "风险标签",
+    }).locator("dd"),
+  ).toContainText("urgency-pressure");
+  await expect(
+    vulnStatusPanel.locator(".inspection-grid div").filter({
+      hasText: "风险标签",
+    }).locator("dd"),
+  ).toContainText("approval-chain-bypass");
+
+  await page.goto("/labs/social/spear-phishing/fixed");
+  await expect(
+    page.getByRole("heading", { name: "鱼叉式钓鱼流程核验复盘版" }),
+  ).toBeVisible();
+  await expect(page.getByRole("textbox")).toHaveCount(0);
+  await expect(page.getByRole("combobox")).toHaveCount(2);
+
+  await page.getByRole("button", { name: "付款审批" }).click();
+  await page.getByRole("button", { name: "审批链复核" }).click();
+  await page.getByRole("button", { name: "观察核验结果" }).click();
+
+  const fixedStatusPanel = page.locator(".spear-phishing-status-panel");
+
+  await expect(page.getByText("修复版要求可信通道二次确认和正式流程复核")).toBeVisible();
+  await expect(
+    fixedStatusPanel.locator(".status-metric strong").filter({
+      hasText: /^blocked$/,
+    }),
+  ).toBeVisible();
+  await expect(
+    fixedStatusPanel.locator(".status-metric strong").filter({
+      hasText: /^修复版要求可信通道二次确认$/,
+    }),
+  ).toBeVisible();
+  await expect(
+    fixedStatusPanel.locator(".inspection-grid div").filter({
+      hasText: "核验策略",
+    }).locator("dd"),
+  ).toHaveText("已应用");
+  await expect(
+    fixedStatusPanel.locator(".inspection-grid div").filter({
+      hasText: "审批链复核",
+    }).locator("dd"),
+  ).toHaveText("需要");
+  await expect(
+    fixedStatusPanel.locator(".inspection-grid div").filter({
+      hasText: "可信通道",
+    }).locator("dd"),
+  ).toHaveText("需要");
+});
+
 test("登录用户可以对比依赖混淆漏洞版公共来源与修复版审计路径", async ({ page }) => {
   await page.goto("/login");
 
