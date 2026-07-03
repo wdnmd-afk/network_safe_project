@@ -45,7 +45,20 @@
     }
   ],
   "entrypoints": {
-    "web": [],
+    "web": [
+      {
+        "key": "misconfiguration-vuln-workbench",
+        "variant": "vuln",
+        "path": "/labs/infrastructure/misconfiguration/vuln",
+        "description": "配置风险观察版固定配置审计工作台"
+      },
+      {
+        "key": "misconfiguration-fixed-workbench",
+        "variant": "fixed",
+        "path": "/labs/infrastructure/misconfiguration/fixed",
+        "description": "配置审计复盘版固定配置审计工作台"
+      }
+    ],
     "api": [
       {
         "key": "misconfiguration-vuln-audit",
@@ -121,9 +134,9 @@
     }
   },
   "prerequisites": [
-    "已阅读配置错误利用实验执行文档、目录与 planned 元数据执行文档和后端固定审计 API 执行文档",
-    "理解当前 in-progress 状态只表示标准目录、基础文档、元数据入口和后端受控 audit API 已建立，不表示前端页面或脚本已经可用",
-    "理解当前 API 只能使用固定 configCaseKey 和 auditPolicyKey，不读取或修改真实配置"
+    "已阅读配置错误利用实验执行文档、目录与 planned 元数据执行文档、后端固定审计 API 执行文档和前端固定审计工作台执行文档",
+    "理解当前 in-progress 状态只表示标准目录、基础文档、元数据入口、后端受控 audit API 和前端固定选择器工作台已建立，不表示脚本或真实配置审计能力已经可用",
+    "理解当前页面和 API 只能使用固定 configCaseKey 和 auditPolicyKey，不读取或修改真实配置"
   ],
   "paths": {
     "root": "labs/infrastructure/misconfiguration",
@@ -137,7 +150,8 @@
   "sortOrder": 600,
   "estimatedMinutes": 25,
   "safeBoundaries": [
-    "当前 in-progress 状态仅表示标准目录、基础文档、docs 入口和后端受控 audit API 已建立，不表示存在前端页面、脚本或真实配置审计能力",
+    "当前 in-progress 状态仅表示标准目录、基础文档、docs 入口、web 固定选择器入口和后端受控 audit API 已建立，不表示存在脚本或真实配置审计能力",
+    "前端工作台只提供固定配置样例和固定审计策略选择器，不提供任意配置文本、主机、端口、路径、凭据、扫描或连接入口",
     "后端 audit API 只使用固定静态配置片段、固定暴露面信号和固定审计策略，不读取真实配置文件",
     "不修改真实 nginx、MySQL、Node、Windows 服务、系统防火墙、代理、hosts、证书或云账号配置",
     "不读取真实 .env、本机配置文件、服务配置、云凭据、数据库连接串、token、Cookie 或密码",
@@ -146,5 +160,5 @@
     "不提供 exploit.py、verify.ts、扫描器、弱口令测试、服务枚举或可复用利用流程",
     "事件日志只记录固定 key、暴露面类别、风险标签、审计动作和学习信号，不保存完整配置、真实路径、真实服务地址、真实凭据或真实端口清单"
   ],
-  "notes": "配置错误利用当前为 simulation / in-progress：已建立标准目录、基础文档、docs 元数据入口和后端受控 audit API。API 只读取固定 configCaseKey 和 auditPolicyKey，并写入统一事件日志安全摘要；当前不登记 web 或 scripts 入口，不提供 exploit.py、verify.ts、真实配置读取、真实服务扫描、真实管理接口连接或配置修改能力。"
+  "notes": "配置错误利用当前为 simulation / in-progress：已建立标准目录、基础文档、docs 元数据入口、前端固定配置审计工作台和后端受控 audit API。页面和 API 只读取固定 configCaseKey 和 auditPolicyKey，并写入统一事件日志安全摘要；当前不登记 scripts 入口，不提供 exploit.py、verify.ts、真实配置读取、真实服务扫描、真实管理接口连接或配置修改能力。"
 }

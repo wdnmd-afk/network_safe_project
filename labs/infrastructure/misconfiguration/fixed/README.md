@@ -4,7 +4,7 @@
 
 配置审计复盘版用于从防御方视角理解如何收敛配置暴露面。
 
-当前处于 `in-progress` 阶段，后端受控 `audit` API 已可返回修复版固定配置审计信号。本目录仍不包含页面、真实配置修改、部署步骤或脚本。
+当前处于 `in-progress` 阶段，前端固定配置审计工作台和后端受控 `audit` API 已可返回修复版固定配置审计信号。本目录仍不包含真实配置修改、部署步骤或脚本。
 
 ## 后续修复目标
 
@@ -26,13 +26,14 @@
 - `misconfiguration-safe-error-reporting`
 - `misconfiguration-boundary-verified`
 
-## 当前 API 入口
+## 当前入口
 
 ```text
+GET /labs/infrastructure/misconfiguration/fixed
 POST /api/labs/infrastructure/misconfiguration/fixed/audit
 ```
 
-请求体只读取固定字段：
+页面和请求体只读取固定字段：
 
 - `configCaseKey`
 - `auditPolicyKey`

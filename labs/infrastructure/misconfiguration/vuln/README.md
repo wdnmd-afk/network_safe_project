@@ -4,7 +4,7 @@
 
 配置风险观察版用于从攻击方观察角度理解配置错误会暴露哪些风险信号。
 
-当前处于 `in-progress` 阶段，后端受控 `audit` API 已可返回漏洞版固定配置风险信号。本目录仍不包含页面、真实配置样例、扫描器或攻击脚本。
+当前处于 `in-progress` 阶段，前端固定配置审计工作台和后端受控 `audit` API 已可返回漏洞版固定配置风险信号。本目录仍不包含真实配置样例、扫描器或攻击脚本。
 
 ## 后续观察目标
 
@@ -28,13 +28,14 @@
 - `misconfiguration-error-detail-exposed`
 - `misconfiguration-default-credential-hint-visible`
 
-## 当前 API 入口
+## 当前入口
 
 ```text
+GET /labs/infrastructure/misconfiguration/vuln
 POST /api/labs/infrastructure/misconfiguration/vuln/audit
 ```
 
-请求体只读取固定字段：
+页面和请求体只读取固定字段：
 
 - `configCaseKey`
 - `auditPolicyKey`

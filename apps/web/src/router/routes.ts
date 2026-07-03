@@ -426,4 +426,20 @@ export const routes: RouteRecordRaw[] = [
       variant: "fixed",
     },
   },
+  {
+    path: "/labs/infrastructure/misconfiguration/vuln",
+    name: "lab-infrastructure-misconfiguration-vuln",
+    component: () => import("../views/MisconfigurationLabView.vue"),
+    props: {
+      variant: "vuln",
+    },
+  },
+  {
+    path: "/labs/infrastructure/misconfiguration/fixed",
+    name: "lab-infrastructure-misconfiguration-fixed",
+    component: () => import("../views/MisconfigurationLabView.vue"),
+    props: {
+      variant: "fixed",
+    },
+  },
 ];

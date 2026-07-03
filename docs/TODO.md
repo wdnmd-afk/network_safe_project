@@ -1,3 +1,26 @@
+# 2026-07-03 最新进展：配置错误前端固定审计工作台
+
+- [x] 新增 `apps/web/src/views/MisconfigurationLabView.vue`，提供配置风险观察版和配置审计复盘版固定选择器工作台。
+- [x] 新增 `/labs/infrastructure/misconfiguration/vuln` 与 `/labs/infrastructure/misconfiguration/fixed` 路由。
+- [x] 页面只提交固定 `configCaseKey` 和固定 `auditPolicyKey`，不提供任意配置文本、主机、端口、路径、凭据、扫描、连接、上传、下载、部署或重载入口。
+- [x] 页面展示后端决策、学习信号、暴露面类别、暴露状态、认证要求、CORS 状态、错误信息状态、风险标签、审计动作和推荐动作。
+- [x] 页面提交成功后记录 `infrastructure/misconfiguration` 学习进度，并对预期学习信号写入验证记录安全摘要。
+- [x] `labs/infrastructure/misconfiguration/meta.json` 已登记 web 入口，状态仍保持 `in-progress`，scripts 入口仍为空，Playwright 和脚本验证仍未启用。
+- [x] 新增 `apps/web/tests/misconfiguration-api.test.ts` 和 `apps/web/tests/misconfiguration-lab.test.ts`，并更新路由测试和共享元数据测试。
+- [x] 同步配置错误 README、漏洞版 / 修复版说明、攻击步骤、修复说明、手动验证和下一波规划文档。
+- [x] 当前仍不提供 `exploit.py`、`verify.ts`、真实配置读取、真实配置修改、真实服务扫描、真实管理接口连接、弱口令测试或服务枚举能力。
+
+验证记录：
+
+- `pnpm --filter @network-safe/web exec vitest run tests/misconfiguration-api.test.ts tests/misconfiguration-lab.test.ts tests/router.test.ts` 通过，3 个测试文件、10 项测试通过。
+- `pnpm --filter @network-safe/web exec vue-tsc -p tsconfig.json --noEmit` 通过。
+- `pnpm --filter @network-safe/shared test` 通过，33 项测试通过。
+- `pnpm --filter @network-safe/server test -- tests/misconfiguration-lab.test.ts tests/health.test.ts tests/lab-registry.test.ts` 通过；该命令按当前服务端测试脚本实际运行全量服务端测试，203 项通过。
+- `git diff --check -- <本轮目标文件>` 通过，仅保留 Windows 环境下 LF/CRLF 提示。
+- `rg -n "[ \t]+$" -- <本轮目标文件>` 无命中。
+- 配置错误前端安全关键词扫描通过：实现文件未发现真实 URL、真实配置文本输入、真实主机 / 端口 / 路径 / 凭据输入、扫描入口、连接入口、上传下载入口、部署重载入口或真实配置读取能力；文档命中仅为禁止性说明、安全边界说明和固定字段反向断言。
+- 下一项建议：进入 `infrastructure/misconfiguration` 页面差异验证或本机只读一致性验证切片，继续保持不提供 `exploit.py`、真实配置读取、真实服务扫描、真实管理接口连接或配置修改能力。
+
 # 2026-07-03 最新进展：配置错误利用后端固定审计 API
 
 - [x] 新增执行文档 `docs/execution/2026-07-03-infrastructure-misconfiguration-fixed-audit-api.md`。
