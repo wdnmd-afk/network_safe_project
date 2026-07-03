@@ -1,3 +1,24 @@
+# 2026-07-03 最新进展：鱼叉式钓鱼页面差异验证
+
+- [x] 新增执行文档 `docs/execution/2026-07-03-social-spear-phishing-playwright-verification.md`。
+- [x] 更新 `packages/testing/tests/e2e/platform.spec.mjs`，新增鱼叉式钓鱼漏洞版误判与修复版核验页面差异验证。
+- [x] Playwright 用例只登录本机演示账号，只访问 `/labs/social/spear-phishing/vuln` 和 `/labs/social/spear-phishing/fixed`，只点击固定按钮和固定选择器。
+- [x] 漏洞版验证 `accepted` 决策、审批链绕过学习信号和固定风险标签。
+- [x] 修复版验证 `blocked` 决策、可信通道二次确认学习信号、审批链复核与可信通道核验状态。
+- [x] 用例断言页面没有文本输入框，不提供任意正文、真实人员、邮箱、链接、附件、凭据或投递参数输入。
+- [x] 更新 `labs/social/spear-phishing/meta.json`，启用 Playwright 自动化证据，状态仍为 `in-progress`，scripts 入口仍为空。
+- [x] 同步共享元数据测试、鱼叉式钓鱼 README、手动验证文档、脚本目录边界说明、下一波规划和主目标文档。
+- [x] 当前仍不提供 `verify.ts`、`exploit.py`、真实画像采集、真实投递、凭据收集、模板生成、第三方平台调用、跟踪链接、附件诱导文案、群发脚本或攻击脚本能力。
+
+验证记录：
+
+- `pnpm --filter @network-safe/testing e2e -- --grep "鱼叉式钓鱼"` 通过，1 项 Playwright 测试通过。
+- `pnpm --filter @network-safe/testing test` 通过，9 项测试通过。
+- `pnpm --filter @network-safe/shared test` 通过，34 项测试通过。
+- `pnpm --filter @network-safe/web exec vitest run tests/spear-phishing-api.test.ts tests/spear-phishing-lab.test.ts tests/router.test.ts` 通过，3 个测试文件、9 项测试通过。
+- `pnpm --filter @network-safe/server test -- tests/spear-phishing-lab.test.ts tests/health.test.ts tests/lab-registry.test.ts` 通过；该命令按当前服务端测试脚本实际运行全量服务端测试，209 项通过。
+- 下一项建议：进入 `social/spear-phishing` 只读一致性验证切片，继续保持固定案例选择器和固定核验策略选择器。
+
 # 2026-07-03 最新进展：鱼叉式钓鱼前端固定案例工作台
 
 - [x] 新增执行文档 `docs/execution/2026-07-03-social-spear-phishing-frontend-workbench.md`。
@@ -1903,7 +1924,7 @@
 | 内容 | 状态 | 落地方式 | 当前落点 | 未来代码位置 |
 |---|---|---|---|---|
 | 网络钓鱼 | ready | 案例化演示 / 仿真页面 / 固定线索卡 / 识别训练 / 受控 API / 只读脚本验证 / case-study ready 收口 | `labs/social/phishing/`、`apps/web/src/views/PhishingLabView.vue`、`apps/web/src/api/phishing-lab.ts`、`apps/web/src/labs/phishing.ts`、`tools/lab-scripts/social/phishing/verify.ts`、`apps/server/src/services/phishing-lab.ts`、`apps/server/tests/phishing-lab.test.ts`、`docs/execution/2026-07-02-social-phishing-ready-closeout.md` | `labs/social/phishing/` |
-| 鱼叉式钓鱼 | 进行中 | 案例化演示 / 固定线索卡 / 前端固定选择器 / 受控 review API / 事件日志安全摘要 | `labs/social/spear-phishing/meta.json`、`apps/web/src/views/SpearPhishingLabView.vue`、`apps/web/src/api/spear-phishing-lab.ts`、`apps/server/src/services/spear-phishing-lab.ts`、`docs/execution/2026-07-03-social-spear-phishing-frontend-workbench.md` | `labs/social/spear-phishing/` |
+| 鱼叉式钓鱼 | 进行中 | 案例化演示 / 固定线索卡 / 前端固定选择器 / 受控 review API / Playwright 差异验证 / 事件日志安全摘要 | `labs/social/spear-phishing/meta.json`、`apps/web/src/views/SpearPhishingLabView.vue`、`apps/web/src/api/spear-phishing-lab.ts`、`apps/server/src/services/spear-phishing-lab.ts`、`packages/testing/tests/e2e/platform.spec.mjs`、`docs/execution/2026-07-03-social-spear-phishing-playwright-verification.md` | `labs/social/spear-phishing/` |
 | 捕鲸攻击 | 规划中 | 案例化演示 | `docs/design/project-scope-and-security-content.md` | `labs/social/whaling/` |
 | 短信钓鱼 | 规划中 | 案例化演示 | `docs/design/project-scope-and-security-content.md` | `labs/social/smishing/` |
 | 商业邮件诈骗 | 规划中 | 案例化演示 | `docs/design/project-scope-and-security-content.md` | `labs/social/bec/` |

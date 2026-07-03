@@ -1,3 +1,26 @@
+# 2026-07-03 最新进展：鱼叉式钓鱼页面差异验证
+
+本轮已将社会工程学扩展案例 `social/spear-phishing` 从前端固定案例工作台阶段推进到页面差异验证阶段：
+
+- 新增执行文档：`docs/execution/2026-07-03-social-spear-phishing-playwright-verification.md`。
+- 更新 Playwright 平台用例：`packages/testing/tests/e2e/platform.spec.mjs`。
+- 页面级验证只登录本机演示账号，只访问 `/labs/social/spear-phishing/vuln` 与 `/labs/social/spear-phishing/fixed`，并只点击页面已有固定按钮。
+- 漏洞版覆盖高权威付款审批固定路径，验证无文本输入框、固定选择器、`accepted` 决策、审批链绕过学习信号和固定风险标签。
+- 修复版覆盖同一固定案例与审批链复核策略，验证无文本输入框、`blocked` 决策、可信通道二次确认学习信号、审批链复核与可信通道核验状态。
+- 更新 `labs/social/spear-phishing/meta.json`，启用 Playwright 页面差异验证证据，状态仍保持 `in-progress`，scripts 入口仍为空。
+- 同步共享元数据测试、鱼叉式钓鱼 README、手动验证文档、脚本目录边界说明、下一波规划和 TODO。
+- 当前仍不提供 `verify.ts`、`exploit.py`、真实画像采集、真实投递、凭据收集、模板生成、第三方平台调用、跟踪链接、附件诱导文案、群发脚本或攻击脚本能力。
+
+验证记录：
+
+- `pnpm --filter @network-safe/testing e2e -- --grep "鱼叉式钓鱼"` 通过，1 项 Playwright 测试通过。
+- `pnpm --filter @network-safe/testing test` 通过，9 项测试通过。
+- `pnpm --filter @network-safe/shared test` 通过，34 项测试通过。
+- `pnpm --filter @network-safe/web exec vitest run tests/spear-phishing-api.test.ts tests/spear-phishing-lab.test.ts tests/router.test.ts` 通过，3 个测试文件、9 项测试通过。
+- `pnpm --filter @network-safe/server test -- tests/spear-phishing-lab.test.ts tests/health.test.ts tests/lab-registry.test.ts` 通过；该命令按当前服务端测试脚本实际运行全量服务端测试，209 项通过。
+
+下一项建议：进入 `social/spear-phishing` 只读一致性验证切片，继续保持 case-study 边界。
+
 # 2026-07-03 最新进展：鱼叉式钓鱼前端固定案例工作台
 
 本轮已将社会工程学扩展案例 `social/spear-phishing` 从后端受控 API 阶段推进到前端固定案例工作台阶段：
