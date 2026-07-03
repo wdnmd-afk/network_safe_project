@@ -6,9 +6,9 @@
 
 攻击方视角的核心问题是：针对性上下文、角色权威、紧急压力、业务熟悉感和审批链例外为什么会让学习者忽略二次确认。
 
-## 2. 当前 in-progress 观察范围
+## 2. 当前 ready 观察范围
 
-当前已建立目录、元数据、文档入口、固定虚构案例卡、前端固定案例工作台和后端受控 `review` API。当前页面和后端 API 只能使用以下固定案例 key：
+当前已建立目录、元数据、文档入口、固定虚构案例卡、前端固定案例工作台、后端受控 `review` API、Playwright 页面差异验证和本机只读一致性验证，并已按 case-study ready 标准收口。当前页面和后端 API 只能使用以下固定案例 key：
 
 - `executive-invoice-approval`
 - `vendor-payment-change`

@@ -2,7 +2,7 @@
 
 ## 1. 当前验证目标
 
-当前切片验证 `social/spear-phishing` 前端固定案例工作台、后端固定案例 API、Playwright 页面差异验证、本机只读一致性验证、`in-progress` 元数据、文档入口、目录结构和安全边界是否一致。
+当前切片验证 `social/spear-phishing` 前端固定案例工作台、后端固定案例 API、Playwright 页面差异验证、本机只读一致性验证、`ready` 元数据、文档入口、目录结构和安全边界是否一致。
 
 本轮验证前端固定选择器、后端 API、Playwright 页面差异、本机只读一致性验证和事件日志安全摘要。只读脚本只读取仓库文件，不验证真实投递、真实画像采集、凭据收集、模板生成或第三方平台调用能力。
 
@@ -14,7 +14,7 @@
 - `category` 为 `social`。
 - `subcategory` 为 `spear-phishing`。
 - `mode` 为 `case-study`。
-- `status` 为 `in-progress`。
+- `status` 为 `ready`。
 - `entrypoints.web` 包含 `/labs/social/spear-phishing/vuln` 和 `/labs/social/spear-phishing/fixed`。
 - `entrypoints.api` 包含 `/api/labs/social/spear-phishing/vuln/review` 和 `/api/labs/social/spear-phishing/fixed/review`。
 - `entrypoints.scripts` 只包含 `tools/lab-scripts/social/spear-phishing/verify.ts`。
@@ -29,6 +29,7 @@
 - `verification.automation.scriptVerification.enabled` 为 `true`。
 - `verification.automation.scriptVerification.scriptKeys` 只包含 `spear-phishing-verify`。
 - 两个 `variants[].supportsAutomation` 均为 `false`。
+- `safeBoundaries` 至少有一条同时说明 `case-study` 与 `ready`，且明确 ready 只代表本项目内固定案例学习闭环完成。
 - `safeBoundaries` 明确不提供真实画像采集、真实投递、凭据收集、模板生成、第三方平台调用或攻击脚本。
 
 ## 3. 文档检查
@@ -83,7 +84,7 @@ rg --files labs/social/spear-phishing tools/lab-scripts/social/spear-phishing
 ## 6. 通过标准
 
 - 共享元数据校验通过。
-- 服务端实验索引能扫描到 `social.spear-phishing`，状态为 `in-progress`。
+- 服务端实验索引能扫描到 `social.spear-phishing`，状态为 `ready`。
 - 本地元数据总数同步更新。
 - 元数据登记 docs、web、api 和只读 scripts 入口，Playwright 页面差异验证、API 测试和 scriptVerification 均已启用。
 - 脚本目录只包含 README 和 `verify.ts`。

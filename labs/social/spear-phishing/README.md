@@ -4,11 +4,11 @@
 
 本实验用于学习鱼叉式钓鱼中更具针对性的误判风险：针对性上下文、角色权威、紧急压力、审批链绕过、供应商或人事流程变更、工程临时访问请求和二次确认缺失。
 
-当前状态为 `in-progress`。当前已建立标准目录、基础文档、元数据入口、前端固定案例工作台、后端受控 `review` API、Playwright 页面差异验证和本机只读一致性验证，不提供攻击脚本或 `exploit.py`。
+当前状态为 `case-study` / `ready`。ready 仅表示本项目内固定虚构案例、前端固定案例工作台、后端受控 `review` API、统一事件日志安全摘要、Playwright 页面差异验证、服务端 API 测试和本机只读一致性验证已经形成学习闭环，不提供攻击脚本或 `exploit.py`。
 
 ## 当前范围
 
-- 已建立 `social.spear-phishing` in-progress 元数据。
+- 已建立 `social.spear-phishing` ready 元数据。
 - 已建立漏洞版 / 修复版说明目录。
 - 已建立攻击方观察、修复说明和手动验证文档。
 - 已补充固定虚构案例卡文档。
@@ -17,12 +17,12 @@
 - 已接入后端受控固定案例 API：`POST /api/labs/social/spear-phishing/:variant/review`。
 - 已接入 Playwright 页面差异验证：`packages/testing/tests/e2e/platform.spec.mjs`。
 - 已接入本机只读一致性验证：`tools/lab-scripts/social/spear-phishing/verify.ts`。
+- 已完成 case-study ready 收口审计：`docs/execution/2026-07-03-social-spear-phishing-ready-closeout.md`。
 - 元数据当前登记 docs、web、api 和只读 scripts 入口。
 
 当前未实现：
 
 - `exploit.py`。
-- case-study ready 收口审计。
 - 任何真实投递、画像采集、凭据收集、模板生成或第三方平台调用能力。
 
 ## 固定案例方向
@@ -53,11 +53,9 @@
 - `spear-phishing-out-of-band-confirmation-required`
 - `spear-phishing-boundary-verified`
 
-## 后续入口规划
+## 后续扩展边界
 
-后续若继续实现，应单独编写执行文档，并按以下顺序推进：
-
-1. case-study ready 收口切片。
+后续若扩展更多社会工程学案例、跨案例复盘或持久化学习记录，必须单独编写执行文档，并继续保持固定虚构案例、固定 key、只读验证和不提供攻击脚本的边界。
 
 ## 当前页面边界
 
@@ -98,4 +96,4 @@
 
 ## 后续切片
 
-下一步建议进入 case-study ready 收口切片，继续保持固定案例选择器和固定核验策略选择器，不创建真实投递、凭据收集、模板生成或第三方平台调用能力。
+鱼叉式钓鱼已按 case-study ready 标准收口。后续若继续扩展，只能在新的执行文档中评估固定案例复盘、学习统计或防御流程强化，不创建真实投递、凭据收集、模板生成或第三方平台调用能力。

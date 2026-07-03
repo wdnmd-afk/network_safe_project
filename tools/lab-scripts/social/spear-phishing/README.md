@@ -4,7 +4,7 @@
 
 当前目录用于 `social/spear-phishing` 的脚本边界说明和本机只读一致性验证。
 
-`social/spear-phishing` 当前为 `case-study` / `in-progress`，已建立标准目录、基础文档、docs 元数据入口、前端固定案例工作台、后端受控 `review` API、Playwright 页面差异验证和本机只读一致性验证。当前只登记 `verify.ts` 只读验证入口，不提供 `exploit.py`、投递脚本、画像采集脚本、模板生成脚本或第三方平台连接脚本。
+`social/spear-phishing` 当前为 `case-study` / `ready`，已建立标准目录、基础文档、docs 元数据入口、前端固定案例工作台、后端受控 `review` API、Playwright 页面差异验证、本机只读一致性验证和 ready 收口审计。当前只登记 `verify.ts` 只读验证入口，不提供 `exploit.py`、投递脚本、画像采集脚本、模板生成脚本或第三方平台连接脚本。
 
 ## 当前脚本
 

@@ -1,3 +1,28 @@
+# 2026-07-03 最新进展：鱼叉式钓鱼 case-study ready 收口
+
+本轮已将社会工程学扩展案例 `social/spear-phishing` 从本机只读一致性验证阶段推进到 case-study ready 收口：
+
+- 新增执行文档：`docs/execution/2026-07-03-social-spear-phishing-ready-closeout.md`。
+- `labs/social/spear-phishing/meta.json` 已从 `in-progress` 更新为 `ready`，ready 只代表本项目内固定案例学习闭环完成，不代表存在真实投递、画像采集、凭据收集、模板生成、第三方平台调用或攻击脚本能力。
+- `tools/lab-scripts/social/spear-phishing/verify.ts` 已改为校验 `ready` 状态、case-study ready 边界、Playwright 页面差异验证、服务端 API 测试、只读脚本证据和不提供 `exploit.py`。
+- 已同步共享元数据测试、服务端 health / registry 测试、场景 README、固定案例文档、攻击步骤、修复说明、手动验证、脚本目录边界说明、`docs/TODO.md` 和下一波实验规划。
+- `variants[].supportsAutomation` 仍为 `false`，避免把 Playwright、API 测试或只读脚本误标为攻击脚本自动化。
+- 当前仍不提供 `exploit.py`、真实画像采集、真实投递、凭据收集、模板生成、第三方平台调用、跟踪链接、附件诱导文案、群发脚本或攻击脚本能力。
+
+验证记录：
+
+- `pnpm --filter @network-safe/web exec tsx ../../tools/lab-scripts/social/spear-phishing/verify.ts` 通过，报告 `ok: true`。
+- `pnpm --filter @network-safe/shared test` 通过，34 项测试通过。
+- `pnpm --filter @network-safe/web exec vitest run tests/spear-phishing-api.test.ts tests/spear-phishing-lab.test.ts tests/router.test.ts` 通过，3 个测试文件、9 项测试通过。
+- `pnpm --filter @network-safe/server test -- tests/spear-phishing-lab.test.ts tests/health.test.ts tests/lab-registry.test.ts` 通过；该命令按当前服务端测试脚本实际运行全量服务端测试，209 项通过。
+- `pnpm --filter @network-safe/testing test` 通过，9 项测试通过。
+- `pnpm --filter @network-safe/testing e2e -- --grep "鱼叉式钓鱼"` 通过，1 项 Playwright 测试通过。
+- `git diff --check` 通过，仅保留 Windows 环境下 LF/CRLF 提示。
+- `Test-Path tools/lab-scripts/social/spear-phishing/exploit.py` 返回 `False`。
+- 鱼叉式钓鱼实现文件安全关键词窄扫描命中均为 `verify.ts` 内的禁止项检测片段和反向断言；脚本目录仅包含 `README.md` 与 `verify.ts`，未发现真实投递、画像采集、凭据收集、模板生成、第三方平台调用或攻击脚本实现。
+
+下一项建议：进入新的扩展案例边界设计切片，例如社会工程学后续案例或下一波供应链 / 基础设施扩展；继续先写单独执行文档。
+
 # 2026-07-03 最新进展：鱼叉式钓鱼只读一致性验证
 
 本轮已将社会工程学扩展案例 `social/spear-phishing` 从页面差异验证阶段推进到本机只读一致性验证阶段：
