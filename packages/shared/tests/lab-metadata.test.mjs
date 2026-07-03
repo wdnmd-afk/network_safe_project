@@ -831,7 +831,14 @@ test("spear phishing metadata is in-progress web api case-study", async () => {
       "/api/labs/social/spear-phishing/fixed/review",
     ],
   );
-  assert.deepEqual(result.value.entrypoints.scripts, []);
+  assert.deepEqual(result.value.entrypoints.scripts, [
+    {
+      key: "spear-phishing-verify",
+      language: "ts",
+      path: "tools/lab-scripts/social/spear-phishing/verify.ts",
+      description: "本机只读鱼叉式钓鱼元数据、文档与固定案例边界一致性验证",
+    },
+  ]);
   assert.deepEqual(
     result.value.entrypoints.docs.map((entrypoint) => entrypoint.path),
     [
@@ -857,8 +864,8 @@ test("spear phishing metadata is in-progress web api case-study", async () => {
     specPath: "apps/server/tests/spear-phishing-lab.test.ts",
   });
   assert.deepEqual(result.value.verification.automation.scriptVerification, {
-    enabled: false,
-    scriptKeys: [],
+    enabled: true,
+    scriptKeys: ["spear-phishing-verify"],
   });
   assert.deepEqual(
     result.value.variants.map((variant) => variant.supportsAutomation),
@@ -889,6 +896,8 @@ test("spear phishing metadata is in-progress web api case-study", async () => {
   assert.match(result.value.notes, /前端固定案例工作台/);
   assert.match(result.value.notes, /受控 review API/);
   assert.match(result.value.notes, /Playwright 页面差异验证/);
+  assert.match(result.value.notes, /只读一致性验证/);
+  assert.match(result.value.notes, /supportsAutomation 仍为 false/);
   assert.match(result.value.notes, /exploit\.py/);
 });
 
