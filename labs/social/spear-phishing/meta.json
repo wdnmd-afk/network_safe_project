@@ -118,8 +118,8 @@
     "automation": {
       "supported": true,
       "playwright": {
-        "enabled": false,
-        "specPath": ""
+        "enabled": true,
+        "specPath": "packages/testing/tests/e2e/platform.spec.mjs"
       },
       "apiTest": {
         "enabled": true,
@@ -132,8 +132,8 @@
     }
   },
   "prerequisites": [
-    "已阅读鱼叉式钓鱼边界设计、目录与 planned 元数据、固定案例文档、后端固定案例 API 和前端固定案例工作台执行文档",
-    "理解当前 in-progress 状态只表示目录、文档、元数据入口、前端固定案例工作台和后端受控 review API 已建立，不表示脚本、页面差异验证或只读验证已实现",
+    "已阅读鱼叉式钓鱼边界设计、目录与 planned 元数据、固定案例文档、后端固定案例 API、前端固定案例工作台和页面差异验证执行文档",
+    "理解当前 in-progress 状态只表示目录、文档、元数据入口、前端固定案例工作台、后端受控 review API 和 Playwright 页面差异验证已建立，不表示脚本或只读验证已实现",
     "理解本实验首版只能使用固定虚构案例、固定线索卡、固定 verificationPolicyKey 和固定防御流程复盘"
   ],
   "paths": {
@@ -148,7 +148,7 @@
   "sortOrder": 410,
   "estimatedMinutes": 20,
   "safeBoundaries": [
-    "in-progress 状态仅表示标准目录、文档、docs 元数据入口、前端固定案例工作台和后端受控 review API 已建立，不表示脚本、页面差异验证或只读验证已实现",
+    "in-progress 状态仅表示标准目录、文档、docs 元数据入口、前端固定案例工作台、后端受控 review API 和 Playwright 页面差异验证已建立，不表示脚本或只读验证已实现",
     "首版必须保持 case-study，只使用固定虚构案例、固定线索卡、固定风险标签和固定防御流程复盘",
     "不发送真实邮件、短信、消息或链接",
     "不采集真实姓名、真实邮箱、真实手机号、真实公司、真实部门、真实职位、社交账号、组织关系或公开资料",
@@ -158,5 +158,5 @@
     "不提供 exploit.py、投递脚本、画像采集脚本、模板生成脚本或攻击脚本",
     "当前页面和 API 只读取固定 caseKey 和 verificationPolicyKey，并且事件日志只能记录固定 key、风险类别、决策和学习信号"
   ],
-  "notes": "鱼叉式钓鱼当前为 case-study / in-progress：已建立标准目录、基础文档、docs 元数据入口、前端固定案例工作台和后端受控 review API；当前仍不提供 verify.ts、exploit.py、真实画像采集、真实投递、凭据收集、模板生成、第三方平台调用或攻击脚本。"
+  "notes": "鱼叉式钓鱼当前为 case-study / in-progress：已建立标准目录、基础文档、docs 元数据入口、前端固定案例工作台、后端受控 review API 和 Playwright 页面差异验证；当前仍不提供 verify.ts、exploit.py、真实画像采集、真实投递、凭据收集、模板生成、第三方平台调用或攻击脚本。"
 }

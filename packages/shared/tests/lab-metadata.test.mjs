@@ -849,8 +849,8 @@ test("spear phishing metadata is in-progress web api case-study", async () => {
   );
   assert.equal(result.value.verification.automation.supported, true);
   assert.deepEqual(result.value.verification.automation.playwright, {
-    enabled: false,
-    specPath: "",
+    enabled: true,
+    specPath: "packages/testing/tests/e2e/platform.spec.mjs",
   });
   assert.deepEqual(result.value.verification.automation.apiTest, {
     enabled: true,
@@ -888,6 +888,7 @@ test("spear phishing metadata is in-progress web api case-study", async () => {
   assert.match(result.value.notes, /in-progress/);
   assert.match(result.value.notes, /前端固定案例工作台/);
   assert.match(result.value.notes, /受控 review API/);
+  assert.match(result.value.notes, /Playwright 页面差异验证/);
   assert.match(result.value.notes, /exploit\.py/);
 });
 
