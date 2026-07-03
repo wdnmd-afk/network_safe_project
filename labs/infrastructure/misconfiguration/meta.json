@@ -7,8 +7,8 @@
   "mode": "simulation",
   "severity": "high",
   "difficulty": "intermediate",
-  "summary": "通过静态配置片段、固定暴露面信号和固定审计策略学习调试入口、目录索引、过宽 CORS、公开管理状态页、详细错误信息和默认凭据提示等配置错误风险。",
-  "status": "in-progress",
+  "summary": "通过前端固定配置审计工作台、后端受控 audit API、静态配置片段、固定暴露面信号、固定审计策略、Playwright 页面差异验证和本机只读一致性验证学习调试入口、目录索引、过宽 CORS、公开管理状态页、详细错误信息和默认凭据提示等配置错误风险。",
+  "status": "ready",
   "phase": "phase-3",
   "tags": [
     "infrastructure",
@@ -102,7 +102,7 @@
       {
         "key": "manual-verification",
         "path": "labs/infrastructure/misconfiguration/docs/manual-verification.md",
-        "description": "planned 文档入口、元数据和安全边界验证方式"
+        "description": "配置错误页面、API、只读脚本和基础设施安全边界验证方式"
       }
     ]
   },
@@ -143,8 +143,8 @@
     }
   },
   "prerequisites": [
-    "已阅读配置错误利用实验执行文档、目录与 planned 元数据执行文档、后端固定审计 API 执行文档、前端固定审计工作台执行文档、页面级 Playwright 验证执行文档和只读一致性验证执行文档",
-    "理解当前 in-progress 状态只表示标准目录、基础文档、元数据入口、后端受控 audit API、前端固定选择器工作台、Playwright 页面级差异验证和本机只读一致性验证已建立，不表示攻击脚本或真实配置审计能力已经可用",
+    "已阅读配置错误利用实验执行文档、目录与 planned 元数据执行文档、后端固定审计 API 执行文档、前端固定审计工作台执行文档、页面级 Playwright 验证执行文档、只读一致性验证执行文档和 ready 收口执行文档",
+    "理解当前 ready 状态只表示本项目内固定配置样例学习闭环完成，不表示存在攻击脚本、真实配置审计能力或真实基础设施连接能力",
     "理解当前页面和 API 只能使用固定 configCaseKey 和 auditPolicyKey，不读取或修改真实配置"
   ],
   "paths": {
@@ -159,7 +159,10 @@
   "sortOrder": 600,
   "estimatedMinutes": 25,
   "safeBoundaries": [
-    "当前 in-progress 状态仅表示标准目录、基础文档、docs 入口、web 固定选择器入口、后端受控 audit API、Playwright 页面级差异验证和本机只读一致性验证已建立，不表示存在攻击脚本或真实配置审计能力",
+    "ready 状态仅表示标准目录、基础文档、docs 入口、web 固定选择器入口、后端受控 audit API、Playwright 页面级差异验证和本机只读一致性验证已在本项目固定配置样例学习边界内形成闭环",
+    "已按 simulation ready 收口，但不表示存在攻击脚本、真实配置审计能力或真实基础设施连接能力",
+    "已登记 Playwright 页面级差异验证证据，但不表示存在扫描器、弱口令测试或真实管理接口连接能力",
+    "已登记只读一致性验证脚本，但该脚本只读取仓库内文件，不发起 HTTP 请求，不读取真实配置、不扫描、不连接真实管理接口",
     "前端工作台只提供固定配置样例和固定审计策略选择器，不提供任意配置文本、主机、端口、路径、凭据、扫描或连接入口",
     "后端 audit API 只使用固定静态配置片段、固定暴露面信号和固定审计策略，不读取真实配置文件",
     "不修改真实 nginx、MySQL、Node、Windows 服务、系统防火墙、代理、hosts、证书或云账号配置",
@@ -169,5 +172,5 @@
     "不提供 exploit.py、扫描器、弱口令测试、服务枚举或可复用利用流程，verify.ts 仅作为本机只读一致性验证入口",
     "事件日志只记录固定 key、暴露面类别、风险标签、审计动作和学习信号，不保存完整配置、真实路径、真实服务地址、真实凭据或真实端口清单"
   ],
-  "notes": "配置错误利用当前为 simulation / in-progress：已建立标准目录、基础文档、docs 元数据入口、前端固定配置审计工作台、后端受控 audit API、Playwright 页面级差异验证和本机只读一致性验证。页面和 API 只读取固定 configCaseKey 和 auditPolicyKey，并写入统一事件日志安全摘要；当前 scripts 入口只登记 misconfiguration-verify 只读一致性验证，variants[].supportsAutomation 仍为 false，不提供 exploit.py、真实配置读取、真实服务扫描、真实管理接口连接或配置修改能力。"
+  "notes": "配置错误利用当前为 simulation / ready：已按 ready 收口审计确认标准目录、基础文档、docs 元数据入口、前端固定配置审计工作台、后端受控 audit API、Playwright 页面级差异验证和本机只读一致性验证形成固定配置样例学习闭环。页面和 API 只读取固定 configCaseKey 和 auditPolicyKey，并写入统一事件日志安全摘要；当前 scripts 入口只登记 misconfiguration-verify 只读一致性验证，variants[].supportsAutomation 仍为 false，不提供 exploit.py、真实配置读取、真实服务扫描、真实管理接口连接或配置修改能力。"
 }

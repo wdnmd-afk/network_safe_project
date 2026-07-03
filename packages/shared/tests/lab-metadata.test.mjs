@@ -551,7 +551,7 @@ test("dns hijack metadata is ready controlled DNS simulation", async () => {
   assert.match(result.value.notes, /不提供 exploit\.py/);
 });
 
-test("misconfiguration metadata exposes fixed workbench, controlled audit api and readonly verifier", async () => {
+test("misconfiguration metadata is ready fixed configuration simulation", async () => {
   const metadata = await readFixture(
     "labs/infrastructure/misconfiguration/meta.json",
   );
@@ -559,7 +559,7 @@ test("misconfiguration metadata exposes fixed workbench, controlled audit api an
 
   assert.equal(result.ok, true);
   assert.equal(result.value.id, "infrastructure.misconfiguration");
-  assert.equal(result.value.status, "in-progress");
+  assert.equal(result.value.status, "ready");
   assert.equal(result.value.mode, "simulation");
   assert.deepEqual(
     result.value.entrypoints.web.map((entrypoint) => entrypoint.path),
@@ -624,7 +624,13 @@ test("misconfiguration metadata exposes fixed workbench, controlled audit api an
       boundary.includes("不提供 exploit.py"),
     ),
   );
-  assert.match(result.value.notes, /in-progress/);
+  assert.ok(
+    result.value.safeBoundaries.some((boundary) =>
+      boundary.includes("ready 状态仅表示"),
+    ),
+  );
+  assert.match(result.value.notes, /ready/);
+  assert.match(result.value.notes, /ready 收口审计/);
   assert.match(result.value.notes, /前端固定配置审计工作台/);
   assert.match(result.value.notes, /后端受控 audit API/);
   assert.match(result.value.notes, /Playwright 页面级差异验证/);

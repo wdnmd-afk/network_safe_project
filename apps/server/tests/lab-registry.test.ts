@@ -15,7 +15,7 @@ test("lab registry scans phase-one metadata files", async () => {
     labs.some(
       (lab) =>
         lab.id === "infrastructure.misconfiguration" &&
-        lab.status === "in-progress",
+        lab.status === "ready",
     ),
   );
   assert.ok(

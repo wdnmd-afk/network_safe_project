@@ -2,17 +2,16 @@
 
 ## 1. 当前可验证内容
 
-当前 `in-progress` 阶段可验证：
+当前 `ready` 阶段可验证：
 
 - `labs/infrastructure/misconfiguration/meta.json` 存在。
 - `README.md`、`vuln/README.md`、`fixed/README.md`、`mock/README.md` 存在。
 - 攻击步骤、修复说明和手动验证文档存在。
 - `tools/lab-scripts/infrastructure/misconfiguration/README.md` 存在。
-- 元数据登记 docs、web 和 api 入口。
+- 元数据登记 docs、web、api 和 scripts 入口。
 - `entrypoints.web` 包含：
   - `/labs/infrastructure/misconfiguration/vuln`
   - `/labs/infrastructure/misconfiguration/fixed`
-- `entrypoints.scripts` 为空数组。
 - `entrypoints.api` 包含：
   - `POST /api/labs/infrastructure/misconfiguration/vuln/audit`
   - `POST /api/labs/infrastructure/misconfiguration/fixed/audit`
@@ -40,11 +39,11 @@
 - `misconfiguration-safe-error-reporting`
 - `misconfiguration-boundary-verified`
 
-当前前端固定工作台和后端受控 `audit` 接口可观察这些信号；仍不代表脚本、真实配置审计、真实扫描或真实连接能力已可运行。
+当前前端固定工作台、后端受控 `audit` 接口、Playwright 页面验证和本机只读脚本可观察或校验这些信号；仍不代表真实配置审计、真实扫描或真实连接能力已可运行。
 
 ## 3. 不应出现的内容
 
-当前阶段不应出现：
+当前 ready 阶段不应出现：
 
 - `exploit.py`。
 - 真实配置文件。
@@ -73,4 +72,4 @@ rg -n "[ \t]+$" -- <本轮目标文件>
 rg --files labs/infrastructure/misconfiguration tools/lab-scripts/infrastructure/misconfiguration
 ```
 
-in-progress 状态仅表示本项目内标准目录、元数据、基础文档入口、前端固定工作台、后端受控 API、Playwright 页面级差异验证和本机只读一致性验证建立完成，不表示提供真实配置审计、真实扫描、真实连接或攻击脚本能力。
+ready 状态仅表示本项目内标准目录、元数据、基础文档入口、前端固定工作台、后端受控 API、Playwright 页面级差异验证和本机只读一致性验证形成固定配置样例学习闭环，不表示提供真实配置审计、真实扫描、真实连接或攻击脚本能力。

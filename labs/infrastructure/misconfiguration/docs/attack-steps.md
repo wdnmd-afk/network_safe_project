@@ -8,7 +8,7 @@
 
 ## 2. 固定观察步骤
 
-当前前端固定配置审计工作台和后端受控 API 已实现，学习者只应在固定样例范围内观察：
+当前已完成 simulation ready 收口审计，学习者只应在前端固定配置审计工作台和后端受控 API 的固定样例范围内观察：
 
 1. 打开 `/labs/infrastructure/misconfiguration/vuln`。
 2. 选择固定配置样例，例如 `debug-console-exposed` 或 `wildcard-cors-with-credentials`。
@@ -38,7 +38,7 @@
 
 ## 4. 成功观察信号
 
-当前页面与 API 阶段，学习者应能说明：
+当前 ready 阶段，学习者应能说明：
 
 - 为什么调试入口和管理状态页不应默认公开。
 - 为什么目录索引和详细错误信息可能泄露内部结构。

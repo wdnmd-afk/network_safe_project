@@ -317,8 +317,8 @@ export function runMisconfigurationConsistencyVerification(): MisconfigurationCo
       "metadata-basic-state",
       metadata.id === "infrastructure.misconfiguration" &&
         metadata.mode === "simulation" &&
-        metadata.status === "in-progress",
-      "配置错误元数据应保持 infrastructure.misconfiguration / simulation / in-progress。",
+        metadata.status === "ready",
+      "配置错误元数据应保持 infrastructure.misconfiguration / simulation / ready。",
     ),
   );
   checks.push(
@@ -373,20 +373,24 @@ export function runMisconfigurationConsistencyVerification(): MisconfigurationCo
   );
   checks.push(
     createCheck(
-      "in-progress-boundary",
+      "simulation-ready-boundary",
       metadata.safeBoundaries.some(
         (boundary) =>
-          boundary.includes("只读一致性验证") &&
-          boundary.includes("不表示存在攻击脚本或真实配置审计能力"),
+          boundary.includes("ready 状态仅表示") &&
+          boundary.includes("固定配置样例学习边界"),
       ) &&
+        metadata.safeBoundaries.some((boundary) =>
+          boundary.includes("不表示存在攻击脚本"),
+        ) &&
         metadata.safeBoundaries.some((boundary) =>
           boundary.includes("不提供 exploit.py"),
         ) &&
+        metadata.notes.includes("ready 收口审计") &&
         metadata.notes.includes("只读一致性验证") &&
         metadata.notes.includes("variants[].supportsAutomation 仍为 false") &&
         metadata.notes.includes("不提供") &&
         metadata.notes.includes("exploit.py"),
-      "配置错误 in-progress 元数据应说明只读验证证据、固定样例学习边界和不提供 exploit.py。",
+      "配置错误 ready 元数据应说明固定配置样例学习边界、只读验证证据和不提供 exploit.py。",
     ),
   );
   checks.push(
@@ -501,6 +505,7 @@ export function runMisconfigurationConsistencyVerification(): MisconfigurationCo
       "本脚本不读取 .env、真实配置文件、服务配置、系统配置、云凭据、token、Cookie、证书或密码。",
       "本脚本不修改、重载或启动真实 nginx、MySQL、Node、Windows 服务、代理、防火墙或云配置。",
       "本脚本入口是只读一致性验证，不是 exploit.py、扫描器、弱口令测试、服务枚举脚本或配置修改脚本。",
+      "当前实验已按 simulation ready 收口，ready 仅代表本项目内固定配置样例学习闭环完成。",
     ],
   };
 }

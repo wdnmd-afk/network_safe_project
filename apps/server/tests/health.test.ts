@@ -103,7 +103,7 @@ test("GET /api/labs returns scanned lab metadata list", async () => {
     body.items.some(
       (item) =>
         item.id === "infrastructure.misconfiguration" &&
-        item.status === "in-progress",
+        item.status === "ready",
     ),
   );
   assert.ok(
