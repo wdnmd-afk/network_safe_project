@@ -1,3 +1,26 @@
+# 2026-07-03 最新进展：配置错误只读一致性验证
+
+本轮已将基础设施实验 `infrastructure/misconfiguration` 从页面级差异验证阶段推进到本机只读一致性验证阶段：
+
+- 新增执行文档：`docs/execution/2026-07-03-infrastructure-misconfiguration-readonly-verification.md`。
+- 新增只读验证脚本：`tools/lab-scripts/infrastructure/misconfiguration/verify.ts`。
+- 脚本只读取仓库内配置错误元数据、文档、前端、后端和测试文件，并输出 JSON 一致性报告。
+- 脚本校验 web / api / docs / scripts 入口、固定 `configCaseKey`、固定 `auditPolicyKey`、预期学习信号、前端固定请求体、Playwright 无文本输入框断言、统一事件日志安全摘要和基础设施安全边界。
+- `labs/infrastructure/misconfiguration/meta.json` 已登记 `misconfiguration-verify` scripts 入口和 `scriptVerification` 自动化证据，状态仍保持 `in-progress`。
+- `variants[].supportsAutomation` 仍为 `false`，避免把只读验证脚本误标为攻击脚本自动化。
+- 已同步共享元数据测试、场景 README、漏洞版 / 修复版说明、固定样例说明、攻击步骤、手动验证、脚本目录边界说明、`docs/TODO.md` 和下一波实验规划。
+- 当前仍不提供 `exploit.py`、真实配置读取、真实配置修改、真实服务扫描、真实管理接口连接、弱口令测试、服务枚举或配置修改能力。
+
+验证记录：
+
+- `pnpm --filter @network-safe/web exec tsx ../../tools/lab-scripts/infrastructure/misconfiguration/verify.ts` 通过，报告 `ok: true`。
+- `pnpm --filter @network-safe/shared test` 通过，33 项测试通过。
+- `pnpm --filter @network-safe/web exec vitest run tests/misconfiguration-api.test.ts tests/misconfiguration-lab.test.ts tests/router.test.ts` 通过，3 个测试文件、10 项测试通过。
+- `pnpm --filter @network-safe/testing test` 通过，9 项测试通过。
+- `pnpm --filter @network-safe/server test -- tests/misconfiguration-lab.test.ts tests/health.test.ts tests/lab-registry.test.ts` 通过；该命令按当前服务端测试脚本实际运行全量服务端测试，203 项通过。
+
+下一项建议：对 `infrastructure/misconfiguration` 执行 simulation ready 收口审计，继续保持不提供 `exploit.py`、真实配置读取、真实服务扫描、真实管理接口连接或配置修改能力。
+
 # 2026-07-03 最新进展：配置错误页面级差异验证
 
 本轮已将基础设施实验 `infrastructure/misconfiguration` 从前端固定配置审计工作台阶段推进到页面级差异验证阶段：

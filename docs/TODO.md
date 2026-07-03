@@ -1,3 +1,22 @@
+# 2026-07-03 最新进展：配置错误只读一致性验证
+
+- [x] 新增执行文档 `docs/execution/2026-07-03-infrastructure-misconfiguration-readonly-verification.md`。
+- [x] 新增 `tools/lab-scripts/infrastructure/misconfiguration/verify.ts`，只读取仓库内配置错误元数据、文档、前端、后端和测试文件，并输出 JSON 一致性报告。
+- [x] 只读脚本校验 web / api / docs / scripts 入口、固定配置样例 key、固定审计策略 key、预期学习信号、前端固定请求体、Playwright 无文本输入框断言、统一事件日志安全摘要和基础设施安全边界。
+- [x] `labs/infrastructure/misconfiguration/meta.json` 已登记 `misconfiguration-verify` scripts 入口和 `scriptVerification` 自动化证据，状态仍保持 `in-progress`。
+- [x] `variants[].supportsAutomation` 仍为 `false`，避免把只读验证脚本误标为攻击脚本自动化。
+- [x] 更新共享元数据测试、配置错误 README、漏洞版 / 修复版说明、固定样例说明、攻击步骤、手动验证、脚本目录边界说明和下一波规划文档。
+- [x] 当前仍不提供 `exploit.py`、真实配置读取、真实配置修改、真实服务扫描、真实管理接口连接、弱口令测试、服务枚举或配置修改能力。
+
+验证记录：
+
+- `pnpm --filter @network-safe/web exec tsx ../../tools/lab-scripts/infrastructure/misconfiguration/verify.ts` 通过，报告 `ok: true`。
+- `pnpm --filter @network-safe/shared test` 通过，33 项测试通过。
+- `pnpm --filter @network-safe/web exec vitest run tests/misconfiguration-api.test.ts tests/misconfiguration-lab.test.ts tests/router.test.ts` 通过，3 个测试文件、10 项测试通过。
+- `pnpm --filter @network-safe/testing test` 通过，9 项测试通过。
+- `pnpm --filter @network-safe/server test -- tests/misconfiguration-lab.test.ts tests/health.test.ts tests/lab-registry.test.ts` 通过；该命令按当前服务端测试脚本实际运行全量服务端测试，203 项通过。
+- 下一项建议：对 `infrastructure/misconfiguration` 执行 simulation ready 收口审计，继续保持不提供攻击脚本、真实配置读取、真实服务扫描、真实管理接口连接或配置修改能力。
+
 # 2026-07-03 最新进展：配置错误页面级差异验证
 
 - [x] 新增执行文档 `docs/execution/2026-07-03-infrastructure-misconfiguration-playwright-verification.md`。
@@ -1810,7 +1829,7 @@
 
 | 内容 | 状态 | 落地方式 | 当前落点 | 未来代码位置 |
 |---|---|---|---|---|
-| 配置错误利用 | 后端固定审计 API 阶段 | 本机模拟 / 静态配置分析 / 固定配置审计样例 / 受控 audit API / 事件日志安全摘要 | `labs/infrastructure/misconfiguration/meta.json`、`apps/server/src/services/misconfiguration-lab.ts`、`apps/server/tests/misconfiguration-lab.test.ts`、`docs/execution/2026-07-03-infrastructure-misconfiguration-fixed-audit-api.md` | `labs/infrastructure/misconfiguration/` |
+| 配置错误利用 | 只读一致性验证阶段 | 本机模拟 / 静态配置分析 / 固定配置审计样例 / 前端固定选择器 / 受控 audit API / Playwright 页面级差异验证 / 本机只读一致性验证 / 事件日志安全摘要 | `apps/web/src/views/MisconfigurationLabView.vue`、`apps/server/src/services/misconfiguration-lab.ts`、`apps/server/tests/misconfiguration-lab.test.ts`、`packages/testing/tests/e2e/platform.spec.mjs`、`tools/lab-scripts/infrastructure/misconfiguration/verify.ts`、`labs/infrastructure/misconfiguration/meta.json`、`docs/execution/2026-07-03-infrastructure-misconfiguration-readonly-verification.md` | `labs/infrastructure/misconfiguration/` |
 | 容器逃逸 | 不做真实复现 | 案例化演示 | `docs/design/project-scope-and-security-content.md` | `labs/infrastructure/container-escape/` |
 | 云安全漏洞 | 规划中 | 案例化演示 / 本机模拟 | `docs/design/project-scope-and-security-content.md` | `labs/infrastructure/cloud-security/` |
 | IoT 攻击 | 规划中 | 案例化演示 / 本机模拟 | `docs/design/project-scope-and-security-content.md` | `labs/infrastructure/iot/` |
