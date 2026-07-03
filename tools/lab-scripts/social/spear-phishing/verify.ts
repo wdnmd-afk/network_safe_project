@@ -316,8 +316,8 @@ export function runSpearPhishingConsistencyVerification(): SpearPhishingConsiste
       "metadata-basic-state",
       metadata.id === "social.spear-phishing" &&
         metadata.mode === "case-study" &&
-        metadata.status === "in-progress",
-      "鱼叉式钓鱼元数据应保持 social.spear-phishing / case-study / in-progress。",
+        metadata.status === "ready",
+      "鱼叉式钓鱼元数据应保持 social.spear-phishing / case-study / ready。",
     ),
   );
   checks.push(
@@ -372,20 +372,22 @@ export function runSpearPhishingConsistencyVerification(): SpearPhishingConsiste
   );
   checks.push(
     createCheck(
-      "in-progress-boundary",
+      "case-study-ready-boundary",
       metadata.safeBoundaries.some(
         (boundary) =>
-          boundary.includes("in-progress 状态仅表示") &&
+          boundary.includes("case-study") &&
+          boundary.includes("ready") &&
           boundary.includes("只读一致性验证"),
       ) &&
         metadata.safeBoundaries.some((boundary) =>
           boundary.includes("不提供 exploit.py"),
         ) &&
+        metadata.notes.includes("ready 收口审计") &&
         metadata.notes.includes("只读一致性验证") &&
         metadata.notes.includes("supportsAutomation 仍为 false") &&
         metadata.notes.includes("不提供") &&
         metadata.notes.includes("exploit.py"),
-      "鱼叉式钓鱼 in-progress 元数据应说明只读验证证据、安全边界和不提供 exploit.py。",
+      "鱼叉式钓鱼 ready 元数据应说明 case-study ready 边界、只读验证证据和不提供 exploit.py。",
     ),
   );
   checks.push(
@@ -513,7 +515,7 @@ export function runSpearPhishingConsistencyVerification(): SpearPhishingConsiste
       "本脚本不发起 HTTP 请求，不发送邮件、短信或消息，不连接第三方平台、通讯录、CRM、HR、IM 或收件箱服务。",
       "本脚本不读取 .env、Cookie、token、验证码、凭据、付款信息、真实人员资料或真实业务材料。",
       "本脚本入口是只读一致性验证，不是 exploit.py、投递器、画像采集器、模板生成器或攻击脚本。",
-      "当前实验仍为 case-study / in-progress，ready 收口需另行编写执行文档。",
+      "当前实验已按 case-study ready 例外收口，ready 仅代表本项目内固定案例学习闭环完成。",
     ],
   };
 }
