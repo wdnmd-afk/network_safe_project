@@ -4,7 +4,7 @@
 
 配置审计复盘版用于从防御方视角理解如何收敛配置暴露面。
 
-当前处于 `in-progress` 阶段，前端固定配置审计工作台和后端受控 `audit` API 已可返回修复版固定配置审计信号。本目录仍不包含真实配置修改、部署步骤或脚本。
+当前处于 `in-progress` 阶段，前端固定配置审计工作台、后端受控 `audit` API、Playwright 页面级差异验证和本机只读一致性验证已可覆盖修复版固定配置审计信号。本目录仍不包含真实配置修改、部署步骤或攻击脚本。
 
 ## 后续修复目标
 
@@ -39,6 +39,10 @@ POST /api/labs/infrastructure/misconfiguration/fixed/audit
 - `auditPolicyKey`
 
 修复版可观察暴露面收敛、管理入口认证要求、CORS 策略收敛和安全错误信息等结果；事件日志仍只记录固定摘要。
+
+脚本入口只提供本机只读一致性验证：
+
+- `tools/lab-scripts/infrastructure/misconfiguration/verify.ts`
 
 ## 禁止内容
 

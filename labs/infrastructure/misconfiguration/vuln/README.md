@@ -4,7 +4,7 @@
 
 配置风险观察版用于从攻击方观察角度理解配置错误会暴露哪些风险信号。
 
-当前处于 `in-progress` 阶段，前端固定配置审计工作台和后端受控 `audit` API 已可返回漏洞版固定配置风险信号。本目录仍不包含真实配置样例、扫描器或攻击脚本。
+当前处于 `in-progress` 阶段，前端固定配置审计工作台、后端受控 `audit` API、Playwright 页面级差异验证和本机只读一致性验证已可覆盖漏洞版固定配置风险信号。本目录仍不包含真实配置样例、扫描器或攻击脚本。
 
 ## 后续观察目标
 
@@ -41,6 +41,10 @@ POST /api/labs/infrastructure/misconfiguration/vuln/audit
 - `auditPolicyKey`
 
 事件日志只记录固定 key、暴露面类别、风险标签、审计动作和学习信号。
+
+脚本入口只提供本机只读一致性验证：
+
+- `tools/lab-scripts/infrastructure/misconfiguration/verify.ts`
 
 ## 禁止内容
 

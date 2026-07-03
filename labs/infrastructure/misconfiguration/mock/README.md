@@ -2,7 +2,7 @@
 
 ## 当前状态
 
-当前为 `in-progress` 阶段，已实现后端固定配置审计服务，尚未实现前端工作台。
+当前为 `in-progress` 阶段，已实现后端固定配置审计服务、前端固定配置审计工作台、Playwright 页面级差异验证和本机只读一致性验证。
 
 本目录只记录固定样例方向，不保存真实配置文件、真实服务地址、真实端口、真实凭据或本机路径。
 
@@ -28,6 +28,14 @@
 - `authenticated-admin-only`
 - `strict-cors-audit`
 - `safe-error-reporting`
+
+## 当前验证入口
+
+当前只登记本机只读一致性验证脚本：
+
+- `tools/lab-scripts/infrastructure/misconfiguration/verify.ts`
+
+该脚本只读取仓库内元数据、文档、前端、后端和测试文件，不读取真实配置、不扫描、不连接真实管理接口。
 
 ## 禁止内容
 

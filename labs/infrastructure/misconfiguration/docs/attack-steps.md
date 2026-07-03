@@ -20,7 +20,7 @@
 
 ## 3. 当前入口状态
 
-当前已建立文档、目录、元数据入口、前端固定工作台和后端受控 API：
+当前已建立文档、目录、元数据入口、前端固定工作台、后端受控 API、Playwright 页面级差异验证和本机只读一致性验证：
 
 - `labs/infrastructure/misconfiguration/meta.json`
 - `labs/infrastructure/misconfiguration/README.md`
@@ -29,11 +29,11 @@
 - `/labs/infrastructure/misconfiguration/fixed`
 - `POST /api/labs/infrastructure/misconfiguration/vuln/audit`
 - `POST /api/labs/infrastructure/misconfiguration/fixed/audit`
+- `tools/lab-scripts/infrastructure/misconfiguration/verify.ts`
 
 当前未实现：
 
 - `exploit.py`。
-- `verify.ts`。
 - 真实配置读取、真实服务扫描或真实管理接口连接。
 
 ## 4. 成功观察信号

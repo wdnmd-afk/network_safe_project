@@ -551,7 +551,7 @@ test("dns hijack metadata is ready controlled DNS simulation", async () => {
   assert.match(result.value.notes, /不提供 exploit\.py/);
 });
 
-test("misconfiguration metadata exposes fixed workbench, controlled audit api and playwright evidence", async () => {
+test("misconfiguration metadata exposes fixed workbench, controlled audit api and readonly verifier", async () => {
   const metadata = await readFixture(
     "labs/infrastructure/misconfiguration/meta.json",
   );
@@ -575,7 +575,14 @@ test("misconfiguration metadata exposes fixed workbench, controlled audit api an
       "/api/labs/infrastructure/misconfiguration/fixed/audit",
     ],
   );
-  assert.deepEqual(result.value.entrypoints.scripts, []);
+  assert.deepEqual(result.value.entrypoints.scripts, [
+    {
+      key: "misconfiguration-verify",
+      language: "ts",
+      path: "tools/lab-scripts/infrastructure/misconfiguration/verify.ts",
+      description: "本机只读配置错误元数据、文档与固定样例边界一致性验证",
+    },
+  ]);
   assert.deepEqual(
     result.value.entrypoints.docs.map((entrypoint) => entrypoint.path),
     [
@@ -600,8 +607,8 @@ test("misconfiguration metadata exposes fixed workbench, controlled audit api an
     specPath: "apps/server/tests/misconfiguration-lab.test.ts",
   });
   assert.deepEqual(result.value.verification.automation.scriptVerification, {
-    enabled: false,
-    scriptKeys: [],
+    enabled: true,
+    scriptKeys: ["misconfiguration-verify"],
   });
   assert.deepEqual(
     result.value.variants.map((variant) => variant.supportsAutomation),
@@ -621,8 +628,10 @@ test("misconfiguration metadata exposes fixed workbench, controlled audit api an
   assert.match(result.value.notes, /前端固定配置审计工作台/);
   assert.match(result.value.notes, /后端受控 audit API/);
   assert.match(result.value.notes, /Playwright 页面级差异验证/);
+  assert.match(result.value.notes, /只读一致性验证/);
+  assert.match(result.value.notes, /variants\[\]\.supportsAutomation 仍为 false/);
   assert.match(result.value.notes, /固定 configCaseKey 和 auditPolicyKey/);
-  assert.match(result.value.notes, /不登记 scripts 入口/);
+  assert.match(result.value.notes, /misconfiguration-verify/);
   assert.match(result.value.notes, /不提供 exploit\.py/);
 });
 
