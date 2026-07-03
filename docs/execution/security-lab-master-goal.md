@@ -1,3 +1,25 @@
+# 2026-07-03 最新进展：鱼叉式钓鱼边界设计
+
+本轮已按下一波实验规划，完成社会工程学扩展案例 `social/spear-phishing` 的边界设计切片：
+
+- 新增执行文档：`docs/execution/2026-07-03-social-spear-phishing-boundary-design.md`。
+- 将 `social/spear-phishing` 首版定位为 `case-study`，只使用固定虚构案例、固定线索卡、固定风险标签和固定防御流程复盘。
+- 攻击方视角只用于学习针对性上下文、角色权威、审批链绕过、供应商 / 人事 / 工程协作语境和二次确认缺失如何造成误判，不用于生成真实投递内容。
+- 防御方视角重点覆盖角色核验、可信通道二次确认、审批链、供应商主数据变更流程、最小授权、隔离举报和日志复盘。
+- 明确后续若继续实现，必须按目录与 `planned` 元数据、固定案例文档、后端固定案例 API、前端固定案例工作台、自动化验证和 case-study ready 收口的顺序单独写执行文档推进。
+- 同步 `docs/design/next-wave-security-labs.md` 和 `docs/TODO.md`，将鱼叉式钓鱼从“延后”推进到“边界设计阶段”。
+- 当前不创建 `labs/social/spear-phishing/`、`tools/lab-scripts/social/spear-phishing/`、页面、API、数据库字段、元数据或脚本。
+- 当前仍不提供真实画像采集、真实投递、凭据收集、模板生成、第三方平台调用、跟踪链接、附件诱导文案、群发脚本或攻击脚本能力。
+
+验证记录：
+
+- `git diff --check -- docs/execution/2026-07-03-social-spear-phishing-boundary-design.md docs/design/next-wave-security-labs.md docs/TODO.md docs/execution/security-lab-master-goal.md` 通过，仅保留 Windows 环境下 LF/CRLF 提示。
+- `rg -n "[ \t]+$" -- docs/execution/2026-07-03-social-spear-phishing-boundary-design.md docs/design/next-wave-security-labs.md docs/TODO.md docs/execution/security-lab-master-goal.md` 无命中。
+- `Test-Path labs/social/spear-phishing` 与 `Test-Path tools/lab-scripts/social/spear-phishing` 均返回 `False`，确认本轮未创建实验目录或脚本目录。
+- 鱼叉式钓鱼边界设计安全关键词扫描命中均为禁止性说明、安全边界说明、历史记录或案例化学习说明，未发现真实投递、凭据收集、模板生成、第三方平台调用或攻击脚本实现。
+
+下一项建议：进入 `social/spear-phishing` 目录与 `planned` 元数据切片，先只登记 docs 入口，不创建页面、API、脚本或自动化攻击能力。
+
 # 2026-07-03 最新进展：配置错误 simulation ready 收口
 
 本轮已将基础设施实验 `infrastructure/misconfiguration` 从本机只读一致性验证阶段推进到 simulation ready 收口：

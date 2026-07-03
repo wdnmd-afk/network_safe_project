@@ -113,7 +113,7 @@
 | 实验 | 状态 | 推荐模式 | 当前规划落点 | 后续目录 |
 |---|---|---|---|---|
 | 网络钓鱼 | ready | 案例化演示 / 仿真页面 / 固定线索卡 / 识别训练 / 受控 API / 只读脚本验证 / case-study ready 收口 | `labs/social/phishing/`、`apps/web/src/views/PhishingLabView.vue`、`apps/web/src/api/phishing-lab.ts`、`apps/web/src/labs/phishing.ts`、`tools/lab-scripts/social/phishing/verify.ts`、`apps/server/src/services/phishing-lab.ts`、`apps/server/tests/phishing-lab.test.ts`、`docs/execution/2026-07-02-social-phishing-ready-closeout.md` | `labs/social/phishing/` |
-| 鱼叉式钓鱼 | 延后 | 案例化演示 | `docs/design/project-scope-and-security-content.md` | `labs/social/spear-phishing/` |
+| 鱼叉式钓鱼 | 边界设计阶段 | `case-study` / 固定线索卡 / 流程复盘 | `docs/execution/2026-07-03-social-spear-phishing-boundary-design.md` | `labs/social/spear-phishing/` |
 | 短信钓鱼 | 延后 | 案例化演示 | `docs/design/project-scope-and-security-content.md` | `labs/social/smishing/` |
 | 商业邮件诈骗 | 延后 | 案例化演示 | `docs/design/project-scope-and-security-content.md` | `labs/social/bec/` |
 | 水坑攻击 | 延后 | 案例化演示 | `docs/design/project-scope-and-security-content.md` | `labs/social/watering-hole/` |
@@ -131,7 +131,15 @@
 - 当前已接入本机只读一致性验证脚本：`tools/lab-scripts/social/phishing/verify.ts`。
 - 当前页面、API 和只读脚本仍只接受或验证固定 `caseKey`、固定 `reviewModeKey` 和固定 `defenseChecklistKey`，并接入统一事件日志安全摘要。
 - 当前已完成 case-study ready 收口审计：`docs/execution/2026-07-02-social-phishing-ready-closeout.md`。
-- 下一步切片建议：进入供应链或基础设施类单独执行文档切片，仍不创建真实投递、凭据收集、模板生成或攻击脚本能力。
+- 当前 `social/phishing` 可作为后续 `social/spear-phishing` 的案例化边界样板，继续保持固定 key、固定案例、事件日志安全摘要和不提供攻击脚本的约束。
+
+`social/spear-phishing` 边界设计：
+
+- 当前已补齐执行文档：`docs/execution/2026-07-03-social-spear-phishing-boundary-design.md`。
+- 推荐模式为 `case-study`，只使用固定虚构案例、固定线索卡、固定风险标签和固定防御流程复盘。
+- 攻击方视角只观察针对性上下文、角色权威、审批链绕过、供应商 / 人事 / 工程协作语境和二次确认缺失如何造成误判。
+- 防御方视角重点展示角色核验、可信通道二次确认、审批链、供应商主数据变更流程、最小授权、隔离举报和日志复盘。
+- 下一步切片建议：进入 `social/spear-phishing` 目录与 `planned` 元数据切片，先只登记 docs 入口，不创建页面、API、脚本或自动化攻击能力。
 
 禁止：
 
@@ -139,6 +147,7 @@
 - 不收集真实凭据。
 - 不生成可投递模板包。
 - 不调用第三方邮件、短信或社交平台。
+- `social/spear-phishing` 额外禁止真实画像采集、真实姓名 / 邮箱 / 手机号 / 公司 / 部门 / 职位输入、通讯录或社交平台连接、跟踪链接、附件诱导文案和群发脚本。
 
 ## 7. AI / 新型攻击规划
 
@@ -267,7 +276,7 @@
 
 推荐后续按以下切片推进：
 
-1. 后续社会工程学扩展案例的边界设计。
+1. 后续社会工程学扩展案例的边界设计：`social/spear-phishing` 已完成边界设计，下一步可进入目录与 `planned` 元数据切片。
 2. 后续供应链扩展案例的边界设计。
 3. 后续基础设施扩展案例的边界设计。
 
