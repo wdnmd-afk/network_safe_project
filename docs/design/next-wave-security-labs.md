@@ -113,7 +113,7 @@
 | 实验 | 状态 | 推荐模式 | 当前规划落点 | 后续目录 |
 |---|---|---|---|---|
 | 网络钓鱼 | ready | 案例化演示 / 仿真页面 / 固定线索卡 / 识别训练 / 受控 API / 只读脚本验证 / case-study ready 收口 | `labs/social/phishing/`、`apps/web/src/views/PhishingLabView.vue`、`apps/web/src/api/phishing-lab.ts`、`apps/web/src/labs/phishing.ts`、`tools/lab-scripts/social/phishing/verify.ts`、`apps/server/src/services/phishing-lab.ts`、`apps/server/tests/phishing-lab.test.ts`、`docs/execution/2026-07-02-social-phishing-ready-closeout.md` | `labs/social/phishing/` |
-| 鱼叉式钓鱼 | planned 元数据阶段 | `case-study` / 固定线索卡 / 流程复盘 / docs-only 注册 | `labs/social/spear-phishing/meta.json`、`docs/execution/2026-07-03-social-spear-phishing-directory-metadata.md` | `labs/social/spear-phishing/` |
+| 鱼叉式钓鱼 | 固定案例文档阶段 | `case-study` / 固定线索卡 / 流程复盘 / docs-only 注册 | `labs/social/spear-phishing/meta.json`、`labs/social/spear-phishing/docs/fixed-cases.md`、`docs/execution/2026-07-03-social-spear-phishing-fixed-cases.md` | `labs/social/spear-phishing/` |
 | 短信钓鱼 | 延后 | 案例化演示 | `docs/design/project-scope-and-security-content.md` | `labs/social/smishing/` |
 | 商业邮件诈骗 | 延后 | 案例化演示 | `docs/design/project-scope-and-security-content.md` | `labs/social/bec/` |
 | 水坑攻击 | 延后 | 案例化演示 | `docs/design/project-scope-and-security-content.md` | `labs/social/watering-hole/` |
@@ -137,12 +137,13 @@
 
 - 当前已补齐执行文档：`docs/execution/2026-07-03-social-spear-phishing-boundary-design.md`。
 - 当前已完成目录与 `planned` 元数据切片：`docs/execution/2026-07-03-social-spear-phishing-directory-metadata.md`、`labs/social/spear-phishing/meta.json`。
+- 当前已完成固定案例文档切片：`docs/execution/2026-07-03-social-spear-phishing-fixed-cases.md`、`labs/social/spear-phishing/docs/fixed-cases.md`。
 - 当前只登记 docs 入口，`entrypoints.web`、`entrypoints.api` 和 `entrypoints.scripts` 均为空数组。
 - 当前脚本目录只提供 README 边界说明，不提供 `exploit.py`、`verify.ts`、投递脚本、画像采集脚本、模板生成脚本或第三方平台连接脚本。
 - 推荐模式为 `case-study`，只使用固定虚构案例、固定线索卡、固定风险标签和固定防御流程复盘。
 - 攻击方视角只观察针对性上下文、角色权威、审批链绕过、供应商 / 人事 / 工程协作语境和二次确认缺失如何造成误判。
 - 防御方视角重点展示角色核验、可信通道二次确认、审批链、供应商主数据变更流程、最小授权、隔离举报和日志复盘。
-- 下一步切片建议：进入固定案例文档切片，继续不创建页面、API、脚本或自动化攻击能力。
+- 下一步切片建议：进入后端固定案例 API 切片，只读取固定案例 key 和固定检查策略 key，继续不创建投递脚本、画像采集脚本、模板生成脚本或第三方平台连接能力。
 
 禁止：
 
@@ -279,7 +280,7 @@
 
 推荐后续按以下切片推进：
 
-1. 后续社会工程学扩展案例的边界设计：`social/spear-phishing` 已完成边界设计和 `planned` 元数据切片，下一步可进入固定案例文档切片。
+1. 后续社会工程学扩展案例的边界设计：`social/spear-phishing` 已完成边界设计、`planned` 元数据切片和固定案例文档切片，下一步可进入后端固定案例 API 切片。
 2. 后续供应链扩展案例的边界设计。
 3. 后续基础设施扩展案例的边界设计。
 

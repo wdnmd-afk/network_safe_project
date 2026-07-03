@@ -1,3 +1,23 @@
+# 2026-07-03 最新进展：鱼叉式钓鱼固定案例文档
+
+- [x] 新增执行文档 `docs/execution/2026-07-03-social-spear-phishing-fixed-cases.md`。
+- [x] 新增 `labs/social/spear-phishing/docs/fixed-cases.md`，定义四个固定虚构案例卡：`executive-invoice-approval`、`vendor-payment-change`、`engineering-access-request`、`hr-benefit-personalized`。
+- [x] 每个案例只记录案例目标、虚构角色标签、误判线索、防御动作和学习信号，不提供完整邮件正文、IM 对话、可复制标题、可投递附件名、真实链接、跟踪链接、模板库、群发脚本或第三方平台调用方式。
+- [x] 更新 `labs/social/spear-phishing/meta.json`，在 docs 入口登记 `fixed-cases`，状态仍保持 `planned`，模式仍保持 `case-study`。
+- [x] `entrypoints.web`、`entrypoints.api`、`entrypoints.scripts` 继续为空数组，`verification.automation.supported` 和 `variants[].supportsAutomation` 继续保持 `false`。
+- [x] 同步鱼叉式钓鱼 README、mock 说明、攻击方观察步骤、手动验证文档和共享元数据测试。
+- [x] 当前仍不提供页面、API、数据库写入、事件日志写入、`verify.ts`、`exploit.py`、真实画像采集、真实投递、凭据收集、模板生成、第三方平台调用、跟踪链接、附件诱导文案、群发脚本或攻击脚本能力。
+
+验证记录：
+
+- `pnpm --filter @network-safe/shared test` 通过，34 项测试通过。
+- `pnpm --filter @network-safe/server test -- tests/health.test.ts tests/lab-registry.test.ts` 通过；该命令按当前服务端测试脚本实际运行全量服务端测试，203 项通过。
+- `git diff --check -- <本轮目标文件>` 通过，仅保留 Windows 环境下 LF/CRLF 提示。
+- `rg -n "[ \t]+$" -- <本轮目标文件>` 无命中。
+- `rg --files labs/social/spear-phishing tools/lab-scripts/social/spear-phishing` 确认当前脚本目录只包含 README，场景目录只包含元数据和文档。
+- 鱼叉式钓鱼安全关键词扫描命中均为禁止性说明、安全边界说明、测试断言或文档路径，未发现真实投递、画像采集、凭据收集、模板生成、第三方平台调用或攻击脚本实现。
+- 下一项建议：进入 `social/spear-phishing` 后端固定案例 API 切片，只读取固定案例 key 和固定检查策略 key，并接入统一事件日志安全摘要。
+
 # 2026-07-03 最新进展：鱼叉式钓鱼 planned 元数据
 
 - [x] 新增执行文档 `docs/execution/2026-07-03-social-spear-phishing-directory-metadata.md`。

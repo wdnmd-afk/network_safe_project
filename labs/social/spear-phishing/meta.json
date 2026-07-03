@@ -60,6 +60,11 @@
         "description": "攻击方视角误判机制观察步骤与安全边界"
       },
       {
+        "key": "fixed-cases",
+        "path": "labs/social/spear-phishing/docs/fixed-cases.md",
+        "description": "固定虚构案例卡、误判线索、防御动作和安全边界"
+      },
+      {
         "key": "fix-notes",
         "path": "labs/social/spear-phishing/docs/fix-notes.md",
         "description": "角色核验、审批链、二次确认和隔离举报修复说明"

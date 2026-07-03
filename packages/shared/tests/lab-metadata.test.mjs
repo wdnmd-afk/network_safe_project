@@ -825,6 +825,7 @@ test("spear phishing metadata is planned docs-only case-study", async () => {
     [
       "labs/social/spear-phishing/README.md",
       "labs/social/spear-phishing/docs/attack-steps.md",
+      "labs/social/spear-phishing/docs/fixed-cases.md",
       "labs/social/spear-phishing/docs/fix-notes.md",
       "labs/social/spear-phishing/docs/manual-verification.md",
     ],

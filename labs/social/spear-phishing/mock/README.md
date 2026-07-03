@@ -28,4 +28,4 @@
 - `engineering-access-request`
 - `hr-benefit-personalized`
 
-这些方向只表示未来学习案例类别，不是当前已实现字段，也不是可投递内容。
+这些方向已在 `labs/social/spear-phishing/docs/fixed-cases.md` 中补充为固定虚构案例卡。它们只表示后续学习案例类别，不是当前已实现页面字段，也不是可投递内容。

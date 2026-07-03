@@ -8,14 +8,14 @@
 
 ## 2. 当前 planned 观察范围
 
-当前只建立目录、元数据和文档入口。后续若实现观察工作台，只能使用固定虚构案例，例如：
+当前只建立目录、元数据和文档入口，并已补充固定虚构案例卡。后续若实现观察工作台，只能使用以下固定案例 key：
 
 - `executive-invoice-approval`
 - `vendor-payment-change`
 - `engineering-access-request`
 - `hr-benefit-personalized`
 
-这些案例只能展示线索卡、风险标签、流程节点和复盘问题，不能展示完整邮件正文、IM 对话、可复制标题、可投递附件名或真实链接。
+这些案例的详细边界见 `labs/social/spear-phishing/docs/fixed-cases.md`。它们只能展示线索卡、风险标签、流程节点和复盘问题，不能展示完整邮件正文、IM 对话、可复制标题、可投递附件名或真实链接。
 
 ## 3. 后续允许的观察步骤
 

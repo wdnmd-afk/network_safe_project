@@ -18,7 +18,7 @@
 - `entrypoints.web` 为空数组。
 - `entrypoints.api` 为空数组。
 - `entrypoints.scripts` 为空数组。
-- `entrypoints.docs` 只指向真实存在的文档入口。
+- `entrypoints.docs` 只指向真实存在的文档入口，并包含 `labs/social/spear-phishing/docs/fixed-cases.md`。
 - `verification.manual.supported` 为 `true`。
 - `verification.manual.stepsDocPath` 为 `labs/social/spear-phishing/docs/manual-verification.md`。
 - `verification.automation.supported` 为 `false`。
@@ -33,6 +33,7 @@
 - `labs/social/spear-phishing/vuln/README.md`
 - `labs/social/spear-phishing/fixed/README.md`
 - `labs/social/spear-phishing/mock/README.md`
+- `labs/social/spear-phishing/docs/fixed-cases.md`
 - `labs/social/spear-phishing/docs/attack-steps.md`
 - `labs/social/spear-phishing/docs/fix-notes.md`
 - `labs/social/spear-phishing/docs/manual-verification.md`
@@ -51,6 +52,7 @@
 确认当前文档：
 
 - 只使用固定虚构案例方向。
+- 固定案例文档只包含案例 key、虚构角色标签、误判线索、防御动作和学习信号。
 - 不提供完整邮件正文、完整 IM 对话、可复制标题、可投递附件名或真实链接。
 - 不要求用户输入真实姓名、邮箱、手机号、公司、部门、职位、社交账号、组织关系或公开资料。
 
