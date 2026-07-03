@@ -1,0 +1,135 @@
+{
+  "id": "infrastructure.misconfiguration",
+  "slug": "misconfiguration",
+  "title": "配置错误利用",
+  "category": "infrastructure",
+  "subcategory": "misconfiguration",
+  "mode": "simulation",
+  "severity": "high",
+  "difficulty": "intermediate",
+  "summary": "通过静态配置片段、固定暴露面信号和固定审计策略学习调试入口、目录索引、过宽 CORS、公开管理状态页、详细错误信息和默认凭据提示等配置错误风险。",
+  "status": "planned",
+  "phase": "phase-3",
+  "tags": [
+    "infrastructure",
+    "misconfiguration",
+    "configuration",
+    "exposure",
+    "simulation"
+  ],
+  "knowledgePoints": [
+    "配置暴露面识别",
+    "调试入口与管理状态页风险",
+    "目录索引风险",
+    "CORS 信任边界",
+    "安全错误信息与配置审计"
+  ],
+  "variants": [
+    {
+      "key": "vuln",
+      "title": "配置风险观察版",
+      "enabled": true,
+      "description": "使用固定静态配置摘要展示调试入口、目录索引、过宽 CORS、公开管理状态页和详细错误信息等暴露面信号。",
+      "entryKey": "vuln-entry",
+      "expectedOutcome": "后续通过受控 audit API 观察 misconfiguration-debug-surface-visible、misconfiguration-directory-index-visible 或 misconfiguration-cors-too-broad 等学习信号。",
+      "supportsAutomation": false
+    },
+    {
+      "key": "fixed",
+      "title": "配置审计复盘版",
+      "enabled": true,
+      "description": "使用同一批固定样例展示默认关闭、认证要求、最小权限 CORS、错误信息收敛和配置审计的防御流程。",
+      "entryKey": "fixed-entry",
+      "expectedOutcome": "后续通过受控 audit API 观察 misconfiguration-exposure-reduced、misconfiguration-auth-required、misconfiguration-cors-policy-restricted 或 misconfiguration-safe-error-reporting 等学习信号。",
+      "supportsAutomation": false
+    }
+  ],
+  "entrypoints": {
+    "web": [],
+    "api": [],
+    "scripts": [],
+    "docs": [
+      {
+        "key": "overview",
+        "path": "labs/infrastructure/misconfiguration/README.md",
+        "description": "配置错误利用实验总说明"
+      },
+      {
+        "key": "attack-steps",
+        "path": "labs/infrastructure/misconfiguration/docs/attack-steps.md",
+        "description": "攻击方视角观察步骤与安全边界"
+      },
+      {
+        "key": "fix-notes",
+        "path": "labs/infrastructure/misconfiguration/docs/fix-notes.md",
+        "description": "配置暴露面收敛、认证要求和配置审计修复说明"
+      },
+      {
+        "key": "manual-verification",
+        "path": "labs/infrastructure/misconfiguration/docs/manual-verification.md",
+        "description": "planned 文档入口、元数据和安全边界验证方式"
+      }
+    ]
+  },
+  "verification": {
+    "manual": {
+      "supported": true,
+      "stepsDocPath": "labs/infrastructure/misconfiguration/docs/manual-verification.md",
+      "expectedSignals": [
+        "misconfiguration-debug-surface-visible",
+        "misconfiguration-directory-index-visible",
+        "misconfiguration-cors-too-broad",
+        "misconfiguration-admin-status-public",
+        "misconfiguration-error-detail-exposed",
+        "misconfiguration-default-credential-hint-visible",
+        "misconfiguration-exposure-reduced",
+        "misconfiguration-auth-required",
+        "misconfiguration-cors-policy-restricted",
+        "misconfiguration-safe-error-reporting",
+        "misconfiguration-boundary-verified"
+      ]
+    },
+    "automation": {
+      "supported": false,
+      "playwright": {
+        "enabled": false,
+        "specPath": ""
+      },
+      "apiTest": {
+        "enabled": false,
+        "specPath": ""
+      },
+      "scriptVerification": {
+        "enabled": false,
+        "scriptKeys": []
+      }
+    }
+  },
+  "prerequisites": [
+    "已阅读配置错误利用实验执行文档和目录与 planned 元数据执行文档",
+    "理解当前 planned 状态只表示标准目录、基础文档和元数据入口已建立，不表示实验已经可运行",
+    "理解后续实现只能使用固定 configCaseKey 和 auditPolicyKey，不读取或修改真实配置"
+  ],
+  "paths": {
+    "root": "labs/infrastructure/misconfiguration",
+    "readme": "labs/infrastructure/misconfiguration/README.md",
+    "vuln": "labs/infrastructure/misconfiguration/vuln",
+    "fixed": "labs/infrastructure/misconfiguration/fixed",
+    "mock": "labs/infrastructure/misconfiguration/mock",
+    "docs": "labs/infrastructure/misconfiguration/docs",
+    "scripts": "tools/lab-scripts/infrastructure/misconfiguration"
+  },
+  "sortOrder": 600,
+  "estimatedMinutes": 25,
+  "safeBoundaries": [
+    "当前 planned 状态仅表示标准目录、基础文档和 docs 入口已建立，不表示存在页面、API、脚本或真实配置审计能力",
+    "只使用固定静态配置片段、固定暴露面信号和固定审计策略，不读取真实配置文件",
+    "不修改真实 nginx、MySQL、Node、Windows 服务、系统防火墙、代理、hosts、证书或云账号配置",
+    "不读取真实 .env、本机配置文件、服务配置、云凭据、数据库连接串、token、Cookie 或密码",
+    "不启动真实调试端口、管理端口、目录索引、公开状态页或跨域代理",
+    "不扫描本机端口、局域网、外部 IP、域名、云资源或服务指纹",
+    "不提供 exploit.py、扫描器、弱口令测试、服务枚举或可复用利用流程",
+    "后续事件日志只允许记录固定 key、暴露面类别、风险标签、审计动作和学习信号，不保存完整配置、真实路径、真实服务地址、真实凭据或真实端口清单"
+  ],
+  "notes": "配置错误利用当前为 simulation / planned：本轮只建立标准目录、基础文档和 docs 元数据入口。当前不登记 web、api 或 scripts 入口，不提供 exploit.py、verify.ts、真实配置读取、真实服务扫描、真实管理接口连接或配置修改能力。"
+}

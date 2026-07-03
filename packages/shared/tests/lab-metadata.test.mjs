@@ -551,6 +551,65 @@ test("dns hijack metadata is ready controlled DNS simulation", async () => {
   assert.match(result.value.notes, /不提供 exploit\.py/);
 });
 
+test("misconfiguration metadata is planned docs-only simulation", async () => {
+  const metadata = await readFixture(
+    "labs/infrastructure/misconfiguration/meta.json",
+  );
+  const result = validateLabMetadata(metadata);
+
+  assert.equal(result.ok, true);
+  assert.equal(result.value.id, "infrastructure.misconfiguration");
+  assert.equal(result.value.status, "planned");
+  assert.equal(result.value.mode, "simulation");
+  assert.deepEqual(result.value.entrypoints.web, []);
+  assert.deepEqual(result.value.entrypoints.api, []);
+  assert.deepEqual(result.value.entrypoints.scripts, []);
+  assert.deepEqual(
+    result.value.entrypoints.docs.map((entrypoint) => entrypoint.path),
+    [
+      "labs/infrastructure/misconfiguration/README.md",
+      "labs/infrastructure/misconfiguration/docs/attack-steps.md",
+      "labs/infrastructure/misconfiguration/docs/fix-notes.md",
+      "labs/infrastructure/misconfiguration/docs/manual-verification.md",
+    ],
+  );
+  assert.equal(result.value.verification.manual.supported, true);
+  assert.equal(
+    result.value.verification.manual.stepsDocPath,
+    "labs/infrastructure/misconfiguration/docs/manual-verification.md",
+  );
+  assert.equal(result.value.verification.automation.supported, false);
+  assert.deepEqual(result.value.verification.automation.playwright, {
+    enabled: false,
+    specPath: "",
+  });
+  assert.deepEqual(result.value.verification.automation.apiTest, {
+    enabled: false,
+    specPath: "",
+  });
+  assert.deepEqual(result.value.verification.automation.scriptVerification, {
+    enabled: false,
+    scriptKeys: [],
+  });
+  assert.deepEqual(
+    result.value.variants.map((variant) => variant.supportsAutomation),
+    [false, false],
+  );
+  assert.ok(
+    result.value.safeBoundaries.some((boundary) =>
+      boundary.includes("不修改真实 nginx"),
+    ),
+  );
+  assert.ok(
+    result.value.safeBoundaries.some((boundary) =>
+      boundary.includes("不提供 exploit.py"),
+    ),
+  );
+  assert.match(result.value.notes, /planned/);
+  assert.match(result.value.notes, /不登记 web、api 或 scripts 入口/);
+  assert.match(result.value.notes, /不提供 exploit\.py/);
+});
+
 test("prompt injection metadata is ready controlled prompt injection simulation", async () => {
   const metadata = await readFixture("labs/ai/prompt-injection/meta.json");
   const result = validateLabMetadata(metadata);
