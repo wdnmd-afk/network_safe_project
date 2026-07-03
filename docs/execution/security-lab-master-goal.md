@@ -1,3 +1,25 @@
+# 2026-07-03 最新进展：捕鲸攻击边界设计
+
+本轮已按下一波实验规划，完成社会工程学扩展案例 `social/whaling` 的边界设计切片：
+
+- 新增执行文档：`docs/execution/2026-07-03-social-whaling-boundary-design.md`。
+- 将 `social/whaling` 首版定位为 `case-study`，只使用固定虚构高层决策案例、固定线索卡、固定风险标签和固定防御流程复盘。
+- 攻击方视角只用于学习高层授权压力、重大业务事件、董事会或外部顾问语境、保密理由、时间窗口压缩和越级审批如何造成流程失守，不用于生成真实投递内容。
+- 防御方视角重点覆盖大额付款双人复核、可信通道回拨、法务核验、董事会固定通道、例外冻结、最小授权、隔离举报和日志复盘。
+- 明确后续若继续实现，必须按目录与 `planned` 元数据、固定案例文档、后端固定案例 API、前端固定案例工作台、自动化验证和 case-study ready 收口的顺序单独写执行文档推进。
+- 同步 `docs/design/next-wave-security-labs.md` 和 `docs/TODO.md`，将捕鲸攻击从“规划中”推进到“边界设计阶段”。
+- 当前不创建 `labs/social/whaling/`、`tools/lab-scripts/social/whaling/`、页面、API、数据库字段、元数据或脚本。
+- 当前仍不提供真实高管画像采集、真实组织结构收集、真实投递、凭据收集、模板生成、第三方平台调用、跟踪链接、附件诱导文案、会议邀请模板、付款指令、群发脚本或攻击脚本能力。
+
+验证记录：
+
+- `git diff --check -- docs/execution/2026-07-03-social-whaling-boundary-design.md docs/design/next-wave-security-labs.md docs/TODO.md docs/execution/security-lab-master-goal.md` 通过，仅保留 Windows 环境下 LF/CRLF 提示。
+- `rg -n "[ \t]+$" -- docs/execution/2026-07-03-social-whaling-boundary-design.md docs/design/next-wave-security-labs.md docs/TODO.md docs/execution/security-lab-master-goal.md` 无命中。
+- `Test-Path labs/social/whaling` 与 `Test-Path tools/lab-scripts/social/whaling` 均返回 `False`，确认本轮未创建实验目录或脚本目录。
+- 捕鲸攻击边界设计安全关键词扫描命中均为禁止性说明、安全边界说明、风险控制说明、案例化学习说明或只读验证边界，未发现真实投递、画像采集、凭据收集、模板生成、第三方平台调用或攻击脚本实现。
+
+下一项建议：进入 `social/whaling` 目录与 `planned` 元数据切片，先只登记 docs 入口，不创建页面、API、脚本或自动化攻击能力。
+
 # 2026-07-03 最新进展：鱼叉式钓鱼 case-study ready 收口
 
 本轮已将社会工程学扩展案例 `social/spear-phishing` 从本机只读一致性验证阶段推进到 case-study ready 收口：

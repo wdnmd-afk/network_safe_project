@@ -1,3 +1,21 @@
+# 2026-07-03 最新进展：捕鲸攻击边界设计
+
+- [x] 新增执行文档 `docs/execution/2026-07-03-social-whaling-boundary-design.md`。
+- [x] 将 `social/whaling` 首版定位为 `case-study`，只允许固定虚构高层决策案例、固定线索卡、固定风险标签和固定防御流程复盘。
+- [x] 明确攻击方视角只用于观察高层授权压力、重大业务事件、董事会或外部顾问语境、保密理由、时间窗口压缩和越级审批如何造成流程失守。
+- [x] 明确防御方视角重点覆盖大额付款双人复核、可信通道回拨、法务核验、董事会固定通道、例外冻结、最小授权、隔离举报和日志复盘。
+- [x] 明确本轮不创建 `labs/social/whaling/`、`tools/lab-scripts/social/whaling/`、页面、API、数据库字段、元数据或脚本。
+- [x] 当前仍不提供真实高管画像采集、真实组织结构收集、真实投递、凭据收集、模板生成、第三方平台调用、跟踪链接、附件诱导文案、会议邀请模板、付款指令、群发脚本或攻击脚本能力。
+- [x] 同步 `docs/design/next-wave-security-labs.md`，将捕鲸攻击推进到边界设计阶段，并把下一步切片指向目录与 `planned` 元数据。
+
+验证记录：
+
+- `git diff --check -- docs/execution/2026-07-03-social-whaling-boundary-design.md docs/design/next-wave-security-labs.md docs/TODO.md docs/execution/security-lab-master-goal.md` 通过，仅保留 Windows 环境下 LF/CRLF 提示。
+- `rg -n "[ \t]+$" -- docs/execution/2026-07-03-social-whaling-boundary-design.md docs/design/next-wave-security-labs.md docs/TODO.md docs/execution/security-lab-master-goal.md` 无命中。
+- `Test-Path labs/social/whaling` 与 `Test-Path tools/lab-scripts/social/whaling` 均返回 `False`，确认本轮未创建实验目录或脚本目录。
+- 捕鲸攻击边界设计安全关键词扫描命中均为禁止性说明、安全边界说明、风险控制说明、案例化学习说明或只读验证边界，未发现真实投递、画像采集、凭据收集、模板生成、第三方平台调用或攻击脚本实现。
+- 下一项建议：进入 `social/whaling` 目录与 `planned` 元数据切片，先只登记 docs 入口，不创建页面、API、脚本或自动化攻击能力。
+
 # 2026-07-03 最新进展：鱼叉式钓鱼 case-study ready 收口
 
 - [x] 新增执行文档 `docs/execution/2026-07-03-social-spear-phishing-ready-closeout.md`。
@@ -1969,7 +1987,7 @@
 |---|---|---|---|---|
 | 网络钓鱼 | ready | 案例化演示 / 仿真页面 / 固定线索卡 / 识别训练 / 受控 API / 只读脚本验证 / case-study ready 收口 | `labs/social/phishing/`、`apps/web/src/views/PhishingLabView.vue`、`apps/web/src/api/phishing-lab.ts`、`apps/web/src/labs/phishing.ts`、`tools/lab-scripts/social/phishing/verify.ts`、`apps/server/src/services/phishing-lab.ts`、`apps/server/tests/phishing-lab.test.ts`、`docs/execution/2026-07-02-social-phishing-ready-closeout.md` | `labs/social/phishing/` |
 | 鱼叉式钓鱼 | ready | 案例化演示 / 固定线索卡 / 前端固定选择器 / 受控 review API / Playwright 差异验证 / 只读脚本验证 / case-study ready 收口 / 事件日志安全摘要 | `labs/social/spear-phishing/meta.json`、`apps/web/src/views/SpearPhishingLabView.vue`、`apps/web/src/api/spear-phishing-lab.ts`、`apps/server/src/services/spear-phishing-lab.ts`、`packages/testing/tests/e2e/platform.spec.mjs`、`tools/lab-scripts/social/spear-phishing/verify.ts`、`docs/execution/2026-07-03-social-spear-phishing-ready-closeout.md` | `labs/social/spear-phishing/` |
-| 捕鲸攻击 | 规划中 | 案例化演示 | `docs/design/project-scope-and-security-content.md` | `labs/social/whaling/` |
+| 捕鲸攻击 | 边界设计阶段 | 案例化演示 / 固定高层决策线索 / 固定防御流程复盘 | `docs/execution/2026-07-03-social-whaling-boundary-design.md` | `labs/social/whaling/` |
 | 短信钓鱼 | 规划中 | 案例化演示 | `docs/design/project-scope-and-security-content.md` | `labs/social/smishing/` |
 | 商业邮件诈骗 | 规划中 | 案例化演示 | `docs/design/project-scope-and-security-content.md` | `labs/social/bec/` |
 | 水坑攻击 | 规划中 | 案例化演示 | `docs/design/project-scope-and-security-content.md` | `labs/social/watering-hole/` |
