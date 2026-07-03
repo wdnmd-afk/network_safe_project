@@ -241,7 +241,7 @@
 
 | 实验 | 状态 | 推荐模式 | 当前规划落点 | 后续目录 |
 |---|---|---|---|---|
-| 配置错误利用 | 只读一致性验证阶段 | 本机模拟 / 静态配置分析 / 固定配置审计样例 / 前端固定选择器 / 受控 audit API / Playwright 页面级差异验证 / 本机只读一致性验证 / 事件日志安全摘要 | `apps/web/src/views/MisconfigurationLabView.vue`、`apps/web/src/api/misconfiguration-lab.ts`、`apps/web/src/labs/misconfiguration.ts`、`apps/server/src/services/misconfiguration-lab.ts`、`apps/server/tests/misconfiguration-lab.test.ts`、`packages/testing/tests/e2e/platform.spec.mjs`、`tools/lab-scripts/infrastructure/misconfiguration/verify.ts`、`labs/infrastructure/misconfiguration/meta.json`、`docs/execution/2026-07-03-infrastructure-misconfiguration-readonly-verification.md` | `labs/infrastructure/misconfiguration/` |
+| 配置错误利用 | ready | 本机模拟 / 静态配置分析 / 固定配置审计样例 / 前端固定选择器 / 受控 audit API / Playwright 页面级差异验证 / 本机只读一致性验证 / simulation ready 收口 / 事件日志安全摘要 | `apps/web/src/views/MisconfigurationLabView.vue`、`apps/web/src/api/misconfiguration-lab.ts`、`apps/web/src/labs/misconfiguration.ts`、`apps/server/src/services/misconfiguration-lab.ts`、`apps/server/tests/misconfiguration-lab.test.ts`、`packages/testing/tests/e2e/platform.spec.mjs`、`tools/lab-scripts/infrastructure/misconfiguration/verify.ts`、`labs/infrastructure/misconfiguration/meta.json`、`docs/execution/2026-07-03-infrastructure-misconfiguration-ready-closeout.md` | `labs/infrastructure/misconfiguration/` |
 | 云安全漏洞 | 延后 | 案例化演示 / 本机模拟 | `docs/design/project-scope-and-security-content.md` | `labs/infrastructure/cloud-security/` |
 | IoT 攻击 | 延后 | 案例化演示 / 本机模拟 | `docs/design/project-scope-and-security-content.md` | `labs/infrastructure/iot/` |
 | 容器逃逸 | 不做真实复现 | 案例化演示 | `docs/design/project-scope-and-security-content.md` | `labs/infrastructure/container-escape/` |
@@ -253,13 +253,13 @@
 - 漏洞版展示调试端口、默认凭据提示、目录索引、过宽 CORS 等风险信号。
 - 修复版展示最小暴露面、默认关闭、认证要求和配置审计。
 - 当前已补齐执行文档：`docs/execution/2026-07-02-infrastructure-misconfiguration-lab.md`。
-- 当前已建立 `labs/infrastructure/misconfiguration/` 目录与 `in-progress` 元数据，登记 docs、web 和 api 入口，不创建 scripts 入口或真实配置文件。
+- 当前已建立 `labs/infrastructure/misconfiguration/` 目录与 `ready` 元数据，登记 docs、web、api 和只读 scripts 入口，不创建真实配置文件。
 - 当前已新增脚本目录边界说明和只读一致性验证入口：`tools/lab-scripts/infrastructure/misconfiguration/README.md`、`tools/lab-scripts/infrastructure/misconfiguration/verify.ts`；不提供 `exploit.py`、扫描器或真实基础设施连接能力。
 - 当前已接入后端固定配置审计 API：`POST /api/labs/infrastructure/misconfiguration/:variant/audit`，只读取固定 `configCaseKey` 和固定 `auditPolicyKey`，并接入统一事件日志安全摘要。
 - 当前已接入前端固定配置审计工作台：`/labs/infrastructure/misconfiguration/vuln`、`/labs/infrastructure/misconfiguration/fixed`，只提供固定样例选择器，不提供任意配置文本、主机、端口、路径、凭据、扫描或连接入口。
 - 当前已接入 Playwright 页面级差异验证：`packages/testing/tests/e2e/platform.spec.mjs`，覆盖漏洞版固定暴露信号和修复版固定审计路径，并断言页面没有任意文本输入框。
 - 当前已接入本机只读一致性验证脚本：`tools/lab-scripts/infrastructure/misconfiguration/verify.ts`，只读取仓库内文件，不读取真实配置、不扫描、不连接真实管理接口。
-- 下一步切片建议：执行 simulation ready 收口审计，继续保持不提供攻击脚本和真实基础设施连接能力。
+- 当前已完成 simulation ready 收口审计：`docs/execution/2026-07-03-infrastructure-misconfiguration-ready-closeout.md`。ready 只代表本项目内固定配置样例学习闭环完成，仍不创建攻击脚本或真实基础设施连接能力。
 
 禁止修改真实 nginx、MySQL、Node、系统服务或云账号配置。
 
@@ -267,9 +267,9 @@
 
 推荐后续按以下切片推进：
 
-1. `infrastructure/misconfiguration` simulation ready 收口审计。
-2. 后续社会工程学扩展案例的边界设计。
-3. 后续供应链扩展案例的边界设计。
+1. 后续社会工程学扩展案例的边界设计。
+2. 后续供应链扩展案例的边界设计。
+3. 后续基础设施扩展案例的边界设计。
 
 每个切片完成后都必须同步 `docs/TODO.md` 和 `docs/execution/security-lab-master-goal.md`。
 

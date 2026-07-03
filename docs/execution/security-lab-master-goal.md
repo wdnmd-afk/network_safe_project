@@ -1,3 +1,28 @@
+# 2026-07-03 最新进展：配置错误 simulation ready 收口
+
+本轮已将基础设施实验 `infrastructure/misconfiguration` 从本机只读一致性验证阶段推进到 simulation ready 收口：
+
+- 新增执行文档：`docs/execution/2026-07-03-infrastructure-misconfiguration-ready-closeout.md`。
+- `labs/infrastructure/misconfiguration/meta.json` 已从 `in-progress` 更新为 `ready`，ready 只代表本项目内固定配置样例学习闭环完成，不代表存在攻击脚本、真实配置审计能力或真实基础设施连接能力。
+- `tools/lab-scripts/infrastructure/misconfiguration/verify.ts` 已改为校验 ready 状态、固定配置样例学习边界、只读验证证据和不提供 `exploit.py`。
+- 已同步共享元数据测试、服务端 health / registry 测试、场景 README、漏洞版 / 修复版说明、固定样例说明、攻击步骤、修复说明、手动验证、脚本目录边界说明、`docs/TODO.md` 和下一波实验规划。
+- `variants[].supportsAutomation` 仍为 `false`，避免把 Playwright、API 测试或只读验证脚本误标为攻击脚本自动化。
+- 当前仍不提供 `exploit.py`、真实配置读取、真实配置修改、真实服务扫描、真实管理接口连接、弱口令测试、服务枚举、配置修改、部署、重载或回滚能力。
+
+验证记录：
+
+- `pnpm --filter @network-safe/web exec tsx ../../tools/lab-scripts/infrastructure/misconfiguration/verify.ts` 通过，报告 `ok: true`。
+- `pnpm --filter @network-safe/shared test` 通过，33 项测试通过。
+- `pnpm --filter @network-safe/web exec vitest run tests/misconfiguration-api.test.ts tests/misconfiguration-lab.test.ts tests/router.test.ts` 通过，3 个测试文件、10 项测试通过。
+- `pnpm --filter @network-safe/testing test` 通过，9 项测试通过。
+- `pnpm --filter @network-safe/testing e2e -- --grep "配置错误"` 通过，1 项 Playwright 测试通过。
+- `pnpm --filter @network-safe/server test -- tests/misconfiguration-lab.test.ts tests/health.test.ts tests/lab-registry.test.ts` 通过；该命令按当前服务端测试脚本实际运行全量服务端测试，203 项通过。
+- `git diff --check` 通过，仅保留 Windows 环境下 LF/CRLF 提示。
+- `rg -n "[ \t]+$" -- <本轮目标文件>` 无命中。
+- 配置错误实现文件安全关键词扫描无命中；脚本目录仅包含 `README.md` 和 `verify.ts`，未发现 `exploit.py`。
+
+下一项建议：进入后续社会工程学、供应链或基础设施扩展案例的边界设计，继续按单独执行文档推进。
+
 # 2026-07-03 最新进展：配置错误只读一致性验证
 
 本轮已将基础设施实验 `infrastructure/misconfiguration` 从页面级差异验证阶段推进到本机只读一致性验证阶段：
