@@ -46,4 +46,4 @@
 
 ## 5. 当前边界
 
-当前不提供 `verify.ts`、`exploit.py` 或任何投递能力。当前页面和后端 API 只读取固定 `caseKey` 与 `verificationPolicyKey`，并且事件日志只保存安全摘要。
+当前只提供本机只读一致性验证 `verify.ts`，不提供 `exploit.py` 或任何投递能力。当前页面和后端 API 只读取固定 `caseKey` 与 `verificationPolicyKey`，并且事件日志只保存安全摘要。

@@ -38,7 +38,7 @@
 - `spear-phishing-out-of-band-confirmation-required`
 - `spear-phishing-boundary-verified`
 
-这些信号只用于学习复盘。当前已有前端固定案例工作台和后端受控 API，尚未提供脚本实现。
+这些信号只用于学习复盘。当前已有前端固定案例工作台、后端受控 API 和本机只读一致性验证脚本；脚本只校验仓库内元数据、文档、固定 key 和安全边界一致性，不发起请求或投递。
 
 ## 5. 明确禁止
 

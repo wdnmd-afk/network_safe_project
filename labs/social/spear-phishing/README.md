@@ -4,7 +4,7 @@
 
 本实验用于学习鱼叉式钓鱼中更具针对性的误判风险：针对性上下文、角色权威、紧急压力、审批链绕过、供应商或人事流程变更、工程临时访问请求和二次确认缺失。
 
-当前状态为 `in-progress`。当前已建立标准目录、基础文档、元数据入口、前端固定案例工作台、后端受控 `review` API 和 Playwright 页面差异验证，不提供脚本或只读验证。
+当前状态为 `in-progress`。当前已建立标准目录、基础文档、元数据入口、前端固定案例工作台、后端受控 `review` API、Playwright 页面差异验证和本机只读一致性验证，不提供攻击脚本或 `exploit.py`。
 
 ## 当前范围
 
@@ -16,13 +16,13 @@
 - 已实现前端固定案例工作台：`apps/web/src/views/SpearPhishingLabView.vue`。
 - 已接入后端受控固定案例 API：`POST /api/labs/social/spear-phishing/:variant/review`。
 - 已接入 Playwright 页面差异验证：`packages/testing/tests/e2e/platform.spec.mjs`。
-- 元数据当前登记 docs、web 和 api 入口。
+- 已接入本机只读一致性验证：`tools/lab-scripts/social/spear-phishing/verify.ts`。
+- 元数据当前登记 docs、web、api 和只读 scripts 入口。
 
 当前未实现：
 
-- 只读验证脚本。
-- `verify.ts`。
 - `exploit.py`。
+- case-study ready 收口审计。
 - 任何真实投递、画像采集、凭据收集、模板生成或第三方平台调用能力。
 
 ## 固定案例方向
@@ -34,14 +34,30 @@
 - `engineering-access-request`：观察工程协作语境下的临时访问请求。
 - `hr-benefit-personalized`：观察人事福利语境中的个性化诱导。
 
-这些案例只作为线索卡、流程节点、风险标签和复盘问题使用，不提供完整邮件正文、IM 对话、可复制标题、可投递附件名或真实链接。
+这些案例只作为固定线索卡、流程节点、风险标签和复盘问题使用，不提供完整邮件正文、IM 对话、可复制标题、可投递附件名或真实链接。
+
+## 固定核验策略
+
+当前前端和后端只允许以下固定 `verificationPolicyKey`：
+
+- `context-only`
+- `out-of-band-confirmation`
+- `approval-chain-review`
+- `least-privilege-review`
+- `report-and-isolate`
+
+当前核心学习信号为：
+
+- `spear-phishing-context-trust-overweighted`
+- `spear-phishing-approval-chain-bypassed`
+- `spear-phishing-out-of-band-confirmation-required`
+- `spear-phishing-boundary-verified`
 
 ## 后续入口规划
 
 后续若继续实现，应单独编写执行文档，并按以下顺序推进：
 
-1. 自动化验证切片。
-2. case-study ready 收口切片。
+1. case-study ready 收口切片。
 
 ## 当前页面边界
 
@@ -65,6 +81,12 @@
 
 事件日志只记录固定 key、风险类别、建议动作、后端决策和学习信号，不保存真实人员、邮箱、手机号、组织、链接、附件、凭据或正文。
 
+## 当前只读验证边界
+
+当前 `tools/lab-scripts/social/spear-phishing/verify.ts` 只读取仓库内元数据、文档、前端、后端和测试文件，并输出 JSON 一致性报告。
+
+该脚本不发起 HTTP 请求，不连接网络，不读取 `.env`、Cookie、token、验证码、凭据、付款信息、真实人员资料或真实业务材料。该脚本不是 `exploit.py`、投递器、画像采集器、模板生成器或攻击脚本。
+
 ## 安全边界
 
 - 不发送真实邮件、短信、消息或链接。
@@ -76,4 +98,4 @@
 
 ## 后续切片
 
-下一步建议进入只读一致性验证切片，继续保持固定案例选择器和固定核验策略选择器，不创建真实投递、凭据收集、模板生成或第三方平台调用能力。
+下一步建议进入 case-study ready 收口切片，继续保持固定案例选择器和固定核验策略选择器，不创建真实投递、凭据收集、模板生成或第三方平台调用能力。
