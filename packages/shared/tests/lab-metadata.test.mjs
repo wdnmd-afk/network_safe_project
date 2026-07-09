@@ -904,6 +904,69 @@ test("spear phishing metadata is ready fixed-case workbench case-study", async (
   assert.match(result.value.notes, /exploit\.py/);
 });
 
+test("whaling metadata is planned docs-only case-study", async () => {
+  const metadata = await readFixture("labs/social/whaling/meta.json");
+  const result = validateLabMetadata(metadata);
+
+  assert.equal(result.ok, true);
+  assert.equal(result.value.id, "social.whaling");
+  assert.equal(result.value.status, "planned");
+  assert.equal(result.value.mode, "case-study");
+  assert.deepEqual(result.value.entrypoints.web, []);
+  assert.deepEqual(result.value.entrypoints.api, []);
+  assert.deepEqual(result.value.entrypoints.scripts, []);
+  assert.deepEqual(
+    result.value.entrypoints.docs.map((entrypoint) => entrypoint.path),
+    [
+      "labs/social/whaling/README.md",
+      "labs/social/whaling/docs/attack-steps.md",
+      "labs/social/whaling/docs/fix-notes.md",
+      "labs/social/whaling/docs/manual-verification.md",
+    ],
+  );
+  assert.equal(result.value.verification.manual.supported, true);
+  assert.equal(
+    result.value.verification.manual.stepsDocPath,
+    "labs/social/whaling/docs/manual-verification.md",
+  );
+  assert.deepEqual(result.value.verification.manual.expectedSignals, [
+    "whaling-executive-authority-overweighted",
+    "whaling-confidential-pressure-identified",
+    "whaling-payment-freeze-required",
+    "whaling-boundary-verified",
+  ]);
+  assert.equal(result.value.verification.automation.supported, false);
+  assert.deepEqual(
+    result.value.variants.map((variant) => variant.supportsAutomation),
+    [false, false],
+  );
+  assert.ok(
+    result.value.safeBoundaries.some((boundary) =>
+      boundary.includes("planned 状态仅表示目录"),
+    ),
+  );
+  assert.ok(
+    result.value.safeBoundaries.some((boundary) =>
+      boundary.includes("entrypoints.web、entrypoints.api 和 entrypoints.scripts 当前必须保持空数组"),
+    ),
+  );
+  assert.ok(
+    result.value.safeBoundaries.some((boundary) =>
+      boundary.includes("不采集真实高管"),
+    ),
+  );
+  assert.ok(
+    result.value.safeBoundaries.some((boundary) =>
+      boundary.includes("不提供 exploit.py"),
+    ),
+  );
+  assert.match(result.value.notes, /case-study/);
+  assert.match(result.value.notes, /planned/);
+  assert.match(result.value.notes, /不提供页面/);
+  assert.match(result.value.notes, /verify\.ts/);
+  assert.match(result.value.notes, /exploit\.py/);
+});
+
 test("dependency confusion metadata is ready fixed workbench simulation", async () => {
   const metadata = await readFixture(
     "labs/supply-chain/dependency-confusion/meta.json",

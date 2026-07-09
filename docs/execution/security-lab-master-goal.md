@@ -1,3 +1,29 @@
+# 2026-07-09 最新进展：捕鲸攻击 planned 元数据
+
+本轮已将社会工程学扩展案例 `social/whaling` 从边界设计阶段推进到 planned 元数据阶段：
+
+- 新增执行文档：`docs/execution/2026-07-09-social-whaling-directory-metadata.md`。
+- 建立 `labs/social/whaling/` 标准目录。
+- 新增 `labs/social/whaling/meta.json`，状态为 `planned`，模式为 `case-study`。
+- 新增捕鲸攻击 README、高权威误判观察版说明、高风险流程核验复盘版说明、mock 边界说明、攻击方观察步骤、修复说明和手动验证文档。
+- 新增 `tools/lab-scripts/social/whaling/README.md`，当前只说明脚本边界，不提供 `exploit.py` 或 `verify.ts`。
+- 元数据当前只登记 docs 入口，`entrypoints.web`、`entrypoints.api`、`entrypoints.scripts` 均为空数组。
+- `verification.automation.supported` 为 `false`，`variants[].supportsAutomation` 均为 `false`。
+- 更新共享元数据测试和服务端 health / registry 测试，确认 `social.whaling` 为 planned 条目。
+- 当前仍不提供页面、API、数据库写入、事件日志写入、真实高管画像采集、真实组织结构收集、真实投递、凭据收集、模板生成、第三方平台调用、会议邀请模板、付款指令、群发脚本或攻击脚本能力。
+
+验证记录：
+
+- `pnpm --filter @network-safe/shared test` 通过，35 项测试通过。
+- `pnpm --filter @network-safe/server test -- tests/health.test.ts tests/lab-registry.test.ts` 通过；该命令按当前服务端测试脚本实际运行全量服务端测试，209 项通过。
+- `git diff --check -- <本轮目标文件>` 通过，仅保留 Windows 环境下 LF/CRLF 提示。
+- `rg -n "[ \t]+$" -- <本轮目标文件>` 无命中。
+- `rg --files labs/social/whaling tools/lab-scripts/social/whaling` 确认当前脚本目录只包含 README，场景目录只包含元数据和文档。
+- `Test-Path tools/lab-scripts/social/whaling/exploit.py` 与 `Test-Path tools/lab-scripts/social/whaling/verify.ts` 均返回 `False`。
+- 捕鲸攻击安全关键词扫描命中均为禁止性说明、安全边界说明、手动验证说明、历史规划或字段 / 路径名，未发现真实投递、画像采集、凭据收集、模板生成、第三方平台调用或攻击脚本实现。
+
+下一项建议：进入 `social/whaling` 固定案例文档切片，继续只使用固定虚构高层决策案例、固定线索卡、固定风险标签和固定防御流程复盘，不创建页面、API、脚本或自动化攻击能力。
+
 # 2026-07-03 最新进展：捕鲸攻击边界设计
 
 本轮已按下一波实验规划，完成社会工程学扩展案例 `social/whaling` 的边界设计切片：

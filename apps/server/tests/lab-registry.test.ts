@@ -7,7 +7,7 @@ test("lab registry scans phase-one metadata files", async () => {
   const registry = createLabRegistry();
   const labs = await registry.listLabs();
 
-  assert.equal(labs.length, 26);
+  assert.equal(labs.length, 27);
   assert.equal(labs[0]?.id, "ai.prompt-injection");
   assert.equal(labs[0]?.status, "ready");
   assert.equal(labs[1]?.id, "auth.brute-force");
@@ -37,6 +37,11 @@ test("lab registry scans phase-one metadata files", async () => {
     labs.some(
       (lab) =>
         lab.id === "social.spear-phishing" && lab.status === "ready",
+    ),
+  );
+  assert.ok(
+    labs.some(
+      (lab) => lab.id === "social.whaling" && lab.status === "planned",
     ),
   );
   assert.ok(
