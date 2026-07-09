@@ -63,6 +63,8 @@ describe("SafeMart 路由清单", () => {
       "/labs/social/phishing/fixed",
       "/labs/social/spear-phishing/vuln",
       "/labs/social/spear-phishing/fixed",
+      "/labs/social/whaling/vuln",
+      "/labs/social/whaling/fixed",
       "/labs/supply-chain/dependency-confusion/vuln",
       "/labs/supply-chain/dependency-confusion/fixed",
       "/labs/infrastructure/misconfiguration/vuln",

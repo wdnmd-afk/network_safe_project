@@ -427,6 +427,22 @@ export const routes: RouteRecordRaw[] = [
     },
   },
   {
+    path: "/labs/social/whaling/vuln",
+    name: "lab-social-whaling-vuln",
+    component: () => import("../views/WhalingLabView.vue"),
+    props: {
+      variant: "vuln",
+    },
+  },
+  {
+    path: "/labs/social/whaling/fixed",
+    name: "lab-social-whaling-fixed",
+    component: () => import("../views/WhalingLabView.vue"),
+    props: {
+      variant: "fixed",
+    },
+  },
+  {
     path: "/labs/supply-chain/dependency-confusion/vuln",
     name: "lab-supply-chain-dependency-confusion-vuln",
     component: () => import("../views/DependencyConfusionLabView.vue"),
