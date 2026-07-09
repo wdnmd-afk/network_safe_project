@@ -26,9 +26,12 @@
 - `labs/social/whaling/fixed/README.md`
 - `labs/social/whaling/mock/README.md`
 - `labs/social/whaling/docs/attack-steps.md`
+- `labs/social/whaling/docs/fixed-cases.md`
 - `labs/social/whaling/docs/fix-notes.md`
 - `labs/social/whaling/docs/manual-verification.md`
 - `tools/lab-scripts/social/whaling/README.md`
+
+确认 `labs/social/whaling/docs/fixed-cases.md` 只包含固定虚构案例卡、虚构角色标签、误判线索、防御动作和学习信号，不包含完整邮件正文、IM 对话、会议邀请模板、可复制标题、真实链接、付款指令或可投递素材。
 
 确认以下文件不存在：
 
@@ -47,4 +50,3 @@
 - 真实高管画像采集。
 - 真实组织结构收集。
 - 真实投递、凭据收集、模板生成、第三方平台调用或攻击脚本。
-

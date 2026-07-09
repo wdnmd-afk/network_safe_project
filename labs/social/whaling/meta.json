@@ -61,6 +61,11 @@
         "description": "攻击方视角误判机制观察步骤与安全边界"
       },
       {
+        "key": "fixed-cases",
+        "path": "labs/social/whaling/docs/fixed-cases.md",
+        "description": "固定虚构高层决策案例卡、误判线索、防御动作和安全边界"
+      },
+      {
         "key": "fix-notes",
         "path": "labs/social/whaling/docs/fix-notes.md",
         "description": "高风险流程核验、例外冻结和日志复盘修复说明"
@@ -117,4 +122,3 @@
   ],
   "notes": "捕鲸攻击当前为 case-study / planned：planned 仅代表本项目内目录、元数据和基础文档入口已建立；当前不提供页面、API、数据库写入、事件日志写入、verify.ts、exploit.py、真实高管画像采集、真实组织结构收集、真实投递、凭据收集、模板生成、第三方平台调用、会议邀请、付款指令或攻击脚本。"
 }
-

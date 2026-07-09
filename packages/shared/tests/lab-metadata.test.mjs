@@ -920,6 +920,7 @@ test("whaling metadata is planned docs-only case-study", async () => {
     [
       "labs/social/whaling/README.md",
       "labs/social/whaling/docs/attack-steps.md",
+      "labs/social/whaling/docs/fixed-cases.md",
       "labs/social/whaling/docs/fix-notes.md",
       "labs/social/whaling/docs/manual-verification.md",
     ],
