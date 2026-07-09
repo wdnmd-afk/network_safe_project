@@ -2,7 +2,7 @@
 
 ## 目标
 
-本文档从攻击方视角观察捕鲸攻击中的误判机制，但只使用固定虚构案例和抽象流程节点，不提供真实投递、画像采集、模板生成或攻击脚本。
+本文档从攻击方视角观察捕鲸攻击中的误判机制，但只使用固定虚构案例、受控 review API 和抽象流程节点，不提供真实投递、画像采集、模板生成或攻击脚本。
 
 ## 观察路径
 
@@ -10,7 +10,8 @@
 2. 观察保密压力：董事会、法务、并购或重大交易语境会让普通协作流程被临时压缩。
 3. 观察时间窗口：短时限、大额付款、临时资料室访问或例外审批会增加跳过核验的概率。
 4. 观察流程缺口：缺少可信通道回拨、双人复核、法务核验或例外冻结时，错误放行更容易发生。
-5. 观察学习信号：将误判结果记录为固定学习信号，例如 `whaling-executive-authority-overweighted` 或 `whaling-confidential-pressure-identified`。
+5. 观察受控 API：`POST /api/labs/social/whaling/vuln/review` 只接收固定 `caseKey` 和 `verificationPolicyKey`，用于返回固定风险标签和学习信号。
+6. 观察学习信号：将误判结果记录为固定学习信号，例如 `whaling-executive-authority-overweighted` 或 `whaling-confidential-pressure-identified`。
 
 ## 固定案例方向
 

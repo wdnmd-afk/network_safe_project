@@ -7,8 +7,8 @@
   "mode": "case-study",
   "severity": "critical",
   "difficulty": "advanced",
-  "summary": "通过固定虚构高层决策案例、线索卡和流程复盘学习高层授权压力、重大业务事件、保密语境、时间窗口压缩和越级审批如何造成流程失守。",
-  "status": "planned",
+  "summary": "通过固定虚构高层决策案例、受控 review API、线索卡和流程复盘学习高层授权压力、重大业务事件、保密语境、时间窗口压缩和越级审批如何造成流程失守。",
+  "status": "in-progress",
   "phase": "phase-3",
   "tags": [
     "social",
@@ -30,30 +30,45 @@
       "key": "vuln",
       "title": "高权威误判观察版",
       "enabled": true,
-      "description": "后续只通过固定虚构线索卡观察高权威、保密理由、重大交易语境和时间压力如何诱发越级审批或核验缺失。",
+      "description": "通过固定虚构线索卡和受控 review API 观察高权威、保密理由、重大交易语境和时间压力如何诱发越级审批或核验缺失。",
       "entryKey": "vuln-entry",
-      "expectedOutcome": "通过文档化固定案例观察 whaling-executive-authority-overweighted、whaling-confidential-pressure-identified 等学习信号。",
+      "expectedOutcome": "通过固定案例和受控 review API 观察 whaling-executive-authority-overweighted、whaling-confidential-pressure-identified 等学习信号。",
       "supportsAutomation": false
     },
     {
       "key": "fixed",
       "title": "高风险流程核验复盘版",
       "enabled": true,
-      "description": "后续只通过固定虚构流程复盘观察大额付款双人复核、可信通道回拨、法务核验、例外冻结和最小授权如何阻断高风险请求。",
+      "description": "通过固定虚构流程复盘和受控 review API 观察大额付款双人复核、可信通道回拨、法务核验、例外冻结和最小授权如何阻断高风险请求。",
       "entryKey": "fixed-entry",
-      "expectedOutcome": "通过文档化固定案例观察 whaling-payment-freeze-required、whaling-boundary-verified 等学习信号。",
+      "expectedOutcome": "通过固定案例和受控 review API 观察 whaling-payment-freeze-required、whaling-boundary-verified 等学习信号。",
       "supportsAutomation": false
     }
   ],
   "entrypoints": {
     "web": [],
-    "api": [],
+    "api": [
+      {
+        "key": "whaling-vuln-review",
+        "variant": "vuln",
+        "method": "POST",
+        "path": "/api/labs/social/whaling/vuln/review",
+        "description": "漏洞版固定案例高权威误判观察接口"
+      },
+      {
+        "key": "whaling-fixed-review",
+        "variant": "fixed",
+        "method": "POST",
+        "path": "/api/labs/social/whaling/fixed/review",
+        "description": "修复版固定案例高风险流程核验复盘接口"
+      }
+    ],
     "scripts": [],
     "docs": [
       {
         "key": "overview",
         "path": "labs/social/whaling/README.md",
-        "description": "捕鲸攻击 planned 场景总说明"
+        "description": "捕鲸攻击 in-progress 场景总说明"
       },
       {
         "key": "attack-steps",
@@ -89,12 +104,16 @@
       ]
     },
     "automation": {
-      "supported": false
+      "supported": true,
+      "apiTest": {
+        "enabled": true,
+        "specPath": "apps/server/tests/whaling-lab.test.ts"
+      }
     }
   },
   "prerequisites": [
-    "已阅读捕鲸攻击边界设计和目录与 planned 元数据执行文档",
-    "理解当前 planned 仅代表目录、元数据和基础文档入口存在",
+    "已阅读捕鲸攻击边界设计、目录与 planned 元数据、固定案例文档和后端固定案例 API 执行文档",
+    "理解当前 in-progress 仅代表目录、元数据、基础文档入口、后端受控 review API 和统一事件日志安全摘要存在",
     "理解本实验首版只能使用固定虚构高层决策案例、固定线索卡、固定风险标签和固定防御流程复盘"
   ],
   "paths": {
@@ -109,8 +128,8 @@
   "sortOrder": 420,
   "estimatedMinutes": 20,
   "safeBoundaries": [
-    "当前 planned 状态仅表示目录、元数据和基础文档入口存在，不表示页面、API、数据库写入、事件日志写入或脚本能力已实现",
-    "entrypoints.web、entrypoints.api 和 entrypoints.scripts 当前必须保持空数组",
+    "当前 in-progress 状态仅表示目录、元数据、基础文档入口、后端受控 review API 和事件日志安全摘要存在，不表示页面或脚本能力已实现",
+    "entrypoints.web 和 entrypoints.scripts 当前必须保持空数组；entrypoints.api 只能登记受控 review API",
     "首版必须保持 case-study，只使用固定虚构高层决策案例、固定线索卡、固定风险标签和固定防御流程复盘",
     "不发送真实邮件、短信、消息、会议邀请或链接",
     "不采集真实高管、董事会成员、外部顾问、供应商、客户、姓名、邮箱、手机号、公司、部门、职位、汇报关系、组织结构、社交账号或公开资料",
@@ -118,7 +137,7 @@
     "不连接第三方邮件、短信、社交平台、CRM、HR、IM、企业通讯录、会议系统、日程系统、投递服务、收件箱服务或支付系统",
     "不生成可投递标题库、正文模板库、IM 话术库、会议邀请模板、附件诱导文案、付款指令、跟踪链接或群发脚本",
     "不提供 exploit.py、verify.ts、投递脚本、画像采集脚本、模板生成脚本、付款指令脚本或攻击脚本",
-    "后续若实现 API，只允许固定 caseKey 和固定 verificationPolicyKey，并且事件日志只能记录固定 key、风险类别、决策和学习信号"
+    "当前 API 只允许固定 caseKey 和固定 verificationPolicyKey，并且事件日志只能记录固定 key、风险类别、决策和学习信号"
   ],
-  "notes": "捕鲸攻击当前为 case-study / planned：planned 仅代表本项目内目录、元数据和基础文档入口已建立；当前不提供页面、API、数据库写入、事件日志写入、verify.ts、exploit.py、真实高管画像采集、真实组织结构收集、真实投递、凭据收集、模板生成、第三方平台调用、会议邀请、付款指令或攻击脚本。"
+  "notes": "捕鲸攻击当前为 case-study / in-progress：in-progress 仅代表本项目内目录、元数据、基础文档入口、后端受控 review API、统一事件日志安全摘要和服务端 API 测试已建立；当前不提供页面、verify.ts、exploit.py、真实高管画像采集、真实组织结构收集、真实投递、凭据收集、模板生成、第三方平台调用、会议邀请、付款指令或攻击脚本。"
 }

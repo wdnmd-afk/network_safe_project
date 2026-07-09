@@ -125,7 +125,7 @@ test("GET /api/labs returns scanned lab metadata list", async () => {
   );
   assert.ok(
     body.items.some(
-      (item) => item.id === "social.whaling" && item.status === "planned",
+      (item) => item.id === "social.whaling" && item.status === "in-progress",
     ),
   );
   assert.ok(

@@ -904,16 +904,22 @@ test("spear phishing metadata is ready fixed-case workbench case-study", async (
   assert.match(result.value.notes, /exploit\.py/);
 });
 
-test("whaling metadata is planned docs-only case-study", async () => {
+test("whaling metadata exposes controlled review api case-study", async () => {
   const metadata = await readFixture("labs/social/whaling/meta.json");
   const result = validateLabMetadata(metadata);
 
   assert.equal(result.ok, true);
   assert.equal(result.value.id, "social.whaling");
-  assert.equal(result.value.status, "planned");
+  assert.equal(result.value.status, "in-progress");
   assert.equal(result.value.mode, "case-study");
   assert.deepEqual(result.value.entrypoints.web, []);
-  assert.deepEqual(result.value.entrypoints.api, []);
+  assert.deepEqual(
+    result.value.entrypoints.api.map((entrypoint) => entrypoint.path),
+    [
+      "/api/labs/social/whaling/vuln/review",
+      "/api/labs/social/whaling/fixed/review",
+    ],
+  );
   assert.deepEqual(result.value.entrypoints.scripts, []);
   assert.deepEqual(
     result.value.entrypoints.docs.map((entrypoint) => entrypoint.path),
@@ -936,19 +942,28 @@ test("whaling metadata is planned docs-only case-study", async () => {
     "whaling-payment-freeze-required",
     "whaling-boundary-verified",
   ]);
-  assert.equal(result.value.verification.automation.supported, false);
+  assert.equal(result.value.verification.automation.supported, true);
+  assert.deepEqual(result.value.verification.automation.apiTest, {
+    enabled: true,
+    specPath: "apps/server/tests/whaling-lab.test.ts",
+  });
   assert.deepEqual(
     result.value.variants.map((variant) => variant.supportsAutomation),
     [false, false],
   );
   assert.ok(
     result.value.safeBoundaries.some((boundary) =>
-      boundary.includes("planned 状态仅表示目录"),
+      boundary.includes("in-progress 状态仅表示目录"),
     ),
   );
   assert.ok(
     result.value.safeBoundaries.some((boundary) =>
-      boundary.includes("entrypoints.web、entrypoints.api 和 entrypoints.scripts 当前必须保持空数组"),
+      boundary.includes("entrypoints.web 和 entrypoints.scripts 当前必须保持空数组"),
+    ),
+  );
+  assert.ok(
+    result.value.safeBoundaries.some((boundary) =>
+      boundary.includes("当前 API 只允许固定 caseKey"),
     ),
   );
   assert.ok(
@@ -962,7 +977,8 @@ test("whaling metadata is planned docs-only case-study", async () => {
     ),
   );
   assert.match(result.value.notes, /case-study/);
-  assert.match(result.value.notes, /planned/);
+  assert.match(result.value.notes, /in-progress/);
+  assert.match(result.value.notes, /后端受控 review API/);
   assert.match(result.value.notes, /不提供页面/);
   assert.match(result.value.notes, /verify\.ts/);
   assert.match(result.value.notes, /exploit\.py/);
