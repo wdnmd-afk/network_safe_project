@@ -1,3 +1,30 @@
+# 2026-07-09 最新进展：捕鲸攻击前端固定案例工作台
+
+本轮已将社会工程学扩展案例 `social/whaling` 从后端受控 API 阶段推进到前端固定案例工作台阶段：
+
+- 新增执行文档：`docs/execution/2026-07-09-social-whaling-frontend-workbench.md`。
+- 新增前端 API client：`apps/web/src/api/whaling-lab.ts`，只提交固定 `caseKey` 与固定 `verificationPolicyKey`。
+- 新增前端实验模型：`apps/web/src/labs/whaling.ts`，集中维护四个固定虚构高层决策案例、六个固定核验策略、默认策略、学习进度和验证记录安全摘要。
+- 新增前端工作台页面：`apps/web/src/views/WhalingLabView.vue`。
+- 新增路由：`/labs/social/whaling/vuln` 与 `/labs/social/whaling/fixed`。
+- 页面只提供固定案例选择器、固定核验策略选择器和固定样例按钮，不提供任意正文、真实人员、邮箱、链接、附件、付款信息、会议邀请、凭据或第三方平台参数输入。
+- 新增前端测试：`apps/web/tests/whaling-api.test.ts` 与 `apps/web/tests/whaling-lab.test.ts`，覆盖请求体边界、固定选项、默认策略、验证记录安全摘要和静态安全边界。
+- 更新 `labs/social/whaling/meta.json`，登记 web 入口，状态仍保持 `in-progress`，scripts 入口仍为空。
+- 当前仍不提供 `verify.ts`、`exploit.py`、真实高管画像采集、真实组织结构收集、真实投递、凭据收集、模板生成、第三方平台调用、会议邀请、付款指令、群发脚本或攻击脚本能力。
+
+验证记录：
+
+- `pnpm --filter @network-safe/web exec vitest run tests/whaling-api.test.ts tests/whaling-lab.test.ts tests/router.test.ts` 通过，3 个测试文件、9 项测试通过。
+- `pnpm --filter @network-safe/web exec vue-tsc -p tsconfig.json --noEmit` 通过。
+- `pnpm --filter @network-safe/shared test` 通过，35 项测试通过。
+- `pnpm --filter @network-safe/server test -- tests/whaling-lab.test.ts tests/health.test.ts tests/lab-registry.test.ts` 通过；该命令按当前服务端测试脚本实际运行全量服务端测试，215 项通过。
+- `git diff --check` 通过，仅保留 Windows 环境下 LF/CRLF 提示。
+- `rg -n "[ \t]+$" -- <本轮目标文件>` 无命中。
+- `Test-Path tools/lab-scripts/social/whaling/exploit.py` 与 `Test-Path tools/lab-scripts/social/whaling/verify.ts` 均返回 `False`。
+- 捕鲸攻击安全关键词扫描命中均为禁止性说明、安全边界说明、测试反向断言或固定字段 / 文档路径，未发现真实投递、画像采集、凭据收集、模板生成、第三方平台调用、会议邀请、付款指令或攻击脚本实现。
+
+下一项建议：进入 `social/whaling` 页面差异验证或只读一致性验证切片，继续只使用固定案例、固定核验策略和仓库内文件，不创建真实投递、画像采集、凭据收集、模板生成、第三方平台调用或攻击脚本能力。
+
 # 2026-07-09 最新进展：捕鲸攻击后端固定案例 API
 
 本轮已将社会工程学扩展案例 `social/whaling` 从固定案例文档阶段推进到后端受控 API 阶段：

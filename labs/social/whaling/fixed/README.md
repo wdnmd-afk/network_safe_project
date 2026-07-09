@@ -2,11 +2,11 @@
 
 ## 目标
 
-本目录用于记录捕鲸攻击修复版的 in-progress 说明。当前只能通过固定虚构流程复盘和后端受控 review API 学习大额付款双人复核、可信通道回拨、法务核验、董事会固定通道、例外冻结、最小授权、隔离举报和日志复盘如何降低高权威误判风险。
+本目录用于记录捕鲸攻击修复版的 in-progress 说明。当前只能通过前端固定案例工作台、固定虚构流程复盘和后端受控 review API 学习大额付款双人复核、可信通道回拨、法务核验、董事会固定通道、例外冻结、最小授权、隔离举报和日志复盘如何降低高权威误判风险。
 
 ## 当前状态
 
-当前未实现页面或脚本。后端已提供 `POST /api/labs/social/whaling/fixed/review`，只读取固定 `caseKey` 和 `verificationPolicyKey`，并写入统一事件日志安全摘要。
+当前已实现固定案例页面 `/labs/social/whaling/fixed`，后端已提供 `POST /api/labs/social/whaling/fixed/review`。页面和 API 只读取固定 `caseKey` 和 `verificationPolicyKey`，并写入统一事件日志安全摘要；当前仍不提供脚本能力。
 
 ## 后续防御重点
 

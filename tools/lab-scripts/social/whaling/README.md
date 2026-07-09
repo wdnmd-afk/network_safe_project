@@ -4,7 +4,7 @@
 
 当前目录仅用于 `social/whaling` in-progress 阶段的脚本边界说明。
 
-`social/whaling` 当前只建立标准目录、基础文档、docs 元数据入口和后端受控 review API。当前不登记 scripts 入口，不提供 `verify.ts`、`exploit.py`、投递脚本、画像采集脚本、模板生成脚本、付款指令脚本或第三方平台连接脚本。
+`social/whaling` 当前已建立标准目录、基础文档、docs 元数据入口、前端固定案例工作台和后端受控 review API。当前不登记 scripts 入口，不提供 `verify.ts`、`exploit.py`、投递脚本、画像采集脚本、模板生成脚本、付款指令脚本或第三方平台连接脚本。
 
 ## 禁止能力
 

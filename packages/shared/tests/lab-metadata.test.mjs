@@ -904,7 +904,7 @@ test("spear phishing metadata is ready fixed-case workbench case-study", async (
   assert.match(result.value.notes, /exploit\.py/);
 });
 
-test("whaling metadata exposes controlled review api case-study", async () => {
+test("whaling metadata exposes fixed workbench and controlled review api case-study", async () => {
   const metadata = await readFixture("labs/social/whaling/meta.json");
   const result = validateLabMetadata(metadata);
 
@@ -912,7 +912,10 @@ test("whaling metadata exposes controlled review api case-study", async () => {
   assert.equal(result.value.id, "social.whaling");
   assert.equal(result.value.status, "in-progress");
   assert.equal(result.value.mode, "case-study");
-  assert.deepEqual(result.value.entrypoints.web, []);
+  assert.deepEqual(
+    result.value.entrypoints.web.map((entrypoint) => entrypoint.path),
+    ["/labs/social/whaling/vuln", "/labs/social/whaling/fixed"],
+  );
   assert.deepEqual(
     result.value.entrypoints.api.map((entrypoint) => entrypoint.path),
     [
@@ -958,12 +961,12 @@ test("whaling metadata exposes controlled review api case-study", async () => {
   );
   assert.ok(
     result.value.safeBoundaries.some((boundary) =>
-      boundary.includes("entrypoints.web 和 entrypoints.scripts 当前必须保持空数组"),
+      boundary.includes("entrypoints.web 只能登记固定案例工作台"),
     ),
   );
   assert.ok(
     result.value.safeBoundaries.some((boundary) =>
-      boundary.includes("当前 API 只允许固定 caseKey"),
+      boundary.includes("当前页面和 API 只允许固定 caseKey"),
     ),
   );
   assert.ok(
@@ -978,8 +981,8 @@ test("whaling metadata exposes controlled review api case-study", async () => {
   );
   assert.match(result.value.notes, /case-study/);
   assert.match(result.value.notes, /in-progress/);
+  assert.match(result.value.notes, /固定案例工作台/);
   assert.match(result.value.notes, /后端受控 review API/);
-  assert.match(result.value.notes, /不提供页面/);
   assert.match(result.value.notes, /verify\.ts/);
   assert.match(result.value.notes, /exploit\.py/);
 });

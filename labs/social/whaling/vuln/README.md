@@ -2,11 +2,11 @@
 
 ## 目标
 
-本目录用于记录捕鲸攻击漏洞版的 in-progress 说明。当前只能通过固定虚构线索卡和后端受控 review API 观察高权威、保密理由、重大业务事件和时间压力如何诱发越级审批、可信通道缺失或例外流程失守。
+本目录用于记录捕鲸攻击漏洞版的 in-progress 说明。当前只能通过前端固定案例工作台、固定虚构线索卡和后端受控 review API 观察高权威、保密理由、重大业务事件和时间压力如何诱发越级审批、可信通道缺失或例外流程失守。
 
 ## 当前状态
 
-当前未实现页面或脚本。后端已提供 `POST /api/labs/social/whaling/vuln/review`，只读取固定 `caseKey` 和 `verificationPolicyKey`，并写入统一事件日志安全摘要。
+当前已实现固定案例页面 `/labs/social/whaling/vuln`，后端已提供 `POST /api/labs/social/whaling/vuln/review`。页面和 API 只读取固定 `caseKey` 和 `verificationPolicyKey`，并写入统一事件日志安全摘要；当前仍不提供脚本能力。
 
 ## 允许观察的内容
 

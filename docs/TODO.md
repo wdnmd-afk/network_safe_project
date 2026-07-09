@@ -1,3 +1,27 @@
+# 2026-07-09 最新进展：捕鲸攻击前端固定案例工作台
+
+- [x] 新增执行文档 `docs/execution/2026-07-09-social-whaling-frontend-workbench.md`。
+- [x] 新增前端 API client `apps/web/src/api/whaling-lab.ts`，只提交固定 `caseKey` 和 `verificationPolicyKey`。
+- [x] 新增前端实验模型 `apps/web/src/labs/whaling.ts`，集中维护固定高层决策案例、固定核验策略、默认策略、学习进度和验证记录安全摘要。
+- [x] 新增前端工作台页面 `apps/web/src/views/WhalingLabView.vue`，接入 `/labs/social/whaling/vuln` 与 `/labs/social/whaling/fixed`。
+- [x] 页面只提供固定案例选择器、固定核验策略选择器和固定样例按钮，不提供任意正文、真实人员、邮箱、链接、附件、付款信息、会议邀请、凭据或第三方平台参数输入。
+- [x] 新增前端测试 `apps/web/tests/whaling-api.test.ts` 与 `apps/web/tests/whaling-lab.test.ts`，同步路由测试和共享元数据测试。
+- [x] 更新 `labs/social/whaling/meta.json`，登记 web 入口，继续保持 scripts 入口为空、`variants[].supportsAutomation` 为 `false`。
+- [x] 同步捕鲸攻击 README、漏洞版 / 修复版说明、攻击步骤、修复说明、手动验证、脚本目录边界说明、下一波规划和主目标文档。
+- [x] 当前仍不提供 `verify.ts`、`exploit.py`、真实高管画像采集、真实组织结构收集、真实投递、凭据收集、模板生成、第三方平台调用、会议邀请、付款指令、群发脚本或攻击脚本能力。
+
+验证记录：
+- `pnpm --filter @network-safe/web exec vitest run tests/whaling-api.test.ts tests/whaling-lab.test.ts tests/router.test.ts` 通过，3 个测试文件、9 项测试通过。
+- `pnpm --filter @network-safe/web exec vue-tsc -p tsconfig.json --noEmit` 通过。
+- `pnpm --filter @network-safe/shared test` 通过，35 项测试通过。
+- `pnpm --filter @network-safe/server test -- tests/whaling-lab.test.ts tests/health.test.ts tests/lab-registry.test.ts` 通过；该命令按当前服务端测试脚本实际运行全量服务端测试，215 项通过。
+- `git diff --check` 通过，仅保留 Windows 环境下 LF/CRLF 提示。
+- `rg -n "[ \t]+$" -- <本轮目标文件>` 无命中。
+- `Test-Path tools/lab-scripts/social/whaling/exploit.py` 与 `Test-Path tools/lab-scripts/social/whaling/verify.ts` 均返回 `False`。
+- 捕鲸攻击安全关键词扫描命中均为禁止性说明、安全边界说明、测试反向断言或固定字段 / 文档路径，未发现真实投递、画像采集、凭据收集、模板生成、第三方平台调用、会议邀请、付款指令或攻击脚本实现。
+
+下一项建议：进入 `social/whaling` 页面差异验证或只读一致性验证切片，继续只读取固定案例、固定策略和仓库内文档，不创建真实投递、画像采集、凭据收集、模板生成、第三方平台调用或攻击脚本能力。
+
 # 2026-07-09 最新进展：捕鲸攻击后端固定案例 API
 
 - [x] 新增执行文档 `docs/execution/2026-07-09-social-whaling-fixed-case-api.md`。
@@ -2055,7 +2079,7 @@
 |---|---|---|---|---|
 | 网络钓鱼 | ready | 案例化演示 / 仿真页面 / 固定线索卡 / 识别训练 / 受控 API / 只读脚本验证 / case-study ready 收口 | `labs/social/phishing/`、`apps/web/src/views/PhishingLabView.vue`、`apps/web/src/api/phishing-lab.ts`、`apps/web/src/labs/phishing.ts`、`tools/lab-scripts/social/phishing/verify.ts`、`apps/server/src/services/phishing-lab.ts`、`apps/server/tests/phishing-lab.test.ts`、`docs/execution/2026-07-02-social-phishing-ready-closeout.md` | `labs/social/phishing/` |
 | 鱼叉式钓鱼 | ready | 案例化演示 / 固定线索卡 / 前端固定选择器 / 受控 review API / Playwright 差异验证 / 只读脚本验证 / case-study ready 收口 / 事件日志安全摘要 | `labs/social/spear-phishing/meta.json`、`apps/web/src/views/SpearPhishingLabView.vue`、`apps/web/src/api/spear-phishing-lab.ts`、`apps/server/src/services/spear-phishing-lab.ts`、`packages/testing/tests/e2e/platform.spec.mjs`、`tools/lab-scripts/social/spear-phishing/verify.ts`、`docs/execution/2026-07-03-social-spear-phishing-ready-closeout.md` | `labs/social/spear-phishing/` |
-| 捕鲸攻击 | 后端受控 API 阶段 | 案例化演示 / 固定高层决策线索 / 固定防御流程复盘 / 受控 review API / 事件日志安全摘要 | `labs/social/whaling/meta.json`、`labs/social/whaling/docs/fixed-cases.md`、`apps/server/src/services/whaling-lab.ts`、`apps/server/tests/whaling-lab.test.ts`、`docs/execution/2026-07-09-social-whaling-fixed-case-api.md` | `labs/social/whaling/` |
+| 捕鲸攻击 | 前端固定案例工作台阶段 | 案例化演示 / 固定高层决策线索 / 前端固定选择器 / 固定防御流程复盘 / 受控 review API / 事件日志安全摘要 | `labs/social/whaling/meta.json`、`labs/social/whaling/docs/fixed-cases.md`、`apps/web/src/views/WhalingLabView.vue`、`apps/web/src/api/whaling-lab.ts`、`apps/web/src/labs/whaling.ts`、`apps/server/src/services/whaling-lab.ts`、`apps/server/tests/whaling-lab.test.ts`、`docs/execution/2026-07-09-social-whaling-frontend-workbench.md` | `labs/social/whaling/` |
 | 短信钓鱼 | 规划中 | 案例化演示 | `docs/design/project-scope-and-security-content.md` | `labs/social/smishing/` |
 | 商业邮件诈骗 | 规划中 | 案例化演示 | `docs/design/project-scope-and-security-content.md` | `labs/social/bec/` |
 | 水坑攻击 | 规划中 | 案例化演示 | `docs/design/project-scope-and-security-content.md` | `labs/social/watering-hole/` |
