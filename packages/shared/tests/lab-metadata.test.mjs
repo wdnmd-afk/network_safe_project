@@ -946,6 +946,10 @@ test("whaling metadata exposes fixed workbench and controlled review api case-st
     "whaling-boundary-verified",
   ]);
   assert.equal(result.value.verification.automation.supported, true);
+  assert.deepEqual(result.value.verification.automation.playwright, {
+    enabled: true,
+    specPath: "packages/testing/tests/e2e/platform.spec.mjs",
+  });
   assert.deepEqual(result.value.verification.automation.apiTest, {
     enabled: true,
     specPath: "apps/server/tests/whaling-lab.test.ts",
@@ -982,6 +986,7 @@ test("whaling metadata exposes fixed workbench and controlled review api case-st
   assert.match(result.value.notes, /case-study/);
   assert.match(result.value.notes, /in-progress/);
   assert.match(result.value.notes, /固定案例工作台/);
+  assert.match(result.value.notes, /Playwright 页面差异验证/);
   assert.match(result.value.notes, /后端受控 review API/);
   assert.match(result.value.notes, /verify\.ts/);
   assert.match(result.value.notes, /exploit\.py/);

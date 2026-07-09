@@ -114,7 +114,7 @@
 |---|---|---|---|---|
 | 网络钓鱼 | ready | 案例化演示 / 仿真页面 / 固定线索卡 / 识别训练 / 受控 API / 只读脚本验证 / case-study ready 收口 | `labs/social/phishing/`、`apps/web/src/views/PhishingLabView.vue`、`apps/web/src/api/phishing-lab.ts`、`apps/web/src/labs/phishing.ts`、`tools/lab-scripts/social/phishing/verify.ts`、`apps/server/src/services/phishing-lab.ts`、`apps/server/tests/phishing-lab.test.ts`、`docs/execution/2026-07-02-social-phishing-ready-closeout.md` | `labs/social/phishing/` |
 | 鱼叉式钓鱼 | ready | `case-study` / 固定线索卡 / 前端固定选择器 / 受控 review API / Playwright 差异验证 / 只读脚本验证 / case-study ready 收口 / 事件日志安全摘要 | `labs/social/spear-phishing/meta.json`、`apps/web/src/views/SpearPhishingLabView.vue`、`apps/web/src/api/spear-phishing-lab.ts`、`apps/server/src/services/spear-phishing-lab.ts`、`packages/testing/tests/e2e/platform.spec.mjs`、`tools/lab-scripts/social/spear-phishing/verify.ts`、`docs/execution/2026-07-03-social-spear-phishing-ready-closeout.md` | `labs/social/spear-phishing/` |
-| 捕鲸攻击 | 前端固定案例工作台阶段 | `case-study` / 固定高层决策线索 / 前端固定选择器 / 固定防御流程复盘 / 受控 review API / 事件日志安全摘要 | `labs/social/whaling/meta.json`、`labs/social/whaling/docs/fixed-cases.md`、`apps/web/src/views/WhalingLabView.vue`、`apps/web/src/api/whaling-lab.ts`、`apps/web/src/labs/whaling.ts`、`apps/server/src/services/whaling-lab.ts`、`apps/server/tests/whaling-lab.test.ts`、`docs/execution/2026-07-09-social-whaling-frontend-workbench.md` | `labs/social/whaling/` |
+| 捕鲸攻击 | 页面差异验证阶段 | `case-study` / 固定高层决策线索 / 前端固定选择器 / Playwright 差异验证 / 固定防御流程复盘 / 受控 review API / 事件日志安全摘要 | `labs/social/whaling/meta.json`、`labs/social/whaling/docs/fixed-cases.md`、`apps/web/src/views/WhalingLabView.vue`、`apps/web/src/api/whaling-lab.ts`、`apps/web/src/labs/whaling.ts`、`apps/server/src/services/whaling-lab.ts`、`apps/server/tests/whaling-lab.test.ts`、`packages/testing/tests/e2e/platform.spec.mjs`、`docs/execution/2026-07-09-social-whaling-playwright-verification.md` | `labs/social/whaling/` |
 | 短信钓鱼 | 延后 | 案例化演示 | `docs/design/project-scope-and-security-content.md` | `labs/social/smishing/` |
 | 商业邮件诈骗 | 延后 | 案例化演示 | `docs/design/project-scope-and-security-content.md` | `labs/social/bec/` |
 | 水坑攻击 | 延后 | 案例化演示 | `docs/design/project-scope-and-security-content.md` | `labs/social/watering-hole/` |
@@ -162,13 +162,14 @@
 - 当前已完成固定案例文档切片：`docs/execution/2026-07-09-social-whaling-fixed-cases.md`、`labs/social/whaling/docs/fixed-cases.md`。
 - 当前已完成后端固定案例 API 切片：`docs/execution/2026-07-09-social-whaling-fixed-case-api.md`、`apps/server/src/services/whaling-lab.ts`、`apps/server/tests/whaling-lab.test.ts`。
 - 当前已完成前端固定案例工作台切片：`docs/execution/2026-07-09-social-whaling-frontend-workbench.md`、`apps/web/src/views/WhalingLabView.vue`、`apps/web/src/api/whaling-lab.ts`、`apps/web/src/labs/whaling.ts`。
+- 当前已完成页面差异验证切片：`docs/execution/2026-07-09-social-whaling-playwright-verification.md`、`packages/testing/tests/e2e/platform.spec.mjs`。
 - 当前已建立 README、漏洞版 / 修复版说明、mock 边界说明、攻击方观察步骤、修复说明、手动验证文档和脚本目录边界说明。
 - 当前元数据登记 docs、web 和 api 入口，`entrypoints.scripts` 为空数组。
 - 当前不创建 `verify.ts`、`exploit.py` 或自动化攻击能力。
 - 推荐模式为 `case-study`，只使用固定虚构高层决策案例、固定线索卡、固定风险标签和固定防御流程复盘。
 - 攻击方视角只观察高层授权压力、重大业务事件、董事会或外部顾问语境、保密理由、时间窗口压缩和越级审批如何造成流程失守。
 - 防御方视角重点展示大额付款双人复核、可信通道回拨、法务核验、董事会固定通道、例外冻结、最小授权、隔离举报和日志复盘。
-- 后续若继续实现，应进入页面差异验证或只读一致性验证切片；继续不创建真实投递、真实画像采集、凭据收集、模板生成、第三方平台调用或攻击脚本能力。
+- 后续若继续实现，应进入只读一致性验证切片；继续不创建真实投递、真实画像采集、凭据收集、模板生成、第三方平台调用或攻击脚本能力。
 
 禁止：
 
@@ -305,7 +306,7 @@
 
 推荐后续按以下切片推进：
 
-1. 后续社会工程学扩展案例的边界设计：`social/spear-phishing` 已完成边界设计、`planned` 元数据、固定案例文档、后端固定案例 API、前端固定案例工作台、页面差异验证、只读一致性验证和 case-study ready 收口切片；`social/whaling` 已完成边界设计、目录与 `planned` 元数据、固定案例文档、后端固定案例 API 和前端固定案例工作台切片，下一步可进入页面差异验证或只读一致性验证切片。
+1. 后续社会工程学扩展案例的边界设计：`social/spear-phishing` 已完成边界设计、`planned` 元数据、固定案例文档、后端固定案例 API、前端固定案例工作台、页面差异验证、只读一致性验证和 case-study ready 收口切片；`social/whaling` 已完成边界设计、目录与 `planned` 元数据、固定案例文档、后端固定案例 API、前端固定案例工作台和页面差异验证切片，下一步可进入只读一致性验证切片。
 2. 后续供应链扩展案例的边界设计。
 3. 后续基础设施扩展案例的边界设计。
 

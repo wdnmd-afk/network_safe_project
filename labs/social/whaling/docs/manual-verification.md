@@ -2,7 +2,7 @@
 
 ## 验证目标
 
-确认 `social.whaling` 当前为 in-progress 前端固定案例工作台和后端受控 API 切片，不提供脚本、真实投递、画像采集、凭据收集、模板生成、第三方平台调用或攻击能力。
+确认 `social.whaling` 当前为 in-progress 前端固定案例工作台、Playwright 页面差异验证和后端受控 API 切片，不提供脚本、真实投递、画像采集、凭据收集、模板生成、第三方平台调用或攻击能力。
 
 ## 元数据验证
 
@@ -19,7 +19,9 @@
   - `/labs/social/whaling/vuln`
   - `/labs/social/whaling/fixed`
 - `entrypoints.scripts` 为空数组。
-- `verification.automation.supported` 为 `true`，且只登记服务端 API 测试 `apps/server/tests/whaling-lab.test.ts`。
+- `verification.automation.supported` 为 `true`。
+- `verification.automation.playwright.specPath` 为 `packages/testing/tests/e2e/platform.spec.mjs`。
+- `verification.automation.apiTest.specPath` 为 `apps/server/tests/whaling-lab.test.ts`。
 - `variants[].supportsAutomation` 均为 `false`。
 - `safeBoundaries` 明确当前页面只提供固定案例工作台，不提供 `verify.ts`、`exploit.py` 或攻击脚本。
 
@@ -41,6 +43,7 @@
 - `apps/web/src/views/WhalingLabView.vue`
 - `apps/web/tests/whaling-api.test.ts`
 - `apps/web/tests/whaling-lab.test.ts`
+- `packages/testing/tests/e2e/platform.spec.mjs`
 
 确认 `labs/social/whaling/docs/fixed-cases.md` 只包含固定虚构案例卡、虚构角色标签、误判线索、防御动作和学习信号，不包含完整邮件正文、IM 对话、会议邀请模板、可复制标题、真实链接、付款指令或可投递素材。
 
@@ -57,6 +60,16 @@
 - `/labs/social/whaling/fixed`
 
 页面只允许选择固定 `caseKey` 与固定 `verificationPolicyKey`，不得提供任意正文、真实人员、邮箱、链接、附件、付款信息、会议邀请、凭据或第三方平台参数输入。
+
+## 页面差异验证
+
+确认 `packages/testing/tests/e2e/platform.spec.mjs` 中的捕鲸攻击用例只执行以下行为：
+
+- 登录本机 demo 用户。
+- 访问 `/labs/social/whaling/vuln` 与 `/labs/social/whaling/fixed`。
+- 断言页面没有文本输入框，并且只有固定选择器。
+- 点击固定按钮“高层付款”“双人复核”和“观察核验结果”。
+- 断言漏洞版 `accepted`、修复版 `blocked`、固定学习信号和固定风险标签。
 
 ## API 验证
 

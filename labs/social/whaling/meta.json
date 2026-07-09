@@ -101,7 +101,7 @@
       {
         "key": "manual-verification",
         "path": "labs/social/whaling/docs/manual-verification.md",
-        "description": "前端固定案例工作台、后端固定案例 API、元数据和安全边界验证方式"
+        "description": "前端固定案例工作台、Playwright 页面差异验证、后端固定案例 API、元数据和安全边界验证方式"
       }
     ]
   },
@@ -118,6 +118,10 @@
     },
     "automation": {
       "supported": true,
+      "playwright": {
+        "enabled": true,
+        "specPath": "packages/testing/tests/e2e/platform.spec.mjs"
+      },
       "apiTest": {
         "enabled": true,
         "specPath": "apps/server/tests/whaling-lab.test.ts"
@@ -125,8 +129,8 @@
     }
   },
   "prerequisites": [
-    "已阅读捕鲸攻击边界设计、目录与 planned 元数据、固定案例文档、后端固定案例 API 和前端固定案例工作台执行文档",
-    "理解当前 in-progress 仅代表目录、元数据、基础文档入口、前端固定案例工作台、后端受控 review API 和统一事件日志安全摘要存在",
+    "已阅读捕鲸攻击边界设计、目录与 planned 元数据、固定案例文档、后端固定案例 API、前端固定案例工作台和页面差异验证执行文档",
+    "理解当前 in-progress 仅代表目录、元数据、基础文档入口、前端固定案例工作台、Playwright 页面差异验证、后端受控 review API 和统一事件日志安全摘要存在",
     "理解本实验首版只能使用固定虚构高层决策案例、固定线索卡、固定风险标签和固定防御流程复盘"
   ],
   "paths": {
@@ -141,7 +145,7 @@
   "sortOrder": 420,
   "estimatedMinutes": 20,
   "safeBoundaries": [
-    "当前 in-progress 状态仅表示目录、元数据、基础文档入口、前端固定案例工作台、后端受控 review API 和事件日志安全摘要存在，不表示脚本能力已实现",
+    "当前 in-progress 状态仅表示目录、元数据、基础文档入口、前端固定案例工作台、Playwright 页面差异验证、后端受控 review API 和事件日志安全摘要存在，不表示脚本能力已实现",
     "entrypoints.web 只能登记固定案例工作台，entrypoints.api 只能登记受控 review API，entrypoints.scripts 当前必须保持空数组",
     "首版必须保持 case-study，只使用固定虚构高层决策案例、固定线索卡、固定风险标签和固定防御流程复盘",
     "不发送真实邮件、短信、消息、会议邀请或链接",
@@ -152,5 +156,5 @@
     "不提供 exploit.py、verify.ts、投递脚本、画像采集脚本、模板生成脚本、付款指令脚本或攻击脚本",
     "当前页面和 API 只允许固定 caseKey 和固定 verificationPolicyKey，并且事件日志只能记录固定 key、风险类别、决策和学习信号"
   ],
-  "notes": "捕鲸攻击当前为 case-study / in-progress：in-progress 仅代表本项目内固定案例工作台、后端受控 review API、统一事件日志安全摘要、前端单元测试、前端 API client 测试和服务端 API 测试已建立；当前不提供 verify.ts、exploit.py、真实高管画像采集、真实组织结构收集、真实投递、凭据收集、模板生成、第三方平台调用、会议邀请、付款指令或攻击脚本。"
+  "notes": "捕鲸攻击当前为 case-study / in-progress：in-progress 仅代表本项目内固定案例工作台、Playwright 页面差异验证、后端受控 review API、统一事件日志安全摘要、前端单元测试、前端 API client 测试和服务端 API 测试已建立；当前不提供 verify.ts、exploit.py、真实高管画像采集、真实组织结构收集、真实投递、凭据收集、模板生成、第三方平台调用、会议邀请、付款指令或攻击脚本。"
 }

@@ -593,6 +593,99 @@ test("登录用户可以对比鱼叉式钓鱼漏洞版误判与修复版核验",
   ).toHaveText("需要");
 });
 
+test("登录用户可以对比捕鲸攻击漏洞版高权威误判与修复版流程核验", async ({ page }) => {
+  await page.goto("/login");
+
+  await page.getByLabel("用户名").fill("demo_user");
+  await page.getByLabel("密码").fill("Demo@123456");
+  await page.getByRole("button", { name: "登录" }).click();
+
+  await expect(page.getByRole("heading", { name: "账户中心" })).toBeVisible();
+
+  await page.goto("/labs/social/whaling/vuln");
+  await expect(
+    page.getByRole("heading", { name: "捕鲸攻击高权威误判观察版" }),
+  ).toBeVisible();
+  await expect(page.getByRole("textbox")).toHaveCount(0);
+  await expect(page.getByRole("combobox")).toHaveCount(2);
+
+  await page.getByRole("button", { name: "高层付款" }).click();
+  await page.getByRole("button", { name: "观察核验结果" }).click();
+
+  const vulnStatusPanel = page.locator(".whaling-status-panel");
+
+  await expect(
+    page.getByText("漏洞版只看高层授权标签，忽略了可信通道、审批链和最小授权核验。"),
+  ).toBeVisible();
+  await expect(
+    vulnStatusPanel.locator(".status-metric strong").filter({
+      hasText: /^accepted$/,
+    }),
+  ).toBeVisible();
+  await expect(
+    vulnStatusPanel.locator(".status-metric strong").filter({
+      hasText: /^漏洞版过度相信高权威上下文$/,
+    }),
+  ).toBeVisible();
+  await expect(
+    vulnStatusPanel.locator(".inspection-grid div").filter({
+      hasText: "风险标签",
+    }).locator("dd"),
+  ).toContainText("executive-authority-pressure");
+  await expect(
+    vulnStatusPanel.locator(".inspection-grid div").filter({
+      hasText: "风险标签",
+    }).locator("dd"),
+  ).toContainText("payment-urgency");
+  await expect(
+    vulnStatusPanel.locator(".inspection-grid div").filter({
+      hasText: "风险标签",
+    }).locator("dd"),
+  ).toContainText("approval-chain-bypass");
+
+  await page.goto("/labs/social/whaling/fixed");
+  await expect(
+    page.getByRole("heading", { name: "捕鲸攻击高风险流程核验复盘版" }),
+  ).toBeVisible();
+  await expect(page.getByRole("textbox")).toHaveCount(0);
+  await expect(page.getByRole("combobox")).toHaveCount(2);
+
+  await page.getByRole("button", { name: "高层付款" }).click();
+  await page.getByRole("button", { name: "双人复核" }).click();
+  await page.getByRole("button", { name: "观察核验结果" }).click();
+
+  const fixedStatusPanel = page.locator(".whaling-status-panel");
+
+  await expect(
+    page.getByText("修复版要求冻结高风险动作并完成付款、法务或董事会固定通道复核，已阻断固定高风险请求。"),
+  ).toBeVisible();
+  await expect(
+    fixedStatusPanel.locator(".status-metric strong").filter({
+      hasText: /^blocked$/,
+    }),
+  ).toBeVisible();
+  await expect(
+    fixedStatusPanel.locator(".status-metric strong").filter({
+      hasText: /^修复版要求冻结并复核高风险动作$/,
+    }),
+  ).toBeVisible();
+  await expect(
+    fixedStatusPanel.locator(".inspection-grid div").filter({
+      hasText: "核验策略",
+    }).locator("dd"),
+  ).toHaveText("已应用");
+  await expect(
+    fixedStatusPanel.locator(".inspection-grid div").filter({
+      hasText: "可信通道",
+    }).locator("dd"),
+  ).toHaveText("需要");
+  await expect(
+    fixedStatusPanel.locator(".inspection-grid div").filter({
+      hasText: "付款冻结",
+    }).locator("dd"),
+  ).toHaveText("需要");
+});
+
 test("登录用户可以对比依赖混淆漏洞版公共来源与修复版审计路径", async ({ page }) => {
   await page.goto("/login");
 
