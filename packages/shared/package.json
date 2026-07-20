@@ -4,6 +4,7 @@
   "private": true,
   "type": "module",
   "exports": {
+    "./guided-scenarios": "./src/guided-scenarios.js",
     "./lab-metadata": "./src/lab-metadata.js"
   },
   "scripts": {

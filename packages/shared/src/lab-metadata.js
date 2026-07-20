@@ -129,7 +129,23 @@ function validateEntrypoints(entrypoints, errors) {
   for (const field of ["web", "api", "scripts", "docs"]) {
     if (!Array.isArray(entrypoints[field])) {
       errors.push(`entrypoints.${field} must be an array`);
+      continue;
     }
+
+    entrypoints[field].forEach((entry, index) => {
+      if (!isRecord(entry)) {
+        errors.push(`entrypoints.${field}[${index}] must be an object`);
+        return;
+      }
+
+      if (!isNonEmptyString(entry.key)) {
+        errors.push(`entrypoints.${field}[${index}].key must be a non-empty string`);
+      }
+
+      if (!isNonEmptyString(entry.path)) {
+        errors.push(`entrypoints.${field}[${index}].path must be a non-empty string`);
+      }
+    });
   }
 }
 
@@ -157,8 +173,29 @@ function validateVerification(verification, errors) {
 
   if (!isRecord(verification.automation)) {
     errors.push("verification.automation must be an object");
-  } else if (typeof verification.automation.supported !== "boolean") {
-    errors.push("verification.automation.supported must be a boolean");
+  } else {
+    if (typeof verification.automation.supported !== "boolean") {
+      errors.push("verification.automation.supported must be a boolean");
+    }
+
+    for (const field of ["playwright", "apiTest", "scriptVerification"]) {
+      const entry = verification.automation[field];
+
+      if (entry === undefined) {
+        continue;
+      }
+
+      if (!isRecord(entry)) {
+        errors.push(`verification.automation.${field} must be an object`);
+        continue;
+      }
+
+      if (typeof entry.enabled !== "boolean") {
+        errors.push(
+          `verification.automation.${field}.enabled must be a boolean`,
+        );
+      }
+    }
   }
 }
 

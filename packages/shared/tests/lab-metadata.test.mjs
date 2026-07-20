@@ -904,13 +904,13 @@ test("spear phishing metadata is ready fixed-case workbench case-study", async (
   assert.match(result.value.notes, /exploit\.py/);
 });
 
-test("whaling metadata exposes fixed workbench and controlled review api case-study", async () => {
+test("whaling metadata is ready fixed-case workbench case-study", async () => {
   const metadata = await readFixture("labs/social/whaling/meta.json");
   const result = validateLabMetadata(metadata);
 
   assert.equal(result.ok, true);
   assert.equal(result.value.id, "social.whaling");
-  assert.equal(result.value.status, "in-progress");
+  assert.equal(result.value.status, "ready");
   assert.equal(result.value.mode, "case-study");
   assert.deepEqual(
     result.value.entrypoints.web.map((entrypoint) => entrypoint.path),
@@ -923,7 +923,15 @@ test("whaling metadata exposes fixed workbench and controlled review api case-st
       "/api/labs/social/whaling/fixed/review",
     ],
   );
-  assert.deepEqual(result.value.entrypoints.scripts, []);
+  assert.deepEqual(result.value.entrypoints.scripts, [
+    {
+      key: "whaling-verify",
+      language: "ts",
+      path: "tools/lab-scripts/social/whaling/verify.ts",
+      description:
+        "本机只读捕鲸攻击元数据、文档、固定案例边界和验证证据一致性验证",
+    },
+  ]);
   assert.deepEqual(
     result.value.entrypoints.docs.map((entrypoint) => entrypoint.path),
     [
@@ -954,13 +962,18 @@ test("whaling metadata exposes fixed workbench and controlled review api case-st
     enabled: true,
     specPath: "apps/server/tests/whaling-lab.test.ts",
   });
+  assert.deepEqual(result.value.verification.automation.scriptVerification, {
+    enabled: true,
+    scriptKeys: ["whaling-verify"],
+  });
   assert.deepEqual(
     result.value.variants.map((variant) => variant.supportsAutomation),
     [false, false],
   );
   assert.ok(
-    result.value.safeBoundaries.some((boundary) =>
-      boundary.includes("in-progress 状态仅表示目录"),
+    result.value.safeBoundaries.some(
+      (boundary) =>
+        boundary.includes("case-study") && boundary.includes("ready"),
     ),
   );
   assert.ok(
@@ -984,10 +997,14 @@ test("whaling metadata exposes fixed workbench and controlled review api case-st
     ),
   );
   assert.match(result.value.notes, /case-study/);
-  assert.match(result.value.notes, /in-progress/);
-  assert.match(result.value.notes, /固定案例工作台/);
-  assert.match(result.value.notes, /Playwright 页面差异验证/);
+  assert.match(result.value.notes, /ready/);
+  assert.match(result.value.notes, /ready 收口审计/);
+  assert.match(result.value.notes, /前端固定案例工作台/);
   assert.match(result.value.notes, /后端受控 review API/);
+  assert.match(result.value.notes, /Playwright 页面差异验证/);
+  assert.match(result.value.notes, /服务端 API 测试/);
+  assert.match(result.value.notes, /只读一致性验证/);
+  assert.match(result.value.notes, /supportsAutomation 仍为 false/);
   assert.match(result.value.notes, /verify\.ts/);
   assert.match(result.value.notes, /exploit\.py/);
 });
