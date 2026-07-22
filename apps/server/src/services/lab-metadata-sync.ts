@@ -66,6 +66,41 @@ const categoryProfiles: Record<string, LabCategoryProfile> = {
     name: "认证授权",
     description: "认证授权与业务逻辑实验",
   },
+  network: {
+    code: "network",
+    name: "网络与传输层",
+    description: "虚拟网络拓扑与传输安全模拟实验",
+  },
+  social: {
+    code: "social",
+    name: "社会工程学",
+    description: "固定虚构案例与防御流程复盘实验",
+  },
+  malware: {
+    code: "malware",
+    name: "恶意软件",
+    description: "恶意行为时间线与防御策略案例实验",
+  },
+  "supply-chain": {
+    code: "supply-chain",
+    name: "供应链",
+    description: "依赖、更新与来源完整性学习实验",
+  },
+  ai: {
+    code: "ai",
+    name: "AI 与新型攻击",
+    description: "确定性 AI 风险案例与资源模拟实验",
+  },
+  client: {
+    code: "client",
+    name: "客户端攻击",
+    description: "固定浏览器行为与客户端防护实验",
+  },
+  infrastructure: {
+    code: "infrastructure",
+    name: "基础设施",
+    description: "固定配置、资产和运行边界模拟实验",
+  },
 };
 
 export function getLabCategoryProfile(category: string): LabCategoryProfile {

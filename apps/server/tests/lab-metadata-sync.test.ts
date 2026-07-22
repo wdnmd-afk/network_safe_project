@@ -82,6 +82,16 @@ test("getLabCategoryProfile returns documented labels for phase-one categories",
     name: "认证授权",
     description: "认证授权与业务逻辑实验",
   });
+  assert.deepEqual(getLabCategoryProfile("malware"), {
+    code: "malware",
+    name: "恶意软件",
+    description: "恶意行为时间线与防御策略案例实验",
+  });
+  assert.deepEqual(getLabCategoryProfile("client"), {
+    code: "client",
+    name: "客户端攻击",
+    description: "固定浏览器行为与客户端防护实验",
+  });
 });
 
 test("syncLabMetadataToDatabase upserts category, lab and variants from metadata", async () => {

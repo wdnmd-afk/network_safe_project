@@ -86,7 +86,7 @@ test("GET /api/labs returns scanned lab metadata list", async () => {
   };
 
   assert.equal(response.status, 200);
-  assert.equal(body.total, 27);
+  assert.equal(body.total, 65);
   assert.ok(
     body.items.some(
       (item) =>
@@ -125,7 +125,7 @@ test("GET /api/labs returns scanned lab metadata list", async () => {
   );
   assert.ok(
     body.items.some(
-      (item) => item.id === "social.whaling" && item.status === "in-progress",
+      (item) => item.id === "social.whaling" && item.status === "ready",
     ),
   );
   assert.ok(
@@ -158,6 +158,22 @@ test("GET /api/labs returns scanned lab metadata list", async () => {
     body.items.some(
       (item) =>
         item.id === "web.ldap-injection" && item.status === "ready",
+    ),
+  );
+  assert.ok(
+    body.items.some(
+      (item) => item.id === "malware.ransomware" && item.status === "ready",
+    ),
+  );
+  assert.ok(
+    body.items.some(
+      (item) => item.id === "client.formjacking" && item.status === "ready",
+    ),
+  );
+  assert.ok(
+    body.items.some(
+      (item) =>
+        item.id === "infrastructure.zero-day" && item.status === "ready",
     ),
   );
 });

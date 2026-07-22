@@ -73,6 +73,12 @@ import {
   type JwtVariantKey,
 } from "./services/jwt-lab.js";
 import {
+  createGuidedScenarioLabService,
+  summarizeGuidedScenarioResult,
+  type GuidedScenarioLabService,
+  type GuidedScenarioVariantKey,
+} from "./services/guided-scenario-lab.js";
+import {
   createLabEventLogsService,
   type LabEventInput,
   type LabEventLogsService,
@@ -169,6 +175,7 @@ type CreateAppOptions = {
   infoDisclosureLabService?: InfoDisclosureLabService;
   idorLabService?: IdorLabService;
   jwtLabService?: JwtLabService;
+  guidedScenarioLabService?: GuidedScenarioLabService;
   labEventLogsService?: LabEventLogsService;
   labRecapQuestionCompletionsService?: LabRecapQuestionCompletionsService;
   ldapInjectionLabService?: LdapInjectionLabService;
@@ -248,6 +255,8 @@ export function createApp(options: CreateAppOptions = {}) {
     options.infoDisclosureLabService ?? createInfoDisclosureLabService();
   const idorLabService = options.idorLabService ?? createIdorLabService();
   const jwtLabService = options.jwtLabService ?? createJwtLabService();
+  const guidedScenarioLabService =
+    options.guidedScenarioLabService ?? createGuidedScenarioLabService();
   const labEventLogsService =
     options.labEventLogsService ?? createLabEventLogsService();
   const labRecapQuestionCompletionsService =
@@ -458,6 +467,28 @@ export function createApp(options: CreateAppOptions = {}) {
 
   function readRequiredString(value: unknown) {
     return typeof value === "string" && value.trim() ? value.trim() : "";
+  }
+
+  function readVerificationSignal(value: unknown) {
+    if (!value || typeof value !== "object" || Array.isArray(value)) {
+      return "manual-verification-recorded";
+    }
+
+    const signal = readRequiredString(
+      (value as Record<string, unknown>).signal,
+    );
+
+    // signal 是验证记录中唯一允许进入事件日志的 details 字段；限制为稳定标识，
+    // 防止把自由文本或其他原始详情借该字段写入日志。
+    return signal.length <= 100 && /^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(signal)
+      ? signal
+      : "manual-verification-recorded";
+  }
+
+  function readGuidedScenarioVariantKey(
+    value: string,
+  ): GuidedScenarioVariantKey | undefined {
+    return value === "vuln" || value === "fixed" ? value : undefined;
   }
 
   function readRequiredStringArray(value: unknown) {
@@ -1610,6 +1641,47 @@ export function createApp(options: CreateAppOptions = {}) {
           result,
           summary,
           details: req.body?.details,
+        });
+
+        const signal = readVerificationSignal(req.body?.details);
+        const decision =
+          result === "passed"
+            ? "accepted"
+            : result === "blocked"
+              ? "blocked"
+              : "failed";
+
+        await recordLabEventSafely({
+          traceId: readOptionalTraceId(req),
+          userId: currentUser.user.id,
+          labKey: currentLab.lab.id,
+          variantKey,
+          phase:
+            variantKey === "vuln"
+              ? "attack"
+              : variantKey === "fixed"
+                ? "defense"
+                : "normal",
+          eventType:
+            decision === "accepted"
+              ? "success"
+              : decision === "blocked"
+                ? "blocked"
+                : "failure",
+          actorPerspective: "user",
+          method: req.method,
+          path: req.path,
+          inputSummary: {
+            variantKey,
+            result,
+            signal,
+            summaryLength: summary.length,
+          },
+          decision,
+          signal,
+          statusCode: 200,
+          message: "手动验证记录已保存",
+          riskLevel: currentLab.lab.severity,
         });
 
         res.status(200).json({
@@ -4061,6 +4133,111 @@ export function createApp(options: CreateAppOptions = {}) {
           statusCode: responseStatus,
           message: result.message,
           riskLevel: riskyCase ? result.assessment.riskLevel : "low",
+        });
+
+        res.status(responseStatus).json({
+          status: result.status,
+          result,
+        });
+      } catch (error) {
+        next(error);
+      }
+    },
+  );
+
+  // 通用场景路由必须位于专用实验路由之后，避免吞掉 Prompt 注入等同名 evaluate 路径。
+  app.get(
+    "/api/labs/:category/:scene/workbench",
+    (req, res) => {
+      const workbench = guidedScenarioLabService.getWorkbench(
+        req.params.category,
+        req.params.scene,
+      );
+
+      if (!workbench) {
+        res.status(404).json({
+          status: "error",
+          message: "guided scenario lab not found",
+        });
+        return;
+      }
+
+      res.status(200).json({
+        status: "ok",
+        workbench,
+      });
+    },
+  );
+
+  app.post(
+    "/api/labs/:category/:scene/:variant/evaluate",
+    async (req, res, next) => {
+      try {
+        const currentUser = await readCurrentUser(req);
+
+        if (!currentUser.ok) {
+          res.status(currentUser.status).json(currentUser.body);
+          return;
+        }
+
+        const variantKey = readGuidedScenarioVariantKey(req.params.variant);
+
+        if (!variantKey) {
+          res.status(404).json({
+            status: "error",
+            message: "guided scenario variant not found",
+          });
+          return;
+        }
+
+        const scenarioKey = readRequiredString(req.body?.scenarioKey);
+        const controlKey = readRequiredString(req.body?.controlKey);
+
+        if (!scenarioKey || !controlKey) {
+          res.status(400).json({
+            status: "error",
+            message: "scenarioKey and controlKey are required",
+          });
+          return;
+        }
+
+        const result = guidedScenarioLabService.evaluate({
+          category: req.params.category,
+          scene: req.params.scene,
+          variantKey,
+          scenarioKey,
+          controlKey,
+        });
+
+        if (!result) {
+          res.status(404).json({
+            status: "error",
+            message: "guided scenario lab not found",
+          });
+          return;
+        }
+
+        const responseStatus = result.decision === "blocked" ? 403 : 200;
+
+        await recordLabEventSafely({
+          traceId: readOptionalTraceId(req),
+          userId: currentUser.user.id,
+          labKey: result.labKey,
+          variantKey,
+          phase: variantKey === "vuln" ? "attack" : "defense",
+          eventType: result.decision === "blocked" ? "blocked" : "success",
+          actorPerspective:
+            variantKey === "vuln" && result.decision === "accepted"
+              ? "attacker"
+              : "system",
+          method: req.method,
+          path: req.path,
+          inputSummary: summarizeGuidedScenarioResult(result),
+          decision: result.decision,
+          signal: result.signal,
+          statusCode: responseStatus,
+          message: result.message,
+          riskLevel: result.assessment.riskLevel,
         });
 
         res.status(responseStatus).json({

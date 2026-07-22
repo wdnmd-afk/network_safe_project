@@ -3,14 +3,16 @@ import test from "node:test";
 
 import { createLabRegistry } from "../src/services/lab-registry.js";
 
-test("lab registry scans phase-one metadata files", async () => {
+test("lab registry scans all ready metadata files", async () => {
   const registry = createLabRegistry();
   const labs = await registry.listLabs();
+  const labIds = labs.map((lab) => lab.id);
 
-  assert.equal(labs.length, 27);
-  assert.equal(labs[0]?.id, "ai.prompt-injection");
-  assert.equal(labs[0]?.status, "ready");
-  assert.equal(labs[1]?.id, "auth.brute-force");
+  assert.equal(labs.length, 65);
+  assert.equal(new Set(labIds).size, 65);
+  assert.ok(labs.every((lab) => lab.status === "ready"));
+  assert.ok(labIds.includes("ai.prompt-injection"));
+  assert.ok(labIds.includes("auth.brute-force"));
   assert.ok(
     labs.some(
       (lab) =>
@@ -41,7 +43,7 @@ test("lab registry scans phase-one metadata files", async () => {
   );
   assert.ok(
     labs.some(
-      (lab) => lab.id === "social.whaling" && lab.status === "in-progress",
+      (lab) => lab.id === "social.whaling" && lab.status === "ready",
     ),
   );
   assert.ok(
@@ -69,6 +71,22 @@ test("lab registry scans phase-one metadata files", async () => {
   assert.ok(
     labs.some(
       (lab) => lab.id === "web.ldap-injection" && lab.status === "ready",
+    ),
+  );
+  assert.ok(
+    labs.some(
+      (lab) => lab.id === "malware.ransomware" && lab.status === "ready",
+    ),
+  );
+  assert.ok(
+    labs.some(
+      (lab) => lab.id === "client.formjacking" && lab.status === "ready",
+    ),
+  );
+  assert.ok(
+    labs.some(
+      (lab) =>
+        lab.id === "infrastructure.zero-day" && lab.status === "ready",
     ),
   );
   assert.equal(labs.at(-1)?.id, "web.xxe");

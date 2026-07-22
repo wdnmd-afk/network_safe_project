@@ -106,8 +106,10 @@ export type LabEventLogsService = {
   listUserLabEventLogs(input: LabEventLogQueryInput): Promise<UserLabEventLogSummary[]>;
 };
 
+// 统一事件日志安全摘要的兜底脱敏：按 key 名匹配凭据类与常见 PII，
+// 命中即替换为 [redacted]。各实验 service 已在源头做主脱敏，这里是纵深防御。
 const sensitiveInputKeyPattern =
-  /password|token|secret|authorization|cookie|credential/i;
+  /password|token|secret|authorization|cookie|credential|email|phone|mobile|passport|idcard/i;
 
 function getErrorMessage(error: unknown) {
   if (error instanceof Error) {

@@ -17,6 +17,7 @@ const xssLab = {
   title: "XSS",
   category: "web",
   subcategory: "xss",
+  severity: "high",
 };
 
 async function listen(app: ReturnType<typeof createApp>) {
@@ -129,6 +130,9 @@ test("POST /api/labs/:category/:scene/learning-progress records current user pro
 
 test("POST /api/labs/:category/:scene/verification-records records manual verification", async () => {
   const calls: unknown[] = [];
+  const eventCalls: unknown[] = [];
+  const verificationSummary =
+    "修复版原样显示 HTML 字符串，raw-summary-value 不应进入事件日志";
   const app = createApp({
     authService: {
       login: async () => null,
@@ -152,8 +156,23 @@ test("POST /api/labs/:category/:scene/verification-records records manual verifi
         };
       },
     },
+    labEventLogsService: {
+      recordLabEvent: async (input: unknown) => {
+        eventCalls.push(input);
+
+        return {
+          traceId: "verification-trace",
+          persisted: true,
+          labId: "1",
+        };
+      },
+      listUserLabEventLogs: async () => {
+        throw new Error("listUserLabEventLogs should not be called");
+      },
+    },
   } as Parameters<typeof createApp>[0] & {
     labRecordsService: unknown;
+    labEventLogsService: unknown;
   });
   const origin = await listen(app);
 
@@ -164,13 +183,16 @@ test("POST /api/labs/:category/:scene/verification-records records manual verifi
       headers: {
         authorization: "Bearer local-session-token",
         "content-type": "application/json",
+        "x-lab-trace-id": "verification-trace",
       },
       body: JSON.stringify({
         variantKey: "fixed",
         result: "passed",
-        summary: "修复版原样显示 HTML 字符串",
+        summary: verificationSummary,
         details: {
           signal: "text-rendered",
+          password: "raw-password",
+          rawDetail: "raw-detail-value",
         },
       }),
     },
@@ -199,12 +221,44 @@ test("POST /api/labs/:category/:scene/verification-records records manual verifi
       labKey: "web.xss",
       variantKey: "fixed",
       result: "passed",
-      summary: "修复版原样显示 HTML 字符串",
+      summary: verificationSummary,
       details: {
         signal: "text-rendered",
+        password: "raw-password",
+        rawDetail: "raw-detail-value",
       },
     },
   ]);
+  assert.deepEqual(eventCalls, [
+    {
+      traceId: "verification-trace",
+      userId: "1",
+      labKey: "web.xss",
+      variantKey: "fixed",
+      phase: "defense",
+      eventType: "success",
+      actorPerspective: "user",
+      method: "POST",
+      path: "/api/labs/web/xss/verification-records",
+      inputSummary: {
+        variantKey: "fixed",
+        result: "passed",
+        signal: "text-rendered",
+        summaryLength: verificationSummary.length,
+      },
+      decision: "accepted",
+      signal: "text-rendered",
+      statusCode: 200,
+      message: "手动验证记录已保存",
+      riskLevel: "high",
+    },
+  ]);
+
+  const serializedEvent = JSON.stringify(eventCalls);
+
+  assert.equal(serializedEvent.includes("raw-summary-value"), false);
+  assert.equal(serializedEvent.includes("raw-password"), false);
+  assert.equal(serializedEvent.includes("raw-detail-value"), false);
 });
 
 test("POST /api/labs/:category/:scene/verification-records returns 404 for unknown lab", async () => {
