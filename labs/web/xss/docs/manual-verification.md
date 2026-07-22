@@ -76,6 +76,7 @@ pnpm --filter @network-safe/server seed:labs
 
 - 学习进度中可看到 `web.xss` 对应的当前变体和 `completed` 状态。
 - 最近验证中可看到“漏洞版出现 XSS 模拟信号”或“修复版原样显示 HTML 字符串”。
+- 最近事件复盘中可看到对应变体、决策和学习信号；事件摘要不包含原始验证摘要或 `details` 内容。
 
 ## 自动化验证
 

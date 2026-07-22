@@ -14,7 +14,7 @@
 - 客户端攻击
 - 基础设施
 
-本文档只定义规划、边界和推荐顺序。进入任一具体实验实现前，仍必须单独编写执行文档。
+本文档记录扩展实验的规划、边界、推荐顺序和当前收口状态。后续进入新的具体实验实现前，仍必须单独编写执行文档。
 
 ## 2. 当前基线
 
@@ -66,11 +66,12 @@
 |---|---|---|---|---|
 | 端口扫描 | ready | 固定虚拟资产 / 受控 API / 前端固定选择器 / Playwright 差异验证 / 只读脚本验证 | `labs/network/port-scan/meta.json`、`apps/web/src/views/PortScanLabView.vue`、`packages/testing/tests/e2e/platform.spec.mjs`、`apps/server/src/services/port-scan-lab.ts`、`tools/lab-scripts/network/port-scan/verify.ts`、`docs/execution/2026-07-01-network-port-scan-ready-closeout.md` | `labs/network/port-scan/` |
 | DNS 劫持 / 污染 | ready | 内存解析表 / 前端固定选择器 / Playwright 差异验证 / 只读脚本验证 / 本机模拟 / 案例化演示 | `labs/network/dns-hijack/meta.json`、`apps/web/src/views/DnsHijackLabView.vue`、`packages/testing/tests/e2e/platform.spec.mjs`、`tools/lab-scripts/network/dns-hijack/verify.ts`、`apps/server/src/services/dns-hijack-lab.ts`、`apps/server/tests/dns-hijack-lab.test.ts`、`docs/execution/2026-07-01-network-dns-hijack-ready-closeout.md` | `labs/network/dns-hijack/` |
-| 中间人攻击 | 规划中 | 案例化演示 / 本机模拟 | `docs/design/project-scope-and-security-content.md` | `labs/network/mitm/` |
-| ARP 欺骗 | 延后 | 案例化演示 | `docs/design/project-scope-and-security-content.md` | `labs/network/arp-spoofing/` |
-| DNS 隧道 | 延后 | 案例化演示 / 只读流量图解 | `docs/design/project-scope-and-security-content.md` | `labs/network/dns-tunnel/` |
-| DDoS | 不做真实复现 | 案例化演示 | `docs/design/project-scope-and-security-content.md` | `labs/network/ddos/` |
-| BGP 劫持 | 不做真实复现 | 案例化演示 | `docs/design/project-scope-and-security-content.md` | `labs/network/bgp-hijack/` |
+| 中间人攻击 | ready | 本机状态模拟 / 固定案例 / 漏洞版与修复版 / 统一事件日志 / 只读一致性验证 | `labs/network/mitm/meta.json`、`apps/web/src/views/GuidedScenarioLabView.vue`、`apps/web/src/api/guided-scenario-lab.ts`、`apps/server/src/services/guided-scenario-lab.ts`、`apps/server/tests/guided-scenario-lab.test.ts`、`tools/lab-scripts/network/mitm/verify.ts`、`docs/execution/2026-07-20-network-mitm-guided-lab.md` | `labs/network/mitm/` |
+| ARP 欺骗 | ready | 本机状态模拟 / 固定案例 / 漏洞版与修复版 / 统一事件日志 / 只读一致性验证 | `labs/network/arp-spoofing/meta.json`、`apps/web/src/views/GuidedScenarioLabView.vue`、`apps/web/src/api/guided-scenario-lab.ts`、`apps/server/src/services/guided-scenario-lab.ts`、`apps/server/tests/guided-scenario-lab.test.ts`、`tools/lab-scripts/network/arp-spoofing/verify.ts`、`docs/execution/2026-07-20-network-arp-spoofing-guided-lab.md` | `labs/network/arp-spoofing/` |
+| 窃听攻击 | ready | 本机状态模拟 / 固定案例 / 漏洞版与修复版 / 统一事件日志 / 只读一致性验证 | `labs/network/eavesdropping/meta.json`、`apps/web/src/views/GuidedScenarioLabView.vue`、`apps/web/src/api/guided-scenario-lab.ts`、`apps/server/src/services/guided-scenario-lab.ts`、`apps/server/tests/guided-scenario-lab.test.ts`、`tools/lab-scripts/network/eavesdropping/verify.ts`、`docs/execution/2026-07-20-network-eavesdropping-guided-lab.md` | `labs/network/eavesdropping/` |
+| DNS 隧道 | ready | 本机状态模拟 / 固定案例 / 漏洞版与修复版 / 统一事件日志 / 只读一致性验证 | `labs/network/dns-tunneling/meta.json`、`apps/web/src/views/GuidedScenarioLabView.vue`、`apps/web/src/api/guided-scenario-lab.ts`、`apps/server/src/services/guided-scenario-lab.ts`、`apps/server/tests/guided-scenario-lab.test.ts`、`tools/lab-scripts/network/dns-tunneling/verify.ts`、`docs/execution/2026-07-20-network-dns-tunneling-guided-lab.md` | `labs/network/dns-tunneling/` |
+| DDoS | ready | 本机状态模拟 / 固定案例 / 漏洞版与修复版 / 统一事件日志 / 只读一致性验证 | `labs/network/ddos/meta.json`、`apps/web/src/views/GuidedScenarioLabView.vue`、`apps/web/src/api/guided-scenario-lab.ts`、`apps/server/src/services/guided-scenario-lab.ts`、`apps/server/tests/guided-scenario-lab.test.ts`、`tools/lab-scripts/network/ddos/verify.ts`、`docs/execution/2026-07-20-network-ddos-guided-lab.md` | `labs/network/ddos/` |
+| BGP 劫持 | ready | 本机状态模拟 / 固定案例 / 漏洞版与修复版 / 统一事件日志 / 只读一致性验证 | `labs/network/bgp-hijacking/meta.json`、`apps/web/src/views/GuidedScenarioLabView.vue`、`apps/web/src/api/guided-scenario-lab.ts`、`apps/server/src/services/guided-scenario-lab.ts`、`apps/server/tests/guided-scenario-lab.test.ts`、`tools/lab-scripts/network/bgp-hijacking/verify.ts`、`docs/execution/2026-07-20-network-bgp-hijacking-guided-lab.md` | `labs/network/bgp-hijacking/` |
 
 ### 5.1 端口扫描首版边界
 
@@ -114,11 +115,12 @@
 |---|---|---|---|---|
 | 网络钓鱼 | ready | 案例化演示 / 仿真页面 / 固定线索卡 / 识别训练 / 受控 API / 只读脚本验证 / case-study ready 收口 | `labs/social/phishing/`、`apps/web/src/views/PhishingLabView.vue`、`apps/web/src/api/phishing-lab.ts`、`apps/web/src/labs/phishing.ts`、`tools/lab-scripts/social/phishing/verify.ts`、`apps/server/src/services/phishing-lab.ts`、`apps/server/tests/phishing-lab.test.ts`、`docs/execution/2026-07-02-social-phishing-ready-closeout.md` | `labs/social/phishing/` |
 | 鱼叉式钓鱼 | ready | `case-study` / 固定线索卡 / 前端固定选择器 / 受控 review API / Playwright 差异验证 / 只读脚本验证 / case-study ready 收口 / 事件日志安全摘要 | `labs/social/spear-phishing/meta.json`、`apps/web/src/views/SpearPhishingLabView.vue`、`apps/web/src/api/spear-phishing-lab.ts`、`apps/server/src/services/spear-phishing-lab.ts`、`packages/testing/tests/e2e/platform.spec.mjs`、`tools/lab-scripts/social/spear-phishing/verify.ts`、`docs/execution/2026-07-03-social-spear-phishing-ready-closeout.md` | `labs/social/spear-phishing/` |
-| 捕鲸攻击 | 页面差异验证阶段 | `case-study` / 固定高层决策线索 / 前端固定选择器 / Playwright 差异验证 / 固定防御流程复盘 / 受控 review API / 事件日志安全摘要 | `labs/social/whaling/meta.json`、`labs/social/whaling/docs/fixed-cases.md`、`apps/web/src/views/WhalingLabView.vue`、`apps/web/src/api/whaling-lab.ts`、`apps/web/src/labs/whaling.ts`、`apps/server/src/services/whaling-lab.ts`、`apps/server/tests/whaling-lab.test.ts`、`packages/testing/tests/e2e/platform.spec.mjs`、`docs/execution/2026-07-09-social-whaling-playwright-verification.md` | `labs/social/whaling/` |
-| 短信钓鱼 | 延后 | 案例化演示 | `docs/design/project-scope-and-security-content.md` | `labs/social/smishing/` |
-| 商业邮件诈骗 | 延后 | 案例化演示 | `docs/design/project-scope-and-security-content.md` | `labs/social/bec/` |
-| 水坑攻击 | 延后 | 案例化演示 | `docs/design/project-scope-and-security-content.md` | `labs/social/watering-hole/` |
-| 钓鱼 WiFi | 延后 | 案例化演示 / 本机模拟 | `docs/design/project-scope-and-security-content.md` | `labs/social/rogue-wifi/` |
+| 捕鲸攻击 | ready | `case-study` / 固定高层决策线索 / 前端固定选择器 / Playwright 差异验证 / 固定防御流程复盘 / 受控 review API / 只读一致性验证 / 事件日志安全摘要 | `labs/social/whaling/meta.json`、`labs/social/whaling/docs/fixed-cases.md`、`apps/web/src/views/WhalingLabView.vue`、`apps/web/src/api/whaling-lab.ts`、`apps/web/src/labs/whaling.ts`、`apps/server/src/services/whaling-lab.ts`、`apps/server/tests/whaling-lab.test.ts`、`packages/testing/tests/e2e/platform.spec.mjs`、`tools/lab-scripts/social/whaling/verify.ts`、`docs/execution/2026-07-09-social-whaling-ready-closeout.md` | `labs/social/whaling/` |
+| 短信钓鱼 | ready | 固定案例化演示 / 漏洞视角与防御视角 / 统一事件日志 / 只读一致性验证 | `labs/social/smishing/meta.json`、`apps/web/src/views/GuidedScenarioLabView.vue`、`apps/web/src/api/guided-scenario-lab.ts`、`apps/server/src/services/guided-scenario-lab.ts`、`apps/server/tests/guided-scenario-lab.test.ts`、`tools/lab-scripts/social/smishing/verify.ts`、`docs/execution/2026-07-20-social-smishing-guided-lab.md` | `labs/social/smishing/` |
+| 商业邮件诈骗 | ready | 固定案例化演示 / 漏洞视角与防御视角 / 统一事件日志 / 只读一致性验证 | `labs/social/bec/meta.json`、`apps/web/src/views/GuidedScenarioLabView.vue`、`apps/web/src/api/guided-scenario-lab.ts`、`apps/server/src/services/guided-scenario-lab.ts`、`apps/server/tests/guided-scenario-lab.test.ts`、`tools/lab-scripts/social/bec/verify.ts`、`docs/execution/2026-07-20-social-bec-guided-lab.md` | `labs/social/bec/` |
+| 水坑攻击 | ready | 固定案例化演示 / 漏洞视角与防御视角 / 统一事件日志 / 只读一致性验证 | `labs/social/watering-hole/meta.json`、`apps/web/src/views/GuidedScenarioLabView.vue`、`apps/web/src/api/guided-scenario-lab.ts`、`apps/server/src/services/guided-scenario-lab.ts`、`apps/server/tests/guided-scenario-lab.test.ts`、`tools/lab-scripts/social/watering-hole/verify.ts`、`docs/execution/2026-07-20-social-watering-hole-guided-lab.md` | `labs/social/watering-hole/` |
+| 钓鱼 WiFi | ready | 固定案例化演示 / 漏洞视角与防御视角 / 统一事件日志 / 只读一致性验证 | `labs/social/rogue-wifi/meta.json`、`apps/web/src/views/GuidedScenarioLabView.vue`、`apps/web/src/api/guided-scenario-lab.ts`、`apps/server/src/services/guided-scenario-lab.ts`、`apps/server/tests/guided-scenario-lab.test.ts`、`tools/lab-scripts/social/rogue-wifi/verify.ts`、`docs/execution/2026-07-20-social-rogue-wifi-guided-lab.md` | `labs/social/rogue-wifi/` |
+| 尾随 / 物理入侵 | ready | 固定案例化演示 / 漏洞视角与防御视角 / 统一事件日志 / 只读一致性验证 | `labs/social/physical-intrusion/meta.json`、`apps/web/src/views/GuidedScenarioLabView.vue`、`apps/web/src/api/guided-scenario-lab.ts`、`apps/server/src/services/guided-scenario-lab.ts`、`apps/server/tests/guided-scenario-lab.test.ts`、`tools/lab-scripts/social/physical-intrusion/verify.ts`、`docs/execution/2026-07-20-social-physical-intrusion-guided-lab.md` | `labs/social/physical-intrusion/` |
 
 `social/phishing` 首版建议做仿真收件箱：
 
@@ -164,12 +166,14 @@
 - 当前已完成前端固定案例工作台切片：`docs/execution/2026-07-09-social-whaling-frontend-workbench.md`、`apps/web/src/views/WhalingLabView.vue`、`apps/web/src/api/whaling-lab.ts`、`apps/web/src/labs/whaling.ts`。
 - 当前已完成页面差异验证切片：`docs/execution/2026-07-09-social-whaling-playwright-verification.md`、`packages/testing/tests/e2e/platform.spec.mjs`。
 - 当前已建立 README、漏洞版 / 修复版说明、mock 边界说明、攻击方观察步骤、修复说明、手动验证文档和脚本目录边界说明。
-- 当前元数据登记 docs、web 和 api 入口，`entrypoints.scripts` 为空数组。
-- 当前不创建 `verify.ts`、`exploit.py` 或自动化攻击能力。
+- 当前元数据已登记 docs、web、api 和只读 `verify.ts` 入口，状态为 `ready`。
+- 当前已完成 Playwright 页面差异验证、服务端 API 测试和本机只读一致性验证；`variants[].supportsAutomation` 继续为 `false`。
+- 当前 `verify.ts` 只读取仓库内元数据、文档、前端、后端和测试文件，不发起 HTTP 请求，不读取 `.env`、凭据、Cookie、token 或真实业务材料。
+- 当前不创建 `exploit.py` 或自动化攻击能力。
 - 推荐模式为 `case-study`，只使用固定虚构高层决策案例、固定线索卡、固定风险标签和固定防御流程复盘。
 - 攻击方视角只观察高层授权压力、重大业务事件、董事会或外部顾问语境、保密理由、时间窗口压缩和越级审批如何造成流程失守。
 - 防御方视角重点展示大额付款双人复核、可信通道回拨、法务核验、董事会固定通道、例外冻结、最小授权、隔离举报和日志复盘。
-- 后续若继续实现，应进入只读一致性验证切片；继续不创建真实投递、真实画像采集、凭据收集、模板生成、第三方平台调用或攻击脚本能力。
+- 后续扩展应另写执行文档，继续不创建真实投递、真实画像采集、凭据收集、模板生成、第三方平台调用或攻击脚本能力。
 
 禁止：
 
@@ -184,10 +188,10 @@
 | 实验 | 状态 | 推荐模式 | 当前规划落点 | 后续目录 |
 |---|---|---|---|---|
 | Prompt 注入 | ready | 确定性提示词路由模拟器 / 前端固定选择器 / Playwright 差异验证 / 只读脚本验证 / 可交互演示 / 事件日志安全摘要 | `apps/web/src/views/PromptInjectionLabView.vue`、`apps/web/src/api/prompt-injection-lab.ts`、`apps/web/src/labs/prompt-injection.ts`、`packages/testing/tests/e2e/platform.spec.mjs`、`tools/lab-scripts/ai/prompt-injection/verify.ts`、`apps/server/src/services/prompt-injection-lab.ts`、`apps/server/tests/prompt-injection-lab.test.ts`、`labs/ai/prompt-injection/meta.json`、`docs/execution/2026-07-02-ai-prompt-injection-ready-closeout.md` | `labs/ai/prompt-injection/` |
-| AI 驱动攻击 | 延后 | 案例化演示 | `docs/design/project-scope-and-security-content.md` | `labs/ai/ai-driven-attacks/` |
-| Deepfake | 不做真实生成 | 案例化演示 | `docs/design/project-scope-and-security-content.md` | `labs/ai/deepfake/` |
-| 对抗性 AI | 延后 | 案例化演示 | `docs/design/project-scope-and-security-content.md` | `labs/ai/adversarial-ai/` |
-| 加密劫持 | 延后 | 本机模拟 / 案例化演示 | `docs/design/project-scope-and-security-content.md` | `labs/ai/cryptojacking/` |
+| AI 驱动攻击 | ready | 固定案例化演示 / 漏洞视角与防御视角 / 统一事件日志 / 只读一致性验证 | `labs/ai/ai-driven-attacks/meta.json`、`apps/web/src/views/GuidedScenarioLabView.vue`、`apps/web/src/api/guided-scenario-lab.ts`、`apps/server/src/services/guided-scenario-lab.ts`、`apps/server/tests/guided-scenario-lab.test.ts`、`tools/lab-scripts/ai/ai-driven-attacks/verify.ts`、`docs/execution/2026-07-20-ai-ai-driven-attacks-guided-lab.md` | `labs/ai/ai-driven-attacks/` |
+| Deepfake | ready | 固定案例化演示 / 漏洞视角与防御视角 / 统一事件日志 / 只读一致性验证 | `labs/ai/deepfake/meta.json`、`apps/web/src/views/GuidedScenarioLabView.vue`、`apps/web/src/api/guided-scenario-lab.ts`、`apps/server/src/services/guided-scenario-lab.ts`、`apps/server/tests/guided-scenario-lab.test.ts`、`tools/lab-scripts/ai/deepfake/verify.ts`、`docs/execution/2026-07-20-ai-deepfake-guided-lab.md` | `labs/ai/deepfake/` |
+| 对抗性 AI | ready | 固定案例化演示 / 漏洞视角与防御视角 / 统一事件日志 / 只读一致性验证 | `labs/ai/adversarial-ai/meta.json`、`apps/web/src/views/GuidedScenarioLabView.vue`、`apps/web/src/api/guided-scenario-lab.ts`、`apps/server/src/services/guided-scenario-lab.ts`、`apps/server/tests/guided-scenario-lab.test.ts`、`tools/lab-scripts/ai/adversarial-ai/verify.ts`、`docs/execution/2026-07-20-ai-adversarial-ai-guided-lab.md` | `labs/ai/adversarial-ai/` |
+| 加密劫持 | ready | 本机状态模拟 / 固定案例 / 漏洞版与修复版 / 统一事件日志 / 只读一致性验证 | `labs/ai/cryptojacking/meta.json`、`apps/web/src/views/GuidedScenarioLabView.vue`、`apps/web/src/api/guided-scenario-lab.ts`、`apps/server/src/services/guided-scenario-lab.ts`、`apps/server/tests/guided-scenario-lab.test.ts`、`tools/lab-scripts/ai/cryptojacking/verify.ts`、`docs/execution/2026-07-20-ai-cryptojacking-guided-lab.md` | `labs/ai/cryptojacking/` |
 
 `ai/prompt-injection` 首版建议使用确定性提示词路由模拟器：
 
@@ -201,7 +205,7 @@
 - 当前已接入只读一致性验证脚本：`tools/lab-scripts/ai/prompt-injection/verify.ts`。
 - 当前已完成 ready 收口审计：`docs/execution/2026-07-02-ai-prompt-injection-ready-closeout.md`。
 - 当前页面和 API 仍只接受固定 `scenarioKey`、固定 `instructionSourceKey` 和固定 `defensePolicyKey`。
-- 下一步切片建议：继续推进 `supply-chain/dependency-confusion` 或 `infrastructure/misconfiguration` 单独执行文档切片，优先保持案例化 / 本机模拟边界。
+- 后续已完成 `supply-chain/dependency-confusion`、`infrastructure/misconfiguration` 及总纲其余扩展主题的受控实现和 ready 收口。
 
 禁止：
 
@@ -214,9 +218,9 @@
 | 实验 | 状态 | 推荐模式 | 当前规划落点 | 后续目录 |
 |---|---|---|---|---|
 | 依赖混淆 | ready | 本机模拟 / 案例化演示 / 固定 manifest / 伪 registry 元数据 / 前端固定选择器 / 受控 resolve API / Playwright 页面差异验证 / 只读脚本验证 / simulation ready 收口 / 事件日志安全摘要 | `apps/web/src/views/DependencyConfusionLabView.vue`、`apps/web/src/api/dependency-confusion-lab.ts`、`apps/web/src/labs/dependency-confusion.ts`、`apps/server/src/services/dependency-confusion-lab.ts`、`apps/server/tests/dependency-confusion-lab.test.ts`、`packages/testing/tests/e2e/platform.spec.mjs`、`tools/lab-scripts/supply-chain/dependency-confusion/verify.ts`、`labs/supply-chain/dependency-confusion/meta.json`、`docs/execution/2026-07-02-supply-chain-dependency-confusion-ready-closeout.md` | `labs/supply-chain/dependency-confusion/` |
-| 恶意包注入 | 延后 | 案例化演示 | `docs/design/project-scope-and-security-content.md` | `labs/supply-chain/malicious-package/` |
-| 更新投毒 | 延后 | 案例化演示 | `docs/design/project-scope-and-security-content.md` | `labs/supply-chain/update-poisoning/` |
-| 硬件供应链 | 延后 | 案例化演示 | `docs/design/project-scope-and-security-content.md` | `labs/supply-chain/hardware/` |
+| 恶意包注入 | ready | 固定案例化演示 / 漏洞视角与防御视角 / 统一事件日志 / 只读一致性验证 | `labs/supply-chain/malicious-package/meta.json`、`apps/web/src/views/GuidedScenarioLabView.vue`、`apps/web/src/api/guided-scenario-lab.ts`、`apps/server/src/services/guided-scenario-lab.ts`、`apps/server/tests/guided-scenario-lab.test.ts`、`tools/lab-scripts/supply-chain/malicious-package/verify.ts`、`docs/execution/2026-07-20-supply-chain-malicious-package-guided-lab.md` | `labs/supply-chain/malicious-package/` |
+| 更新投毒 | ready | 固定案例化演示 / 漏洞视角与防御视角 / 统一事件日志 / 只读一致性验证 | `labs/supply-chain/update-poisoning/meta.json`、`apps/web/src/views/GuidedScenarioLabView.vue`、`apps/web/src/api/guided-scenario-lab.ts`、`apps/server/src/services/guided-scenario-lab.ts`、`apps/server/tests/guided-scenario-lab.test.ts`、`tools/lab-scripts/supply-chain/update-poisoning/verify.ts`、`docs/execution/2026-07-20-supply-chain-update-poisoning-guided-lab.md` | `labs/supply-chain/update-poisoning/` |
+| 硬件供应链 | ready | 固定案例化演示 / 漏洞视角与防御视角 / 统一事件日志 / 只读一致性验证 | `labs/supply-chain/hardware/meta.json`、`apps/web/src/views/GuidedScenarioLabView.vue`、`apps/web/src/api/guided-scenario-lab.ts`、`apps/server/src/services/guided-scenario-lab.ts`、`apps/server/tests/guided-scenario-lab.test.ts`、`tools/lab-scripts/supply-chain/hardware/verify.ts`、`docs/execution/2026-07-20-supply-chain-hardware-guided-lab.md` | `labs/supply-chain/hardware/` |
 
 `supply-chain/dependency-confusion` 首版建议：
 
@@ -224,13 +228,13 @@
 - 漏洞版展示私有包名与公共包名冲突的解析风险。
 - 修复版展示 scope、私有 registry、lockfile、完整性校验和安装源审计。
 - 当前已补齐执行文档：`docs/execution/2026-07-02-supply-chain-dependency-confusion-lab.md`。
-- 当前已建立 `labs/supply-chain/dependency-confusion/` 目录与 `in-progress` 元数据，登记 docs、web 和 api 入口，不创建安装、发布、registry 连接或攻击脚本能力。
+- 当前已建立 `labs/supply-chain/dependency-confusion/` 目录与 `ready` 元数据，登记 docs、web、api 和只读 scripts 入口，不创建安装、发布、registry 连接或攻击脚本能力。
 - 当前已接入后端固定解析 API：`POST /api/labs/supply-chain/dependency-confusion/:variant/resolve`，只读取固定 `manifestKey`、固定 `registryScenarioKey` 和固定 `resolutionPolicyKey`，并接入统一事件日志安全摘要。
 - 当前已接入前端依赖解析观察工作台：`/labs/supply-chain/dependency-confusion/vuln`、`/labs/supply-chain/dependency-confusion/fixed`，只提供固定样例选择器，不提供任意包名、registry URL、token、安装或发布入口。
 - 当前已接入 Playwright 页面级差异验证：`packages/testing/tests/e2e/platform.spec.mjs`，覆盖漏洞版错误公共来源选择、修复版私有 scope 固定、修复版完整性阻断和正常公开依赖审计放行。
 - 当前已接入本机只读一致性验证脚本：`tools/lab-scripts/supply-chain/dependency-confusion/verify.ts`，只读取仓库内文件，不安装、下载、打包或发布依赖，不访问真实 registry。
 - 当前已完成 simulation ready 收口审计：`docs/execution/2026-07-02-supply-chain-dependency-confusion-ready-closeout.md`。ready 只代表本项目内固定样例学习闭环完成，仍不创建真实安装、发布、registry 连接或攻击脚本能力。
-- 下一步切片建议：进入 `infrastructure/misconfiguration` 模拟实验执行文档。
+- 后续已完成 `infrastructure/misconfiguration` 模拟实验及总纲扩展实验收口。
 
 禁止：
 
@@ -242,12 +246,12 @@
 
 | 实验 | 状态 | 推荐模式 | 当前规划落点 | 后续目录 |
 |---|---|---|---|---|
-| 勒索软件 | 不做真实样本 | 案例化演示 / 安全化状态机 | `docs/design/project-scope-and-security-content.md` | `labs/malware/ransomware/` |
-| 木马 | 不做真实样本 | 案例化演示 | `docs/design/project-scope-and-security-content.md` | `labs/malware/trojan/` |
-| 蠕虫 | 不做真实样本 | 案例化演示 | `docs/design/project-scope-and-security-content.md` | `labs/malware/worm/` |
-| 间谍软件 | 不做真实样本 | 案例化演示 | `docs/design/project-scope-and-security-content.md` | `labs/malware/spyware/` |
-| 键盘记录器 | 不做真实样本 | 案例化演示 | `docs/design/project-scope-and-security-content.md` | `labs/malware/keylogger/` |
-| Rootkit | 不做真实样本 | 案例化演示 | `docs/design/project-scope-and-security-content.md` | `labs/malware/rootkit/` |
+| 勒索软件 | ready | 固定案例化演示 / 漏洞视角与防御视角 / 统一事件日志 / 只读一致性验证 | `labs/malware/ransomware/meta.json`、`apps/web/src/views/GuidedScenarioLabView.vue`、`apps/web/src/api/guided-scenario-lab.ts`、`apps/server/src/services/guided-scenario-lab.ts`、`apps/server/tests/guided-scenario-lab.test.ts`、`tools/lab-scripts/malware/ransomware/verify.ts`、`docs/execution/2026-07-20-malware-ransomware-guided-lab.md` | `labs/malware/ransomware/` |
+| 木马 | ready | 固定案例化演示 / 漏洞视角与防御视角 / 统一事件日志 / 只读一致性验证 | `labs/malware/trojan/meta.json`、`apps/web/src/views/GuidedScenarioLabView.vue`、`apps/web/src/api/guided-scenario-lab.ts`、`apps/server/src/services/guided-scenario-lab.ts`、`apps/server/tests/guided-scenario-lab.test.ts`、`tools/lab-scripts/malware/trojan/verify.ts`、`docs/execution/2026-07-20-malware-trojan-guided-lab.md` | `labs/malware/trojan/` |
+| 蠕虫 | ready | 固定案例化演示 / 漏洞视角与防御视角 / 统一事件日志 / 只读一致性验证 | `labs/malware/worm/meta.json`、`apps/web/src/views/GuidedScenarioLabView.vue`、`apps/web/src/api/guided-scenario-lab.ts`、`apps/server/src/services/guided-scenario-lab.ts`、`apps/server/tests/guided-scenario-lab.test.ts`、`tools/lab-scripts/malware/worm/verify.ts`、`docs/execution/2026-07-20-malware-worm-guided-lab.md` | `labs/malware/worm/` |
+| 间谍软件 | ready | 固定案例化演示 / 漏洞视角与防御视角 / 统一事件日志 / 只读一致性验证 | `labs/malware/spyware/meta.json`、`apps/web/src/views/GuidedScenarioLabView.vue`、`apps/web/src/api/guided-scenario-lab.ts`、`apps/server/src/services/guided-scenario-lab.ts`、`apps/server/tests/guided-scenario-lab.test.ts`、`tools/lab-scripts/malware/spyware/verify.ts`、`docs/execution/2026-07-20-malware-spyware-guided-lab.md` | `labs/malware/spyware/` |
+| 键盘记录器 | ready | 固定案例化演示 / 漏洞视角与防御视角 / 统一事件日志 / 只读一致性验证 | `labs/malware/keylogger/meta.json`、`apps/web/src/views/GuidedScenarioLabView.vue`、`apps/web/src/api/guided-scenario-lab.ts`、`apps/server/src/services/guided-scenario-lab.ts`、`apps/server/tests/guided-scenario-lab.test.ts`、`tools/lab-scripts/malware/keylogger/verify.ts`、`docs/execution/2026-07-20-malware-keylogger-guided-lab.md` | `labs/malware/keylogger/` |
+| Rootkit | ready | 固定案例化演示 / 漏洞视角与防御视角 / 统一事件日志 / 只读一致性验证 | `labs/malware/rootkit/meta.json`、`apps/web/src/views/GuidedScenarioLabView.vue`、`apps/web/src/api/guided-scenario-lab.ts`、`apps/server/src/services/guided-scenario-lab.ts`、`apps/server/tests/guided-scenario-lab.test.ts`、`tools/lab-scripts/malware/rootkit/verify.ts`、`docs/execution/2026-07-20-malware-rootkit-guided-lab.md` | `labs/malware/rootkit/` |
 
 恶意软件方向只能做：
 
@@ -262,11 +266,11 @@
 
 | 实验 | 状态 | 推荐模式 | 当前规划落点 | 后续目录 |
 |---|---|---|---|---|
-| Formjacking | 规划中 | 仿真页面 / 案例化演示 | `docs/design/next-wave-security-labs.md` | `labs/client/formjacking/` |
-| 驾车式下载 | 不做真实下载 | 案例化演示 | `docs/design/project-scope-and-security-content.md` | `labs/client/drive-by-download/` |
-| 恶意浏览器插件 | 不做真实插件 | 案例化演示 | `docs/design/project-scope-and-security-content.md` | `labs/client/malicious-extension/` |
-| 恶意广告 | 延后 | 案例化演示 | `docs/design/project-scope-and-security-content.md` | `labs/client/malvertising/` |
-| 浏览器 MITB | 延后 | 案例化演示 / 本机模拟 | `docs/design/project-scope-and-security-content.md` | `labs/client/mitb/` |
+| Formjacking | ready | 本机状态模拟 / 固定案例 / 漏洞版与修复版 / 统一事件日志 / 只读一致性验证 | `labs/client/formjacking/meta.json`、`apps/web/src/views/GuidedScenarioLabView.vue`、`apps/web/src/api/guided-scenario-lab.ts`、`apps/server/src/services/guided-scenario-lab.ts`、`apps/server/tests/guided-scenario-lab.test.ts`、`tools/lab-scripts/client/formjacking/verify.ts`、`docs/execution/2026-07-20-client-formjacking-guided-lab.md` | `labs/client/formjacking/` |
+| 驾车式下载 | ready | 固定案例化演示 / 漏洞视角与防御视角 / 统一事件日志 / 只读一致性验证 | `labs/client/drive-by-download/meta.json`、`apps/web/src/views/GuidedScenarioLabView.vue`、`apps/web/src/api/guided-scenario-lab.ts`、`apps/server/src/services/guided-scenario-lab.ts`、`apps/server/tests/guided-scenario-lab.test.ts`、`tools/lab-scripts/client/drive-by-download/verify.ts`、`docs/execution/2026-07-20-client-drive-by-download-guided-lab.md` | `labs/client/drive-by-download/` |
+| 恶意浏览器插件 | ready | 固定案例化演示 / 漏洞视角与防御视角 / 统一事件日志 / 只读一致性验证 | `labs/client/malicious-extension/meta.json`、`apps/web/src/views/GuidedScenarioLabView.vue`、`apps/web/src/api/guided-scenario-lab.ts`、`apps/server/src/services/guided-scenario-lab.ts`、`apps/server/tests/guided-scenario-lab.test.ts`、`tools/lab-scripts/client/malicious-extension/verify.ts`、`docs/execution/2026-07-20-client-malicious-extension-guided-lab.md` | `labs/client/malicious-extension/` |
+| 恶意广告 | ready | 固定案例化演示 / 漏洞视角与防御视角 / 统一事件日志 / 只读一致性验证 | `labs/client/malvertising/meta.json`、`apps/web/src/views/GuidedScenarioLabView.vue`、`apps/web/src/api/guided-scenario-lab.ts`、`apps/server/src/services/guided-scenario-lab.ts`、`apps/server/tests/guided-scenario-lab.test.ts`、`tools/lab-scripts/client/malvertising/verify.ts`、`docs/execution/2026-07-20-client-malvertising-guided-lab.md` | `labs/client/malvertising/` |
+| 浏览器 MITB | ready | 固定案例化演示 / 漏洞视角与防御视角 / 统一事件日志 / 只读一致性验证 | `labs/client/mitb/meta.json`、`apps/web/src/views/GuidedScenarioLabView.vue`、`apps/web/src/api/guided-scenario-lab.ts`、`apps/server/src/services/guided-scenario-lab.ts`、`apps/server/tests/guided-scenario-lab.test.ts`、`tools/lab-scripts/client/mitb/verify.ts`、`docs/execution/2026-07-20-client-mitb-guided-lab.md` | `labs/client/mitb/` |
 
 `client/formjacking` 可作为后续客户端首项：
 
@@ -281,10 +285,10 @@
 | 实验 | 状态 | 推荐模式 | 当前规划落点 | 后续目录 |
 |---|---|---|---|---|
 | 配置错误利用 | ready | 本机模拟 / 静态配置分析 / 固定配置审计样例 / 前端固定选择器 / 受控 audit API / Playwright 页面级差异验证 / 本机只读一致性验证 / simulation ready 收口 / 事件日志安全摘要 | `apps/web/src/views/MisconfigurationLabView.vue`、`apps/web/src/api/misconfiguration-lab.ts`、`apps/web/src/labs/misconfiguration.ts`、`apps/server/src/services/misconfiguration-lab.ts`、`apps/server/tests/misconfiguration-lab.test.ts`、`packages/testing/tests/e2e/platform.spec.mjs`、`tools/lab-scripts/infrastructure/misconfiguration/verify.ts`、`labs/infrastructure/misconfiguration/meta.json`、`docs/execution/2026-07-03-infrastructure-misconfiguration-ready-closeout.md` | `labs/infrastructure/misconfiguration/` |
-| 云安全漏洞 | 延后 | 案例化演示 / 本机模拟 | `docs/design/project-scope-and-security-content.md` | `labs/infrastructure/cloud-security/` |
-| IoT 攻击 | 延后 | 案例化演示 / 本机模拟 | `docs/design/project-scope-and-security-content.md` | `labs/infrastructure/iot/` |
-| 容器逃逸 | 不做真实复现 | 案例化演示 | `docs/design/project-scope-and-security-content.md` | `labs/infrastructure/container-escape/` |
-| 零日漏洞利用 | 不做真实复现 | 案例化演示 | `docs/design/project-scope-and-security-content.md` | `labs/infrastructure/zero-day/` |
+| 云安全漏洞 | ready | 本机状态模拟 / 固定案例 / 漏洞版与修复版 / 统一事件日志 / 只读一致性验证 | `labs/infrastructure/cloud-security/meta.json`、`apps/web/src/views/GuidedScenarioLabView.vue`、`apps/web/src/api/guided-scenario-lab.ts`、`apps/server/src/services/guided-scenario-lab.ts`、`apps/server/tests/guided-scenario-lab.test.ts`、`tools/lab-scripts/infrastructure/cloud-security/verify.ts`、`docs/execution/2026-07-20-infrastructure-cloud-security-guided-lab.md` | `labs/infrastructure/cloud-security/` |
+| IoT 攻击 | ready | 本机状态模拟 / 固定案例 / 漏洞版与修复版 / 统一事件日志 / 只读一致性验证 | `labs/infrastructure/iot/meta.json`、`apps/web/src/views/GuidedScenarioLabView.vue`、`apps/web/src/api/guided-scenario-lab.ts`、`apps/server/src/services/guided-scenario-lab.ts`、`apps/server/tests/guided-scenario-lab.test.ts`、`tools/lab-scripts/infrastructure/iot/verify.ts`、`docs/execution/2026-07-20-infrastructure-iot-guided-lab.md` | `labs/infrastructure/iot/` |
+| 容器逃逸 | ready | 固定案例化演示 / 漏洞视角与防御视角 / 统一事件日志 / 只读一致性验证 | `labs/infrastructure/container-escape/meta.json`、`apps/web/src/views/GuidedScenarioLabView.vue`、`apps/web/src/api/guided-scenario-lab.ts`、`apps/server/src/services/guided-scenario-lab.ts`、`apps/server/tests/guided-scenario-lab.test.ts`、`tools/lab-scripts/infrastructure/container-escape/verify.ts`、`docs/execution/2026-07-20-infrastructure-container-escape-guided-lab.md` | `labs/infrastructure/container-escape/` |
+| 零日漏洞利用 | ready | 固定案例化演示 / 漏洞视角与防御视角 / 统一事件日志 / 只读一致性验证 | `labs/infrastructure/zero-day/meta.json`、`apps/web/src/views/GuidedScenarioLabView.vue`、`apps/web/src/api/guided-scenario-lab.ts`、`apps/server/src/services/guided-scenario-lab.ts`、`apps/server/tests/guided-scenario-lab.test.ts`、`tools/lab-scripts/infrastructure/zero-day/verify.ts`、`docs/execution/2026-07-20-infrastructure-zero-day-guided-lab.md` | `labs/infrastructure/zero-day/` |
 
 `infrastructure/misconfiguration` 首版建议：
 
@@ -302,15 +306,13 @@
 
 禁止修改真实 nginx、MySQL、Node、系统服务或云账号配置。
 
-## 12. 后续切片
+## 12. 当前收口状态
 
-推荐后续按以下切片推进：
-
-1. 后续社会工程学扩展案例的边界设计：`social/spear-phishing` 已完成边界设计、`planned` 元数据、固定案例文档、后端固定案例 API、前端固定案例工作台、页面差异验证、只读一致性验证和 case-study ready 收口切片；`social/whaling` 已完成边界设计、目录与 `planned` 元数据、固定案例文档、后端固定案例 API、前端固定案例工作台和页面差异验证切片，下一步可进入只读一致性验证切片。
-2. 后续供应链扩展案例的边界设计。
-3. 后续基础设施扩展案例的边界设计。
-
-每个切片完成后都必须同步 `docs/TODO.md` 和 `docs/execution/security-lab-master-goal.md`。
+- 当前范围共 65 个实验，全部为 `ready`，覆盖 9 个分类和 130 个漏洞版 / 修复版变体。
+- 原有专用实验保留独立页面、API 和验证脚本；新增 38 个主题复用受控引导式工作台，但仍各自具备独立元数据、目录、文档和只读验证入口。
+- `social/spear-phishing` 与 `social/whaling` 均已完成 case-study ready 收口，不提供真实投递、画像采集、凭据收集或攻击脚本。
+- 供应链、恶意软件、AI、客户端和基础设施高风险主题均保持固定案例或本机状态模拟边界。
+- 后续新增主题必须先编写独立执行文档，并同步 `docs/TODO.md` 和 `docs/execution/security-lab-master-goal.md`。
 
 ## 13. 完成判定
 

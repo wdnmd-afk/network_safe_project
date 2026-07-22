@@ -205,36 +205,27 @@ tools/lab-scripts/<category>/<scene>/
 
 ## 9. 当前状态
 
-当前仓库处于：**工程骨架实现阶段，真实实验业务实现尚未开始**
+当前仓库处于：**65 个安全学习实验全量 ready 收口后的持续维护阶段**
 
 当前已完成：
 
-- 项目目标与约束确认
-- 总体架构划分
-- 文档体系闭环
-- monorepo 根配置
-- 实验目录规范
-- 实验脚本目录规范
-- 一期实验目录骨架
-- 一期脚本目录骨架
-- `apps/server` Node + Express + TypeScript 最小健康检查接口
-- 平台核心 Prisma schema、迁移 SQL、Prisma Client 生成 / 校验脚本
-- 数据库健康检查接口骨架
+- Vue + Vite 前端、Node.js + Express 后端和 MySQL 平台数据链路。
+- 实验元数据扫描、注册、列表、详情、学习进度、验证记录和复盘能力。
+- 统一 `lab_event_logs` 事件日志和脱敏摘要。
+- 65 个 `ready` 实验、9 个分类、130 个漏洞版 / 修复版变体。
+- 23 个 `interactive`、15 个 `simulation`、27 个 `case-study` 实验模式。
+- 原有专用实验页面与新增 38 个主题的通用引导式工作台。
+- 单元 / API / 共享校验 / 只读脚本 / Playwright 分层自动化验证。
+- 本机数据库缺失复盘表的幂等补齐入口 `pnpm --filter @network-safe/server schema:ensure`。
 
-当前尚未完成：
+总纲和最终验证证据见：
 
-- `apps/web` 可运行 Vue + Vite 应用初始化
-- 元数据扫描与实验注册
-- 本机 MySQL 连接验证与首个 migration 实际应用
-- `web/xss` 样板实验真实业务逻辑
-- 自动化测试落地
+- `docs/execution/security-lab-master-goal.md`
+- `docs/execution/2026-07-20-security-lab-master-completion.md`
 
-## 10. 下一步
+## 10. 后续维护
 
-当前最直接的下一步如下：
-
-1. 初始化 `apps/web` 为可运行的 Vue + Vite 应用
-2. 建立 `packages/shared` 中的实验元数据类型与校验
-3. 实现实验扫描、注册与实验列表接口
-4. 连接本机 MySQL 并应用平台核心 migration
-5. 开始 `web/xss` 样板实验
+1. 新增实验前先编写独立执行文档，并明确 `interactive`、`simulation` 或 `case-study` 模式。
+2. 继续使用固定数据、本机受控目标和统一事件日志，不扩展为外部攻击能力。
+3. 修改共享目录或通用工作台后，执行服务端、前端、共享包、`test:guided`、类型检查和代表性 Playwright 验证。
+4. 保持元数据、路由、API、脚本、文档和 `docs/TODO.md` 状态一致。
