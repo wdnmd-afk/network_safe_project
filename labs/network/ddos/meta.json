@@ -1,0 +1,170 @@
+{
+  "id": "network.ddos",
+  "slug": "ddos",
+  "title": "DDoS",
+  "category": "network",
+  "subcategory": "ddos",
+  "mode": "simulation",
+  "severity": "critical",
+  "difficulty": "intermediate",
+  "summary": "使用固定流量时间线模拟容量耗尽与分层缓解策略，不产生真实流量。",
+  "status": "ready",
+  "phase": "phase-2",
+  "sortOrder": 305,
+  "estimatedMinutes": 25,
+  "tags": [
+    "network",
+    "ddos",
+    "availability"
+  ],
+  "knowledgePoints": [
+    "容量耗尽",
+    "分层限流",
+    "服务降级"
+  ],
+  "variants": [
+    {
+      "key": "vuln",
+      "title": "DDoS风险观察版",
+      "enabled": true,
+      "description": "观察入口没有速率、连接和容量保护且缺少降级路径导致的固定风险判定。",
+      "entryKey": "network-ddos-vuln",
+      "expectedOutcome": "返回 network-ddos-risk-accepted 学习信号。",
+      "supportsAutomation": true
+    },
+    {
+      "key": "fixed",
+      "title": "DDoS防御复盘版",
+      "enabled": true,
+      "description": "观察验证落实“分层限流、流量清洗、缓存、弹性容量和服务降级”后的正常受控流程。",
+      "entryKey": "network-ddos-fixed",
+      "expectedOutcome": "高风险动作被阻断，正常受控流程通过复核。",
+      "supportsAutomation": true
+    }
+  ],
+  "entrypoints": {
+    "web": [
+      {
+        "key": "network-ddos-vuln",
+        "variant": "vuln",
+        "path": "/labs/network/ddos/vuln",
+        "description": "DDoS风险观察版工作台"
+      },
+      {
+        "key": "network-ddos-fixed",
+        "variant": "fixed",
+        "path": "/labs/network/ddos/fixed",
+        "description": "DDoS防御复盘版工作台"
+      }
+    ],
+    "api": [
+      {
+        "key": "network-ddos-workbench",
+        "variant": "shared",
+        "method": "GET",
+        "path": "/api/labs/network/ddos/workbench",
+        "description": "DDoS固定工作台配置"
+      },
+      {
+        "key": "network-ddos-vuln-evaluate",
+        "variant": "vuln",
+        "method": "POST",
+        "path": "/api/labs/network/ddos/vuln/evaluate",
+        "description": "DDoS漏洞版固定案例评估"
+      },
+      {
+        "key": "network-ddos-fixed-evaluate",
+        "variant": "fixed",
+        "method": "POST",
+        "path": "/api/labs/network/ddos/fixed/evaluate",
+        "description": "DDoS修复版固定案例评估"
+      }
+    ],
+    "scripts": [
+      {
+        "key": "network-ddos-verify",
+        "language": "ts",
+        "path": "tools/lab-scripts/network/ddos/verify.ts",
+        "description": "DDoS本机只读一致性验证"
+      }
+    ],
+    "docs": [
+      {
+        "key": "network-ddos-readme",
+        "path": "labs/network/ddos/README.md",
+        "description": "DDoS场景说明"
+      },
+      {
+        "key": "network-ddos-attack-steps",
+        "path": "labs/network/ddos/docs/attack-steps.md",
+        "description": "DDoS风险观察步骤"
+      },
+      {
+        "key": "network-ddos-fix-notes",
+        "path": "labs/network/ddos/docs/fix-notes.md",
+        "description": "DDoS修复思路"
+      },
+      {
+        "key": "network-ddos-manual-verification",
+        "path": "labs/network/ddos/docs/manual-verification.md",
+        "description": "DDoS手工验证矩阵"
+      }
+    ]
+  },
+  "verification": {
+    "manual": {
+      "supported": true,
+      "stepsDocPath": "labs/network/ddos/docs/manual-verification.md",
+      "expectedSignals": [
+        "network-ddos-risk-accepted",
+        "network-ddos-defense-blocked",
+        "network-ddos-normal-verified"
+      ]
+    },
+    "automation": {
+      "supported": true,
+      "playwright": {
+        "enabled": false,
+        "specPath": "packages/testing/tests/e2e/platform.spec.mjs"
+      },
+      "apiTest": {
+        "enabled": true,
+        "specPath": "apps/server/tests/guided-scenario-lab.test.ts"
+      },
+      "scriptVerification": {
+        "enabled": true,
+        "scriptKeys": [
+          "network-ddos-verify"
+        ]
+      }
+    }
+  },
+  "prerequisites": [
+    {
+      "type": "service",
+      "value": "本机后端服务运行于 http://127.0.0.1:6667",
+      "required": true
+    },
+    {
+      "type": "browser",
+      "value": "使用本机浏览器访问实验工作台",
+      "required": true
+    }
+  ],
+  "safeBoundaries": [
+    "只使用内存中的虚拟网络拓扑和固定流量摘要，不扫描、监听或连接真实网络。",
+    "页面和 API 只接受共享目录中声明的 scenarioKey 与 controlKey。",
+    "未知 key 会被脱敏阻断，不写入原始输入或外部目标信息。"
+  ],
+  "paths": {
+    "root": "labs/network/ddos",
+    "readme": "labs/network/ddos/README.md",
+    "vuln": "labs/network/ddos/vuln",
+    "fixed": "labs/network/ddos/fixed",
+    "mock": "labs/network/ddos/mock",
+    "docs": "labs/network/ddos/docs",
+    "scripts": "tools/lab-scripts/network/ddos"
+  },
+  "references": [],
+  "notes": "该实验仅提供本机受控固定场景和只读验证，不允许扩展为通用攻击工具。"
+}

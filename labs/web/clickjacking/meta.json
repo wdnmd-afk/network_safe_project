@@ -1,0 +1,176 @@
+{
+  "id": "web.clickjacking",
+  "slug": "clickjacking",
+  "title": "点击劫持",
+  "category": "web",
+  "subcategory": "clickjacking",
+  "mode": "interactive",
+  "severity": "medium",
+  "difficulty": "beginner",
+  "summary": "通过固定嵌入式审批界面对比缺少框架限制与启用防嵌入策略的差异。",
+  "status": "ready",
+  "phase": "phase-1",
+  "sortOrder": 300,
+  "estimatedMinutes": 25,
+  "tags": [
+    "web",
+    "clickjacking",
+    "browser-policy"
+  ],
+  "knowledgePoints": [
+    "框架嵌入边界",
+    "用户意图确认",
+    "CSP frame-ancestors"
+  ],
+  "variants": [
+    {
+      "key": "vuln",
+      "title": "点击劫持风险观察版",
+      "enabled": true,
+      "description": "观察页面允许被任意来源嵌入且敏感动作缺少二次确认导致的固定风险判定。",
+      "entryKey": "web-clickjacking-vuln",
+      "expectedOutcome": "返回 web-clickjacking-risk-accepted 学习信号。",
+      "supportsAutomation": true
+    },
+    {
+      "key": "fixed",
+      "title": "点击劫持防御复盘版",
+      "enabled": true,
+      "description": "观察验证落实“CSP frame-ancestors、X-Frame-Options 和敏感动作确认”后的正常受控流程。",
+      "entryKey": "web-clickjacking-fixed",
+      "expectedOutcome": "高风险动作被阻断，正常受控流程通过复核。",
+      "supportsAutomation": true
+    }
+  ],
+  "entrypoints": {
+    "web": [
+      {
+        "key": "web-clickjacking-vuln",
+        "variant": "vuln",
+        "path": "/labs/web/clickjacking/vuln",
+        "description": "点击劫持风险观察版工作台"
+      },
+      {
+        "key": "web-clickjacking-fixed",
+        "variant": "fixed",
+        "path": "/labs/web/clickjacking/fixed",
+        "description": "点击劫持防御复盘版工作台"
+      }
+    ],
+    "api": [
+      {
+        "key": "web-clickjacking-workbench",
+        "variant": "shared",
+        "method": "GET",
+        "path": "/api/labs/web/clickjacking/workbench",
+        "description": "点击劫持固定工作台配置"
+      },
+      {
+        "key": "web-clickjacking-vuln-evaluate",
+        "variant": "vuln",
+        "method": "POST",
+        "path": "/api/labs/web/clickjacking/vuln/evaluate",
+        "description": "点击劫持漏洞版固定案例评估"
+      },
+      {
+        "key": "web-clickjacking-fixed-evaluate",
+        "variant": "fixed",
+        "method": "POST",
+        "path": "/api/labs/web/clickjacking/fixed/evaluate",
+        "description": "点击劫持修复版固定案例评估"
+      }
+    ],
+    "scripts": [
+      {
+        "key": "web-clickjacking-verify",
+        "language": "ts",
+        "path": "tools/lab-scripts/web/clickjacking/verify.ts",
+        "description": "点击劫持本机只读一致性验证"
+      },
+      {
+        "key": "web-clickjacking-exploit",
+        "language": "python",
+        "path": "tools/lab-scripts/web/clickjacking/exploit.py",
+        "description": "点击劫持本机固定案例受控请求脚本"
+      }
+    ],
+    "docs": [
+      {
+        "key": "web-clickjacking-readme",
+        "path": "labs/web/clickjacking/README.md",
+        "description": "点击劫持场景说明"
+      },
+      {
+        "key": "web-clickjacking-attack-steps",
+        "path": "labs/web/clickjacking/docs/attack-steps.md",
+        "description": "点击劫持风险观察步骤"
+      },
+      {
+        "key": "web-clickjacking-fix-notes",
+        "path": "labs/web/clickjacking/docs/fix-notes.md",
+        "description": "点击劫持修复思路"
+      },
+      {
+        "key": "web-clickjacking-manual-verification",
+        "path": "labs/web/clickjacking/docs/manual-verification.md",
+        "description": "点击劫持手工验证矩阵"
+      }
+    ]
+  },
+  "verification": {
+    "manual": {
+      "supported": true,
+      "stepsDocPath": "labs/web/clickjacking/docs/manual-verification.md",
+      "expectedSignals": [
+        "web-clickjacking-risk-accepted",
+        "web-clickjacking-defense-blocked",
+        "web-clickjacking-normal-verified"
+      ]
+    },
+    "automation": {
+      "supported": true,
+      "playwright": {
+        "enabled": false,
+        "specPath": "packages/testing/tests/e2e/platform.spec.mjs"
+      },
+      "apiTest": {
+        "enabled": true,
+        "specPath": "apps/server/tests/guided-scenario-lab.test.ts"
+      },
+      "scriptVerification": {
+        "enabled": true,
+        "scriptKeys": [
+          "web-clickjacking-verify"
+        ]
+      }
+    }
+  },
+  "prerequisites": [
+    {
+      "type": "service",
+      "value": "本机后端服务运行于 http://127.0.0.1:6667",
+      "required": true
+    },
+    {
+      "type": "browser",
+      "value": "使用本机浏览器访问实验工作台",
+      "required": true
+    }
+  ],
+  "safeBoundaries": [
+    "只处理固定本机 Web 教学场景，不生成可用于外部站点的攻击载荷。",
+    "页面和 API 只接受共享目录中声明的 scenarioKey 与 controlKey。",
+    "未知 key 会被脱敏阻断，不写入原始输入或外部目标信息。"
+  ],
+  "paths": {
+    "root": "labs/web/clickjacking",
+    "readme": "labs/web/clickjacking/README.md",
+    "vuln": "labs/web/clickjacking/vuln",
+    "fixed": "labs/web/clickjacking/fixed",
+    "mock": "labs/web/clickjacking/mock",
+    "docs": "labs/web/clickjacking/docs",
+    "scripts": "tools/lab-scripts/web/clickjacking"
+  },
+  "references": [],
+  "notes": "该实验仅提供本机受控固定场景和只读验证，不允许扩展为通用攻击工具。"
+}

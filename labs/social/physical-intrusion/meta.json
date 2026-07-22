@@ -1,0 +1,171 @@
+{
+  "id": "social.physical-intrusion",
+  "slug": "physical-intrusion",
+  "title": "尾随 / 物理入侵",
+  "category": "social",
+  "subcategory": "physical-intrusion",
+  "mode": "case-study",
+  "severity": "high",
+  "difficulty": "beginner",
+  "summary": "通过固定门禁事件时间线学习尾随识别、访客流程和分区控制。",
+  "status": "ready",
+  "phase": "phase-3",
+  "sortOrder": 315,
+  "estimatedMinutes": 20,
+  "tags": [
+    "social",
+    "physical-security",
+    "case-study"
+  ],
+  "knowledgePoints": [
+    "尾随风险",
+    "访客管理",
+    "安全区域分层"
+  ],
+  "variants": [
+    {
+      "key": "vuln",
+      "title": "尾随 / 物理入侵风险观察版",
+      "enabled": true,
+      "description": "观察人员因权威、礼貌或紧急理由绕过逐人验证导致的固定风险判定。",
+      "entryKey": "social-physical-intrusion-vuln",
+      "expectedOutcome": "返回 social-physical-intrusion-risk-accepted 学习信号。",
+      "supportsAutomation": false
+    },
+    {
+      "key": "fixed",
+      "title": "尾随 / 物理入侵防御复盘版",
+      "enabled": true,
+      "description": "观察验证落实“逐人门禁、访客陪同、分区控制和无责举报流程”后的正常受控流程。",
+      "entryKey": "social-physical-intrusion-fixed",
+      "expectedOutcome": "高风险动作被阻断，正常受控流程通过复核。",
+      "supportsAutomation": false
+    }
+  ],
+  "entrypoints": {
+    "web": [
+      {
+        "key": "social-physical-intrusion-vuln",
+        "variant": "vuln",
+        "path": "/labs/social/physical-intrusion/vuln",
+        "description": "尾随 / 物理入侵风险观察版工作台"
+      },
+      {
+        "key": "social-physical-intrusion-fixed",
+        "variant": "fixed",
+        "path": "/labs/social/physical-intrusion/fixed",
+        "description": "尾随 / 物理入侵防御复盘版工作台"
+      }
+    ],
+    "api": [
+      {
+        "key": "social-physical-intrusion-workbench",
+        "variant": "shared",
+        "method": "GET",
+        "path": "/api/labs/social/physical-intrusion/workbench",
+        "description": "尾随 / 物理入侵固定工作台配置"
+      },
+      {
+        "key": "social-physical-intrusion-vuln-evaluate",
+        "variant": "vuln",
+        "method": "POST",
+        "path": "/api/labs/social/physical-intrusion/vuln/evaluate",
+        "description": "尾随 / 物理入侵漏洞版固定案例评估"
+      },
+      {
+        "key": "social-physical-intrusion-fixed-evaluate",
+        "variant": "fixed",
+        "method": "POST",
+        "path": "/api/labs/social/physical-intrusion/fixed/evaluate",
+        "description": "尾随 / 物理入侵修复版固定案例评估"
+      }
+    ],
+    "scripts": [
+      {
+        "key": "social-physical-intrusion-verify",
+        "language": "ts",
+        "path": "tools/lab-scripts/social/physical-intrusion/verify.ts",
+        "description": "尾随 / 物理入侵本机只读一致性验证"
+      }
+    ],
+    "docs": [
+      {
+        "key": "social-physical-intrusion-readme",
+        "path": "labs/social/physical-intrusion/README.md",
+        "description": "尾随 / 物理入侵场景说明"
+      },
+      {
+        "key": "social-physical-intrusion-attack-steps",
+        "path": "labs/social/physical-intrusion/docs/attack-steps.md",
+        "description": "尾随 / 物理入侵风险观察步骤"
+      },
+      {
+        "key": "social-physical-intrusion-fix-notes",
+        "path": "labs/social/physical-intrusion/docs/fix-notes.md",
+        "description": "尾随 / 物理入侵修复思路"
+      },
+      {
+        "key": "social-physical-intrusion-manual-verification",
+        "path": "labs/social/physical-intrusion/docs/manual-verification.md",
+        "description": "尾随 / 物理入侵手工验证矩阵"
+      }
+    ]
+  },
+  "verification": {
+    "manual": {
+      "supported": true,
+      "stepsDocPath": "labs/social/physical-intrusion/docs/manual-verification.md",
+      "expectedSignals": [
+        "social-physical-intrusion-risk-accepted",
+        "social-physical-intrusion-defense-blocked",
+        "social-physical-intrusion-normal-verified"
+      ]
+    },
+    "automation": {
+      "supported": true,
+      "playwright": {
+        "enabled": false,
+        "specPath": "packages/testing/tests/e2e/platform.spec.mjs"
+      },
+      "apiTest": {
+        "enabled": true,
+        "specPath": "apps/server/tests/guided-scenario-lab.test.ts"
+      },
+      "scriptVerification": {
+        "enabled": true,
+        "scriptKeys": [
+          "social-physical-intrusion-verify"
+        ]
+      }
+    }
+  },
+  "prerequisites": [
+    {
+      "type": "service",
+      "value": "本机后端服务运行于 http://127.0.0.1:6667",
+      "required": true
+    },
+    {
+      "type": "browser",
+      "value": "使用本机浏览器访问实验工作台",
+      "required": true
+    }
+  ],
+  "safeBoundaries": [
+    "尾随 / 物理入侵 按 case-study ready 例外收口，只代表固定案例学习闭环完成。",
+    "只使用固定虚构案例和线索卡，不发送消息、不采集画像、不收集凭据。",
+    "页面和 API 只接受共享目录中声明的 scenarioKey 与 controlKey。",
+    "未知 key 会被脱敏阻断，不写入原始输入或外部目标信息。"
+  ],
+  "paths": {
+    "root": "labs/social/physical-intrusion",
+    "readme": "labs/social/physical-intrusion/README.md",
+    "vuln": "labs/social/physical-intrusion/vuln",
+    "fixed": "labs/social/physical-intrusion/fixed",
+    "mock": "labs/social/physical-intrusion/mock",
+    "docs": "labs/social/physical-intrusion/docs",
+    "scripts": "tools/lab-scripts/social/physical-intrusion"
+  },
+  "references": [],
+  "notes": "该实验按 case-study ready 例外收口，不提供 exploit.py、攻击脚本、外部连接或真实样本。"
+}

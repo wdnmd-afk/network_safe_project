@@ -1,0 +1,176 @@
+{
+  "id": "web.open-redirect",
+  "slug": "open-redirect",
+  "title": "开放重定向",
+  "category": "web",
+  "subcategory": "open-redirect",
+  "mode": "interactive",
+  "severity": "medium",
+  "difficulty": "beginner",
+  "summary": "通过固定跳转目标观察任意重定向与受控站内目标校验的差异。",
+  "status": "ready",
+  "phase": "phase-1",
+  "sortOrder": 301,
+  "estimatedMinutes": 25,
+  "tags": [
+    "web",
+    "redirect",
+    "input-validation"
+  ],
+  "knowledgePoints": [
+    "重定向信任边界",
+    "URL 规范化",
+    "允许列表"
+  ],
+  "variants": [
+    {
+      "key": "vuln",
+      "title": "开放重定向风险观察版",
+      "enabled": true,
+      "description": "观察服务端直接信任跳转目标且没有规范化与允许列表导致的固定风险判定。",
+      "entryKey": "web-open-redirect-vuln",
+      "expectedOutcome": "返回 web-open-redirect-risk-accepted 学习信号。",
+      "supportsAutomation": true
+    },
+    {
+      "key": "fixed",
+      "title": "开放重定向防御复盘版",
+      "enabled": true,
+      "description": "观察验证落实“站内相对路径约束、规范化和目标允许列表”后的正常受控流程。",
+      "entryKey": "web-open-redirect-fixed",
+      "expectedOutcome": "高风险动作被阻断，正常受控流程通过复核。",
+      "supportsAutomation": true
+    }
+  ],
+  "entrypoints": {
+    "web": [
+      {
+        "key": "web-open-redirect-vuln",
+        "variant": "vuln",
+        "path": "/labs/web/open-redirect/vuln",
+        "description": "开放重定向风险观察版工作台"
+      },
+      {
+        "key": "web-open-redirect-fixed",
+        "variant": "fixed",
+        "path": "/labs/web/open-redirect/fixed",
+        "description": "开放重定向防御复盘版工作台"
+      }
+    ],
+    "api": [
+      {
+        "key": "web-open-redirect-workbench",
+        "variant": "shared",
+        "method": "GET",
+        "path": "/api/labs/web/open-redirect/workbench",
+        "description": "开放重定向固定工作台配置"
+      },
+      {
+        "key": "web-open-redirect-vuln-evaluate",
+        "variant": "vuln",
+        "method": "POST",
+        "path": "/api/labs/web/open-redirect/vuln/evaluate",
+        "description": "开放重定向漏洞版固定案例评估"
+      },
+      {
+        "key": "web-open-redirect-fixed-evaluate",
+        "variant": "fixed",
+        "method": "POST",
+        "path": "/api/labs/web/open-redirect/fixed/evaluate",
+        "description": "开放重定向修复版固定案例评估"
+      }
+    ],
+    "scripts": [
+      {
+        "key": "web-open-redirect-verify",
+        "language": "ts",
+        "path": "tools/lab-scripts/web/open-redirect/verify.ts",
+        "description": "开放重定向本机只读一致性验证"
+      },
+      {
+        "key": "web-open-redirect-exploit",
+        "language": "python",
+        "path": "tools/lab-scripts/web/open-redirect/exploit.py",
+        "description": "开放重定向本机固定案例受控请求脚本"
+      }
+    ],
+    "docs": [
+      {
+        "key": "web-open-redirect-readme",
+        "path": "labs/web/open-redirect/README.md",
+        "description": "开放重定向场景说明"
+      },
+      {
+        "key": "web-open-redirect-attack-steps",
+        "path": "labs/web/open-redirect/docs/attack-steps.md",
+        "description": "开放重定向风险观察步骤"
+      },
+      {
+        "key": "web-open-redirect-fix-notes",
+        "path": "labs/web/open-redirect/docs/fix-notes.md",
+        "description": "开放重定向修复思路"
+      },
+      {
+        "key": "web-open-redirect-manual-verification",
+        "path": "labs/web/open-redirect/docs/manual-verification.md",
+        "description": "开放重定向手工验证矩阵"
+      }
+    ]
+  },
+  "verification": {
+    "manual": {
+      "supported": true,
+      "stepsDocPath": "labs/web/open-redirect/docs/manual-verification.md",
+      "expectedSignals": [
+        "web-open-redirect-risk-accepted",
+        "web-open-redirect-defense-blocked",
+        "web-open-redirect-normal-verified"
+      ]
+    },
+    "automation": {
+      "supported": true,
+      "playwright": {
+        "enabled": false,
+        "specPath": "packages/testing/tests/e2e/platform.spec.mjs"
+      },
+      "apiTest": {
+        "enabled": true,
+        "specPath": "apps/server/tests/guided-scenario-lab.test.ts"
+      },
+      "scriptVerification": {
+        "enabled": true,
+        "scriptKeys": [
+          "web-open-redirect-verify"
+        ]
+      }
+    }
+  },
+  "prerequisites": [
+    {
+      "type": "service",
+      "value": "本机后端服务运行于 http://127.0.0.1:6667",
+      "required": true
+    },
+    {
+      "type": "browser",
+      "value": "使用本机浏览器访问实验工作台",
+      "required": true
+    }
+  ],
+  "safeBoundaries": [
+    "只处理固定本机 Web 教学场景，不生成可用于外部站点的攻击载荷。",
+    "页面和 API 只接受共享目录中声明的 scenarioKey 与 controlKey。",
+    "未知 key 会被脱敏阻断，不写入原始输入或外部目标信息。"
+  ],
+  "paths": {
+    "root": "labs/web/open-redirect",
+    "readme": "labs/web/open-redirect/README.md",
+    "vuln": "labs/web/open-redirect/vuln",
+    "fixed": "labs/web/open-redirect/fixed",
+    "mock": "labs/web/open-redirect/mock",
+    "docs": "labs/web/open-redirect/docs",
+    "scripts": "tools/lab-scripts/web/open-redirect"
+  },
+  "references": [],
+  "notes": "该实验仅提供本机受控固定场景和只读验证，不允许扩展为通用攻击工具。"
+}

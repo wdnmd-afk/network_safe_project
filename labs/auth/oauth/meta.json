@@ -1,0 +1,176 @@
+{
+  "id": "auth.oauth",
+  "slug": "oauth",
+  "title": "OAuth 漏洞",
+  "category": "auth",
+  "subcategory": "oauth",
+  "mode": "interactive",
+  "severity": "high",
+  "difficulty": "advanced",
+  "summary": "通过固定授权请求观察回调地址、state、PKCE 和最小 scope 校验。",
+  "status": "ready",
+  "phase": "phase-1",
+  "sortOrder": 304,
+  "estimatedMinutes": 25,
+  "tags": [
+    "auth",
+    "oauth",
+    "pkce"
+  ],
+  "knowledgePoints": [
+    "授权码流程",
+    "回调地址校验",
+    "PKCE 与 state"
+  ],
+  "variants": [
+    {
+      "key": "vuln",
+      "title": "OAuth 漏洞风险观察版",
+      "enabled": true,
+      "description": "观察授权响应没有与原始客户端、回调地址和请求上下文严格绑定导致的固定风险判定。",
+      "entryKey": "auth-oauth-vuln",
+      "expectedOutcome": "返回 auth-oauth-risk-accepted 学习信号。",
+      "supportsAutomation": true
+    },
+    {
+      "key": "fixed",
+      "title": "OAuth 漏洞防御复盘版",
+      "enabled": true,
+      "description": "观察验证落实“精确回调地址、state、nonce、PKCE 和最小 scope”后的正常受控流程。",
+      "entryKey": "auth-oauth-fixed",
+      "expectedOutcome": "高风险动作被阻断，正常受控流程通过复核。",
+      "supportsAutomation": true
+    }
+  ],
+  "entrypoints": {
+    "web": [
+      {
+        "key": "auth-oauth-vuln",
+        "variant": "vuln",
+        "path": "/labs/auth/oauth/vuln",
+        "description": "OAuth 漏洞风险观察版工作台"
+      },
+      {
+        "key": "auth-oauth-fixed",
+        "variant": "fixed",
+        "path": "/labs/auth/oauth/fixed",
+        "description": "OAuth 漏洞防御复盘版工作台"
+      }
+    ],
+    "api": [
+      {
+        "key": "auth-oauth-workbench",
+        "variant": "shared",
+        "method": "GET",
+        "path": "/api/labs/auth/oauth/workbench",
+        "description": "OAuth 漏洞固定工作台配置"
+      },
+      {
+        "key": "auth-oauth-vuln-evaluate",
+        "variant": "vuln",
+        "method": "POST",
+        "path": "/api/labs/auth/oauth/vuln/evaluate",
+        "description": "OAuth 漏洞漏洞版固定案例评估"
+      },
+      {
+        "key": "auth-oauth-fixed-evaluate",
+        "variant": "fixed",
+        "method": "POST",
+        "path": "/api/labs/auth/oauth/fixed/evaluate",
+        "description": "OAuth 漏洞修复版固定案例评估"
+      }
+    ],
+    "scripts": [
+      {
+        "key": "auth-oauth-verify",
+        "language": "ts",
+        "path": "tools/lab-scripts/auth/oauth/verify.ts",
+        "description": "OAuth 漏洞本机只读一致性验证"
+      },
+      {
+        "key": "auth-oauth-exploit",
+        "language": "python",
+        "path": "tools/lab-scripts/auth/oauth/exploit.py",
+        "description": "OAuth 漏洞本机固定案例受控请求脚本"
+      }
+    ],
+    "docs": [
+      {
+        "key": "auth-oauth-readme",
+        "path": "labs/auth/oauth/README.md",
+        "description": "OAuth 漏洞场景说明"
+      },
+      {
+        "key": "auth-oauth-attack-steps",
+        "path": "labs/auth/oauth/docs/attack-steps.md",
+        "description": "OAuth 漏洞风险观察步骤"
+      },
+      {
+        "key": "auth-oauth-fix-notes",
+        "path": "labs/auth/oauth/docs/fix-notes.md",
+        "description": "OAuth 漏洞修复思路"
+      },
+      {
+        "key": "auth-oauth-manual-verification",
+        "path": "labs/auth/oauth/docs/manual-verification.md",
+        "description": "OAuth 漏洞手工验证矩阵"
+      }
+    ]
+  },
+  "verification": {
+    "manual": {
+      "supported": true,
+      "stepsDocPath": "labs/auth/oauth/docs/manual-verification.md",
+      "expectedSignals": [
+        "auth-oauth-risk-accepted",
+        "auth-oauth-defense-blocked",
+        "auth-oauth-normal-verified"
+      ]
+    },
+    "automation": {
+      "supported": true,
+      "playwright": {
+        "enabled": false,
+        "specPath": "packages/testing/tests/e2e/platform.spec.mjs"
+      },
+      "apiTest": {
+        "enabled": true,
+        "specPath": "apps/server/tests/guided-scenario-lab.test.ts"
+      },
+      "scriptVerification": {
+        "enabled": true,
+        "scriptKeys": [
+          "auth-oauth-verify"
+        ]
+      }
+    }
+  },
+  "prerequisites": [
+    {
+      "type": "service",
+      "value": "本机后端服务运行于 http://127.0.0.1:6667",
+      "required": true
+    },
+    {
+      "type": "browser",
+      "value": "使用本机浏览器访问实验工作台",
+      "required": true
+    }
+  ],
+  "safeBoundaries": [
+    "只处理固定虚构身份与会话数据，不读取真实账号、密码、Cookie 或 token。",
+    "页面和 API 只接受共享目录中声明的 scenarioKey 与 controlKey。",
+    "未知 key 会被脱敏阻断，不写入原始输入或外部目标信息。"
+  ],
+  "paths": {
+    "root": "labs/auth/oauth",
+    "readme": "labs/auth/oauth/README.md",
+    "vuln": "labs/auth/oauth/vuln",
+    "fixed": "labs/auth/oauth/fixed",
+    "mock": "labs/auth/oauth/mock",
+    "docs": "labs/auth/oauth/docs",
+    "scripts": "tools/lab-scripts/auth/oauth"
+  },
+  "references": [],
+  "notes": "该实验仅提供本机受控固定场景和只读验证，不允许扩展为通用攻击工具。"
+}

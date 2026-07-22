@@ -1,0 +1,171 @@
+{
+  "id": "ai.ai-driven-attacks",
+  "slug": "ai-driven-attacks",
+  "title": "AI 驱动攻击",
+  "category": "ai",
+  "subcategory": "ai-driven-attacks",
+  "mode": "case-study",
+  "severity": "high",
+  "difficulty": "intermediate",
+  "summary": "通过固定自动化攻击链摘要学习规模化风险、人工复核和工具权限边界。",
+  "status": "ready",
+  "phase": "phase-3",
+  "sortOrder": 325,
+  "estimatedMinutes": 20,
+  "tags": [
+    "ai",
+    "automation",
+    "case-study"
+  ],
+  "knowledgePoints": [
+    "自动化规模风险",
+    "工具权限",
+    "人工复核"
+  ],
+  "variants": [
+    {
+      "key": "vuln",
+      "title": "AI 驱动攻击风险观察版",
+      "enabled": true,
+      "description": "观察自动化系统拥有过宽工具权限且缺少人工确认和审计导致的固定风险判定。",
+      "entryKey": "ai-ai-driven-attacks-vuln",
+      "expectedOutcome": "返回 ai-ai-driven-attacks-risk-accepted 学习信号。",
+      "supportsAutomation": false
+    },
+    {
+      "key": "fixed",
+      "title": "AI 驱动攻击防御复盘版",
+      "enabled": true,
+      "description": "观察验证落实“工具允许列表、人工审批、速率限制、输出策略和完整审计”后的正常受控流程。",
+      "entryKey": "ai-ai-driven-attacks-fixed",
+      "expectedOutcome": "高风险动作被阻断，正常受控流程通过复核。",
+      "supportsAutomation": false
+    }
+  ],
+  "entrypoints": {
+    "web": [
+      {
+        "key": "ai-ai-driven-attacks-vuln",
+        "variant": "vuln",
+        "path": "/labs/ai/ai-driven-attacks/vuln",
+        "description": "AI 驱动攻击风险观察版工作台"
+      },
+      {
+        "key": "ai-ai-driven-attacks-fixed",
+        "variant": "fixed",
+        "path": "/labs/ai/ai-driven-attacks/fixed",
+        "description": "AI 驱动攻击防御复盘版工作台"
+      }
+    ],
+    "api": [
+      {
+        "key": "ai-ai-driven-attacks-workbench",
+        "variant": "shared",
+        "method": "GET",
+        "path": "/api/labs/ai/ai-driven-attacks/workbench",
+        "description": "AI 驱动攻击固定工作台配置"
+      },
+      {
+        "key": "ai-ai-driven-attacks-vuln-evaluate",
+        "variant": "vuln",
+        "method": "POST",
+        "path": "/api/labs/ai/ai-driven-attacks/vuln/evaluate",
+        "description": "AI 驱动攻击漏洞版固定案例评估"
+      },
+      {
+        "key": "ai-ai-driven-attacks-fixed-evaluate",
+        "variant": "fixed",
+        "method": "POST",
+        "path": "/api/labs/ai/ai-driven-attacks/fixed/evaluate",
+        "description": "AI 驱动攻击修复版固定案例评估"
+      }
+    ],
+    "scripts": [
+      {
+        "key": "ai-ai-driven-attacks-verify",
+        "language": "ts",
+        "path": "tools/lab-scripts/ai/ai-driven-attacks/verify.ts",
+        "description": "AI 驱动攻击本机只读一致性验证"
+      }
+    ],
+    "docs": [
+      {
+        "key": "ai-ai-driven-attacks-readme",
+        "path": "labs/ai/ai-driven-attacks/README.md",
+        "description": "AI 驱动攻击场景说明"
+      },
+      {
+        "key": "ai-ai-driven-attacks-attack-steps",
+        "path": "labs/ai/ai-driven-attacks/docs/attack-steps.md",
+        "description": "AI 驱动攻击风险观察步骤"
+      },
+      {
+        "key": "ai-ai-driven-attacks-fix-notes",
+        "path": "labs/ai/ai-driven-attacks/docs/fix-notes.md",
+        "description": "AI 驱动攻击修复思路"
+      },
+      {
+        "key": "ai-ai-driven-attacks-manual-verification",
+        "path": "labs/ai/ai-driven-attacks/docs/manual-verification.md",
+        "description": "AI 驱动攻击手工验证矩阵"
+      }
+    ]
+  },
+  "verification": {
+    "manual": {
+      "supported": true,
+      "stepsDocPath": "labs/ai/ai-driven-attacks/docs/manual-verification.md",
+      "expectedSignals": [
+        "ai-ai-driven-attacks-risk-accepted",
+        "ai-ai-driven-attacks-defense-blocked",
+        "ai-ai-driven-attacks-normal-verified"
+      ]
+    },
+    "automation": {
+      "supported": true,
+      "playwright": {
+        "enabled": false,
+        "specPath": "packages/testing/tests/e2e/platform.spec.mjs"
+      },
+      "apiTest": {
+        "enabled": true,
+        "specPath": "apps/server/tests/guided-scenario-lab.test.ts"
+      },
+      "scriptVerification": {
+        "enabled": true,
+        "scriptKeys": [
+          "ai-ai-driven-attacks-verify"
+        ]
+      }
+    }
+  },
+  "prerequisites": [
+    {
+      "type": "service",
+      "value": "本机后端服务运行于 http://127.0.0.1:6667",
+      "required": true
+    },
+    {
+      "type": "browser",
+      "value": "使用本机浏览器访问实验工作台",
+      "required": true
+    }
+  ],
+  "safeBoundaries": [
+    "AI 驱动攻击 按 case-study ready 例外收口，只代表固定案例学习闭环完成。",
+    "只使用确定性固定样例，不调用外部模型生成攻击内容。",
+    "页面和 API 只接受共享目录中声明的 scenarioKey 与 controlKey。",
+    "未知 key 会被脱敏阻断，不写入原始输入或外部目标信息。"
+  ],
+  "paths": {
+    "root": "labs/ai/ai-driven-attacks",
+    "readme": "labs/ai/ai-driven-attacks/README.md",
+    "vuln": "labs/ai/ai-driven-attacks/vuln",
+    "fixed": "labs/ai/ai-driven-attacks/fixed",
+    "mock": "labs/ai/ai-driven-attacks/mock",
+    "docs": "labs/ai/ai-driven-attacks/docs",
+    "scripts": "tools/lab-scripts/ai/ai-driven-attacks"
+  },
+  "references": [],
+  "notes": "该实验按 case-study ready 例外收口，不提供 exploit.py、攻击脚本、外部连接或真实样本。"
+}

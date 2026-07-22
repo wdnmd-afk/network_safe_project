@@ -1,0 +1,171 @@
+{
+  "id": "supply-chain.malicious-package",
+  "slug": "malicious-package",
+  "title": "恶意包注入",
+  "category": "supply-chain",
+  "subcategory": "malicious-package",
+  "mode": "case-study",
+  "severity": "critical",
+  "difficulty": "advanced",
+  "summary": "通过固定包清单和构建事件学习依赖审查与生命周期脚本风险。",
+  "status": "ready",
+  "phase": "phase-3",
+  "sortOrder": 322,
+  "estimatedMinutes": 20,
+  "tags": [
+    "supply-chain",
+    "package",
+    "case-study"
+  ],
+  "knowledgePoints": [
+    "依赖来源",
+    "生命周期脚本",
+    "隔离构建"
+  ],
+  "variants": [
+    {
+      "key": "vuln",
+      "title": "恶意包注入风险观察版",
+      "enabled": true,
+      "description": "观察构建流程自动信任依赖更新且没有来源和行为审查导致的固定风险判定。",
+      "entryKey": "supply-chain-malicious-package-vuln",
+      "expectedOutcome": "返回 supply-chain-malicious-package-risk-accepted 学习信号。",
+      "supportsAutomation": false
+    },
+    {
+      "key": "fixed",
+      "title": "恶意包注入防御复盘版",
+      "enabled": true,
+      "description": "观察验证落实“来源证明、锁文件、脚本禁用策略、依赖审查和隔离构建”后的正常受控流程。",
+      "entryKey": "supply-chain-malicious-package-fixed",
+      "expectedOutcome": "高风险动作被阻断，正常受控流程通过复核。",
+      "supportsAutomation": false
+    }
+  ],
+  "entrypoints": {
+    "web": [
+      {
+        "key": "supply-chain-malicious-package-vuln",
+        "variant": "vuln",
+        "path": "/labs/supply-chain/malicious-package/vuln",
+        "description": "恶意包注入风险观察版工作台"
+      },
+      {
+        "key": "supply-chain-malicious-package-fixed",
+        "variant": "fixed",
+        "path": "/labs/supply-chain/malicious-package/fixed",
+        "description": "恶意包注入防御复盘版工作台"
+      }
+    ],
+    "api": [
+      {
+        "key": "supply-chain-malicious-package-workbench",
+        "variant": "shared",
+        "method": "GET",
+        "path": "/api/labs/supply-chain/malicious-package/workbench",
+        "description": "恶意包注入固定工作台配置"
+      },
+      {
+        "key": "supply-chain-malicious-package-vuln-evaluate",
+        "variant": "vuln",
+        "method": "POST",
+        "path": "/api/labs/supply-chain/malicious-package/vuln/evaluate",
+        "description": "恶意包注入漏洞版固定案例评估"
+      },
+      {
+        "key": "supply-chain-malicious-package-fixed-evaluate",
+        "variant": "fixed",
+        "method": "POST",
+        "path": "/api/labs/supply-chain/malicious-package/fixed/evaluate",
+        "description": "恶意包注入修复版固定案例评估"
+      }
+    ],
+    "scripts": [
+      {
+        "key": "supply-chain-malicious-package-verify",
+        "language": "ts",
+        "path": "tools/lab-scripts/supply-chain/malicious-package/verify.ts",
+        "description": "恶意包注入本机只读一致性验证"
+      }
+    ],
+    "docs": [
+      {
+        "key": "supply-chain-malicious-package-readme",
+        "path": "labs/supply-chain/malicious-package/README.md",
+        "description": "恶意包注入场景说明"
+      },
+      {
+        "key": "supply-chain-malicious-package-attack-steps",
+        "path": "labs/supply-chain/malicious-package/docs/attack-steps.md",
+        "description": "恶意包注入风险观察步骤"
+      },
+      {
+        "key": "supply-chain-malicious-package-fix-notes",
+        "path": "labs/supply-chain/malicious-package/docs/fix-notes.md",
+        "description": "恶意包注入修复思路"
+      },
+      {
+        "key": "supply-chain-malicious-package-manual-verification",
+        "path": "labs/supply-chain/malicious-package/docs/manual-verification.md",
+        "description": "恶意包注入手工验证矩阵"
+      }
+    ]
+  },
+  "verification": {
+    "manual": {
+      "supported": true,
+      "stepsDocPath": "labs/supply-chain/malicious-package/docs/manual-verification.md",
+      "expectedSignals": [
+        "supply-chain-malicious-package-risk-accepted",
+        "supply-chain-malicious-package-defense-blocked",
+        "supply-chain-malicious-package-normal-verified"
+      ]
+    },
+    "automation": {
+      "supported": true,
+      "playwright": {
+        "enabled": false,
+        "specPath": "packages/testing/tests/e2e/platform.spec.mjs"
+      },
+      "apiTest": {
+        "enabled": true,
+        "specPath": "apps/server/tests/guided-scenario-lab.test.ts"
+      },
+      "scriptVerification": {
+        "enabled": true,
+        "scriptKeys": [
+          "supply-chain-malicious-package-verify"
+        ]
+      }
+    }
+  },
+  "prerequisites": [
+    {
+      "type": "service",
+      "value": "本机后端服务运行于 http://127.0.0.1:6667",
+      "required": true
+    },
+    {
+      "type": "browser",
+      "value": "使用本机浏览器访问实验工作台",
+      "required": true
+    }
+  ],
+  "safeBoundaries": [
+    "恶意包注入 按 case-study ready 例外收口，只代表固定案例学习闭环完成。",
+    "只分析固定清单和来源记录，不安装、发布或下载任何依赖。",
+    "页面和 API 只接受共享目录中声明的 scenarioKey 与 controlKey。",
+    "未知 key 会被脱敏阻断，不写入原始输入或外部目标信息。"
+  ],
+  "paths": {
+    "root": "labs/supply-chain/malicious-package",
+    "readme": "labs/supply-chain/malicious-package/README.md",
+    "vuln": "labs/supply-chain/malicious-package/vuln",
+    "fixed": "labs/supply-chain/malicious-package/fixed",
+    "mock": "labs/supply-chain/malicious-package/mock",
+    "docs": "labs/supply-chain/malicious-package/docs",
+    "scripts": "tools/lab-scripts/supply-chain/malicious-package"
+  },
+  "references": [],
+  "notes": "该实验按 case-study ready 例外收口，不提供 exploit.py、攻击脚本、外部连接或真实样本。"
+}

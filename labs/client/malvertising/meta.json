@@ -1,0 +1,171 @@
+{
+  "id": "client.malvertising",
+  "slug": "malvertising",
+  "title": "恶意广告",
+  "category": "client",
+  "subcategory": "malvertising",
+  "mode": "case-study",
+  "severity": "high",
+  "difficulty": "beginner",
+  "summary": "通过固定广告供应链记录学习第三方内容、重定向和隔离策略。",
+  "status": "ready",
+  "phase": "phase-3",
+  "sortOrder": 332,
+  "estimatedMinutes": 20,
+  "tags": [
+    "client",
+    "malvertising",
+    "case-study"
+  ],
+  "knowledgePoints": [
+    "广告供应链",
+    "内容沙箱",
+    "重定向监控"
+  ],
+  "variants": [
+    {
+      "key": "vuln",
+      "title": "恶意广告风险观察版",
+      "enabled": true,
+      "description": "观察站点将第三方广告内容置于过宽浏览器权限中导致的固定风险判定。",
+      "entryKey": "client-malvertising-vuln",
+      "expectedOutcome": "返回 client-malvertising-risk-accepted 学习信号。",
+      "supportsAutomation": false
+    },
+    {
+      "key": "fixed",
+      "title": "恶意广告防御复盘版",
+      "enabled": true,
+      "description": "观察验证落实“内容沙箱、供应商审核、CSP、重定向监控和浏览器隔离”后的正常受控流程。",
+      "entryKey": "client-malvertising-fixed",
+      "expectedOutcome": "高风险动作被阻断，正常受控流程通过复核。",
+      "supportsAutomation": false
+    }
+  ],
+  "entrypoints": {
+    "web": [
+      {
+        "key": "client-malvertising-vuln",
+        "variant": "vuln",
+        "path": "/labs/client/malvertising/vuln",
+        "description": "恶意广告风险观察版工作台"
+      },
+      {
+        "key": "client-malvertising-fixed",
+        "variant": "fixed",
+        "path": "/labs/client/malvertising/fixed",
+        "description": "恶意广告防御复盘版工作台"
+      }
+    ],
+    "api": [
+      {
+        "key": "client-malvertising-workbench",
+        "variant": "shared",
+        "method": "GET",
+        "path": "/api/labs/client/malvertising/workbench",
+        "description": "恶意广告固定工作台配置"
+      },
+      {
+        "key": "client-malvertising-vuln-evaluate",
+        "variant": "vuln",
+        "method": "POST",
+        "path": "/api/labs/client/malvertising/vuln/evaluate",
+        "description": "恶意广告漏洞版固定案例评估"
+      },
+      {
+        "key": "client-malvertising-fixed-evaluate",
+        "variant": "fixed",
+        "method": "POST",
+        "path": "/api/labs/client/malvertising/fixed/evaluate",
+        "description": "恶意广告修复版固定案例评估"
+      }
+    ],
+    "scripts": [
+      {
+        "key": "client-malvertising-verify",
+        "language": "ts",
+        "path": "tools/lab-scripts/client/malvertising/verify.ts",
+        "description": "恶意广告本机只读一致性验证"
+      }
+    ],
+    "docs": [
+      {
+        "key": "client-malvertising-readme",
+        "path": "labs/client/malvertising/README.md",
+        "description": "恶意广告场景说明"
+      },
+      {
+        "key": "client-malvertising-attack-steps",
+        "path": "labs/client/malvertising/docs/attack-steps.md",
+        "description": "恶意广告风险观察步骤"
+      },
+      {
+        "key": "client-malvertising-fix-notes",
+        "path": "labs/client/malvertising/docs/fix-notes.md",
+        "description": "恶意广告修复思路"
+      },
+      {
+        "key": "client-malvertising-manual-verification",
+        "path": "labs/client/malvertising/docs/manual-verification.md",
+        "description": "恶意广告手工验证矩阵"
+      }
+    ]
+  },
+  "verification": {
+    "manual": {
+      "supported": true,
+      "stepsDocPath": "labs/client/malvertising/docs/manual-verification.md",
+      "expectedSignals": [
+        "client-malvertising-risk-accepted",
+        "client-malvertising-defense-blocked",
+        "client-malvertising-normal-verified"
+      ]
+    },
+    "automation": {
+      "supported": true,
+      "playwright": {
+        "enabled": false,
+        "specPath": "packages/testing/tests/e2e/platform.spec.mjs"
+      },
+      "apiTest": {
+        "enabled": true,
+        "specPath": "apps/server/tests/guided-scenario-lab.test.ts"
+      },
+      "scriptVerification": {
+        "enabled": true,
+        "scriptKeys": [
+          "client-malvertising-verify"
+        ]
+      }
+    }
+  },
+  "prerequisites": [
+    {
+      "type": "service",
+      "value": "本机后端服务运行于 http://127.0.0.1:6667",
+      "required": true
+    },
+    {
+      "type": "browser",
+      "value": "使用本机浏览器访问实验工作台",
+      "required": true
+    }
+  ],
+  "safeBoundaries": [
+    "恶意广告 按 case-study ready 例外收口，只代表固定案例学习闭环完成。",
+    "只使用固定浏览器行为案例，不注入真实页面、不采集表单数据。",
+    "页面和 API 只接受共享目录中声明的 scenarioKey 与 controlKey。",
+    "未知 key 会被脱敏阻断，不写入原始输入或外部目标信息。"
+  ],
+  "paths": {
+    "root": "labs/client/malvertising",
+    "readme": "labs/client/malvertising/README.md",
+    "vuln": "labs/client/malvertising/vuln",
+    "fixed": "labs/client/malvertising/fixed",
+    "mock": "labs/client/malvertising/mock",
+    "docs": "labs/client/malvertising/docs",
+    "scripts": "tools/lab-scripts/client/malvertising"
+  },
+  "references": [],
+  "notes": "该实验按 case-study ready 例外收口，不提供 exploit.py、攻击脚本、外部连接或真实样本。"
+}

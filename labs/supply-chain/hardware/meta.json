@@ -1,0 +1,171 @@
+{
+  "id": "supply-chain.hardware",
+  "slug": "hardware",
+  "title": "硬件供应链",
+  "category": "supply-chain",
+  "subcategory": "hardware",
+  "mode": "case-study",
+  "severity": "critical",
+  "difficulty": "advanced",
+  "summary": "通过固定采购与验收记录学习硬件来源、固件和资产证明。",
+  "status": "ready",
+  "phase": "phase-3",
+  "sortOrder": 324,
+  "estimatedMinutes": 20,
+  "tags": [
+    "supply-chain",
+    "hardware",
+    "case-study"
+  ],
+  "knowledgePoints": [
+    "硬件来源",
+    "固件完整性",
+    "资产验收"
+  ],
+  "variants": [
+    {
+      "key": "vuln",
+      "title": "硬件供应链风险观察版",
+      "enabled": true,
+      "description": "观察采购和上线流程缺少来源、批次和固件完整性验证导致的固定风险判定。",
+      "entryKey": "supply-chain-hardware-vuln",
+      "expectedOutcome": "返回 supply-chain-hardware-risk-accepted 学习信号。",
+      "supportsAutomation": false
+    },
+    {
+      "key": "fixed",
+      "title": "硬件供应链防御复盘版",
+      "enabled": true,
+      "description": "观察验证落实“合格供应商、链路证明、固件签名、抽检和资产基线”后的正常受控流程。",
+      "entryKey": "supply-chain-hardware-fixed",
+      "expectedOutcome": "高风险动作被阻断，正常受控流程通过复核。",
+      "supportsAutomation": false
+    }
+  ],
+  "entrypoints": {
+    "web": [
+      {
+        "key": "supply-chain-hardware-vuln",
+        "variant": "vuln",
+        "path": "/labs/supply-chain/hardware/vuln",
+        "description": "硬件供应链风险观察版工作台"
+      },
+      {
+        "key": "supply-chain-hardware-fixed",
+        "variant": "fixed",
+        "path": "/labs/supply-chain/hardware/fixed",
+        "description": "硬件供应链防御复盘版工作台"
+      }
+    ],
+    "api": [
+      {
+        "key": "supply-chain-hardware-workbench",
+        "variant": "shared",
+        "method": "GET",
+        "path": "/api/labs/supply-chain/hardware/workbench",
+        "description": "硬件供应链固定工作台配置"
+      },
+      {
+        "key": "supply-chain-hardware-vuln-evaluate",
+        "variant": "vuln",
+        "method": "POST",
+        "path": "/api/labs/supply-chain/hardware/vuln/evaluate",
+        "description": "硬件供应链漏洞版固定案例评估"
+      },
+      {
+        "key": "supply-chain-hardware-fixed-evaluate",
+        "variant": "fixed",
+        "method": "POST",
+        "path": "/api/labs/supply-chain/hardware/fixed/evaluate",
+        "description": "硬件供应链修复版固定案例评估"
+      }
+    ],
+    "scripts": [
+      {
+        "key": "supply-chain-hardware-verify",
+        "language": "ts",
+        "path": "tools/lab-scripts/supply-chain/hardware/verify.ts",
+        "description": "硬件供应链本机只读一致性验证"
+      }
+    ],
+    "docs": [
+      {
+        "key": "supply-chain-hardware-readme",
+        "path": "labs/supply-chain/hardware/README.md",
+        "description": "硬件供应链场景说明"
+      },
+      {
+        "key": "supply-chain-hardware-attack-steps",
+        "path": "labs/supply-chain/hardware/docs/attack-steps.md",
+        "description": "硬件供应链风险观察步骤"
+      },
+      {
+        "key": "supply-chain-hardware-fix-notes",
+        "path": "labs/supply-chain/hardware/docs/fix-notes.md",
+        "description": "硬件供应链修复思路"
+      },
+      {
+        "key": "supply-chain-hardware-manual-verification",
+        "path": "labs/supply-chain/hardware/docs/manual-verification.md",
+        "description": "硬件供应链手工验证矩阵"
+      }
+    ]
+  },
+  "verification": {
+    "manual": {
+      "supported": true,
+      "stepsDocPath": "labs/supply-chain/hardware/docs/manual-verification.md",
+      "expectedSignals": [
+        "supply-chain-hardware-risk-accepted",
+        "supply-chain-hardware-defense-blocked",
+        "supply-chain-hardware-normal-verified"
+      ]
+    },
+    "automation": {
+      "supported": true,
+      "playwright": {
+        "enabled": false,
+        "specPath": "packages/testing/tests/e2e/platform.spec.mjs"
+      },
+      "apiTest": {
+        "enabled": true,
+        "specPath": "apps/server/tests/guided-scenario-lab.test.ts"
+      },
+      "scriptVerification": {
+        "enabled": true,
+        "scriptKeys": [
+          "supply-chain-hardware-verify"
+        ]
+      }
+    }
+  },
+  "prerequisites": [
+    {
+      "type": "service",
+      "value": "本机后端服务运行于 http://127.0.0.1:6667",
+      "required": true
+    },
+    {
+      "type": "browser",
+      "value": "使用本机浏览器访问实验工作台",
+      "required": true
+    }
+  ],
+  "safeBoundaries": [
+    "硬件供应链 按 case-study ready 例外收口，只代表固定案例学习闭环完成。",
+    "只分析固定清单和来源记录，不安装、发布或下载任何依赖。",
+    "页面和 API 只接受共享目录中声明的 scenarioKey 与 controlKey。",
+    "未知 key 会被脱敏阻断，不写入原始输入或外部目标信息。"
+  ],
+  "paths": {
+    "root": "labs/supply-chain/hardware",
+    "readme": "labs/supply-chain/hardware/README.md",
+    "vuln": "labs/supply-chain/hardware/vuln",
+    "fixed": "labs/supply-chain/hardware/fixed",
+    "mock": "labs/supply-chain/hardware/mock",
+    "docs": "labs/supply-chain/hardware/docs",
+    "scripts": "tools/lab-scripts/supply-chain/hardware"
+  },
+  "references": [],
+  "notes": "该实验按 case-study ready 例外收口，不提供 exploit.py、攻击脚本、外部连接或真实样本。"
+}

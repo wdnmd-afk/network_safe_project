@@ -1,0 +1,170 @@
+{
+  "id": "network.dns-tunneling",
+  "slug": "dns-tunneling",
+  "title": "DNS 隧道",
+  "category": "network",
+  "subcategory": "dns-tunneling",
+  "mode": "simulation",
+  "severity": "high",
+  "difficulty": "advanced",
+  "summary": "使用固定 DNS 查询统计观察异常子域模式与出口解析策略。",
+  "status": "ready",
+  "phase": "phase-2",
+  "sortOrder": 309,
+  "estimatedMinutes": 25,
+  "tags": [
+    "network",
+    "dns",
+    "tunneling"
+  ],
+  "knowledgePoints": [
+    "DNS 异常特征",
+    "出口解析控制",
+    "流量基线"
+  ],
+  "variants": [
+    {
+      "key": "vuln",
+      "title": "DNS 隧道风险观察版",
+      "enabled": true,
+      "description": "观察终端可使用未受控解析出口且异常查询没有被关联分析导致的固定风险判定。",
+      "entryKey": "network-dns-tunneling-vuln",
+      "expectedOutcome": "返回 network-dns-tunneling-risk-accepted 学习信号。",
+      "supportsAutomation": true
+    },
+    {
+      "key": "fixed",
+      "title": "DNS 隧道防御复盘版",
+      "enabled": true,
+      "description": "观察验证落实“固定解析器、查询长度与熵检测、出口控制和域名信誉审计”后的正常受控流程。",
+      "entryKey": "network-dns-tunneling-fixed",
+      "expectedOutcome": "高风险动作被阻断，正常受控流程通过复核。",
+      "supportsAutomation": true
+    }
+  ],
+  "entrypoints": {
+    "web": [
+      {
+        "key": "network-dns-tunneling-vuln",
+        "variant": "vuln",
+        "path": "/labs/network/dns-tunneling/vuln",
+        "description": "DNS 隧道风险观察版工作台"
+      },
+      {
+        "key": "network-dns-tunneling-fixed",
+        "variant": "fixed",
+        "path": "/labs/network/dns-tunneling/fixed",
+        "description": "DNS 隧道防御复盘版工作台"
+      }
+    ],
+    "api": [
+      {
+        "key": "network-dns-tunneling-workbench",
+        "variant": "shared",
+        "method": "GET",
+        "path": "/api/labs/network/dns-tunneling/workbench",
+        "description": "DNS 隧道固定工作台配置"
+      },
+      {
+        "key": "network-dns-tunneling-vuln-evaluate",
+        "variant": "vuln",
+        "method": "POST",
+        "path": "/api/labs/network/dns-tunneling/vuln/evaluate",
+        "description": "DNS 隧道漏洞版固定案例评估"
+      },
+      {
+        "key": "network-dns-tunneling-fixed-evaluate",
+        "variant": "fixed",
+        "method": "POST",
+        "path": "/api/labs/network/dns-tunneling/fixed/evaluate",
+        "description": "DNS 隧道修复版固定案例评估"
+      }
+    ],
+    "scripts": [
+      {
+        "key": "network-dns-tunneling-verify",
+        "language": "ts",
+        "path": "tools/lab-scripts/network/dns-tunneling/verify.ts",
+        "description": "DNS 隧道本机只读一致性验证"
+      }
+    ],
+    "docs": [
+      {
+        "key": "network-dns-tunneling-readme",
+        "path": "labs/network/dns-tunneling/README.md",
+        "description": "DNS 隧道场景说明"
+      },
+      {
+        "key": "network-dns-tunneling-attack-steps",
+        "path": "labs/network/dns-tunneling/docs/attack-steps.md",
+        "description": "DNS 隧道风险观察步骤"
+      },
+      {
+        "key": "network-dns-tunneling-fix-notes",
+        "path": "labs/network/dns-tunneling/docs/fix-notes.md",
+        "description": "DNS 隧道修复思路"
+      },
+      {
+        "key": "network-dns-tunneling-manual-verification",
+        "path": "labs/network/dns-tunneling/docs/manual-verification.md",
+        "description": "DNS 隧道手工验证矩阵"
+      }
+    ]
+  },
+  "verification": {
+    "manual": {
+      "supported": true,
+      "stepsDocPath": "labs/network/dns-tunneling/docs/manual-verification.md",
+      "expectedSignals": [
+        "network-dns-tunneling-risk-accepted",
+        "network-dns-tunneling-defense-blocked",
+        "network-dns-tunneling-normal-verified"
+      ]
+    },
+    "automation": {
+      "supported": true,
+      "playwright": {
+        "enabled": false,
+        "specPath": "packages/testing/tests/e2e/platform.spec.mjs"
+      },
+      "apiTest": {
+        "enabled": true,
+        "specPath": "apps/server/tests/guided-scenario-lab.test.ts"
+      },
+      "scriptVerification": {
+        "enabled": true,
+        "scriptKeys": [
+          "network-dns-tunneling-verify"
+        ]
+      }
+    }
+  },
+  "prerequisites": [
+    {
+      "type": "service",
+      "value": "本机后端服务运行于 http://127.0.0.1:6667",
+      "required": true
+    },
+    {
+      "type": "browser",
+      "value": "使用本机浏览器访问实验工作台",
+      "required": true
+    }
+  ],
+  "safeBoundaries": [
+    "只使用内存中的虚拟网络拓扑和固定流量摘要，不扫描、监听或连接真实网络。",
+    "页面和 API 只接受共享目录中声明的 scenarioKey 与 controlKey。",
+    "未知 key 会被脱敏阻断，不写入原始输入或外部目标信息。"
+  ],
+  "paths": {
+    "root": "labs/network/dns-tunneling",
+    "readme": "labs/network/dns-tunneling/README.md",
+    "vuln": "labs/network/dns-tunneling/vuln",
+    "fixed": "labs/network/dns-tunneling/fixed",
+    "mock": "labs/network/dns-tunneling/mock",
+    "docs": "labs/network/dns-tunneling/docs",
+    "scripts": "tools/lab-scripts/network/dns-tunneling"
+  },
+  "references": [],
+  "notes": "该实验仅提供本机受控固定场景和只读验证，不允许扩展为通用攻击工具。"
+}

@@ -1,0 +1,171 @@
+{
+  "id": "social.rogue-wifi",
+  "slug": "rogue-wifi",
+  "title": "钓鱼 WiFi",
+  "category": "social",
+  "subcategory": "rogue-wifi",
+  "mode": "case-study",
+  "severity": "high",
+  "difficulty": "beginner",
+  "summary": "通过固定无线网络卡片学习同名热点、门户诱导和可信网络核验。",
+  "status": "ready",
+  "phase": "phase-3",
+  "sortOrder": 314,
+  "estimatedMinutes": 20,
+  "tags": [
+    "social",
+    "wifi",
+    "case-study"
+  ],
+  "knowledgePoints": [
+    "同名热点",
+    "无线身份校验",
+    "受管网络"
+  ],
+  "variants": [
+    {
+      "key": "vuln",
+      "title": "钓鱼 WiFi风险观察版",
+      "enabled": true,
+      "description": "观察用户和设备仅依赖 SSID 名称判断网络身份导致的固定风险判定。",
+      "entryKey": "social-rogue-wifi-vuln",
+      "expectedOutcome": "返回 social-rogue-wifi-risk-accepted 学习信号。",
+      "supportsAutomation": false
+    },
+    {
+      "key": "fixed",
+      "title": "钓鱼 WiFi防御复盘版",
+      "enabled": true,
+      "description": "观察验证落实“受管无线配置、证书校验、自动连接限制和 VPN”后的正常受控流程。",
+      "entryKey": "social-rogue-wifi-fixed",
+      "expectedOutcome": "高风险动作被阻断，正常受控流程通过复核。",
+      "supportsAutomation": false
+    }
+  ],
+  "entrypoints": {
+    "web": [
+      {
+        "key": "social-rogue-wifi-vuln",
+        "variant": "vuln",
+        "path": "/labs/social/rogue-wifi/vuln",
+        "description": "钓鱼 WiFi风险观察版工作台"
+      },
+      {
+        "key": "social-rogue-wifi-fixed",
+        "variant": "fixed",
+        "path": "/labs/social/rogue-wifi/fixed",
+        "description": "钓鱼 WiFi防御复盘版工作台"
+      }
+    ],
+    "api": [
+      {
+        "key": "social-rogue-wifi-workbench",
+        "variant": "shared",
+        "method": "GET",
+        "path": "/api/labs/social/rogue-wifi/workbench",
+        "description": "钓鱼 WiFi固定工作台配置"
+      },
+      {
+        "key": "social-rogue-wifi-vuln-evaluate",
+        "variant": "vuln",
+        "method": "POST",
+        "path": "/api/labs/social/rogue-wifi/vuln/evaluate",
+        "description": "钓鱼 WiFi漏洞版固定案例评估"
+      },
+      {
+        "key": "social-rogue-wifi-fixed-evaluate",
+        "variant": "fixed",
+        "method": "POST",
+        "path": "/api/labs/social/rogue-wifi/fixed/evaluate",
+        "description": "钓鱼 WiFi修复版固定案例评估"
+      }
+    ],
+    "scripts": [
+      {
+        "key": "social-rogue-wifi-verify",
+        "language": "ts",
+        "path": "tools/lab-scripts/social/rogue-wifi/verify.ts",
+        "description": "钓鱼 WiFi本机只读一致性验证"
+      }
+    ],
+    "docs": [
+      {
+        "key": "social-rogue-wifi-readme",
+        "path": "labs/social/rogue-wifi/README.md",
+        "description": "钓鱼 WiFi场景说明"
+      },
+      {
+        "key": "social-rogue-wifi-attack-steps",
+        "path": "labs/social/rogue-wifi/docs/attack-steps.md",
+        "description": "钓鱼 WiFi风险观察步骤"
+      },
+      {
+        "key": "social-rogue-wifi-fix-notes",
+        "path": "labs/social/rogue-wifi/docs/fix-notes.md",
+        "description": "钓鱼 WiFi修复思路"
+      },
+      {
+        "key": "social-rogue-wifi-manual-verification",
+        "path": "labs/social/rogue-wifi/docs/manual-verification.md",
+        "description": "钓鱼 WiFi手工验证矩阵"
+      }
+    ]
+  },
+  "verification": {
+    "manual": {
+      "supported": true,
+      "stepsDocPath": "labs/social/rogue-wifi/docs/manual-verification.md",
+      "expectedSignals": [
+        "social-rogue-wifi-risk-accepted",
+        "social-rogue-wifi-defense-blocked",
+        "social-rogue-wifi-normal-verified"
+      ]
+    },
+    "automation": {
+      "supported": true,
+      "playwright": {
+        "enabled": false,
+        "specPath": "packages/testing/tests/e2e/platform.spec.mjs"
+      },
+      "apiTest": {
+        "enabled": true,
+        "specPath": "apps/server/tests/guided-scenario-lab.test.ts"
+      },
+      "scriptVerification": {
+        "enabled": true,
+        "scriptKeys": [
+          "social-rogue-wifi-verify"
+        ]
+      }
+    }
+  },
+  "prerequisites": [
+    {
+      "type": "service",
+      "value": "本机后端服务运行于 http://127.0.0.1:6667",
+      "required": true
+    },
+    {
+      "type": "browser",
+      "value": "使用本机浏览器访问实验工作台",
+      "required": true
+    }
+  ],
+  "safeBoundaries": [
+    "钓鱼 WiFi 按 case-study ready 例外收口，只代表固定案例学习闭环完成。",
+    "只使用固定虚构案例和线索卡，不发送消息、不采集画像、不收集凭据。",
+    "页面和 API 只接受共享目录中声明的 scenarioKey 与 controlKey。",
+    "未知 key 会被脱敏阻断，不写入原始输入或外部目标信息。"
+  ],
+  "paths": {
+    "root": "labs/social/rogue-wifi",
+    "readme": "labs/social/rogue-wifi/README.md",
+    "vuln": "labs/social/rogue-wifi/vuln",
+    "fixed": "labs/social/rogue-wifi/fixed",
+    "mock": "labs/social/rogue-wifi/mock",
+    "docs": "labs/social/rogue-wifi/docs",
+    "scripts": "tools/lab-scripts/social/rogue-wifi"
+  },
+  "references": [],
+  "notes": "该实验按 case-study ready 例外收口，不提供 exploit.py、攻击脚本、外部连接或真实样本。"
+}

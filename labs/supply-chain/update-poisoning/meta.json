@@ -1,0 +1,171 @@
+{
+  "id": "supply-chain.update-poisoning",
+  "slug": "update-poisoning",
+  "title": "更新投毒",
+  "category": "supply-chain",
+  "subcategory": "update-poisoning",
+  "mode": "case-study",
+  "severity": "critical",
+  "difficulty": "advanced",
+  "summary": "通过固定更新清单学习签名、发布通道和回滚保护。",
+  "status": "ready",
+  "phase": "phase-3",
+  "sortOrder": 323,
+  "estimatedMinutes": 20,
+  "tags": [
+    "supply-chain",
+    "update",
+    "case-study"
+  ],
+  "knowledgePoints": [
+    "更新签名",
+    "发布透明度",
+    "回滚保护"
+  ],
+  "variants": [
+    {
+      "key": "vuln",
+      "title": "更新投毒风险观察版",
+      "enabled": true,
+      "description": "观察客户端只依据版本号或下载地址接受更新导致的固定风险判定。",
+      "entryKey": "supply-chain-update-poisoning-vuln",
+      "expectedOutcome": "返回 supply-chain-update-poisoning-risk-accepted 学习信号。",
+      "supportsAutomation": false
+    },
+    {
+      "key": "fixed",
+      "title": "更新投毒防御复盘版",
+      "enabled": true,
+      "description": "观察验证落实“离线签名、透明发布、通道固定、回滚保护和分阶段部署”后的正常受控流程。",
+      "entryKey": "supply-chain-update-poisoning-fixed",
+      "expectedOutcome": "高风险动作被阻断，正常受控流程通过复核。",
+      "supportsAutomation": false
+    }
+  ],
+  "entrypoints": {
+    "web": [
+      {
+        "key": "supply-chain-update-poisoning-vuln",
+        "variant": "vuln",
+        "path": "/labs/supply-chain/update-poisoning/vuln",
+        "description": "更新投毒风险观察版工作台"
+      },
+      {
+        "key": "supply-chain-update-poisoning-fixed",
+        "variant": "fixed",
+        "path": "/labs/supply-chain/update-poisoning/fixed",
+        "description": "更新投毒防御复盘版工作台"
+      }
+    ],
+    "api": [
+      {
+        "key": "supply-chain-update-poisoning-workbench",
+        "variant": "shared",
+        "method": "GET",
+        "path": "/api/labs/supply-chain/update-poisoning/workbench",
+        "description": "更新投毒固定工作台配置"
+      },
+      {
+        "key": "supply-chain-update-poisoning-vuln-evaluate",
+        "variant": "vuln",
+        "method": "POST",
+        "path": "/api/labs/supply-chain/update-poisoning/vuln/evaluate",
+        "description": "更新投毒漏洞版固定案例评估"
+      },
+      {
+        "key": "supply-chain-update-poisoning-fixed-evaluate",
+        "variant": "fixed",
+        "method": "POST",
+        "path": "/api/labs/supply-chain/update-poisoning/fixed/evaluate",
+        "description": "更新投毒修复版固定案例评估"
+      }
+    ],
+    "scripts": [
+      {
+        "key": "supply-chain-update-poisoning-verify",
+        "language": "ts",
+        "path": "tools/lab-scripts/supply-chain/update-poisoning/verify.ts",
+        "description": "更新投毒本机只读一致性验证"
+      }
+    ],
+    "docs": [
+      {
+        "key": "supply-chain-update-poisoning-readme",
+        "path": "labs/supply-chain/update-poisoning/README.md",
+        "description": "更新投毒场景说明"
+      },
+      {
+        "key": "supply-chain-update-poisoning-attack-steps",
+        "path": "labs/supply-chain/update-poisoning/docs/attack-steps.md",
+        "description": "更新投毒风险观察步骤"
+      },
+      {
+        "key": "supply-chain-update-poisoning-fix-notes",
+        "path": "labs/supply-chain/update-poisoning/docs/fix-notes.md",
+        "description": "更新投毒修复思路"
+      },
+      {
+        "key": "supply-chain-update-poisoning-manual-verification",
+        "path": "labs/supply-chain/update-poisoning/docs/manual-verification.md",
+        "description": "更新投毒手工验证矩阵"
+      }
+    ]
+  },
+  "verification": {
+    "manual": {
+      "supported": true,
+      "stepsDocPath": "labs/supply-chain/update-poisoning/docs/manual-verification.md",
+      "expectedSignals": [
+        "supply-chain-update-poisoning-risk-accepted",
+        "supply-chain-update-poisoning-defense-blocked",
+        "supply-chain-update-poisoning-normal-verified"
+      ]
+    },
+    "automation": {
+      "supported": true,
+      "playwright": {
+        "enabled": false,
+        "specPath": "packages/testing/tests/e2e/platform.spec.mjs"
+      },
+      "apiTest": {
+        "enabled": true,
+        "specPath": "apps/server/tests/guided-scenario-lab.test.ts"
+      },
+      "scriptVerification": {
+        "enabled": true,
+        "scriptKeys": [
+          "supply-chain-update-poisoning-verify"
+        ]
+      }
+    }
+  },
+  "prerequisites": [
+    {
+      "type": "service",
+      "value": "本机后端服务运行于 http://127.0.0.1:6667",
+      "required": true
+    },
+    {
+      "type": "browser",
+      "value": "使用本机浏览器访问实验工作台",
+      "required": true
+    }
+  ],
+  "safeBoundaries": [
+    "更新投毒 按 case-study ready 例外收口，只代表固定案例学习闭环完成。",
+    "只分析固定清单和来源记录，不安装、发布或下载任何依赖。",
+    "页面和 API 只接受共享目录中声明的 scenarioKey 与 controlKey。",
+    "未知 key 会被脱敏阻断，不写入原始输入或外部目标信息。"
+  ],
+  "paths": {
+    "root": "labs/supply-chain/update-poisoning",
+    "readme": "labs/supply-chain/update-poisoning/README.md",
+    "vuln": "labs/supply-chain/update-poisoning/vuln",
+    "fixed": "labs/supply-chain/update-poisoning/fixed",
+    "mock": "labs/supply-chain/update-poisoning/mock",
+    "docs": "labs/supply-chain/update-poisoning/docs",
+    "scripts": "tools/lab-scripts/supply-chain/update-poisoning"
+  },
+  "references": [],
+  "notes": "该实验按 case-study ready 例外收口，不提供 exploit.py、攻击脚本、外部连接或真实样本。"
+}

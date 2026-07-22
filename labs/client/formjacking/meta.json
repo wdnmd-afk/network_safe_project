@@ -1,0 +1,170 @@
+{
+  "id": "client.formjacking",
+  "slug": "formjacking",
+  "title": "Formjacking",
+  "category": "client",
+  "subcategory": "formjacking",
+  "mode": "simulation",
+  "severity": "critical",
+  "difficulty": "intermediate",
+  "summary": "通过固定结账页提交摘要观察脚本篡改与表单目标校验。",
+  "status": "ready",
+  "phase": "phase-3",
+  "sortOrder": 331,
+  "estimatedMinutes": 25,
+  "tags": [
+    "client",
+    "formjacking",
+    "simulation"
+  ],
+  "knowledgePoints": [
+    "第三方脚本",
+    "表单目标",
+    "CSP 与 SRI"
+  ],
+  "variants": [
+    {
+      "key": "vuln",
+      "title": "Formjacking风险观察版",
+      "enabled": true,
+      "description": "观察敏感页面信任未受约束的第三方脚本和提交目标导致的固定风险判定。",
+      "entryKey": "client-formjacking-vuln",
+      "expectedOutcome": "返回 client-formjacking-risk-accepted 学习信号。",
+      "supportsAutomation": true
+    },
+    {
+      "key": "fixed",
+      "title": "Formjacking防御复盘版",
+      "enabled": true,
+      "description": "观察验证落实“CSP、SRI、脚本清单、提交目标校验和敏感字段隔离”后的正常受控流程。",
+      "entryKey": "client-formjacking-fixed",
+      "expectedOutcome": "高风险动作被阻断，正常受控流程通过复核。",
+      "supportsAutomation": true
+    }
+  ],
+  "entrypoints": {
+    "web": [
+      {
+        "key": "client-formjacking-vuln",
+        "variant": "vuln",
+        "path": "/labs/client/formjacking/vuln",
+        "description": "Formjacking风险观察版工作台"
+      },
+      {
+        "key": "client-formjacking-fixed",
+        "variant": "fixed",
+        "path": "/labs/client/formjacking/fixed",
+        "description": "Formjacking防御复盘版工作台"
+      }
+    ],
+    "api": [
+      {
+        "key": "client-formjacking-workbench",
+        "variant": "shared",
+        "method": "GET",
+        "path": "/api/labs/client/formjacking/workbench",
+        "description": "Formjacking固定工作台配置"
+      },
+      {
+        "key": "client-formjacking-vuln-evaluate",
+        "variant": "vuln",
+        "method": "POST",
+        "path": "/api/labs/client/formjacking/vuln/evaluate",
+        "description": "Formjacking漏洞版固定案例评估"
+      },
+      {
+        "key": "client-formjacking-fixed-evaluate",
+        "variant": "fixed",
+        "method": "POST",
+        "path": "/api/labs/client/formjacking/fixed/evaluate",
+        "description": "Formjacking修复版固定案例评估"
+      }
+    ],
+    "scripts": [
+      {
+        "key": "client-formjacking-verify",
+        "language": "ts",
+        "path": "tools/lab-scripts/client/formjacking/verify.ts",
+        "description": "Formjacking本机只读一致性验证"
+      }
+    ],
+    "docs": [
+      {
+        "key": "client-formjacking-readme",
+        "path": "labs/client/formjacking/README.md",
+        "description": "Formjacking场景说明"
+      },
+      {
+        "key": "client-formjacking-attack-steps",
+        "path": "labs/client/formjacking/docs/attack-steps.md",
+        "description": "Formjacking风险观察步骤"
+      },
+      {
+        "key": "client-formjacking-fix-notes",
+        "path": "labs/client/formjacking/docs/fix-notes.md",
+        "description": "Formjacking修复思路"
+      },
+      {
+        "key": "client-formjacking-manual-verification",
+        "path": "labs/client/formjacking/docs/manual-verification.md",
+        "description": "Formjacking手工验证矩阵"
+      }
+    ]
+  },
+  "verification": {
+    "manual": {
+      "supported": true,
+      "stepsDocPath": "labs/client/formjacking/docs/manual-verification.md",
+      "expectedSignals": [
+        "client-formjacking-risk-accepted",
+        "client-formjacking-defense-blocked",
+        "client-formjacking-normal-verified"
+      ]
+    },
+    "automation": {
+      "supported": true,
+      "playwright": {
+        "enabled": false,
+        "specPath": "packages/testing/tests/e2e/platform.spec.mjs"
+      },
+      "apiTest": {
+        "enabled": true,
+        "specPath": "apps/server/tests/guided-scenario-lab.test.ts"
+      },
+      "scriptVerification": {
+        "enabled": true,
+        "scriptKeys": [
+          "client-formjacking-verify"
+        ]
+      }
+    }
+  },
+  "prerequisites": [
+    {
+      "type": "service",
+      "value": "本机后端服务运行于 http://127.0.0.1:6667",
+      "required": true
+    },
+    {
+      "type": "browser",
+      "value": "使用本机浏览器访问实验工作台",
+      "required": true
+    }
+  ],
+  "safeBoundaries": [
+    "只使用固定浏览器行为案例，不注入真实页面、不采集表单数据。",
+    "页面和 API 只接受共享目录中声明的 scenarioKey 与 controlKey。",
+    "未知 key 会被脱敏阻断，不写入原始输入或外部目标信息。"
+  ],
+  "paths": {
+    "root": "labs/client/formjacking",
+    "readme": "labs/client/formjacking/README.md",
+    "vuln": "labs/client/formjacking/vuln",
+    "fixed": "labs/client/formjacking/fixed",
+    "mock": "labs/client/formjacking/mock",
+    "docs": "labs/client/formjacking/docs",
+    "scripts": "tools/lab-scripts/client/formjacking"
+  },
+  "references": [],
+  "notes": "该实验仅提供本机受控固定场景和只读验证，不允许扩展为通用攻击工具。"
+}

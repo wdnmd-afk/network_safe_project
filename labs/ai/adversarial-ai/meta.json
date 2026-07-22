@@ -1,0 +1,171 @@
+{
+  "id": "ai.adversarial-ai",
+  "slug": "adversarial-ai",
+  "title": "对抗性 AI",
+  "category": "ai",
+  "subcategory": "adversarial-ai",
+  "mode": "case-study",
+  "severity": "high",
+  "difficulty": "advanced",
+  "summary": "通过固定模型输入差异学习分布偏移、鲁棒性和人工兜底。",
+  "status": "ready",
+  "phase": "phase-3",
+  "sortOrder": 327,
+  "estimatedMinutes": 20,
+  "tags": [
+    "ai",
+    "adversarial",
+    "case-study"
+  ],
+  "knowledgePoints": [
+    "对抗样例",
+    "模型鲁棒性",
+    "人工兜底"
+  ],
+  "variants": [
+    {
+      "key": "vuln",
+      "title": "对抗性 AI风险观察版",
+      "enabled": true,
+      "description": "观察高风险决策只依赖单一模型输出且没有输入和置信度审查导致的固定风险判定。",
+      "entryKey": "ai-adversarial-ai-vuln",
+      "expectedOutcome": "返回 ai-adversarial-ai-risk-accepted 学习信号。",
+      "supportsAutomation": false
+    },
+    {
+      "key": "fixed",
+      "title": "对抗性 AI防御复盘版",
+      "enabled": true,
+      "description": "观察验证落实“输入验证、鲁棒性测试、模型监控、阈值策略和人工复核”后的正常受控流程。",
+      "entryKey": "ai-adversarial-ai-fixed",
+      "expectedOutcome": "高风险动作被阻断，正常受控流程通过复核。",
+      "supportsAutomation": false
+    }
+  ],
+  "entrypoints": {
+    "web": [
+      {
+        "key": "ai-adversarial-ai-vuln",
+        "variant": "vuln",
+        "path": "/labs/ai/adversarial-ai/vuln",
+        "description": "对抗性 AI风险观察版工作台"
+      },
+      {
+        "key": "ai-adversarial-ai-fixed",
+        "variant": "fixed",
+        "path": "/labs/ai/adversarial-ai/fixed",
+        "description": "对抗性 AI防御复盘版工作台"
+      }
+    ],
+    "api": [
+      {
+        "key": "ai-adversarial-ai-workbench",
+        "variant": "shared",
+        "method": "GET",
+        "path": "/api/labs/ai/adversarial-ai/workbench",
+        "description": "对抗性 AI固定工作台配置"
+      },
+      {
+        "key": "ai-adversarial-ai-vuln-evaluate",
+        "variant": "vuln",
+        "method": "POST",
+        "path": "/api/labs/ai/adversarial-ai/vuln/evaluate",
+        "description": "对抗性 AI漏洞版固定案例评估"
+      },
+      {
+        "key": "ai-adversarial-ai-fixed-evaluate",
+        "variant": "fixed",
+        "method": "POST",
+        "path": "/api/labs/ai/adversarial-ai/fixed/evaluate",
+        "description": "对抗性 AI修复版固定案例评估"
+      }
+    ],
+    "scripts": [
+      {
+        "key": "ai-adversarial-ai-verify",
+        "language": "ts",
+        "path": "tools/lab-scripts/ai/adversarial-ai/verify.ts",
+        "description": "对抗性 AI本机只读一致性验证"
+      }
+    ],
+    "docs": [
+      {
+        "key": "ai-adversarial-ai-readme",
+        "path": "labs/ai/adversarial-ai/README.md",
+        "description": "对抗性 AI场景说明"
+      },
+      {
+        "key": "ai-adversarial-ai-attack-steps",
+        "path": "labs/ai/adversarial-ai/docs/attack-steps.md",
+        "description": "对抗性 AI风险观察步骤"
+      },
+      {
+        "key": "ai-adversarial-ai-fix-notes",
+        "path": "labs/ai/adversarial-ai/docs/fix-notes.md",
+        "description": "对抗性 AI修复思路"
+      },
+      {
+        "key": "ai-adversarial-ai-manual-verification",
+        "path": "labs/ai/adversarial-ai/docs/manual-verification.md",
+        "description": "对抗性 AI手工验证矩阵"
+      }
+    ]
+  },
+  "verification": {
+    "manual": {
+      "supported": true,
+      "stepsDocPath": "labs/ai/adversarial-ai/docs/manual-verification.md",
+      "expectedSignals": [
+        "ai-adversarial-ai-risk-accepted",
+        "ai-adversarial-ai-defense-blocked",
+        "ai-adversarial-ai-normal-verified"
+      ]
+    },
+    "automation": {
+      "supported": true,
+      "playwright": {
+        "enabled": false,
+        "specPath": "packages/testing/tests/e2e/platform.spec.mjs"
+      },
+      "apiTest": {
+        "enabled": true,
+        "specPath": "apps/server/tests/guided-scenario-lab.test.ts"
+      },
+      "scriptVerification": {
+        "enabled": true,
+        "scriptKeys": [
+          "ai-adversarial-ai-verify"
+        ]
+      }
+    }
+  },
+  "prerequisites": [
+    {
+      "type": "service",
+      "value": "本机后端服务运行于 http://127.0.0.1:6667",
+      "required": true
+    },
+    {
+      "type": "browser",
+      "value": "使用本机浏览器访问实验工作台",
+      "required": true
+    }
+  ],
+  "safeBoundaries": [
+    "对抗性 AI 按 case-study ready 例外收口，只代表固定案例学习闭环完成。",
+    "只使用确定性固定样例，不调用外部模型生成攻击内容。",
+    "页面和 API 只接受共享目录中声明的 scenarioKey 与 controlKey。",
+    "未知 key 会被脱敏阻断，不写入原始输入或外部目标信息。"
+  ],
+  "paths": {
+    "root": "labs/ai/adversarial-ai",
+    "readme": "labs/ai/adversarial-ai/README.md",
+    "vuln": "labs/ai/adversarial-ai/vuln",
+    "fixed": "labs/ai/adversarial-ai/fixed",
+    "mock": "labs/ai/adversarial-ai/mock",
+    "docs": "labs/ai/adversarial-ai/docs",
+    "scripts": "tools/lab-scripts/ai/adversarial-ai"
+  },
+  "references": [],
+  "notes": "该实验按 case-study ready 例外收口，不提供 exploit.py、攻击脚本、外部连接或真实样本。"
+}

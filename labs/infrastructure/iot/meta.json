@@ -1,0 +1,170 @@
+{
+  "id": "infrastructure.iot",
+  "slug": "iot",
+  "title": "IoT 攻击",
+  "category": "infrastructure",
+  "subcategory": "iot",
+  "mode": "simulation",
+  "severity": "high",
+  "difficulty": "intermediate",
+  "summary": "通过固定设备清单学习默认身份、固件和网络分区风险。",
+  "status": "ready",
+  "phase": "phase-3",
+  "sortOrder": 336,
+  "estimatedMinutes": 25,
+  "tags": [
+    "infrastructure",
+    "iot",
+    "simulation"
+  ],
+  "knowledgePoints": [
+    "设备身份",
+    "固件安全",
+    "IoT 网络分区"
+  ],
+  "variants": [
+    {
+      "key": "vuln",
+      "title": "IoT 攻击风险观察版",
+      "enabled": true,
+      "description": "观察设备身份、固件更新和网络边界缺少统一治理导致的固定风险判定。",
+      "entryKey": "infrastructure-iot-vuln",
+      "expectedOutcome": "返回 infrastructure-iot-risk-accepted 学习信号。",
+      "supportsAutomation": true
+    },
+    {
+      "key": "fixed",
+      "title": "IoT 攻击防御复盘版",
+      "enabled": true,
+      "description": "观察验证落实“唯一身份、签名固件、网络分区、资产清单和管理面限制”后的正常受控流程。",
+      "entryKey": "infrastructure-iot-fixed",
+      "expectedOutcome": "高风险动作被阻断，正常受控流程通过复核。",
+      "supportsAutomation": true
+    }
+  ],
+  "entrypoints": {
+    "web": [
+      {
+        "key": "infrastructure-iot-vuln",
+        "variant": "vuln",
+        "path": "/labs/infrastructure/iot/vuln",
+        "description": "IoT 攻击风险观察版工作台"
+      },
+      {
+        "key": "infrastructure-iot-fixed",
+        "variant": "fixed",
+        "path": "/labs/infrastructure/iot/fixed",
+        "description": "IoT 攻击防御复盘版工作台"
+      }
+    ],
+    "api": [
+      {
+        "key": "infrastructure-iot-workbench",
+        "variant": "shared",
+        "method": "GET",
+        "path": "/api/labs/infrastructure/iot/workbench",
+        "description": "IoT 攻击固定工作台配置"
+      },
+      {
+        "key": "infrastructure-iot-vuln-evaluate",
+        "variant": "vuln",
+        "method": "POST",
+        "path": "/api/labs/infrastructure/iot/vuln/evaluate",
+        "description": "IoT 攻击漏洞版固定案例评估"
+      },
+      {
+        "key": "infrastructure-iot-fixed-evaluate",
+        "variant": "fixed",
+        "method": "POST",
+        "path": "/api/labs/infrastructure/iot/fixed/evaluate",
+        "description": "IoT 攻击修复版固定案例评估"
+      }
+    ],
+    "scripts": [
+      {
+        "key": "infrastructure-iot-verify",
+        "language": "ts",
+        "path": "tools/lab-scripts/infrastructure/iot/verify.ts",
+        "description": "IoT 攻击本机只读一致性验证"
+      }
+    ],
+    "docs": [
+      {
+        "key": "infrastructure-iot-readme",
+        "path": "labs/infrastructure/iot/README.md",
+        "description": "IoT 攻击场景说明"
+      },
+      {
+        "key": "infrastructure-iot-attack-steps",
+        "path": "labs/infrastructure/iot/docs/attack-steps.md",
+        "description": "IoT 攻击风险观察步骤"
+      },
+      {
+        "key": "infrastructure-iot-fix-notes",
+        "path": "labs/infrastructure/iot/docs/fix-notes.md",
+        "description": "IoT 攻击修复思路"
+      },
+      {
+        "key": "infrastructure-iot-manual-verification",
+        "path": "labs/infrastructure/iot/docs/manual-verification.md",
+        "description": "IoT 攻击手工验证矩阵"
+      }
+    ]
+  },
+  "verification": {
+    "manual": {
+      "supported": true,
+      "stepsDocPath": "labs/infrastructure/iot/docs/manual-verification.md",
+      "expectedSignals": [
+        "infrastructure-iot-risk-accepted",
+        "infrastructure-iot-defense-blocked",
+        "infrastructure-iot-normal-verified"
+      ]
+    },
+    "automation": {
+      "supported": true,
+      "playwright": {
+        "enabled": false,
+        "specPath": "packages/testing/tests/e2e/platform.spec.mjs"
+      },
+      "apiTest": {
+        "enabled": true,
+        "specPath": "apps/server/tests/guided-scenario-lab.test.ts"
+      },
+      "scriptVerification": {
+        "enabled": true,
+        "scriptKeys": [
+          "infrastructure-iot-verify"
+        ]
+      }
+    }
+  },
+  "prerequisites": [
+    {
+      "type": "service",
+      "value": "本机后端服务运行于 http://127.0.0.1:6667",
+      "required": true
+    },
+    {
+      "type": "browser",
+      "value": "使用本机浏览器访问实验工作台",
+      "required": true
+    }
+  ],
+  "safeBoundaries": [
+    "只审阅固定虚拟配置和事件，不连接或修改真实基础设施。",
+    "页面和 API 只接受共享目录中声明的 scenarioKey 与 controlKey。",
+    "未知 key 会被脱敏阻断，不写入原始输入或外部目标信息。"
+  ],
+  "paths": {
+    "root": "labs/infrastructure/iot",
+    "readme": "labs/infrastructure/iot/README.md",
+    "vuln": "labs/infrastructure/iot/vuln",
+    "fixed": "labs/infrastructure/iot/fixed",
+    "mock": "labs/infrastructure/iot/mock",
+    "docs": "labs/infrastructure/iot/docs",
+    "scripts": "tools/lab-scripts/infrastructure/iot"
+  },
+  "references": [],
+  "notes": "该实验仅提供本机受控固定场景和只读验证，不允许扩展为通用攻击工具。"
+}

@@ -1,0 +1,171 @@
+{
+  "id": "infrastructure.container-escape",
+  "slug": "container-escape",
+  "title": "容器逃逸",
+  "category": "infrastructure",
+  "subcategory": "container-escape",
+  "mode": "case-study",
+  "severity": "critical",
+  "difficulty": "advanced",
+  "summary": "通过固定容器配置和审计事件学习隔离边界，不运行容器逃逸代码。",
+  "status": "ready",
+  "phase": "phase-3",
+  "sortOrder": 334,
+  "estimatedMinutes": 20,
+  "tags": [
+    "infrastructure",
+    "container",
+    "case-study"
+  ],
+  "knowledgePoints": [
+    "容器隔离",
+    "Linux capabilities",
+    "运行时策略"
+  ],
+  "variants": [
+    {
+      "key": "vuln",
+      "title": "容器逃逸风险观察版",
+      "enabled": true,
+      "description": "观察容器获得接近宿主的权限、挂载和内核能力导致的固定风险判定。",
+      "entryKey": "infrastructure-container-escape-vuln",
+      "expectedOutcome": "返回 infrastructure-container-escape-risk-accepted 学习信号。",
+      "supportsAutomation": false
+    },
+    {
+      "key": "fixed",
+      "title": "容器逃逸防御复盘版",
+      "enabled": true,
+      "description": "观察验证落实“非特权运行、能力最小化、只读文件系统、沙箱和运行时检测”后的正常受控流程。",
+      "entryKey": "infrastructure-container-escape-fixed",
+      "expectedOutcome": "高风险动作被阻断，正常受控流程通过复核。",
+      "supportsAutomation": false
+    }
+  ],
+  "entrypoints": {
+    "web": [
+      {
+        "key": "infrastructure-container-escape-vuln",
+        "variant": "vuln",
+        "path": "/labs/infrastructure/container-escape/vuln",
+        "description": "容器逃逸风险观察版工作台"
+      },
+      {
+        "key": "infrastructure-container-escape-fixed",
+        "variant": "fixed",
+        "path": "/labs/infrastructure/container-escape/fixed",
+        "description": "容器逃逸防御复盘版工作台"
+      }
+    ],
+    "api": [
+      {
+        "key": "infrastructure-container-escape-workbench",
+        "variant": "shared",
+        "method": "GET",
+        "path": "/api/labs/infrastructure/container-escape/workbench",
+        "description": "容器逃逸固定工作台配置"
+      },
+      {
+        "key": "infrastructure-container-escape-vuln-evaluate",
+        "variant": "vuln",
+        "method": "POST",
+        "path": "/api/labs/infrastructure/container-escape/vuln/evaluate",
+        "description": "容器逃逸漏洞版固定案例评估"
+      },
+      {
+        "key": "infrastructure-container-escape-fixed-evaluate",
+        "variant": "fixed",
+        "method": "POST",
+        "path": "/api/labs/infrastructure/container-escape/fixed/evaluate",
+        "description": "容器逃逸修复版固定案例评估"
+      }
+    ],
+    "scripts": [
+      {
+        "key": "infrastructure-container-escape-verify",
+        "language": "ts",
+        "path": "tools/lab-scripts/infrastructure/container-escape/verify.ts",
+        "description": "容器逃逸本机只读一致性验证"
+      }
+    ],
+    "docs": [
+      {
+        "key": "infrastructure-container-escape-readme",
+        "path": "labs/infrastructure/container-escape/README.md",
+        "description": "容器逃逸场景说明"
+      },
+      {
+        "key": "infrastructure-container-escape-attack-steps",
+        "path": "labs/infrastructure/container-escape/docs/attack-steps.md",
+        "description": "容器逃逸风险观察步骤"
+      },
+      {
+        "key": "infrastructure-container-escape-fix-notes",
+        "path": "labs/infrastructure/container-escape/docs/fix-notes.md",
+        "description": "容器逃逸修复思路"
+      },
+      {
+        "key": "infrastructure-container-escape-manual-verification",
+        "path": "labs/infrastructure/container-escape/docs/manual-verification.md",
+        "description": "容器逃逸手工验证矩阵"
+      }
+    ]
+  },
+  "verification": {
+    "manual": {
+      "supported": true,
+      "stepsDocPath": "labs/infrastructure/container-escape/docs/manual-verification.md",
+      "expectedSignals": [
+        "infrastructure-container-escape-risk-accepted",
+        "infrastructure-container-escape-defense-blocked",
+        "infrastructure-container-escape-normal-verified"
+      ]
+    },
+    "automation": {
+      "supported": true,
+      "playwright": {
+        "enabled": false,
+        "specPath": "packages/testing/tests/e2e/platform.spec.mjs"
+      },
+      "apiTest": {
+        "enabled": true,
+        "specPath": "apps/server/tests/guided-scenario-lab.test.ts"
+      },
+      "scriptVerification": {
+        "enabled": true,
+        "scriptKeys": [
+          "infrastructure-container-escape-verify"
+        ]
+      }
+    }
+  },
+  "prerequisites": [
+    {
+      "type": "service",
+      "value": "本机后端服务运行于 http://127.0.0.1:6667",
+      "required": true
+    },
+    {
+      "type": "browser",
+      "value": "使用本机浏览器访问实验工作台",
+      "required": true
+    }
+  ],
+  "safeBoundaries": [
+    "容器逃逸 按 case-study ready 例外收口，只代表固定案例学习闭环完成。",
+    "只审阅固定虚拟配置和事件，不连接或修改真实基础设施。",
+    "页面和 API 只接受共享目录中声明的 scenarioKey 与 controlKey。",
+    "未知 key 会被脱敏阻断，不写入原始输入或外部目标信息。"
+  ],
+  "paths": {
+    "root": "labs/infrastructure/container-escape",
+    "readme": "labs/infrastructure/container-escape/README.md",
+    "vuln": "labs/infrastructure/container-escape/vuln",
+    "fixed": "labs/infrastructure/container-escape/fixed",
+    "mock": "labs/infrastructure/container-escape/mock",
+    "docs": "labs/infrastructure/container-escape/docs",
+    "scripts": "tools/lab-scripts/infrastructure/container-escape"
+  },
+  "references": [],
+  "notes": "该实验按 case-study ready 例外收口，不提供 exploit.py、攻击脚本、外部连接或真实样本。"
+}

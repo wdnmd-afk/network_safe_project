@@ -1,0 +1,171 @@
+{
+  "id": "social.smishing",
+  "slug": "smishing",
+  "title": "短信钓鱼",
+  "category": "social",
+  "subcategory": "smishing",
+  "mode": "case-study",
+  "severity": "high",
+  "difficulty": "beginner",
+  "summary": "通过固定虚构短信线索卡学习短链接、紧迫感和可信渠道核验。",
+  "status": "ready",
+  "phase": "phase-3",
+  "sortOrder": 311,
+  "estimatedMinutes": 20,
+  "tags": [
+    "social",
+    "smishing",
+    "case-study"
+  ],
+  "knowledgePoints": [
+    "短信身份伪装",
+    "短链接风险",
+    "可信渠道复核"
+  ],
+  "variants": [
+    {
+      "key": "vuln",
+      "title": "短信钓鱼风险观察版",
+      "enabled": true,
+      "description": "观察接收者只依赖发送者标签和紧迫语境，没有通过可信渠道复核导致的固定风险判定。",
+      "entryKey": "social-smishing-vuln",
+      "expectedOutcome": "返回 social-smishing-risk-accepted 学习信号。",
+      "supportsAutomation": false
+    },
+    {
+      "key": "fixed",
+      "title": "短信钓鱼防御复盘版",
+      "enabled": true,
+      "description": "观察验证落实“官方渠道回查、短链接隔离、设备侧过滤和举报流程”后的正常受控流程。",
+      "entryKey": "social-smishing-fixed",
+      "expectedOutcome": "高风险动作被阻断，正常受控流程通过复核。",
+      "supportsAutomation": false
+    }
+  ],
+  "entrypoints": {
+    "web": [
+      {
+        "key": "social-smishing-vuln",
+        "variant": "vuln",
+        "path": "/labs/social/smishing/vuln",
+        "description": "短信钓鱼风险观察版工作台"
+      },
+      {
+        "key": "social-smishing-fixed",
+        "variant": "fixed",
+        "path": "/labs/social/smishing/fixed",
+        "description": "短信钓鱼防御复盘版工作台"
+      }
+    ],
+    "api": [
+      {
+        "key": "social-smishing-workbench",
+        "variant": "shared",
+        "method": "GET",
+        "path": "/api/labs/social/smishing/workbench",
+        "description": "短信钓鱼固定工作台配置"
+      },
+      {
+        "key": "social-smishing-vuln-evaluate",
+        "variant": "vuln",
+        "method": "POST",
+        "path": "/api/labs/social/smishing/vuln/evaluate",
+        "description": "短信钓鱼漏洞版固定案例评估"
+      },
+      {
+        "key": "social-smishing-fixed-evaluate",
+        "variant": "fixed",
+        "method": "POST",
+        "path": "/api/labs/social/smishing/fixed/evaluate",
+        "description": "短信钓鱼修复版固定案例评估"
+      }
+    ],
+    "scripts": [
+      {
+        "key": "social-smishing-verify",
+        "language": "ts",
+        "path": "tools/lab-scripts/social/smishing/verify.ts",
+        "description": "短信钓鱼本机只读一致性验证"
+      }
+    ],
+    "docs": [
+      {
+        "key": "social-smishing-readme",
+        "path": "labs/social/smishing/README.md",
+        "description": "短信钓鱼场景说明"
+      },
+      {
+        "key": "social-smishing-attack-steps",
+        "path": "labs/social/smishing/docs/attack-steps.md",
+        "description": "短信钓鱼风险观察步骤"
+      },
+      {
+        "key": "social-smishing-fix-notes",
+        "path": "labs/social/smishing/docs/fix-notes.md",
+        "description": "短信钓鱼修复思路"
+      },
+      {
+        "key": "social-smishing-manual-verification",
+        "path": "labs/social/smishing/docs/manual-verification.md",
+        "description": "短信钓鱼手工验证矩阵"
+      }
+    ]
+  },
+  "verification": {
+    "manual": {
+      "supported": true,
+      "stepsDocPath": "labs/social/smishing/docs/manual-verification.md",
+      "expectedSignals": [
+        "social-smishing-risk-accepted",
+        "social-smishing-defense-blocked",
+        "social-smishing-normal-verified"
+      ]
+    },
+    "automation": {
+      "supported": true,
+      "playwright": {
+        "enabled": false,
+        "specPath": "packages/testing/tests/e2e/platform.spec.mjs"
+      },
+      "apiTest": {
+        "enabled": true,
+        "specPath": "apps/server/tests/guided-scenario-lab.test.ts"
+      },
+      "scriptVerification": {
+        "enabled": true,
+        "scriptKeys": [
+          "social-smishing-verify"
+        ]
+      }
+    }
+  },
+  "prerequisites": [
+    {
+      "type": "service",
+      "value": "本机后端服务运行于 http://127.0.0.1:6667",
+      "required": true
+    },
+    {
+      "type": "browser",
+      "value": "使用本机浏览器访问实验工作台",
+      "required": true
+    }
+  ],
+  "safeBoundaries": [
+    "短信钓鱼 按 case-study ready 例外收口，只代表固定案例学习闭环完成。",
+    "只使用固定虚构案例和线索卡，不发送消息、不采集画像、不收集凭据。",
+    "页面和 API 只接受共享目录中声明的 scenarioKey 与 controlKey。",
+    "未知 key 会被脱敏阻断，不写入原始输入或外部目标信息。"
+  ],
+  "paths": {
+    "root": "labs/social/smishing",
+    "readme": "labs/social/smishing/README.md",
+    "vuln": "labs/social/smishing/vuln",
+    "fixed": "labs/social/smishing/fixed",
+    "mock": "labs/social/smishing/mock",
+    "docs": "labs/social/smishing/docs",
+    "scripts": "tools/lab-scripts/social/smishing"
+  },
+  "references": [],
+  "notes": "该实验按 case-study ready 例外收口，不提供 exploit.py、攻击脚本、外部连接或真实样本。"
+}

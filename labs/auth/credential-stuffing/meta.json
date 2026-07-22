@@ -1,0 +1,176 @@
+{
+  "id": "auth.credential-stuffing",
+  "slug": "credential-stuffing",
+  "title": "凭据填充",
+  "category": "auth",
+  "subcategory": "credential-stuffing",
+  "mode": "interactive",
+  "severity": "high",
+  "difficulty": "intermediate",
+  "summary": "使用固定虚构登录批次观察重复凭据尝试与风险控制策略。",
+  "status": "ready",
+  "phase": "phase-1",
+  "sortOrder": 302,
+  "estimatedMinutes": 25,
+  "tags": [
+    "auth",
+    "credential-stuffing",
+    "account-security"
+  ],
+  "knowledgePoints": [
+    "凭据复用风险",
+    "自适应认证",
+    "异常登录关联"
+  ],
+  "variants": [
+    {
+      "key": "vuln",
+      "title": "凭据填充风险观察版",
+      "enabled": true,
+      "description": "观察认证只判断单次口令结果且没有设备、速率和泄露凭据风险关联导致的固定风险判定。",
+      "entryKey": "auth-credential-stuffing-vuln",
+      "expectedOutcome": "返回 auth-credential-stuffing-risk-accepted 学习信号。",
+      "supportsAutomation": true
+    },
+    {
+      "key": "fixed",
+      "title": "凭据填充防御复盘版",
+      "enabled": true,
+      "description": "观察验证落实“速率限制、泄露凭据检测、自适应验证和异常登录告警”后的正常受控流程。",
+      "entryKey": "auth-credential-stuffing-fixed",
+      "expectedOutcome": "高风险动作被阻断，正常受控流程通过复核。",
+      "supportsAutomation": true
+    }
+  ],
+  "entrypoints": {
+    "web": [
+      {
+        "key": "auth-credential-stuffing-vuln",
+        "variant": "vuln",
+        "path": "/labs/auth/credential-stuffing/vuln",
+        "description": "凭据填充风险观察版工作台"
+      },
+      {
+        "key": "auth-credential-stuffing-fixed",
+        "variant": "fixed",
+        "path": "/labs/auth/credential-stuffing/fixed",
+        "description": "凭据填充防御复盘版工作台"
+      }
+    ],
+    "api": [
+      {
+        "key": "auth-credential-stuffing-workbench",
+        "variant": "shared",
+        "method": "GET",
+        "path": "/api/labs/auth/credential-stuffing/workbench",
+        "description": "凭据填充固定工作台配置"
+      },
+      {
+        "key": "auth-credential-stuffing-vuln-evaluate",
+        "variant": "vuln",
+        "method": "POST",
+        "path": "/api/labs/auth/credential-stuffing/vuln/evaluate",
+        "description": "凭据填充漏洞版固定案例评估"
+      },
+      {
+        "key": "auth-credential-stuffing-fixed-evaluate",
+        "variant": "fixed",
+        "method": "POST",
+        "path": "/api/labs/auth/credential-stuffing/fixed/evaluate",
+        "description": "凭据填充修复版固定案例评估"
+      }
+    ],
+    "scripts": [
+      {
+        "key": "auth-credential-stuffing-verify",
+        "language": "ts",
+        "path": "tools/lab-scripts/auth/credential-stuffing/verify.ts",
+        "description": "凭据填充本机只读一致性验证"
+      },
+      {
+        "key": "auth-credential-stuffing-exploit",
+        "language": "python",
+        "path": "tools/lab-scripts/auth/credential-stuffing/exploit.py",
+        "description": "凭据填充本机固定案例受控请求脚本"
+      }
+    ],
+    "docs": [
+      {
+        "key": "auth-credential-stuffing-readme",
+        "path": "labs/auth/credential-stuffing/README.md",
+        "description": "凭据填充场景说明"
+      },
+      {
+        "key": "auth-credential-stuffing-attack-steps",
+        "path": "labs/auth/credential-stuffing/docs/attack-steps.md",
+        "description": "凭据填充风险观察步骤"
+      },
+      {
+        "key": "auth-credential-stuffing-fix-notes",
+        "path": "labs/auth/credential-stuffing/docs/fix-notes.md",
+        "description": "凭据填充修复思路"
+      },
+      {
+        "key": "auth-credential-stuffing-manual-verification",
+        "path": "labs/auth/credential-stuffing/docs/manual-verification.md",
+        "description": "凭据填充手工验证矩阵"
+      }
+    ]
+  },
+  "verification": {
+    "manual": {
+      "supported": true,
+      "stepsDocPath": "labs/auth/credential-stuffing/docs/manual-verification.md",
+      "expectedSignals": [
+        "auth-credential-stuffing-risk-accepted",
+        "auth-credential-stuffing-defense-blocked",
+        "auth-credential-stuffing-normal-verified"
+      ]
+    },
+    "automation": {
+      "supported": true,
+      "playwright": {
+        "enabled": false,
+        "specPath": "packages/testing/tests/e2e/platform.spec.mjs"
+      },
+      "apiTest": {
+        "enabled": true,
+        "specPath": "apps/server/tests/guided-scenario-lab.test.ts"
+      },
+      "scriptVerification": {
+        "enabled": true,
+        "scriptKeys": [
+          "auth-credential-stuffing-verify"
+        ]
+      }
+    }
+  },
+  "prerequisites": [
+    {
+      "type": "service",
+      "value": "本机后端服务运行于 http://127.0.0.1:6667",
+      "required": true
+    },
+    {
+      "type": "browser",
+      "value": "使用本机浏览器访问实验工作台",
+      "required": true
+    }
+  ],
+  "safeBoundaries": [
+    "只处理固定虚构身份与会话数据，不读取真实账号、密码、Cookie 或 token。",
+    "页面和 API 只接受共享目录中声明的 scenarioKey 与 controlKey。",
+    "未知 key 会被脱敏阻断，不写入原始输入或外部目标信息。"
+  ],
+  "paths": {
+    "root": "labs/auth/credential-stuffing",
+    "readme": "labs/auth/credential-stuffing/README.md",
+    "vuln": "labs/auth/credential-stuffing/vuln",
+    "fixed": "labs/auth/credential-stuffing/fixed",
+    "mock": "labs/auth/credential-stuffing/mock",
+    "docs": "labs/auth/credential-stuffing/docs",
+    "scripts": "tools/lab-scripts/auth/credential-stuffing"
+  },
+  "references": [],
+  "notes": "该实验仅提供本机受控固定场景和只读验证，不允许扩展为通用攻击工具。"
+}

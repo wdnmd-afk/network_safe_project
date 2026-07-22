@@ -1,0 +1,176 @@
+{
+  "id": "auth.session-hijacking",
+  "slug": "session-hijacking",
+  "title": "会话劫持",
+  "category": "auth",
+  "subcategory": "session-hijacking",
+  "mode": "interactive",
+  "severity": "high",
+  "difficulty": "intermediate",
+  "summary": "通过固定脱敏会话摘要观察会话复用与上下文绑定防护。",
+  "status": "ready",
+  "phase": "phase-1",
+  "sortOrder": 303,
+  "estimatedMinutes": 25,
+  "tags": [
+    "auth",
+    "session",
+    "hijacking"
+  ],
+  "knowledgePoints": [
+    "会话生命周期",
+    "Cookie 安全属性",
+    "上下文绑定"
+  ],
+  "variants": [
+    {
+      "key": "vuln",
+      "title": "会话劫持风险观察版",
+      "enabled": true,
+      "description": "观察会话标识长期有效且没有轮换、设备上下文或高风险动作再验证导致的固定风险判定。",
+      "entryKey": "auth-session-hijacking-vuln",
+      "expectedOutcome": "返回 auth-session-hijacking-risk-accepted 学习信号。",
+      "supportsAutomation": true
+    },
+    {
+      "key": "fixed",
+      "title": "会话劫持防御复盘版",
+      "enabled": true,
+      "description": "观察验证落实“安全 Cookie、会话轮换、上下文校验和高风险动作再认证”后的正常受控流程。",
+      "entryKey": "auth-session-hijacking-fixed",
+      "expectedOutcome": "高风险动作被阻断，正常受控流程通过复核。",
+      "supportsAutomation": true
+    }
+  ],
+  "entrypoints": {
+    "web": [
+      {
+        "key": "auth-session-hijacking-vuln",
+        "variant": "vuln",
+        "path": "/labs/auth/session-hijacking/vuln",
+        "description": "会话劫持风险观察版工作台"
+      },
+      {
+        "key": "auth-session-hijacking-fixed",
+        "variant": "fixed",
+        "path": "/labs/auth/session-hijacking/fixed",
+        "description": "会话劫持防御复盘版工作台"
+      }
+    ],
+    "api": [
+      {
+        "key": "auth-session-hijacking-workbench",
+        "variant": "shared",
+        "method": "GET",
+        "path": "/api/labs/auth/session-hijacking/workbench",
+        "description": "会话劫持固定工作台配置"
+      },
+      {
+        "key": "auth-session-hijacking-vuln-evaluate",
+        "variant": "vuln",
+        "method": "POST",
+        "path": "/api/labs/auth/session-hijacking/vuln/evaluate",
+        "description": "会话劫持漏洞版固定案例评估"
+      },
+      {
+        "key": "auth-session-hijacking-fixed-evaluate",
+        "variant": "fixed",
+        "method": "POST",
+        "path": "/api/labs/auth/session-hijacking/fixed/evaluate",
+        "description": "会话劫持修复版固定案例评估"
+      }
+    ],
+    "scripts": [
+      {
+        "key": "auth-session-hijacking-verify",
+        "language": "ts",
+        "path": "tools/lab-scripts/auth/session-hijacking/verify.ts",
+        "description": "会话劫持本机只读一致性验证"
+      },
+      {
+        "key": "auth-session-hijacking-exploit",
+        "language": "python",
+        "path": "tools/lab-scripts/auth/session-hijacking/exploit.py",
+        "description": "会话劫持本机固定案例受控请求脚本"
+      }
+    ],
+    "docs": [
+      {
+        "key": "auth-session-hijacking-readme",
+        "path": "labs/auth/session-hijacking/README.md",
+        "description": "会话劫持场景说明"
+      },
+      {
+        "key": "auth-session-hijacking-attack-steps",
+        "path": "labs/auth/session-hijacking/docs/attack-steps.md",
+        "description": "会话劫持风险观察步骤"
+      },
+      {
+        "key": "auth-session-hijacking-fix-notes",
+        "path": "labs/auth/session-hijacking/docs/fix-notes.md",
+        "description": "会话劫持修复思路"
+      },
+      {
+        "key": "auth-session-hijacking-manual-verification",
+        "path": "labs/auth/session-hijacking/docs/manual-verification.md",
+        "description": "会话劫持手工验证矩阵"
+      }
+    ]
+  },
+  "verification": {
+    "manual": {
+      "supported": true,
+      "stepsDocPath": "labs/auth/session-hijacking/docs/manual-verification.md",
+      "expectedSignals": [
+        "auth-session-hijacking-risk-accepted",
+        "auth-session-hijacking-defense-blocked",
+        "auth-session-hijacking-normal-verified"
+      ]
+    },
+    "automation": {
+      "supported": true,
+      "playwright": {
+        "enabled": false,
+        "specPath": "packages/testing/tests/e2e/platform.spec.mjs"
+      },
+      "apiTest": {
+        "enabled": true,
+        "specPath": "apps/server/tests/guided-scenario-lab.test.ts"
+      },
+      "scriptVerification": {
+        "enabled": true,
+        "scriptKeys": [
+          "auth-session-hijacking-verify"
+        ]
+      }
+    }
+  },
+  "prerequisites": [
+    {
+      "type": "service",
+      "value": "本机后端服务运行于 http://127.0.0.1:6667",
+      "required": true
+    },
+    {
+      "type": "browser",
+      "value": "使用本机浏览器访问实验工作台",
+      "required": true
+    }
+  ],
+  "safeBoundaries": [
+    "只处理固定虚构身份与会话数据，不读取真实账号、密码、Cookie 或 token。",
+    "页面和 API 只接受共享目录中声明的 scenarioKey 与 controlKey。",
+    "未知 key 会被脱敏阻断，不写入原始输入或外部目标信息。"
+  ],
+  "paths": {
+    "root": "labs/auth/session-hijacking",
+    "readme": "labs/auth/session-hijacking/README.md",
+    "vuln": "labs/auth/session-hijacking/vuln",
+    "fixed": "labs/auth/session-hijacking/fixed",
+    "mock": "labs/auth/session-hijacking/mock",
+    "docs": "labs/auth/session-hijacking/docs",
+    "scripts": "tools/lab-scripts/auth/session-hijacking"
+  },
+  "references": [],
+  "notes": "该实验仅提供本机受控固定场景和只读验证，不允许扩展为通用攻击工具。"
+}

@@ -1,0 +1,171 @@
+{
+  "id": "social.bec",
+  "slug": "bec",
+  "title": "商业邮件诈骗",
+  "category": "social",
+  "subcategory": "bec",
+  "mode": "case-study",
+  "severity": "critical",
+  "difficulty": "intermediate",
+  "summary": "通过固定付款流程案例学习邮箱上下文欺骗与财务复核。",
+  "status": "ready",
+  "phase": "phase-3",
+  "sortOrder": 312,
+  "estimatedMinutes": 20,
+  "tags": [
+    "social",
+    "bec",
+    "case-study"
+  ],
+  "knowledgePoints": [
+    "商业邮件诈骗",
+    "付款流程控制",
+    "供应商主数据"
+  ],
+  "variants": [
+    {
+      "key": "vuln",
+      "title": "商业邮件诈骗风险观察版",
+      "enabled": true,
+      "description": "观察财务流程把邮件线程当成账户变更的唯一可信来源导致的固定风险判定。",
+      "entryKey": "social-bec-vuln",
+      "expectedOutcome": "返回 social-bec-risk-accepted 学习信号。",
+      "supportsAutomation": false
+    },
+    {
+      "key": "fixed",
+      "title": "商业邮件诈骗防御复盘版",
+      "enabled": true,
+      "description": "观察验证落实“供应商主数据双人复核、可信电话回拨、付款冻结和异常告警”后的正常受控流程。",
+      "entryKey": "social-bec-fixed",
+      "expectedOutcome": "高风险动作被阻断，正常受控流程通过复核。",
+      "supportsAutomation": false
+    }
+  ],
+  "entrypoints": {
+    "web": [
+      {
+        "key": "social-bec-vuln",
+        "variant": "vuln",
+        "path": "/labs/social/bec/vuln",
+        "description": "商业邮件诈骗风险观察版工作台"
+      },
+      {
+        "key": "social-bec-fixed",
+        "variant": "fixed",
+        "path": "/labs/social/bec/fixed",
+        "description": "商业邮件诈骗防御复盘版工作台"
+      }
+    ],
+    "api": [
+      {
+        "key": "social-bec-workbench",
+        "variant": "shared",
+        "method": "GET",
+        "path": "/api/labs/social/bec/workbench",
+        "description": "商业邮件诈骗固定工作台配置"
+      },
+      {
+        "key": "social-bec-vuln-evaluate",
+        "variant": "vuln",
+        "method": "POST",
+        "path": "/api/labs/social/bec/vuln/evaluate",
+        "description": "商业邮件诈骗漏洞版固定案例评估"
+      },
+      {
+        "key": "social-bec-fixed-evaluate",
+        "variant": "fixed",
+        "method": "POST",
+        "path": "/api/labs/social/bec/fixed/evaluate",
+        "description": "商业邮件诈骗修复版固定案例评估"
+      }
+    ],
+    "scripts": [
+      {
+        "key": "social-bec-verify",
+        "language": "ts",
+        "path": "tools/lab-scripts/social/bec/verify.ts",
+        "description": "商业邮件诈骗本机只读一致性验证"
+      }
+    ],
+    "docs": [
+      {
+        "key": "social-bec-readme",
+        "path": "labs/social/bec/README.md",
+        "description": "商业邮件诈骗场景说明"
+      },
+      {
+        "key": "social-bec-attack-steps",
+        "path": "labs/social/bec/docs/attack-steps.md",
+        "description": "商业邮件诈骗风险观察步骤"
+      },
+      {
+        "key": "social-bec-fix-notes",
+        "path": "labs/social/bec/docs/fix-notes.md",
+        "description": "商业邮件诈骗修复思路"
+      },
+      {
+        "key": "social-bec-manual-verification",
+        "path": "labs/social/bec/docs/manual-verification.md",
+        "description": "商业邮件诈骗手工验证矩阵"
+      }
+    ]
+  },
+  "verification": {
+    "manual": {
+      "supported": true,
+      "stepsDocPath": "labs/social/bec/docs/manual-verification.md",
+      "expectedSignals": [
+        "social-bec-risk-accepted",
+        "social-bec-defense-blocked",
+        "social-bec-normal-verified"
+      ]
+    },
+    "automation": {
+      "supported": true,
+      "playwright": {
+        "enabled": false,
+        "specPath": "packages/testing/tests/e2e/platform.spec.mjs"
+      },
+      "apiTest": {
+        "enabled": true,
+        "specPath": "apps/server/tests/guided-scenario-lab.test.ts"
+      },
+      "scriptVerification": {
+        "enabled": true,
+        "scriptKeys": [
+          "social-bec-verify"
+        ]
+      }
+    }
+  },
+  "prerequisites": [
+    {
+      "type": "service",
+      "value": "本机后端服务运行于 http://127.0.0.1:6667",
+      "required": true
+    },
+    {
+      "type": "browser",
+      "value": "使用本机浏览器访问实验工作台",
+      "required": true
+    }
+  ],
+  "safeBoundaries": [
+    "商业邮件诈骗 按 case-study ready 例外收口，只代表固定案例学习闭环完成。",
+    "只使用固定虚构案例和线索卡，不发送消息、不采集画像、不收集凭据。",
+    "页面和 API 只接受共享目录中声明的 scenarioKey 与 controlKey。",
+    "未知 key 会被脱敏阻断，不写入原始输入或外部目标信息。"
+  ],
+  "paths": {
+    "root": "labs/social/bec",
+    "readme": "labs/social/bec/README.md",
+    "vuln": "labs/social/bec/vuln",
+    "fixed": "labs/social/bec/fixed",
+    "mock": "labs/social/bec/mock",
+    "docs": "labs/social/bec/docs",
+    "scripts": "tools/lab-scripts/social/bec"
+  },
+  "references": [],
+  "notes": "该实验按 case-study ready 例外收口，不提供 exploit.py、攻击脚本、外部连接或真实样本。"
+}

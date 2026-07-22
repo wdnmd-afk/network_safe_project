@@ -1,0 +1,171 @@
+{
+  "id": "client.drive-by-download",
+  "slug": "drive-by-download",
+  "title": "驾车式下载",
+  "category": "client",
+  "subcategory": "drive-by-download",
+  "mode": "case-study",
+  "severity": "high",
+  "difficulty": "intermediate",
+  "summary": "通过固定浏览器事件链学习隐式下载、隔离和内容策略。",
+  "status": "ready",
+  "phase": "phase-3",
+  "sortOrder": 329,
+  "estimatedMinutes": 20,
+  "tags": [
+    "client",
+    "browser",
+    "case-study"
+  ],
+  "knowledgePoints": [
+    "隐式下载",
+    "浏览器隔离",
+    "应用控制"
+  ],
+  "variants": [
+    {
+      "key": "vuln",
+      "title": "驾车式下载风险观察版",
+      "enabled": true,
+      "description": "观察浏览器和终端允许不可信内容触发下载或执行链导致的固定风险判定。",
+      "entryKey": "client-drive-by-download-vuln",
+      "expectedOutcome": "返回 client-drive-by-download-risk-accepted 学习信号。",
+      "supportsAutomation": false
+    },
+    {
+      "key": "fixed",
+      "title": "驾车式下载防御复盘版",
+      "enabled": true,
+      "description": "观察验证落实“浏览器更新、下载确认、内容隔离、应用控制和终端检测”后的正常受控流程。",
+      "entryKey": "client-drive-by-download-fixed",
+      "expectedOutcome": "高风险动作被阻断，正常受控流程通过复核。",
+      "supportsAutomation": false
+    }
+  ],
+  "entrypoints": {
+    "web": [
+      {
+        "key": "client-drive-by-download-vuln",
+        "variant": "vuln",
+        "path": "/labs/client/drive-by-download/vuln",
+        "description": "驾车式下载风险观察版工作台"
+      },
+      {
+        "key": "client-drive-by-download-fixed",
+        "variant": "fixed",
+        "path": "/labs/client/drive-by-download/fixed",
+        "description": "驾车式下载防御复盘版工作台"
+      }
+    ],
+    "api": [
+      {
+        "key": "client-drive-by-download-workbench",
+        "variant": "shared",
+        "method": "GET",
+        "path": "/api/labs/client/drive-by-download/workbench",
+        "description": "驾车式下载固定工作台配置"
+      },
+      {
+        "key": "client-drive-by-download-vuln-evaluate",
+        "variant": "vuln",
+        "method": "POST",
+        "path": "/api/labs/client/drive-by-download/vuln/evaluate",
+        "description": "驾车式下载漏洞版固定案例评估"
+      },
+      {
+        "key": "client-drive-by-download-fixed-evaluate",
+        "variant": "fixed",
+        "method": "POST",
+        "path": "/api/labs/client/drive-by-download/fixed/evaluate",
+        "description": "驾车式下载修复版固定案例评估"
+      }
+    ],
+    "scripts": [
+      {
+        "key": "client-drive-by-download-verify",
+        "language": "ts",
+        "path": "tools/lab-scripts/client/drive-by-download/verify.ts",
+        "description": "驾车式下载本机只读一致性验证"
+      }
+    ],
+    "docs": [
+      {
+        "key": "client-drive-by-download-readme",
+        "path": "labs/client/drive-by-download/README.md",
+        "description": "驾车式下载场景说明"
+      },
+      {
+        "key": "client-drive-by-download-attack-steps",
+        "path": "labs/client/drive-by-download/docs/attack-steps.md",
+        "description": "驾车式下载风险观察步骤"
+      },
+      {
+        "key": "client-drive-by-download-fix-notes",
+        "path": "labs/client/drive-by-download/docs/fix-notes.md",
+        "description": "驾车式下载修复思路"
+      },
+      {
+        "key": "client-drive-by-download-manual-verification",
+        "path": "labs/client/drive-by-download/docs/manual-verification.md",
+        "description": "驾车式下载手工验证矩阵"
+      }
+    ]
+  },
+  "verification": {
+    "manual": {
+      "supported": true,
+      "stepsDocPath": "labs/client/drive-by-download/docs/manual-verification.md",
+      "expectedSignals": [
+        "client-drive-by-download-risk-accepted",
+        "client-drive-by-download-defense-blocked",
+        "client-drive-by-download-normal-verified"
+      ]
+    },
+    "automation": {
+      "supported": true,
+      "playwright": {
+        "enabled": false,
+        "specPath": "packages/testing/tests/e2e/platform.spec.mjs"
+      },
+      "apiTest": {
+        "enabled": true,
+        "specPath": "apps/server/tests/guided-scenario-lab.test.ts"
+      },
+      "scriptVerification": {
+        "enabled": true,
+        "scriptKeys": [
+          "client-drive-by-download-verify"
+        ]
+      }
+    }
+  },
+  "prerequisites": [
+    {
+      "type": "service",
+      "value": "本机后端服务运行于 http://127.0.0.1:6667",
+      "required": true
+    },
+    {
+      "type": "browser",
+      "value": "使用本机浏览器访问实验工作台",
+      "required": true
+    }
+  ],
+  "safeBoundaries": [
+    "驾车式下载 按 case-study ready 例外收口，只代表固定案例学习闭环完成。",
+    "只使用固定浏览器行为案例，不注入真实页面、不采集表单数据。",
+    "页面和 API 只接受共享目录中声明的 scenarioKey 与 controlKey。",
+    "未知 key 会被脱敏阻断，不写入原始输入或外部目标信息。"
+  ],
+  "paths": {
+    "root": "labs/client/drive-by-download",
+    "readme": "labs/client/drive-by-download/README.md",
+    "vuln": "labs/client/drive-by-download/vuln",
+    "fixed": "labs/client/drive-by-download/fixed",
+    "mock": "labs/client/drive-by-download/mock",
+    "docs": "labs/client/drive-by-download/docs",
+    "scripts": "tools/lab-scripts/client/drive-by-download"
+  },
+  "references": [],
+  "notes": "该实验按 case-study ready 例外收口，不提供 exploit.py、攻击脚本、外部连接或真实样本。"
+}

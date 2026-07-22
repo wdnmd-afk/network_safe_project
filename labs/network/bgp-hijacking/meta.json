@@ -1,0 +1,170 @@
+{
+  "id": "network.bgp-hijacking",
+  "slug": "bgp-hijacking",
+  "title": "BGP 劫持",
+  "category": "network",
+  "subcategory": "bgp-hijacking",
+  "mode": "simulation",
+  "severity": "critical",
+  "difficulty": "advanced",
+  "summary": "使用固定路由公告时间线观察前缀起源异常与路由安全校验。",
+  "status": "ready",
+  "phase": "phase-2",
+  "sortOrder": 310,
+  "estimatedMinutes": 25,
+  "tags": [
+    "network",
+    "bgp",
+    "routing"
+  ],
+  "knowledgePoints": [
+    "路由起源",
+    "RPKI 与 ROA",
+    "前缀监控"
+  ],
+  "variants": [
+    {
+      "key": "vuln",
+      "title": "BGP 劫持风险观察版",
+      "enabled": true,
+      "description": "观察网络接受未经起源授权验证的路由公告导致的固定风险判定。",
+      "entryKey": "network-bgp-hijacking-vuln",
+      "expectedOutcome": "返回 network-bgp-hijacking-risk-accepted 学习信号。",
+      "supportsAutomation": true
+    },
+    {
+      "key": "fixed",
+      "title": "BGP 劫持防御复盘版",
+      "enabled": true,
+      "description": "观察验证落实“RPKI、ROA、前缀过滤、路由监控和多通道告警”后的正常受控流程。",
+      "entryKey": "network-bgp-hijacking-fixed",
+      "expectedOutcome": "高风险动作被阻断，正常受控流程通过复核。",
+      "supportsAutomation": true
+    }
+  ],
+  "entrypoints": {
+    "web": [
+      {
+        "key": "network-bgp-hijacking-vuln",
+        "variant": "vuln",
+        "path": "/labs/network/bgp-hijacking/vuln",
+        "description": "BGP 劫持风险观察版工作台"
+      },
+      {
+        "key": "network-bgp-hijacking-fixed",
+        "variant": "fixed",
+        "path": "/labs/network/bgp-hijacking/fixed",
+        "description": "BGP 劫持防御复盘版工作台"
+      }
+    ],
+    "api": [
+      {
+        "key": "network-bgp-hijacking-workbench",
+        "variant": "shared",
+        "method": "GET",
+        "path": "/api/labs/network/bgp-hijacking/workbench",
+        "description": "BGP 劫持固定工作台配置"
+      },
+      {
+        "key": "network-bgp-hijacking-vuln-evaluate",
+        "variant": "vuln",
+        "method": "POST",
+        "path": "/api/labs/network/bgp-hijacking/vuln/evaluate",
+        "description": "BGP 劫持漏洞版固定案例评估"
+      },
+      {
+        "key": "network-bgp-hijacking-fixed-evaluate",
+        "variant": "fixed",
+        "method": "POST",
+        "path": "/api/labs/network/bgp-hijacking/fixed/evaluate",
+        "description": "BGP 劫持修复版固定案例评估"
+      }
+    ],
+    "scripts": [
+      {
+        "key": "network-bgp-hijacking-verify",
+        "language": "ts",
+        "path": "tools/lab-scripts/network/bgp-hijacking/verify.ts",
+        "description": "BGP 劫持本机只读一致性验证"
+      }
+    ],
+    "docs": [
+      {
+        "key": "network-bgp-hijacking-readme",
+        "path": "labs/network/bgp-hijacking/README.md",
+        "description": "BGP 劫持场景说明"
+      },
+      {
+        "key": "network-bgp-hijacking-attack-steps",
+        "path": "labs/network/bgp-hijacking/docs/attack-steps.md",
+        "description": "BGP 劫持风险观察步骤"
+      },
+      {
+        "key": "network-bgp-hijacking-fix-notes",
+        "path": "labs/network/bgp-hijacking/docs/fix-notes.md",
+        "description": "BGP 劫持修复思路"
+      },
+      {
+        "key": "network-bgp-hijacking-manual-verification",
+        "path": "labs/network/bgp-hijacking/docs/manual-verification.md",
+        "description": "BGP 劫持手工验证矩阵"
+      }
+    ]
+  },
+  "verification": {
+    "manual": {
+      "supported": true,
+      "stepsDocPath": "labs/network/bgp-hijacking/docs/manual-verification.md",
+      "expectedSignals": [
+        "network-bgp-hijacking-risk-accepted",
+        "network-bgp-hijacking-defense-blocked",
+        "network-bgp-hijacking-normal-verified"
+      ]
+    },
+    "automation": {
+      "supported": true,
+      "playwright": {
+        "enabled": false,
+        "specPath": "packages/testing/tests/e2e/platform.spec.mjs"
+      },
+      "apiTest": {
+        "enabled": true,
+        "specPath": "apps/server/tests/guided-scenario-lab.test.ts"
+      },
+      "scriptVerification": {
+        "enabled": true,
+        "scriptKeys": [
+          "network-bgp-hijacking-verify"
+        ]
+      }
+    }
+  },
+  "prerequisites": [
+    {
+      "type": "service",
+      "value": "本机后端服务运行于 http://127.0.0.1:6667",
+      "required": true
+    },
+    {
+      "type": "browser",
+      "value": "使用本机浏览器访问实验工作台",
+      "required": true
+    }
+  ],
+  "safeBoundaries": [
+    "只使用内存中的虚拟网络拓扑和固定流量摘要，不扫描、监听或连接真实网络。",
+    "页面和 API 只接受共享目录中声明的 scenarioKey 与 controlKey。",
+    "未知 key 会被脱敏阻断，不写入原始输入或外部目标信息。"
+  ],
+  "paths": {
+    "root": "labs/network/bgp-hijacking",
+    "readme": "labs/network/bgp-hijacking/README.md",
+    "vuln": "labs/network/bgp-hijacking/vuln",
+    "fixed": "labs/network/bgp-hijacking/fixed",
+    "mock": "labs/network/bgp-hijacking/mock",
+    "docs": "labs/network/bgp-hijacking/docs",
+    "scripts": "tools/lab-scripts/network/bgp-hijacking"
+  },
+  "references": [],
+  "notes": "该实验仅提供本机受控固定场景和只读验证，不允许扩展为通用攻击工具。"
+}

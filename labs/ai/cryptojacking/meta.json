@@ -1,0 +1,170 @@
+{
+  "id": "ai.cryptojacking",
+  "slug": "cryptojacking",
+  "title": "加密劫持",
+  "category": "ai",
+  "subcategory": "cryptojacking",
+  "mode": "simulation",
+  "severity": "high",
+  "difficulty": "intermediate",
+  "summary": "通过固定资源曲线学习异常算力消耗、进程控制和成本告警。",
+  "status": "ready",
+  "phase": "phase-3",
+  "sortOrder": 328,
+  "estimatedMinutes": 25,
+  "tags": [
+    "ai",
+    "cryptojacking",
+    "simulation"
+  ],
+  "knowledgePoints": [
+    "资源异常",
+    "运行时控制",
+    "成本监控"
+  ],
+  "variants": [
+    {
+      "key": "vuln",
+      "title": "加密劫持风险观察版",
+      "enabled": true,
+      "description": "观察运行环境允许未知工作负载长期占用算力且缺少成本基线导致的固定风险判定。",
+      "entryKey": "ai-cryptojacking-vuln",
+      "expectedOutcome": "返回 ai-cryptojacking-risk-accepted 学习信号。",
+      "supportsAutomation": true
+    },
+    {
+      "key": "fixed",
+      "title": "加密劫持防御复盘版",
+      "enabled": true,
+      "description": "观察验证落实“工作负载允许列表、资源配额、运行时检测和成本告警”后的正常受控流程。",
+      "entryKey": "ai-cryptojacking-fixed",
+      "expectedOutcome": "高风险动作被阻断，正常受控流程通过复核。",
+      "supportsAutomation": true
+    }
+  ],
+  "entrypoints": {
+    "web": [
+      {
+        "key": "ai-cryptojacking-vuln",
+        "variant": "vuln",
+        "path": "/labs/ai/cryptojacking/vuln",
+        "description": "加密劫持风险观察版工作台"
+      },
+      {
+        "key": "ai-cryptojacking-fixed",
+        "variant": "fixed",
+        "path": "/labs/ai/cryptojacking/fixed",
+        "description": "加密劫持防御复盘版工作台"
+      }
+    ],
+    "api": [
+      {
+        "key": "ai-cryptojacking-workbench",
+        "variant": "shared",
+        "method": "GET",
+        "path": "/api/labs/ai/cryptojacking/workbench",
+        "description": "加密劫持固定工作台配置"
+      },
+      {
+        "key": "ai-cryptojacking-vuln-evaluate",
+        "variant": "vuln",
+        "method": "POST",
+        "path": "/api/labs/ai/cryptojacking/vuln/evaluate",
+        "description": "加密劫持漏洞版固定案例评估"
+      },
+      {
+        "key": "ai-cryptojacking-fixed-evaluate",
+        "variant": "fixed",
+        "method": "POST",
+        "path": "/api/labs/ai/cryptojacking/fixed/evaluate",
+        "description": "加密劫持修复版固定案例评估"
+      }
+    ],
+    "scripts": [
+      {
+        "key": "ai-cryptojacking-verify",
+        "language": "ts",
+        "path": "tools/lab-scripts/ai/cryptojacking/verify.ts",
+        "description": "加密劫持本机只读一致性验证"
+      }
+    ],
+    "docs": [
+      {
+        "key": "ai-cryptojacking-readme",
+        "path": "labs/ai/cryptojacking/README.md",
+        "description": "加密劫持场景说明"
+      },
+      {
+        "key": "ai-cryptojacking-attack-steps",
+        "path": "labs/ai/cryptojacking/docs/attack-steps.md",
+        "description": "加密劫持风险观察步骤"
+      },
+      {
+        "key": "ai-cryptojacking-fix-notes",
+        "path": "labs/ai/cryptojacking/docs/fix-notes.md",
+        "description": "加密劫持修复思路"
+      },
+      {
+        "key": "ai-cryptojacking-manual-verification",
+        "path": "labs/ai/cryptojacking/docs/manual-verification.md",
+        "description": "加密劫持手工验证矩阵"
+      }
+    ]
+  },
+  "verification": {
+    "manual": {
+      "supported": true,
+      "stepsDocPath": "labs/ai/cryptojacking/docs/manual-verification.md",
+      "expectedSignals": [
+        "ai-cryptojacking-risk-accepted",
+        "ai-cryptojacking-defense-blocked",
+        "ai-cryptojacking-normal-verified"
+      ]
+    },
+    "automation": {
+      "supported": true,
+      "playwright": {
+        "enabled": false,
+        "specPath": "packages/testing/tests/e2e/platform.spec.mjs"
+      },
+      "apiTest": {
+        "enabled": true,
+        "specPath": "apps/server/tests/guided-scenario-lab.test.ts"
+      },
+      "scriptVerification": {
+        "enabled": true,
+        "scriptKeys": [
+          "ai-cryptojacking-verify"
+        ]
+      }
+    }
+  },
+  "prerequisites": [
+    {
+      "type": "service",
+      "value": "本机后端服务运行于 http://127.0.0.1:6667",
+      "required": true
+    },
+    {
+      "type": "browser",
+      "value": "使用本机浏览器访问实验工作台",
+      "required": true
+    }
+  ],
+  "safeBoundaries": [
+    "只使用确定性固定样例，不调用外部模型生成攻击内容。",
+    "页面和 API 只接受共享目录中声明的 scenarioKey 与 controlKey。",
+    "未知 key 会被脱敏阻断，不写入原始输入或外部目标信息。"
+  ],
+  "paths": {
+    "root": "labs/ai/cryptojacking",
+    "readme": "labs/ai/cryptojacking/README.md",
+    "vuln": "labs/ai/cryptojacking/vuln",
+    "fixed": "labs/ai/cryptojacking/fixed",
+    "mock": "labs/ai/cryptojacking/mock",
+    "docs": "labs/ai/cryptojacking/docs",
+    "scripts": "tools/lab-scripts/ai/cryptojacking"
+  },
+  "references": [],
+  "notes": "该实验仅提供本机受控固定场景和只读验证，不允许扩展为通用攻击工具。"
+}

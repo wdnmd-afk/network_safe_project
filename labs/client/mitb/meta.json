@@ -1,0 +1,171 @@
+{
+  "id": "client.mitb",
+  "slug": "mitb",
+  "title": "浏览器 MITB",
+  "category": "client",
+  "subcategory": "mitb",
+  "mode": "case-study",
+  "severity": "critical",
+  "difficulty": "advanced",
+  "summary": "通过固定交易视图差异学习浏览器内篡改与交易签名。",
+  "status": "ready",
+  "phase": "phase-3",
+  "sortOrder": 333,
+  "estimatedMinutes": 20,
+  "tags": [
+    "client",
+    "mitb",
+    "case-study"
+  ],
+  "knowledgePoints": [
+    "浏览器内篡改",
+    "交易签名",
+    "带外确认"
+  ],
+  "variants": [
+    {
+      "key": "vuln",
+      "title": "浏览器 MITB风险观察版",
+      "enabled": true,
+      "description": "观察高风险交易确认完全依赖可能被篡改的浏览器上下文导致的固定风险判定。",
+      "entryKey": "client-mitb-vuln",
+      "expectedOutcome": "返回 client-mitb-risk-accepted 学习信号。",
+      "supportsAutomation": false
+    },
+    {
+      "key": "fixed",
+      "title": "浏览器 MITB防御复盘版",
+      "enabled": true,
+      "description": "观察验证落实“交易签名、带外确认、受信终端和服务端风险校验”后的正常受控流程。",
+      "entryKey": "client-mitb-fixed",
+      "expectedOutcome": "高风险动作被阻断，正常受控流程通过复核。",
+      "supportsAutomation": false
+    }
+  ],
+  "entrypoints": {
+    "web": [
+      {
+        "key": "client-mitb-vuln",
+        "variant": "vuln",
+        "path": "/labs/client/mitb/vuln",
+        "description": "浏览器 MITB风险观察版工作台"
+      },
+      {
+        "key": "client-mitb-fixed",
+        "variant": "fixed",
+        "path": "/labs/client/mitb/fixed",
+        "description": "浏览器 MITB防御复盘版工作台"
+      }
+    ],
+    "api": [
+      {
+        "key": "client-mitb-workbench",
+        "variant": "shared",
+        "method": "GET",
+        "path": "/api/labs/client/mitb/workbench",
+        "description": "浏览器 MITB固定工作台配置"
+      },
+      {
+        "key": "client-mitb-vuln-evaluate",
+        "variant": "vuln",
+        "method": "POST",
+        "path": "/api/labs/client/mitb/vuln/evaluate",
+        "description": "浏览器 MITB漏洞版固定案例评估"
+      },
+      {
+        "key": "client-mitb-fixed-evaluate",
+        "variant": "fixed",
+        "method": "POST",
+        "path": "/api/labs/client/mitb/fixed/evaluate",
+        "description": "浏览器 MITB修复版固定案例评估"
+      }
+    ],
+    "scripts": [
+      {
+        "key": "client-mitb-verify",
+        "language": "ts",
+        "path": "tools/lab-scripts/client/mitb/verify.ts",
+        "description": "浏览器 MITB本机只读一致性验证"
+      }
+    ],
+    "docs": [
+      {
+        "key": "client-mitb-readme",
+        "path": "labs/client/mitb/README.md",
+        "description": "浏览器 MITB场景说明"
+      },
+      {
+        "key": "client-mitb-attack-steps",
+        "path": "labs/client/mitb/docs/attack-steps.md",
+        "description": "浏览器 MITB风险观察步骤"
+      },
+      {
+        "key": "client-mitb-fix-notes",
+        "path": "labs/client/mitb/docs/fix-notes.md",
+        "description": "浏览器 MITB修复思路"
+      },
+      {
+        "key": "client-mitb-manual-verification",
+        "path": "labs/client/mitb/docs/manual-verification.md",
+        "description": "浏览器 MITB手工验证矩阵"
+      }
+    ]
+  },
+  "verification": {
+    "manual": {
+      "supported": true,
+      "stepsDocPath": "labs/client/mitb/docs/manual-verification.md",
+      "expectedSignals": [
+        "client-mitb-risk-accepted",
+        "client-mitb-defense-blocked",
+        "client-mitb-normal-verified"
+      ]
+    },
+    "automation": {
+      "supported": true,
+      "playwright": {
+        "enabled": false,
+        "specPath": "packages/testing/tests/e2e/platform.spec.mjs"
+      },
+      "apiTest": {
+        "enabled": true,
+        "specPath": "apps/server/tests/guided-scenario-lab.test.ts"
+      },
+      "scriptVerification": {
+        "enabled": true,
+        "scriptKeys": [
+          "client-mitb-verify"
+        ]
+      }
+    }
+  },
+  "prerequisites": [
+    {
+      "type": "service",
+      "value": "本机后端服务运行于 http://127.0.0.1:6667",
+      "required": true
+    },
+    {
+      "type": "browser",
+      "value": "使用本机浏览器访问实验工作台",
+      "required": true
+    }
+  ],
+  "safeBoundaries": [
+    "浏览器 MITB 按 case-study ready 例外收口，只代表固定案例学习闭环完成。",
+    "只使用固定浏览器行为案例，不注入真实页面、不采集表单数据。",
+    "页面和 API 只接受共享目录中声明的 scenarioKey 与 controlKey。",
+    "未知 key 会被脱敏阻断，不写入原始输入或外部目标信息。"
+  ],
+  "paths": {
+    "root": "labs/client/mitb",
+    "readme": "labs/client/mitb/README.md",
+    "vuln": "labs/client/mitb/vuln",
+    "fixed": "labs/client/mitb/fixed",
+    "mock": "labs/client/mitb/mock",
+    "docs": "labs/client/mitb/docs",
+    "scripts": "tools/lab-scripts/client/mitb"
+  },
+  "references": [],
+  "notes": "该实验按 case-study ready 例外收口，不提供 exploit.py、攻击脚本、外部连接或真实样本。"
+}

@@ -1,0 +1,171 @@
+{
+  "id": "ai.deepfake",
+  "slug": "deepfake",
+  "title": "Deepfake",
+  "category": "ai",
+  "subcategory": "deepfake",
+  "mode": "case-study",
+  "severity": "high",
+  "difficulty": "beginner",
+  "summary": "通过固定媒体鉴别卡学习身份冒用线索与可信通道复核，不生成媒体。",
+  "status": "ready",
+  "phase": "phase-3",
+  "sortOrder": 326,
+  "estimatedMinutes": 20,
+  "tags": [
+    "ai",
+    "deepfake",
+    "case-study"
+  ],
+  "knowledgePoints": [
+    "媒体身份冒用",
+    "来源证明",
+    "可信通道"
+  ],
+  "variants": [
+    {
+      "key": "vuln",
+      "title": "Deepfake风险观察版",
+      "enabled": true,
+      "description": "观察业务流程把声音或画面相似度当成身份认证导致的固定风险判定。",
+      "entryKey": "ai-deepfake-vuln",
+      "expectedOutcome": "返回 ai-deepfake-risk-accepted 学习信号。",
+      "supportsAutomation": false
+    },
+    {
+      "key": "fixed",
+      "title": "Deepfake防御复盘版",
+      "enabled": true,
+      "description": "观察验证落实“可信通道回拨、多因素业务确认、媒体来源证明和人工复核”后的正常受控流程。",
+      "entryKey": "ai-deepfake-fixed",
+      "expectedOutcome": "高风险动作被阻断，正常受控流程通过复核。",
+      "supportsAutomation": false
+    }
+  ],
+  "entrypoints": {
+    "web": [
+      {
+        "key": "ai-deepfake-vuln",
+        "variant": "vuln",
+        "path": "/labs/ai/deepfake/vuln",
+        "description": "Deepfake风险观察版工作台"
+      },
+      {
+        "key": "ai-deepfake-fixed",
+        "variant": "fixed",
+        "path": "/labs/ai/deepfake/fixed",
+        "description": "Deepfake防御复盘版工作台"
+      }
+    ],
+    "api": [
+      {
+        "key": "ai-deepfake-workbench",
+        "variant": "shared",
+        "method": "GET",
+        "path": "/api/labs/ai/deepfake/workbench",
+        "description": "Deepfake固定工作台配置"
+      },
+      {
+        "key": "ai-deepfake-vuln-evaluate",
+        "variant": "vuln",
+        "method": "POST",
+        "path": "/api/labs/ai/deepfake/vuln/evaluate",
+        "description": "Deepfake漏洞版固定案例评估"
+      },
+      {
+        "key": "ai-deepfake-fixed-evaluate",
+        "variant": "fixed",
+        "method": "POST",
+        "path": "/api/labs/ai/deepfake/fixed/evaluate",
+        "description": "Deepfake修复版固定案例评估"
+      }
+    ],
+    "scripts": [
+      {
+        "key": "ai-deepfake-verify",
+        "language": "ts",
+        "path": "tools/lab-scripts/ai/deepfake/verify.ts",
+        "description": "Deepfake本机只读一致性验证"
+      }
+    ],
+    "docs": [
+      {
+        "key": "ai-deepfake-readme",
+        "path": "labs/ai/deepfake/README.md",
+        "description": "Deepfake场景说明"
+      },
+      {
+        "key": "ai-deepfake-attack-steps",
+        "path": "labs/ai/deepfake/docs/attack-steps.md",
+        "description": "Deepfake风险观察步骤"
+      },
+      {
+        "key": "ai-deepfake-fix-notes",
+        "path": "labs/ai/deepfake/docs/fix-notes.md",
+        "description": "Deepfake修复思路"
+      },
+      {
+        "key": "ai-deepfake-manual-verification",
+        "path": "labs/ai/deepfake/docs/manual-verification.md",
+        "description": "Deepfake手工验证矩阵"
+      }
+    ]
+  },
+  "verification": {
+    "manual": {
+      "supported": true,
+      "stepsDocPath": "labs/ai/deepfake/docs/manual-verification.md",
+      "expectedSignals": [
+        "ai-deepfake-risk-accepted",
+        "ai-deepfake-defense-blocked",
+        "ai-deepfake-normal-verified"
+      ]
+    },
+    "automation": {
+      "supported": true,
+      "playwright": {
+        "enabled": false,
+        "specPath": "packages/testing/tests/e2e/platform.spec.mjs"
+      },
+      "apiTest": {
+        "enabled": true,
+        "specPath": "apps/server/tests/guided-scenario-lab.test.ts"
+      },
+      "scriptVerification": {
+        "enabled": true,
+        "scriptKeys": [
+          "ai-deepfake-verify"
+        ]
+      }
+    }
+  },
+  "prerequisites": [
+    {
+      "type": "service",
+      "value": "本机后端服务运行于 http://127.0.0.1:6667",
+      "required": true
+    },
+    {
+      "type": "browser",
+      "value": "使用本机浏览器访问实验工作台",
+      "required": true
+    }
+  ],
+  "safeBoundaries": [
+    "Deepfake 按 case-study ready 例外收口，只代表固定案例学习闭环完成。",
+    "只使用确定性固定样例，不调用外部模型生成攻击内容。",
+    "页面和 API 只接受共享目录中声明的 scenarioKey 与 controlKey。",
+    "未知 key 会被脱敏阻断，不写入原始输入或外部目标信息。"
+  ],
+  "paths": {
+    "root": "labs/ai/deepfake",
+    "readme": "labs/ai/deepfake/README.md",
+    "vuln": "labs/ai/deepfake/vuln",
+    "fixed": "labs/ai/deepfake/fixed",
+    "mock": "labs/ai/deepfake/mock",
+    "docs": "labs/ai/deepfake/docs",
+    "scripts": "tools/lab-scripts/ai/deepfake"
+  },
+  "references": [],
+  "notes": "该实验按 case-study ready 例外收口，不提供 exploit.py、攻击脚本、外部连接或真实样本。"
+}

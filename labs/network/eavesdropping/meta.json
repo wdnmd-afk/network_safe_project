@@ -1,0 +1,170 @@
+{
+  "id": "network.eavesdropping",
+  "slug": "eavesdropping",
+  "title": "窃听攻击",
+  "category": "network",
+  "subcategory": "eavesdropping",
+  "mode": "simulation",
+  "severity": "high",
+  "difficulty": "beginner",
+  "summary": "通过固定协议摘要观察明文元数据暴露与端到端加密差异。",
+  "status": "ready",
+  "phase": "phase-2",
+  "sortOrder": 308,
+  "estimatedMinutes": 25,
+  "tags": [
+    "network",
+    "eavesdropping",
+    "encryption"
+  ],
+  "knowledgePoints": [
+    "明文协议风险",
+    "端到端加密",
+    "元数据最小化"
+  ],
+  "variants": [
+    {
+      "key": "vuln",
+      "title": "窃听攻击风险观察版",
+      "enabled": true,
+      "description": "观察敏感通信使用明文协议或未验证的加密通道导致的固定风险判定。",
+      "entryKey": "network-eavesdropping-vuln",
+      "expectedOutcome": "返回 network-eavesdropping-risk-accepted 学习信号。",
+      "supportsAutomation": true
+    },
+    {
+      "key": "fixed",
+      "title": "窃听攻击防御复盘版",
+      "enabled": true,
+      "description": "观察验证落实“端到端加密、证书验证、网络分段和敏感元数据最小化”后的正常受控流程。",
+      "entryKey": "network-eavesdropping-fixed",
+      "expectedOutcome": "高风险动作被阻断，正常受控流程通过复核。",
+      "supportsAutomation": true
+    }
+  ],
+  "entrypoints": {
+    "web": [
+      {
+        "key": "network-eavesdropping-vuln",
+        "variant": "vuln",
+        "path": "/labs/network/eavesdropping/vuln",
+        "description": "窃听攻击风险观察版工作台"
+      },
+      {
+        "key": "network-eavesdropping-fixed",
+        "variant": "fixed",
+        "path": "/labs/network/eavesdropping/fixed",
+        "description": "窃听攻击防御复盘版工作台"
+      }
+    ],
+    "api": [
+      {
+        "key": "network-eavesdropping-workbench",
+        "variant": "shared",
+        "method": "GET",
+        "path": "/api/labs/network/eavesdropping/workbench",
+        "description": "窃听攻击固定工作台配置"
+      },
+      {
+        "key": "network-eavesdropping-vuln-evaluate",
+        "variant": "vuln",
+        "method": "POST",
+        "path": "/api/labs/network/eavesdropping/vuln/evaluate",
+        "description": "窃听攻击漏洞版固定案例评估"
+      },
+      {
+        "key": "network-eavesdropping-fixed-evaluate",
+        "variant": "fixed",
+        "method": "POST",
+        "path": "/api/labs/network/eavesdropping/fixed/evaluate",
+        "description": "窃听攻击修复版固定案例评估"
+      }
+    ],
+    "scripts": [
+      {
+        "key": "network-eavesdropping-verify",
+        "language": "ts",
+        "path": "tools/lab-scripts/network/eavesdropping/verify.ts",
+        "description": "窃听攻击本机只读一致性验证"
+      }
+    ],
+    "docs": [
+      {
+        "key": "network-eavesdropping-readme",
+        "path": "labs/network/eavesdropping/README.md",
+        "description": "窃听攻击场景说明"
+      },
+      {
+        "key": "network-eavesdropping-attack-steps",
+        "path": "labs/network/eavesdropping/docs/attack-steps.md",
+        "description": "窃听攻击风险观察步骤"
+      },
+      {
+        "key": "network-eavesdropping-fix-notes",
+        "path": "labs/network/eavesdropping/docs/fix-notes.md",
+        "description": "窃听攻击修复思路"
+      },
+      {
+        "key": "network-eavesdropping-manual-verification",
+        "path": "labs/network/eavesdropping/docs/manual-verification.md",
+        "description": "窃听攻击手工验证矩阵"
+      }
+    ]
+  },
+  "verification": {
+    "manual": {
+      "supported": true,
+      "stepsDocPath": "labs/network/eavesdropping/docs/manual-verification.md",
+      "expectedSignals": [
+        "network-eavesdropping-risk-accepted",
+        "network-eavesdropping-defense-blocked",
+        "network-eavesdropping-normal-verified"
+      ]
+    },
+    "automation": {
+      "supported": true,
+      "playwright": {
+        "enabled": false,
+        "specPath": "packages/testing/tests/e2e/platform.spec.mjs"
+      },
+      "apiTest": {
+        "enabled": true,
+        "specPath": "apps/server/tests/guided-scenario-lab.test.ts"
+      },
+      "scriptVerification": {
+        "enabled": true,
+        "scriptKeys": [
+          "network-eavesdropping-verify"
+        ]
+      }
+    }
+  },
+  "prerequisites": [
+    {
+      "type": "service",
+      "value": "本机后端服务运行于 http://127.0.0.1:6667",
+      "required": true
+    },
+    {
+      "type": "browser",
+      "value": "使用本机浏览器访问实验工作台",
+      "required": true
+    }
+  ],
+  "safeBoundaries": [
+    "只使用内存中的虚拟网络拓扑和固定流量摘要，不扫描、监听或连接真实网络。",
+    "页面和 API 只接受共享目录中声明的 scenarioKey 与 controlKey。",
+    "未知 key 会被脱敏阻断，不写入原始输入或外部目标信息。"
+  ],
+  "paths": {
+    "root": "labs/network/eavesdropping",
+    "readme": "labs/network/eavesdropping/README.md",
+    "vuln": "labs/network/eavesdropping/vuln",
+    "fixed": "labs/network/eavesdropping/fixed",
+    "mock": "labs/network/eavesdropping/mock",
+    "docs": "labs/network/eavesdropping/docs",
+    "scripts": "tools/lab-scripts/network/eavesdropping"
+  },
+  "references": [],
+  "notes": "该实验仅提供本机受控固定场景和只读验证，不允许扩展为通用攻击工具。"
+}

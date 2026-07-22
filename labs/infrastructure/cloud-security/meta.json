@@ -1,0 +1,170 @@
+{
+  "id": "infrastructure.cloud-security",
+  "slug": "cloud-security",
+  "title": "云安全漏洞",
+  "category": "infrastructure",
+  "subcategory": "cloud-security",
+  "mode": "simulation",
+  "severity": "critical",
+  "difficulty": "advanced",
+  "summary": "通过固定云策略快照学习公开暴露、身份权限和配置审计。",
+  "status": "ready",
+  "phase": "phase-3",
+  "sortOrder": 335,
+  "estimatedMinutes": 25,
+  "tags": [
+    "infrastructure",
+    "cloud",
+    "simulation"
+  ],
+  "knowledgePoints": [
+    "云身份权限",
+    "公开暴露",
+    "配置审计"
+  ],
+  "variants": [
+    {
+      "key": "vuln",
+      "title": "云安全漏洞风险观察版",
+      "enabled": true,
+      "description": "观察云资源和身份策略默认公开或授予通配权限导致的固定风险判定。",
+      "entryKey": "infrastructure-cloud-security-vuln",
+      "expectedOutcome": "返回 infrastructure-cloud-security-risk-accepted 学习信号。",
+      "supportsAutomation": true
+    },
+    {
+      "key": "fixed",
+      "title": "云安全漏洞防御复盘版",
+      "enabled": true,
+      "description": "观察验证落实“最小权限、组织策略、配置扫描、短期凭据和持续审计”后的正常受控流程。",
+      "entryKey": "infrastructure-cloud-security-fixed",
+      "expectedOutcome": "高风险动作被阻断，正常受控流程通过复核。",
+      "supportsAutomation": true
+    }
+  ],
+  "entrypoints": {
+    "web": [
+      {
+        "key": "infrastructure-cloud-security-vuln",
+        "variant": "vuln",
+        "path": "/labs/infrastructure/cloud-security/vuln",
+        "description": "云安全漏洞风险观察版工作台"
+      },
+      {
+        "key": "infrastructure-cloud-security-fixed",
+        "variant": "fixed",
+        "path": "/labs/infrastructure/cloud-security/fixed",
+        "description": "云安全漏洞防御复盘版工作台"
+      }
+    ],
+    "api": [
+      {
+        "key": "infrastructure-cloud-security-workbench",
+        "variant": "shared",
+        "method": "GET",
+        "path": "/api/labs/infrastructure/cloud-security/workbench",
+        "description": "云安全漏洞固定工作台配置"
+      },
+      {
+        "key": "infrastructure-cloud-security-vuln-evaluate",
+        "variant": "vuln",
+        "method": "POST",
+        "path": "/api/labs/infrastructure/cloud-security/vuln/evaluate",
+        "description": "云安全漏洞漏洞版固定案例评估"
+      },
+      {
+        "key": "infrastructure-cloud-security-fixed-evaluate",
+        "variant": "fixed",
+        "method": "POST",
+        "path": "/api/labs/infrastructure/cloud-security/fixed/evaluate",
+        "description": "云安全漏洞修复版固定案例评估"
+      }
+    ],
+    "scripts": [
+      {
+        "key": "infrastructure-cloud-security-verify",
+        "language": "ts",
+        "path": "tools/lab-scripts/infrastructure/cloud-security/verify.ts",
+        "description": "云安全漏洞本机只读一致性验证"
+      }
+    ],
+    "docs": [
+      {
+        "key": "infrastructure-cloud-security-readme",
+        "path": "labs/infrastructure/cloud-security/README.md",
+        "description": "云安全漏洞场景说明"
+      },
+      {
+        "key": "infrastructure-cloud-security-attack-steps",
+        "path": "labs/infrastructure/cloud-security/docs/attack-steps.md",
+        "description": "云安全漏洞风险观察步骤"
+      },
+      {
+        "key": "infrastructure-cloud-security-fix-notes",
+        "path": "labs/infrastructure/cloud-security/docs/fix-notes.md",
+        "description": "云安全漏洞修复思路"
+      },
+      {
+        "key": "infrastructure-cloud-security-manual-verification",
+        "path": "labs/infrastructure/cloud-security/docs/manual-verification.md",
+        "description": "云安全漏洞手工验证矩阵"
+      }
+    ]
+  },
+  "verification": {
+    "manual": {
+      "supported": true,
+      "stepsDocPath": "labs/infrastructure/cloud-security/docs/manual-verification.md",
+      "expectedSignals": [
+        "infrastructure-cloud-security-risk-accepted",
+        "infrastructure-cloud-security-defense-blocked",
+        "infrastructure-cloud-security-normal-verified"
+      ]
+    },
+    "automation": {
+      "supported": true,
+      "playwright": {
+        "enabled": false,
+        "specPath": "packages/testing/tests/e2e/platform.spec.mjs"
+      },
+      "apiTest": {
+        "enabled": true,
+        "specPath": "apps/server/tests/guided-scenario-lab.test.ts"
+      },
+      "scriptVerification": {
+        "enabled": true,
+        "scriptKeys": [
+          "infrastructure-cloud-security-verify"
+        ]
+      }
+    }
+  },
+  "prerequisites": [
+    {
+      "type": "service",
+      "value": "本机后端服务运行于 http://127.0.0.1:6667",
+      "required": true
+    },
+    {
+      "type": "browser",
+      "value": "使用本机浏览器访问实验工作台",
+      "required": true
+    }
+  ],
+  "safeBoundaries": [
+    "只审阅固定虚拟配置和事件，不连接或修改真实基础设施。",
+    "页面和 API 只接受共享目录中声明的 scenarioKey 与 controlKey。",
+    "未知 key 会被脱敏阻断，不写入原始输入或外部目标信息。"
+  ],
+  "paths": {
+    "root": "labs/infrastructure/cloud-security",
+    "readme": "labs/infrastructure/cloud-security/README.md",
+    "vuln": "labs/infrastructure/cloud-security/vuln",
+    "fixed": "labs/infrastructure/cloud-security/fixed",
+    "mock": "labs/infrastructure/cloud-security/mock",
+    "docs": "labs/infrastructure/cloud-security/docs",
+    "scripts": "tools/lab-scripts/infrastructure/cloud-security"
+  },
+  "references": [],
+  "notes": "该实验仅提供本机受控固定场景和只读验证，不允许扩展为通用攻击工具。"
+}

@@ -1,0 +1,170 @@
+{
+  "id": "network.mitm",
+  "slug": "mitm",
+  "title": "中间人攻击",
+  "category": "network",
+  "subcategory": "mitm",
+  "mode": "simulation",
+  "severity": "high",
+  "difficulty": "intermediate",
+  "summary": "使用固定握手记录模拟链路身份校验缺失与证书验证差异。",
+  "status": "ready",
+  "phase": "phase-2",
+  "sortOrder": 306,
+  "estimatedMinutes": 25,
+  "tags": [
+    "network",
+    "mitm",
+    "tls"
+  ],
+  "knowledgePoints": [
+    "通信对端身份",
+    "证书验证",
+    "协议降级"
+  ],
+  "variants": [
+    {
+      "key": "vuln",
+      "title": "中间人攻击风险观察版",
+      "enabled": true,
+      "description": "观察客户端未验证证书链、主机名或协议降级导致的固定风险判定。",
+      "entryKey": "network-mitm-vuln",
+      "expectedOutcome": "返回 network-mitm-risk-accepted 学习信号。",
+      "supportsAutomation": true
+    },
+    {
+      "key": "fixed",
+      "title": "中间人攻击防御复盘版",
+      "enabled": true,
+      "description": "观察验证落实“TLS 身份校验、安全协议基线、证书监控和敏感通道绑定”后的正常受控流程。",
+      "entryKey": "network-mitm-fixed",
+      "expectedOutcome": "高风险动作被阻断，正常受控流程通过复核。",
+      "supportsAutomation": true
+    }
+  ],
+  "entrypoints": {
+    "web": [
+      {
+        "key": "network-mitm-vuln",
+        "variant": "vuln",
+        "path": "/labs/network/mitm/vuln",
+        "description": "中间人攻击风险观察版工作台"
+      },
+      {
+        "key": "network-mitm-fixed",
+        "variant": "fixed",
+        "path": "/labs/network/mitm/fixed",
+        "description": "中间人攻击防御复盘版工作台"
+      }
+    ],
+    "api": [
+      {
+        "key": "network-mitm-workbench",
+        "variant": "shared",
+        "method": "GET",
+        "path": "/api/labs/network/mitm/workbench",
+        "description": "中间人攻击固定工作台配置"
+      },
+      {
+        "key": "network-mitm-vuln-evaluate",
+        "variant": "vuln",
+        "method": "POST",
+        "path": "/api/labs/network/mitm/vuln/evaluate",
+        "description": "中间人攻击漏洞版固定案例评估"
+      },
+      {
+        "key": "network-mitm-fixed-evaluate",
+        "variant": "fixed",
+        "method": "POST",
+        "path": "/api/labs/network/mitm/fixed/evaluate",
+        "description": "中间人攻击修复版固定案例评估"
+      }
+    ],
+    "scripts": [
+      {
+        "key": "network-mitm-verify",
+        "language": "ts",
+        "path": "tools/lab-scripts/network/mitm/verify.ts",
+        "description": "中间人攻击本机只读一致性验证"
+      }
+    ],
+    "docs": [
+      {
+        "key": "network-mitm-readme",
+        "path": "labs/network/mitm/README.md",
+        "description": "中间人攻击场景说明"
+      },
+      {
+        "key": "network-mitm-attack-steps",
+        "path": "labs/network/mitm/docs/attack-steps.md",
+        "description": "中间人攻击风险观察步骤"
+      },
+      {
+        "key": "network-mitm-fix-notes",
+        "path": "labs/network/mitm/docs/fix-notes.md",
+        "description": "中间人攻击修复思路"
+      },
+      {
+        "key": "network-mitm-manual-verification",
+        "path": "labs/network/mitm/docs/manual-verification.md",
+        "description": "中间人攻击手工验证矩阵"
+      }
+    ]
+  },
+  "verification": {
+    "manual": {
+      "supported": true,
+      "stepsDocPath": "labs/network/mitm/docs/manual-verification.md",
+      "expectedSignals": [
+        "network-mitm-risk-accepted",
+        "network-mitm-defense-blocked",
+        "network-mitm-normal-verified"
+      ]
+    },
+    "automation": {
+      "supported": true,
+      "playwright": {
+        "enabled": false,
+        "specPath": "packages/testing/tests/e2e/platform.spec.mjs"
+      },
+      "apiTest": {
+        "enabled": true,
+        "specPath": "apps/server/tests/guided-scenario-lab.test.ts"
+      },
+      "scriptVerification": {
+        "enabled": true,
+        "scriptKeys": [
+          "network-mitm-verify"
+        ]
+      }
+    }
+  },
+  "prerequisites": [
+    {
+      "type": "service",
+      "value": "本机后端服务运行于 http://127.0.0.1:6667",
+      "required": true
+    },
+    {
+      "type": "browser",
+      "value": "使用本机浏览器访问实验工作台",
+      "required": true
+    }
+  ],
+  "safeBoundaries": [
+    "只使用内存中的虚拟网络拓扑和固定流量摘要，不扫描、监听或连接真实网络。",
+    "页面和 API 只接受共享目录中声明的 scenarioKey 与 controlKey。",
+    "未知 key 会被脱敏阻断，不写入原始输入或外部目标信息。"
+  ],
+  "paths": {
+    "root": "labs/network/mitm",
+    "readme": "labs/network/mitm/README.md",
+    "vuln": "labs/network/mitm/vuln",
+    "fixed": "labs/network/mitm/fixed",
+    "mock": "labs/network/mitm/mock",
+    "docs": "labs/network/mitm/docs",
+    "scripts": "tools/lab-scripts/network/mitm"
+  },
+  "references": [],
+  "notes": "该实验仅提供本机受控固定场景和只读验证，不允许扩展为通用攻击工具。"
+}

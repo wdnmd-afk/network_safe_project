@@ -1,0 +1,171 @@
+{
+  "id": "social.watering-hole",
+  "slug": "watering-hole",
+  "title": "水坑攻击",
+  "category": "social",
+  "subcategory": "watering-hole",
+  "mode": "case-study",
+  "severity": "high",
+  "difficulty": "intermediate",
+  "summary": "通过固定访问链案例学习可信站点被篡改后的浏览器与供应商防护。",
+  "status": "ready",
+  "phase": "phase-3",
+  "sortOrder": 313,
+  "estimatedMinutes": 20,
+  "tags": [
+    "social",
+    "watering-hole",
+    "case-study"
+  ],
+  "knowledgePoints": [
+    "可信站点风险",
+    "第三方脚本",
+    "浏览器隔离"
+  ],
+  "variants": [
+    {
+      "key": "vuln",
+      "title": "水坑攻击风险观察版",
+      "enabled": true,
+      "description": "观察终端和供应链流程因站点熟悉而跳过内容与脚本完整性检查导致的固定风险判定。",
+      "entryKey": "social-watering-hole-vuln",
+      "expectedOutcome": "返回 social-watering-hole-risk-accepted 学习信号。",
+      "supportsAutomation": false
+    },
+    {
+      "key": "fixed",
+      "title": "水坑攻击防御复盘版",
+      "enabled": true,
+      "description": "观察验证落实“脚本完整性、浏览器隔离、供应商变更监控和终端检测”后的正常受控流程。",
+      "entryKey": "social-watering-hole-fixed",
+      "expectedOutcome": "高风险动作被阻断，正常受控流程通过复核。",
+      "supportsAutomation": false
+    }
+  ],
+  "entrypoints": {
+    "web": [
+      {
+        "key": "social-watering-hole-vuln",
+        "variant": "vuln",
+        "path": "/labs/social/watering-hole/vuln",
+        "description": "水坑攻击风险观察版工作台"
+      },
+      {
+        "key": "social-watering-hole-fixed",
+        "variant": "fixed",
+        "path": "/labs/social/watering-hole/fixed",
+        "description": "水坑攻击防御复盘版工作台"
+      }
+    ],
+    "api": [
+      {
+        "key": "social-watering-hole-workbench",
+        "variant": "shared",
+        "method": "GET",
+        "path": "/api/labs/social/watering-hole/workbench",
+        "description": "水坑攻击固定工作台配置"
+      },
+      {
+        "key": "social-watering-hole-vuln-evaluate",
+        "variant": "vuln",
+        "method": "POST",
+        "path": "/api/labs/social/watering-hole/vuln/evaluate",
+        "description": "水坑攻击漏洞版固定案例评估"
+      },
+      {
+        "key": "social-watering-hole-fixed-evaluate",
+        "variant": "fixed",
+        "method": "POST",
+        "path": "/api/labs/social/watering-hole/fixed/evaluate",
+        "description": "水坑攻击修复版固定案例评估"
+      }
+    ],
+    "scripts": [
+      {
+        "key": "social-watering-hole-verify",
+        "language": "ts",
+        "path": "tools/lab-scripts/social/watering-hole/verify.ts",
+        "description": "水坑攻击本机只读一致性验证"
+      }
+    ],
+    "docs": [
+      {
+        "key": "social-watering-hole-readme",
+        "path": "labs/social/watering-hole/README.md",
+        "description": "水坑攻击场景说明"
+      },
+      {
+        "key": "social-watering-hole-attack-steps",
+        "path": "labs/social/watering-hole/docs/attack-steps.md",
+        "description": "水坑攻击风险观察步骤"
+      },
+      {
+        "key": "social-watering-hole-fix-notes",
+        "path": "labs/social/watering-hole/docs/fix-notes.md",
+        "description": "水坑攻击修复思路"
+      },
+      {
+        "key": "social-watering-hole-manual-verification",
+        "path": "labs/social/watering-hole/docs/manual-verification.md",
+        "description": "水坑攻击手工验证矩阵"
+      }
+    ]
+  },
+  "verification": {
+    "manual": {
+      "supported": true,
+      "stepsDocPath": "labs/social/watering-hole/docs/manual-verification.md",
+      "expectedSignals": [
+        "social-watering-hole-risk-accepted",
+        "social-watering-hole-defense-blocked",
+        "social-watering-hole-normal-verified"
+      ]
+    },
+    "automation": {
+      "supported": true,
+      "playwright": {
+        "enabled": false,
+        "specPath": "packages/testing/tests/e2e/platform.spec.mjs"
+      },
+      "apiTest": {
+        "enabled": true,
+        "specPath": "apps/server/tests/guided-scenario-lab.test.ts"
+      },
+      "scriptVerification": {
+        "enabled": true,
+        "scriptKeys": [
+          "social-watering-hole-verify"
+        ]
+      }
+    }
+  },
+  "prerequisites": [
+    {
+      "type": "service",
+      "value": "本机后端服务运行于 http://127.0.0.1:6667",
+      "required": true
+    },
+    {
+      "type": "browser",
+      "value": "使用本机浏览器访问实验工作台",
+      "required": true
+    }
+  ],
+  "safeBoundaries": [
+    "水坑攻击 按 case-study ready 例外收口，只代表固定案例学习闭环完成。",
+    "只使用固定虚构案例和线索卡，不发送消息、不采集画像、不收集凭据。",
+    "页面和 API 只接受共享目录中声明的 scenarioKey 与 controlKey。",
+    "未知 key 会被脱敏阻断，不写入原始输入或外部目标信息。"
+  ],
+  "paths": {
+    "root": "labs/social/watering-hole",
+    "readme": "labs/social/watering-hole/README.md",
+    "vuln": "labs/social/watering-hole/vuln",
+    "fixed": "labs/social/watering-hole/fixed",
+    "mock": "labs/social/watering-hole/mock",
+    "docs": "labs/social/watering-hole/docs",
+    "scripts": "tools/lab-scripts/social/watering-hole"
+  },
+  "references": [],
+  "notes": "该实验按 case-study ready 例外收口，不提供 exploit.py、攻击脚本、外部连接或真实样本。"
+}

@@ -1,0 +1,170 @@
+{
+  "id": "network.arp-spoofing",
+  "slug": "arp-spoofing",
+  "title": "ARP 欺骗",
+  "category": "network",
+  "subcategory": "arp-spoofing",
+  "mode": "simulation",
+  "severity": "high",
+  "difficulty": "intermediate",
+  "summary": "使用虚拟二层拓扑观察地址映射漂移与交换网络防护。",
+  "status": "ready",
+  "phase": "phase-2",
+  "sortOrder": 307,
+  "estimatedMinutes": 25,
+  "tags": [
+    "network",
+    "arp",
+    "layer2"
+  ],
+  "knowledgePoints": [
+    "ARP 信任模型",
+    "二层检测",
+    "网络分段"
+  ],
+  "variants": [
+    {
+      "key": "vuln",
+      "title": "ARP 欺骗风险观察版",
+      "enabled": true,
+      "description": "观察二层网络直接接受未经验证的地址映射更新导致的固定风险判定。",
+      "entryKey": "network-arp-spoofing-vuln",
+      "expectedOutcome": "返回 network-arp-spoofing-risk-accepted 学习信号。",
+      "supportsAutomation": true
+    },
+    {
+      "key": "fixed",
+      "title": "ARP 欺骗防御复盘版",
+      "enabled": true,
+      "description": "观察验证落实“DHCP Snooping、动态 ARP 检测、静态关键绑定和网络分段”后的正常受控流程。",
+      "entryKey": "network-arp-spoofing-fixed",
+      "expectedOutcome": "高风险动作被阻断，正常受控流程通过复核。",
+      "supportsAutomation": true
+    }
+  ],
+  "entrypoints": {
+    "web": [
+      {
+        "key": "network-arp-spoofing-vuln",
+        "variant": "vuln",
+        "path": "/labs/network/arp-spoofing/vuln",
+        "description": "ARP 欺骗风险观察版工作台"
+      },
+      {
+        "key": "network-arp-spoofing-fixed",
+        "variant": "fixed",
+        "path": "/labs/network/arp-spoofing/fixed",
+        "description": "ARP 欺骗防御复盘版工作台"
+      }
+    ],
+    "api": [
+      {
+        "key": "network-arp-spoofing-workbench",
+        "variant": "shared",
+        "method": "GET",
+        "path": "/api/labs/network/arp-spoofing/workbench",
+        "description": "ARP 欺骗固定工作台配置"
+      },
+      {
+        "key": "network-arp-spoofing-vuln-evaluate",
+        "variant": "vuln",
+        "method": "POST",
+        "path": "/api/labs/network/arp-spoofing/vuln/evaluate",
+        "description": "ARP 欺骗漏洞版固定案例评估"
+      },
+      {
+        "key": "network-arp-spoofing-fixed-evaluate",
+        "variant": "fixed",
+        "method": "POST",
+        "path": "/api/labs/network/arp-spoofing/fixed/evaluate",
+        "description": "ARP 欺骗修复版固定案例评估"
+      }
+    ],
+    "scripts": [
+      {
+        "key": "network-arp-spoofing-verify",
+        "language": "ts",
+        "path": "tools/lab-scripts/network/arp-spoofing/verify.ts",
+        "description": "ARP 欺骗本机只读一致性验证"
+      }
+    ],
+    "docs": [
+      {
+        "key": "network-arp-spoofing-readme",
+        "path": "labs/network/arp-spoofing/README.md",
+        "description": "ARP 欺骗场景说明"
+      },
+      {
+        "key": "network-arp-spoofing-attack-steps",
+        "path": "labs/network/arp-spoofing/docs/attack-steps.md",
+        "description": "ARP 欺骗风险观察步骤"
+      },
+      {
+        "key": "network-arp-spoofing-fix-notes",
+        "path": "labs/network/arp-spoofing/docs/fix-notes.md",
+        "description": "ARP 欺骗修复思路"
+      },
+      {
+        "key": "network-arp-spoofing-manual-verification",
+        "path": "labs/network/arp-spoofing/docs/manual-verification.md",
+        "description": "ARP 欺骗手工验证矩阵"
+      }
+    ]
+  },
+  "verification": {
+    "manual": {
+      "supported": true,
+      "stepsDocPath": "labs/network/arp-spoofing/docs/manual-verification.md",
+      "expectedSignals": [
+        "network-arp-spoofing-risk-accepted",
+        "network-arp-spoofing-defense-blocked",
+        "network-arp-spoofing-normal-verified"
+      ]
+    },
+    "automation": {
+      "supported": true,
+      "playwright": {
+        "enabled": false,
+        "specPath": "packages/testing/tests/e2e/platform.spec.mjs"
+      },
+      "apiTest": {
+        "enabled": true,
+        "specPath": "apps/server/tests/guided-scenario-lab.test.ts"
+      },
+      "scriptVerification": {
+        "enabled": true,
+        "scriptKeys": [
+          "network-arp-spoofing-verify"
+        ]
+      }
+    }
+  },
+  "prerequisites": [
+    {
+      "type": "service",
+      "value": "本机后端服务运行于 http://127.0.0.1:6667",
+      "required": true
+    },
+    {
+      "type": "browser",
+      "value": "使用本机浏览器访问实验工作台",
+      "required": true
+    }
+  ],
+  "safeBoundaries": [
+    "只使用内存中的虚拟网络拓扑和固定流量摘要，不扫描、监听或连接真实网络。",
+    "页面和 API 只接受共享目录中声明的 scenarioKey 与 controlKey。",
+    "未知 key 会被脱敏阻断，不写入原始输入或外部目标信息。"
+  ],
+  "paths": {
+    "root": "labs/network/arp-spoofing",
+    "readme": "labs/network/arp-spoofing/README.md",
+    "vuln": "labs/network/arp-spoofing/vuln",
+    "fixed": "labs/network/arp-spoofing/fixed",
+    "mock": "labs/network/arp-spoofing/mock",
+    "docs": "labs/network/arp-spoofing/docs",
+    "scripts": "tools/lab-scripts/network/arp-spoofing"
+  },
+  "references": [],
+  "notes": "该实验仅提供本机受控固定场景和只读验证，不允许扩展为通用攻击工具。"
+}

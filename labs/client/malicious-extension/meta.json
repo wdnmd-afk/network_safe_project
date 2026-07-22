@@ -1,0 +1,171 @@
+{
+  "id": "client.malicious-extension",
+  "slug": "malicious-extension",
+  "title": "恶意浏览器插件",
+  "category": "client",
+  "subcategory": "malicious-extension",
+  "mode": "case-study",
+  "severity": "high",
+  "difficulty": "beginner",
+  "summary": "通过固定扩展权限清单学习过宽权限、来源和更新审计。",
+  "status": "ready",
+  "phase": "phase-3",
+  "sortOrder": 330,
+  "estimatedMinutes": 20,
+  "tags": [
+    "client",
+    "extension",
+    "case-study"
+  ],
+  "knowledgePoints": [
+    "扩展权限",
+    "发布者来源",
+    "受管浏览器"
+  ],
+  "variants": [
+    {
+      "key": "vuln",
+      "title": "恶意浏览器插件风险观察版",
+      "enabled": true,
+      "description": "观察浏览器允许扩展自动获得过宽权限且缺少来源审查导致的固定风险判定。",
+      "entryKey": "client-malicious-extension-vuln",
+      "expectedOutcome": "返回 client-malicious-extension-risk-accepted 学习信号。",
+      "supportsAutomation": false
+    },
+    {
+      "key": "fixed",
+      "title": "恶意浏览器插件防御复盘版",
+      "enabled": true,
+      "description": "观察验证落实“企业允许列表、最小权限、更新审计和敏感站点隔离”后的正常受控流程。",
+      "entryKey": "client-malicious-extension-fixed",
+      "expectedOutcome": "高风险动作被阻断，正常受控流程通过复核。",
+      "supportsAutomation": false
+    }
+  ],
+  "entrypoints": {
+    "web": [
+      {
+        "key": "client-malicious-extension-vuln",
+        "variant": "vuln",
+        "path": "/labs/client/malicious-extension/vuln",
+        "description": "恶意浏览器插件风险观察版工作台"
+      },
+      {
+        "key": "client-malicious-extension-fixed",
+        "variant": "fixed",
+        "path": "/labs/client/malicious-extension/fixed",
+        "description": "恶意浏览器插件防御复盘版工作台"
+      }
+    ],
+    "api": [
+      {
+        "key": "client-malicious-extension-workbench",
+        "variant": "shared",
+        "method": "GET",
+        "path": "/api/labs/client/malicious-extension/workbench",
+        "description": "恶意浏览器插件固定工作台配置"
+      },
+      {
+        "key": "client-malicious-extension-vuln-evaluate",
+        "variant": "vuln",
+        "method": "POST",
+        "path": "/api/labs/client/malicious-extension/vuln/evaluate",
+        "description": "恶意浏览器插件漏洞版固定案例评估"
+      },
+      {
+        "key": "client-malicious-extension-fixed-evaluate",
+        "variant": "fixed",
+        "method": "POST",
+        "path": "/api/labs/client/malicious-extension/fixed/evaluate",
+        "description": "恶意浏览器插件修复版固定案例评估"
+      }
+    ],
+    "scripts": [
+      {
+        "key": "client-malicious-extension-verify",
+        "language": "ts",
+        "path": "tools/lab-scripts/client/malicious-extension/verify.ts",
+        "description": "恶意浏览器插件本机只读一致性验证"
+      }
+    ],
+    "docs": [
+      {
+        "key": "client-malicious-extension-readme",
+        "path": "labs/client/malicious-extension/README.md",
+        "description": "恶意浏览器插件场景说明"
+      },
+      {
+        "key": "client-malicious-extension-attack-steps",
+        "path": "labs/client/malicious-extension/docs/attack-steps.md",
+        "description": "恶意浏览器插件风险观察步骤"
+      },
+      {
+        "key": "client-malicious-extension-fix-notes",
+        "path": "labs/client/malicious-extension/docs/fix-notes.md",
+        "description": "恶意浏览器插件修复思路"
+      },
+      {
+        "key": "client-malicious-extension-manual-verification",
+        "path": "labs/client/malicious-extension/docs/manual-verification.md",
+        "description": "恶意浏览器插件手工验证矩阵"
+      }
+    ]
+  },
+  "verification": {
+    "manual": {
+      "supported": true,
+      "stepsDocPath": "labs/client/malicious-extension/docs/manual-verification.md",
+      "expectedSignals": [
+        "client-malicious-extension-risk-accepted",
+        "client-malicious-extension-defense-blocked",
+        "client-malicious-extension-normal-verified"
+      ]
+    },
+    "automation": {
+      "supported": true,
+      "playwright": {
+        "enabled": false,
+        "specPath": "packages/testing/tests/e2e/platform.spec.mjs"
+      },
+      "apiTest": {
+        "enabled": true,
+        "specPath": "apps/server/tests/guided-scenario-lab.test.ts"
+      },
+      "scriptVerification": {
+        "enabled": true,
+        "scriptKeys": [
+          "client-malicious-extension-verify"
+        ]
+      }
+    }
+  },
+  "prerequisites": [
+    {
+      "type": "service",
+      "value": "本机后端服务运行于 http://127.0.0.1:6667",
+      "required": true
+    },
+    {
+      "type": "browser",
+      "value": "使用本机浏览器访问实验工作台",
+      "required": true
+    }
+  ],
+  "safeBoundaries": [
+    "恶意浏览器插件 按 case-study ready 例外收口，只代表固定案例学习闭环完成。",
+    "只使用固定浏览器行为案例，不注入真实页面、不采集表单数据。",
+    "页面和 API 只接受共享目录中声明的 scenarioKey 与 controlKey。",
+    "未知 key 会被脱敏阻断，不写入原始输入或外部目标信息。"
+  ],
+  "paths": {
+    "root": "labs/client/malicious-extension",
+    "readme": "labs/client/malicious-extension/README.md",
+    "vuln": "labs/client/malicious-extension/vuln",
+    "fixed": "labs/client/malicious-extension/fixed",
+    "mock": "labs/client/malicious-extension/mock",
+    "docs": "labs/client/malicious-extension/docs",
+    "scripts": "tools/lab-scripts/client/malicious-extension"
+  },
+  "references": [],
+  "notes": "该实验按 case-study ready 例外收口，不提供 exploit.py、攻击脚本、外部连接或真实样本。"
+}
