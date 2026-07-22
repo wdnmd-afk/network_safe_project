@@ -8,7 +8,7 @@
   "severity": "critical",
   "difficulty": "advanced",
   "summary": "通过前端固定案例工作台、后端受控 review API、线索卡和流程复盘学习高层授权压力、重大业务事件、保密语境、时间窗口压缩和越级审批如何造成流程失守。",
-  "status": "in-progress",
+  "status": "ready",
   "phase": "phase-3",
   "tags": [
     "social",
@@ -76,12 +76,19 @@
         "description": "修复版固定案例高风险流程核验复盘接口"
       }
     ],
-    "scripts": [],
+    "scripts": [
+      {
+        "key": "whaling-verify",
+        "language": "ts",
+        "path": "tools/lab-scripts/social/whaling/verify.ts",
+        "description": "本机只读捕鲸攻击元数据、文档、固定案例边界和验证证据一致性验证"
+      }
+    ],
     "docs": [
       {
         "key": "overview",
         "path": "labs/social/whaling/README.md",
-        "description": "捕鲸攻击 in-progress 场景总说明"
+        "description": "捕鲸攻击 case-study ready 场景总说明"
       },
       {
         "key": "attack-steps",
@@ -125,12 +132,18 @@
       "apiTest": {
         "enabled": true,
         "specPath": "apps/server/tests/whaling-lab.test.ts"
+      },
+      "scriptVerification": {
+        "enabled": true,
+        "scriptKeys": [
+          "whaling-verify"
+        ]
       }
     }
   },
   "prerequisites": [
-    "已阅读捕鲸攻击边界设计、目录与 planned 元数据、固定案例文档、后端固定案例 API、前端固定案例工作台和页面差异验证执行文档",
-    "理解当前 in-progress 仅代表目录、元数据、基础文档入口、前端固定案例工作台、Playwright 页面差异验证、后端受控 review API 和统一事件日志安全摘要存在",
+    "已阅读捕鲸攻击边界设计、目录与 planned 元数据、固定案例文档、后端固定案例 API、前端固定案例工作台、页面差异验证和只读一致性验证执行文档",
+    "理解当前 ready 仅代表本项目内固定虚构高层决策案例、前端固定案例工作台、后端受控 review API、统一事件日志安全摘要、Playwright 页面差异验证、服务端 API 测试和本机只读一致性验证形成学习闭环",
     "理解本实验首版只能使用固定虚构高层决策案例、固定线索卡、固定风险标签和固定防御流程复盘"
   ],
   "paths": {
@@ -145,16 +158,16 @@
   "sortOrder": 420,
   "estimatedMinutes": 20,
   "safeBoundaries": [
-    "当前 in-progress 状态仅表示目录、元数据、基础文档入口、前端固定案例工作台、Playwright 页面差异验证、后端受控 review API 和事件日志安全摘要存在，不表示脚本能力已实现",
-    "entrypoints.web 只能登记固定案例工作台，entrypoints.api 只能登记受控 review API，entrypoints.scripts 当前必须保持空数组",
+    "case-study ready 状态仅表示本项目内固定虚构高层决策案例、前端固定案例工作台、后端受控 review API、事件日志安全摘要、Playwright 页面差异验证、服务端 API 测试和本机只读一致性验证脚本形成学习闭环，并已按 ready 收口审计同步证据；不表示攻击脚本能力已实现",
+    "entrypoints.web 只能登记固定案例工作台，entrypoints.api 只能登记受控 review API，entrypoints.scripts 只能登记 whaling-verify 只读一致性验证",
     "首版必须保持 case-study，只使用固定虚构高层决策案例、固定线索卡、固定风险标签和固定防御流程复盘",
     "不发送真实邮件、短信、消息、会议邀请或链接",
     "不采集真实高管、董事会成员、外部顾问、供应商、客户、姓名、邮箱、手机号、公司、部门、职位、汇报关系、组织结构、社交账号或公开资料",
     "不收集真实凭据、验证码、Cookie、token、付款信息、附件、法务材料、董事会材料、并购材料或业务资料",
     "不连接第三方邮件、短信、社交平台、CRM、HR、IM、企业通讯录、会议系统、日程系统、投递服务、收件箱服务或支付系统",
     "不生成可投递标题库、正文模板库、IM 话术库、会议邀请模板、附件诱导文案、付款指令、跟踪链接或群发脚本",
-    "不提供 exploit.py、verify.ts、投递脚本、画像采集脚本、模板生成脚本、付款指令脚本或攻击脚本",
+    "不提供 exploit.py、投递脚本、画像采集脚本、模板生成脚本、付款指令脚本或攻击脚本；verify.ts 只能作为本机只读一致性验证入口",
     "当前页面和 API 只允许固定 caseKey 和固定 verificationPolicyKey，并且事件日志只能记录固定 key、风险类别、决策和学习信号"
   ],
-  "notes": "捕鲸攻击当前为 case-study / in-progress：in-progress 仅代表本项目内固定案例工作台、Playwright 页面差异验证、后端受控 review API、统一事件日志安全摘要、前端单元测试、前端 API client 测试和服务端 API 测试已建立；当前不提供 verify.ts、exploit.py、真实高管画像采集、真实组织结构收集、真实投递、凭据收集、模板生成、第三方平台调用、会议邀请、付款指令或攻击脚本。"
+  "notes": "捕鲸攻击当前为 case-study / ready：ready 仅代表本项目内固定案例学习闭环完成，并已按 ready 收口审计同步证据；证据包括前端固定案例工作台、后端受控 review API、统一事件日志安全摘要、Playwright 页面差异验证、服务端 API 测试和本机只读一致性验证；verify.ts 只读取仓库内文件，supportsAutomation 仍为 false；当前仍不提供 exploit.py、真实高管画像采集、真实组织结构收集、真实投递、凭据收集、模板生成、第三方平台调用、会议邀请、付款指令或攻击脚本。"
 }

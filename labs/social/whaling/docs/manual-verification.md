@@ -2,14 +2,14 @@
 
 ## 验证目标
 
-确认 `social.whaling` 当前为 in-progress 前端固定案例工作台、Playwright 页面差异验证和后端受控 API 切片，不提供脚本、真实投递、画像采集、凭据收集、模板生成、第三方平台调用或攻击能力。
+确认 `social.whaling` 当前为 case-study ready 前端固定案例工作台、Playwright 页面差异验证、本机只读一致性验证和后端受控 API 学习闭环，不提供攻击脚本、真实投递、画像采集、凭据收集、模板生成、第三方平台调用或攻击能力。
 
 ## 元数据验证
 
 检查 `labs/social/whaling/meta.json`：
 
 - `id` 为 `social.whaling`。
-- `status` 为 `in-progress`。
+- `status` 为 `ready`。
 - `mode` 为 `case-study`。
 - `entrypoints.docs` 只登记真实存在的文档入口。
 - `entrypoints.api` 只登记：
@@ -18,12 +18,14 @@
 - `entrypoints.web` 只登记：
   - `/labs/social/whaling/vuln`
   - `/labs/social/whaling/fixed`
-- `entrypoints.scripts` 为空数组。
+- `entrypoints.scripts` 只登记 `whaling-verify`：
+  - `tools/lab-scripts/social/whaling/verify.ts`
 - `verification.automation.supported` 为 `true`。
 - `verification.automation.playwright.specPath` 为 `packages/testing/tests/e2e/platform.spec.mjs`。
 - `verification.automation.apiTest.specPath` 为 `apps/server/tests/whaling-lab.test.ts`。
+- `verification.automation.scriptVerification.scriptKeys` 只包含 `whaling-verify`。
 - `variants[].supportsAutomation` 均为 `false`。
-- `safeBoundaries` 明确当前页面只提供固定案例工作台，不提供 `verify.ts`、`exploit.py` 或攻击脚本。
+- `safeBoundaries` 明确当前页面只提供固定案例工作台，`verify.ts` 只作为本机只读一致性验证入口，不提供 `exploit.py` 或攻击脚本。
 
 ## 目录验证
 
@@ -38,6 +40,7 @@
 - `labs/social/whaling/docs/fix-notes.md`
 - `labs/social/whaling/docs/manual-verification.md`
 - `tools/lab-scripts/social/whaling/README.md`
+- `tools/lab-scripts/social/whaling/verify.ts`
 - `apps/web/src/api/whaling-lab.ts`
 - `apps/web/src/labs/whaling.ts`
 - `apps/web/src/views/WhalingLabView.vue`
@@ -50,7 +53,6 @@
 确认以下文件不存在：
 
 - `tools/lab-scripts/social/whaling/exploit.py`
-- `tools/lab-scripts/social/whaling/verify.ts`
 
 ## 前端验证
 
@@ -85,13 +87,25 @@
 
 额外传入的正文、邮箱、链接、人员、组织结构、付款账号、附件、凭据、token、会议邀请等字段不得出现在响应或事件日志摘要中。
 
+## 只读一致性验证
+
+确认 `tools/lab-scripts/social/whaling/verify.ts` 只读取仓库内元数据、文档、前端、后端和测试文件，并输出 JSON 一致性报告。
+
+运行方式：
+
+```bash
+pnpm --filter @network-safe/web exec tsx ../../tools/lab-scripts/social/whaling/verify.ts
+```
+
+该脚本不得发起 HTTP 请求，不得连接网络，不得读取 `.env`、Cookie、token、验证码、凭据、付款信息、真实人员资料或真实业务材料。
+
 ## 安全边界验证
 
 文档允许出现“投递、画像、凭据、模板、会议邀请、付款指令、脚本”等词，但必须只用于禁止性说明、边界说明或风险控制说明。
 
 当前不应存在：
 
-- `verify.ts` 或 `exploit.py`。
+- `exploit.py`。
 - 真实高管画像采集。
 - 真实组织结构收集。
 - 真实投递、凭据收集、模板生成、第三方平台调用或攻击脚本。
