@@ -22,6 +22,10 @@ test("playwright uses shared global setup for local services", () => {
   assert.equal(playwrightGlobalSetup, "./src/playwright/global-setup.mjs");
 });
 
-test("playwright seeds auth users and lab metadata before browser tests", () => {
-  assert.deepEqual(playwrightSeedScripts, ["seed:auth", "seed:labs"]);
+test("playwright syncs schema before seeding auth users and lab metadata", () => {
+  assert.deepEqual(playwrightSeedScripts, [
+    "schema:ensure",
+    "seed:auth",
+    "seed:labs",
+  ]);
 });
