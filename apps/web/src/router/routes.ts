@@ -37,6 +37,11 @@ export const routes: RouteRecordRaw[] = [
     component: () => import("../views/LabsView.vue"),
   },
   {
+    path: "/status",
+    name: "platform-status",
+    component: () => import("../views/PlatformStatusView.vue"),
+  },
+  {
     path: "/labs/:category/:scene",
     name: "lab-detail",
     component: () => import("../views/LabDetailView.vue"),
@@ -473,5 +478,15 @@ export const routes: RouteRecordRaw[] = [
     props: {
       variant: "fixed",
     },
+  },
+  {
+    path: "/labs/:category/:scene/:variant(vuln|fixed)",
+    name: "guided-scenario-lab",
+    component: () => import("../views/GuidedScenarioLabView.vue"),
+    props: (route) => ({
+      category: String(route.params.category),
+      scene: String(route.params.scene),
+      variant: String(route.params.variant),
+    }),
   },
 ];

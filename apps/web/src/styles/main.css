@@ -770,6 +770,7 @@ td small {
 .whaling-workbench,
 .dependency-confusion-workbench,
 .misconfiguration-workbench,
+.guided-scenario-workbench,
 .ssrf-workbench {
   display: grid;
   gap: 1rem;
@@ -845,6 +846,7 @@ td small {
 .whaling-status-panel,
 .dependency-confusion-status-panel,
 .misconfiguration-status-panel,
+.guided-scenario-status-panel,
 .ssrf-status-panel {
   display: grid;
   gap: 0.85rem;

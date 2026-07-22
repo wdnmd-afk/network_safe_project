@@ -7,6 +7,7 @@ const navItems = [
   { path: "/orders", label: "订单" },
   { path: "/support", label: "客服" },
   { path: "/labs", label: "实验" },
+  { path: "/status", label: "状态检测" },
 ];
 </script>
 

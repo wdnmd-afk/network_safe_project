@@ -7,6 +7,22 @@ const labs = ref<LabMetadata[]>([]);
 const isLoading = ref(true);
 const errorMessage = ref("");
 
+const categoryTitles: Record<string, string> = {
+  web: "Web 漏洞",
+  auth: "认证授权",
+  network: "网络与传输层",
+  ai: "AI 与新型攻击",
+  social: "社会工程学",
+  malware: "恶意软件",
+  client: "客户端攻击",
+  "supply-chain": "供应链",
+  infrastructure: "基础设施",
+};
+
+function formatCategoryTitle(category: string) {
+  return categoryTitles[category] ?? category;
+}
+
 const groupedLabs = computed(() => {
   return labs.value.reduce<Record<string, LabMetadata[]>>((groups, lab) => {
     groups[lab.category] ??= [];
@@ -47,7 +63,7 @@ onMounted(async () => {
       >
         <div class="section-heading compact-heading">
           <p class="eyebrow">{{ category }}</p>
-          <h2>{{ category === "web" ? "Web 漏洞" : "认证授权" }}</h2>
+          <h2>{{ formatCategoryTitle(category) }}</h2>
         </div>
 
         <div class="lab-grid">

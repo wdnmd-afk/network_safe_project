@@ -14,6 +14,7 @@ describe("SafeMart 路由清单", () => {
       "/orders",
       "/support",
       "/labs",
+      "/status",
       "/labs/:category/:scene",
       "/labs/web/xss/vuln",
       "/labs/web/xss/fixed",
@@ -69,6 +70,7 @@ describe("SafeMart 路由清单", () => {
       "/labs/supply-chain/dependency-confusion/fixed",
       "/labs/infrastructure/misconfiguration/vuln",
       "/labs/infrastructure/misconfiguration/fixed",
+      "/labs/:category/:scene/:variant(vuln|fixed)",
     ]);
   });
 });
