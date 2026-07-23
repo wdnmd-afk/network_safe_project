@@ -22,6 +22,7 @@
     "test:web": "pnpm --filter @network-safe/web test",
     "test:server": "pnpm --filter @network-safe/server test",
     "test:shared": "pnpm --filter @network-safe/shared test",
+    "test:coverage": "node tools/coverage/verify-security-coverage.mjs",
     "test:guided": "node tools/lab-scripts/verify-all-guided-scenarios.mjs",
     "test:smoke": "pnpm --filter @network-safe/testing smoke",
     "test:e2e": "pnpm --filter @network-safe/testing e2e",
