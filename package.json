@@ -17,6 +17,8 @@
     "dev:server": "pnpm --filter @network-safe/server dev",
     "build:web": "pnpm --filter @network-safe/web build",
     "build:server": "pnpm --filter @network-safe/server build",
+    "db:migrate": "node database/scripts/apply-migrations.mjs",
+    "db:prepare": "pnpm db:migrate && pnpm --filter @network-safe/server schema:ensure && pnpm --filter @network-safe/server seed:auth && pnpm --filter @network-safe/server seed:labs",
     "test:web": "pnpm --filter @network-safe/web test",
     "test:server": "pnpm --filter @network-safe/server test",
     "test:shared": "pnpm --filter @network-safe/shared test",

@@ -1,3 +1,17 @@
+# 2026-07-23 最新进展：LT-002 数据库初始化流程
+
+- [x] 新增 `database/scripts/apply-migrations.mjs`，支持创建数据库、顺序迁移、迁移记录和幂等复跑。
+- [x] 新增显式 `--baseline-existing`，将结构完整的既有数据库纳入迁移记录，不删除现有学习数据。
+- [x] MySQL 客户端固定使用 `utf8mb4`，修复中文 SQL 种子在空库迁移时写入失败的问题。
+- [x] 根级新增 `db:migrate` 和 `db:prepare`，串联迁移、schema ensure、认证种子和实验种子。
+- [x] 更新 `database/README.md`，补充本机初始化、迁移规则、既有库基线和 MySQL CLI 路径说明。
+- [x] 新增迁移脚本测试，测试基础设施共 13 项通过。
+- [x] 现有数据库普通复跑结果为 `applied 0; skipped 4; total 4`。
+- [x] 临时空库从零完成 4 个迁移、2 个账号、9 分类、65 实验和 130 变体同步，随后已删除临时库。
+- [x] 服务端类型检查、Prisma schema validate、`git diff --check` 和行尾空白检查通过。
+
+当前状态：`LT-002` 已完成；`LT-001` 发布验收继续等待 `LT-003` nginx 配置和生产构建验证。
+
 # 2026-07-20 最新进展：65 个安全实验全量 ready 收口
 
 - [x] 新增总执行文档 `docs/execution/2026-07-20-security-lab-master-completion.md`，锁定 65 个主题和剩余 38 个实验的实施范围。
