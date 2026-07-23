@@ -2,6 +2,8 @@
 node_modules/
 dist/
 coverage/
+!tools/coverage/
+!tools/coverage/**
 .pnpm-store/
 .env
 .env.*
