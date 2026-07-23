@@ -7,7 +7,7 @@ import { useSessionStore } from "../stores/session";
 const router = useRouter();
 const session = useSessionStore();
 const username = ref("demo_user");
-const password = ref("Demo@123456");
+const password = ref("");
 const errorMessage = ref("");
 
 async function submitLogin() {
@@ -42,7 +42,7 @@ async function submitLogin() {
         <span>密码</span>
         <input v-model="password" type="password" autocomplete="current-password" />
       </label>
-      <p class="form-hint">可用账号：admin / Admin@123456，demo_user / Demo@123456</p>
+      <p class="form-hint">请输入本机种子账号或已有账号的密码。</p>
       <p v-if="errorMessage" class="form-error">{{ errorMessage }}</p>
       <button type="submit" :disabled="session.isLoading">
         {{ session.isLoading ? "登录中..." : "登录" }}

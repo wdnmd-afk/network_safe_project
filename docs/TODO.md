@@ -1,3 +1,17 @@
+# 2026-07-23 最新进展：LT-001 V1 本机发布验收完成
+
+- [x] 前后端生产构建通过，Prisma client、TypeScript 和 Vite 产物生成成功。
+- [x] 构建后 nginx 运行验收通过：首页、深层 Vue 路由、健康、数据库和实验列表均正常。
+- [x] 认证验收通过：登录、当前用户、通用实验漏洞版/修复版/正常流程、退出均正常。
+- [x] 事件日志和复盘问题读写验收通过。
+- [x] `test:guided` 38/38 通过。
+- [x] 完整 `test:automation` 通过：服务端、前端、共享、Smoke 和 Playwright 19/19。
+- [x] 前后端类型检查通过。
+- [x] 构建产物固定演示密码和旧 token fallback 扫描为 0 命中；前端不再内置演示密码。
+- [x] 验收 Node/nginx 进程和 6667/8080 端口已清理。
+
+当前状态：`LT-001`、`LT-002`、`LT-003` 均已完成并推送；下一项进入 `LT-004` 安全覆盖矩阵。
+
 # 2026-07-23 最新进展：LT-003 nginx 本机部署
 
 - [x] 新增 `nginx/network-safe.conf.template`，包含静态托管、Vue history fallback、`/api` 代理和独立日志配置。

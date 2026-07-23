@@ -74,6 +74,18 @@ pnpm --filter @network-safe/server start
 
 `/api/` 由 nginx 代理到 `http://127.0.0.1:6667`；前端 Vue history 路由由 `try_files` 回退到 `index.html`。
 
+## 发布验收脚本
+
+运行公开链路验收：
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File .\tools\release\test-nginx-runtime.ps1 `
+  -NginxRoot 'C:\tools\nginx' `
+  -ConfigPath "$env:TEMP\network-safe-nginx.conf"
+```
+
+运行登录、通用实验、事件日志和复盘读写验收时，在当前 PowerShell 会话临时设置 `NETWORK_SAFE_DEMO_PASSWORD`，再追加 `-RunAuthenticatedChecks`。验收结束后删除该环境变量，不要把密码写入命令历史或脚本文件。
+
 ## 排障
 
 - 首页 404：确认 `apps/web/dist/index.html` 存在且生成配置的 web root 正确。

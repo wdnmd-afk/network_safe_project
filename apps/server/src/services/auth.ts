@@ -1,3 +1,5 @@
+import { randomBytes } from "node:crypto";
+
 import { verifyPassword } from "./password.js";
 import { createSessionToken, readSessionToken } from "./session-token.js";
 import {
@@ -44,7 +46,17 @@ function toAuthUser(user: StoredUser): AuthUser {
 }
 
 function getTokenSecret(secret?: string) {
-  return secret ?? process.env.AUTH_TOKEN_SECRET ?? "network-safe-local-dev-secret";
+  const configuredSecret = secret ?? process.env.AUTH_TOKEN_SECRET;
+
+  if (configuredSecret) {
+    return configuredSecret;
+  }
+
+  if (process.env.NODE_ENV === "production") {
+    throw new Error("AUTH_TOKEN_SECRET is required in production");
+  }
+
+  return randomBytes(32).toString("hex");
 }
 
 export function createAuthService(options: CreateAuthServiceOptions = {}): AuthService {
