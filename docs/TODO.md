@@ -1,3 +1,17 @@
+# 2026-07-23 最新进展：LT-003 nginx 本机部署
+
+- [x] 新增 `nginx/network-safe.conf.template`，包含静态托管、Vue history fallback、`/api` 代理和独立日志配置。
+- [x] 新增 `tools/release/generate-nginx-config.ps1`，按本机路径生成临时配置并执行 `nginx -t`。
+- [x] 新增 `tools/release/test-nginx-runtime.ps1`，启动构建后 Node 和独立 nginx 实例并自动清理。
+- [x] 更新 `nginx/README.md`，补充生成、校验、启动、停止、验收地址和排障说明。
+- [x] 新增 nginx 模板测试，测试基础设施共 17 项通过。
+- [x] 前端生产构建通过，生成 `apps/web/dist`。
+- [x] 后端生产构建通过，Prisma client 和 TypeScript 编译成功。
+- [x] nginx `-t` 通过；首页、深层 MITB 路由、API 健康、数据库健康和实验列表均返回 200。
+- [x] `/api/labs` 经 nginx 返回 65 个实验，Node/nginx 验收进程和端口已清理。
+
+当前状态：`LT-003` 已完成；`LT-001` 继续执行登录、实验差异、复盘、完整自动化和发布复跑验收。
+
 # 2026-07-23 最新进展：LT-002 数据库初始化流程
 
 - [x] 新增 `database/scripts/apply-migrations.mjs`，支持创建数据库、顺序迁移、迁移记录和幂等复跑。
