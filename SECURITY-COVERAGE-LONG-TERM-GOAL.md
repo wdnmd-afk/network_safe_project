@@ -770,7 +770,22 @@
 - [x] `LT-017`：选择一个恶意软件主题升级为专用证据分析实验（完成时间：2026-07-23 14:30:00 +08:00；验证：server 285、web 250、shared 51、guided-all 31/31、coverage、专用 verify.ts 和前后端类型检查全部通过；`malware.ransomware` 从引导式 case-study 毕业为 D3 专用证据分析，保持 case-study ready 例外，三个 canonical 信号不变；顺带修复 LT-016 formjacking 服务端 optionKey 与前端/测试不一致的缺陷）。
 - [x] `LT-018`：建立统一验证入口和 CI 最小门禁（完成时间：2026-07-23 15:05:00 +08:00；验证：新增根级 `typecheck`/`verify` 脚本与 `.github/workflows/verify.yml`；`pnpm verify` 端到端通过：类型检查、shared 51、guided 31、coverage、server 285、web 250；CI 只运行不依赖本机 MySQL 的静态与单元验证，不输出任何秘密）。
 - [x] `LT-019`：建立学习路径、搜索筛选和长期统计方案（完成时间：2026-07-23 15:20:00 +08:00；规划任务，产出 `docs/design/learning-paths-search-statistics.md`，确认学习路径、筛选、搜索、长期统计的数据来源、接口结构、复用现有元数据/事件日志/复盘模型和安全边界）。
-- [ ] `LT-020`：执行长期目标首轮阶段审计并重新排序后续任务。
+- [x] `LT-020`：执行长期目标首轮阶段审计并重新排序后续任务（完成时间：2026-07-23 15:35:00 +08:00；验证：`pnpm verify` 端到端 EXIT=0，coverage 65/65、专用 34、引导式 31、Playwright 10 与真实元数据一致；审计文档 `docs/execution/2026-07-23-lt-first-round-phase-audit.md` 盘点 LT-001~019 完成事实与剩余缺口并重排后续队列）。
+
+### 21.1 首轮审计后重排队列（LT-021 起）
+
+首轮审计（`LT-020`）后，按“先实现规划批次、再深化高风险主题、持续巩固质量”重排。每项仍需单独执行文档。
+
+- [ ] `LT-021`：实现 API 功能级授权（BFLA）专用实验（依据 `docs/design/api-and-business-logic-labs.md`）。
+- [ ] `LT-022`：实现业务流程跳步专用实验。
+- [ ] `LT-023`：实现不安全随机数 / token 熵专用实验（依据 `docs/design/cryptography-and-data-protection-labs.md`）。
+- [ ] `LT-024`：实现固定检测规则匹配与告警研判实验（依据 `docs/design/detection-response-labs.md`）。
+- [ ] `LT-025`：实现 Windows ACL / 服务权限固定审计实验（依据 `docs/design/windows-host-identity-labs.md`）。
+- [ ] `LT-026`：实现云 IAM 策略固定审计实验（依据 `docs/design/cloud-native-iac-labs.md`）。
+- [ ] `LT-027`：再选一个客户端或恶意软件主题升级为专用模拟（如 `client.mitb` 或 `malware.trojan`）。
+- [ ] `LT-028`：为 130 个变体增加路由与元数据 entrypoints 一致性检查，纳入 `verify`。
+- [ ] `LT-029`：为代表性分类补充 Playwright 页面差异验证（专用化后的 clickjacking～ransomware）。
+- [ ] `LT-030`：执行第二轮阶段审计并重排后续任务。
 
 ## 22. 更新规则
 
