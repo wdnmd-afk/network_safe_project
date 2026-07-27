@@ -1,3 +1,13 @@
+# 2026-07-23 最新进展：LT-014 规划云原生和 IaC 安全实验
+
+- [x] 新增 `docs/design/cloud-native-iac-labs.md`，确认云原生与 IaC 安全首批实验的分类、固定模型、模式、复用基础、前置确认项和安全边界。
+- [x] 首批候选：云 IAM 策略最小权限、对象存储公开暴露、Kubernetes RBAC、Terraform/IaC 配置审计。
+- [x] 全部使用固定虚构策略快照、YAML 片段和配置清单，不连接或修改真实云环境、集群或 IaC 后端。
+- [x] 明确前置确认项：分类注册、深度等级判定、scenarioKey/optionKey 命名。
+- [x] 规划任务不含运行时代码；`git diff --check` 通过。
+
+当前状态：`LT-014` 已完成；下一项进入 `LT-015` 规划检测响应和固定安全事件数据集。
+
 # 2026-07-23 最新进展：LT-013 规划 Windows 主机与身份基础设施实验
 
 - [x] 新增 `docs/design/windows-host-identity-labs.md`，规划 Windows 主机与身份基础设施首批实验。
