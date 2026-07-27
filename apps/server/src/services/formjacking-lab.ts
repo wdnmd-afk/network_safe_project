@@ -89,7 +89,7 @@ const formjackingDefinition: GuidedScenarioV2Definition = {
           riskSignal: "client-formjacking-script-trust",
           options: [
             {
-              key: "trust-unrestricted-script",
+              key: "trust-unrestricted-scripts",
               label: "信任未受约束第三方脚本（漏洞视角）",
               outcome: "risk",
               decision: "accepted",
@@ -100,7 +100,7 @@ const formjackingDefinition: GuidedScenarioV2Definition = {
               scoreDeltas: { "script-integrity": 0 },
             },
             {
-              key: "enforce-csp-sri",
+              key: "enforce-csp-sri-allowlist",
               label: "启用 CSP、SRI 与脚本清单",
               outcome: "fix",
               decision: "blocked",
@@ -120,8 +120,8 @@ const formjackingDefinition: GuidedScenarioV2Definition = {
           riskSignal: "client-formjacking-form-target-decision",
           options: [
             {
-              key: "accept-changed-target",
-              label: "直接接受被改写提交目标（漏洞视角）",
+              key: "submit-to-tampered-target",
+              label: "提交到被篡改目标（漏洞视角）",
               outcome: "risk",
               decision: "accepted",
               signal: formjackingRiskSignal,
@@ -131,8 +131,8 @@ const formjackingDefinition: GuidedScenarioV2Definition = {
               scoreDeltas: { "form-target-defense": 0 },
             },
             {
-              key: "defense-blocks-changed-target",
-              label: "防御阻断被改写提交目标",
+              key: "defense-blocks-tampered-target",
+              label: "防御阻断被篡改提交目标",
               outcome: "fix",
               decision: "blocked",
               signal: formjackingDefenseSignal,
@@ -142,8 +142,8 @@ const formjackingDefinition: GuidedScenarioV2Definition = {
               scoreDeltas: { "form-target-defense": 1 },
             },
             {
-              key: "allow-verified-target",
-              label: "校验通过后放行站内提交目标",
+              key: "submit-to-verified-first-party-target",
+              label: "提交到已校验的第一方目标",
               outcome: "normal",
               decision: "accepted",
               signal: formjackingNormalSignal,

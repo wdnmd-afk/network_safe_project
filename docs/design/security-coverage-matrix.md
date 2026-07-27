@@ -127,7 +127,7 @@
 
 | 场景 | 模式 | 深度/实现 | 参考体系 | 证据 | 长期动作 |
 |---|---|---|---|---|---|
-| `malware.ransomware` | case-study | D2 引导式 | ATT&CK T1486 Data Encrypted for Impact | E1–E5 | 增加隔离、备份和恢复时间线 |
+| `malware.ransomware` | case-study | D3 专用模拟 | ATT&CK T1486 Data Encrypted for Impact | E1–E5 | 已升级为两步行为关联与主机处置证据分析状态机（LT-017） |
 | `malware.trojan` | case-study | D2 引导式 | User Execution；Masquerading | E1–E5 | 增加进程树和应用控制分析 |
 | `malware.worm` | case-study | D2 引导式 | 自传播、横向移动和网络分段 | E1–E5 | 增加虚拟传播图 |
 | `malware.spyware` | case-study | D2 引导式 | Collection；Privacy/Endpoint Monitoring | E1–E5 | 增加权限、采集和数据出口证据 |

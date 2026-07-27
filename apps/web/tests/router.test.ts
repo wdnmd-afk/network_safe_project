@@ -82,6 +82,8 @@ describe("SafeMart 路由清单", () => {
       "/labs/auth/oauth/fixed",
       "/labs/client/formjacking/vuln",
       "/labs/client/formjacking/fixed",
+      "/labs/malware/ransomware/vuln",
+      "/labs/malware/ransomware/fixed",
       "/labs/:category/:scene/:variant(vuln|fixed)",
     ]);
   });

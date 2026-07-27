@@ -12,15 +12,16 @@ import {
 import { validateLabMetadata } from "../src/lab-metadata.js";
 
 test("guided scenario catalog covers the remaining guided master-goal topics", () => {
-  // LT-006～LT-010 把 clickjacking、open-redirect、credential-stuffing、session-hijacking、oauth 专用化；LT-016 把 client.formjacking 升级为专用模拟并移出引导式目录，因此当前为 32 个引导式场景。
-  assert.equal(guidedScenarioCatalog.length, 32);
-  assert.equal(new Set(listGuidedScenarioIds()).size, 32);
+  // LT-006～LT-010 把 clickjacking、open-redirect、credential-stuffing、session-hijacking、oauth 专用化；LT-016 把 client.formjacking、LT-017 把 malware.ransomware 升级为专用并移出引导式目录，因此当前为 31 个引导式场景。
+  assert.equal(guidedScenarioCatalog.length, 31);
+  assert.equal(new Set(listGuidedScenarioIds()).size, 31);
   assert.equal(getGuidedScenarioById("web.clickjacking"), undefined);
   assert.equal(getGuidedScenarioById("web.open-redirect"), undefined);
   assert.equal(getGuidedScenarioById("auth.credential-stuffing"), undefined);
   assert.equal(getGuidedScenarioById("auth.session-hijacking"), undefined);
   assert.equal(getGuidedScenarioById("auth.oauth"), undefined);
   assert.equal(getGuidedScenarioById("client.formjacking"), undefined);
+  assert.equal(getGuidedScenarioById("malware.ransomware"), undefined);
 });
 
 test("guided scenario entries expose exact fixed case and control fields", () => {

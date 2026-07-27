@@ -576,6 +576,22 @@ export const routes: RouteRecordRaw[] = [
     },
   },
   {
+    path: "/labs/malware/ransomware/vuln",
+    name: "lab-malware-ransomware-vuln",
+    component: () => import("../views/RansomwareLabView.vue"),
+    props: {
+      variant: "vuln",
+    },
+  },
+  {
+    path: "/labs/malware/ransomware/fixed",
+    name: "lab-malware-ransomware-fixed",
+    component: () => import("../views/RansomwareLabView.vue"),
+    props: {
+      variant: "fixed",
+    },
+  },
+  {
     path: "/labs/:category/:scene/:variant(vuln|fixed)",
     name: "guided-scenario-lab",
     component: () => import("../views/GuidedScenarioLabView.vue"),

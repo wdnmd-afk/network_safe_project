@@ -1,3 +1,28 @@
+# 2026-07-23 最新进展：LT-017 专用化 malware.ransomware（专用证据分析）
+
+- [x] 新增后端专用服务 `apps/server/src/services/ransomware-lab.ts`，用第二版状态机驱动两步证据分析（行为关联策略 → 主机处置决策）。
+- [x] `apps/server/src/app.ts` 注册专用 `GET /workbench` 与 `POST /:variant/evaluate` 路由，置于通用引导式 catch-all 之前。
+- [x] 新增前端 `apps/web/src/api/ransomware-lab.ts`、`apps/web/src/labs/ransomware.ts` 和 `RansomwareLabView.vue`，专用 vuln/fixed 路由置于 catch-all 之前。
+- [x] 保持 case-study ready 例外：`supportsAutomation: false`、无 exploit.py、notes 声明不提供攻击脚本/样本；三个 canonical 信号不变。
+- [x] `malware.ransomware` 从引导式目录（32→31）毕业为专用实现（33→34）；覆盖矩阵行由 D2 引导式改为 D3 专用模拟。
+- [x] `verify.ts` 改为独立只读一致性验证（含 case-study notes 与 no-exploit 检查）；更新 meta.json、README、攻防文档、手工验证文档。
+- [x] 新增服务端 `ransomware-lab.test.ts` 与前端 `ransomware-api.test.ts`；更新受影响的引导式与覆盖测试样例。
+- [x] 顺带修复 `LT-016` formjacking 服务端 optionKey 与前端/测试/文档不一致的缺陷（服务端曾用单数 key，导致前端推荐路径被后端判为 option-not-allowed）。
+- [x] 验证：server 285/285、web 250/250、shared 51/51、guided-all 31/31、coverage、前后端类型检查、`git diff --check` 全部通过。
+
+当前状态：`LT-017` 已完成；阶段 5 首批（客户端 + 恶意软件专用化）达成。下一项进入 `LT-018` 统一验证入口与 CI 最小门禁。
+
+# 2026-07-23 最新进展：LT-016 专用化 client.formjacking（专用模拟）
+
+- [x] 新增后端专用服务 `apps/server/src/services/formjacking-lab.ts`，用第二版状态机驱动两步决策（脚本信任策略 → 表单目标决策）。
+- [x] 新增前端 API client、labs 模块、`FormjackingLabView.vue` 和置于 catch-all 之前的专用路由。
+- [x] `client.formjacking` 从引导式 simulation 毕业为 D3 专用模拟；三个 canonical 信号保持不变。
+- [x] `verify.ts` 改为独立只读一致性验证（含 no-exploit 检查）；更新 meta.json、README、攻防和手工验证文档。
+- [x] 新增服务端与前端专用测试；更新引导式目录计数与覆盖矩阵。
+- [x] 验证：server 276/276、web 247/247、shared 51/51、guided-all 32/32、coverage、前后端类型检查全部通过。
+
+当前状态：`LT-016` 已完成；下一项进入 `LT-017` 恶意软件主题专用化。
+
 # 2026-07-23 最新进展：LT-015 规划检测响应和固定安全事件数据集
 
 - [x] 新增 `docs/design/detection-response-labs.md`，规划检测、响应和安全运营首批实验。
