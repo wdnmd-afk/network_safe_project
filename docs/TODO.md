@@ -1,3 +1,14 @@
+# 2026-07-23 最新进展：LT-018 统一验证入口与最小 CI 门禁
+
+- [x] 根级新增 `typecheck:server`、`typecheck:web`、`typecheck` 脚本，统一前后端类型检查入口。
+- [x] 根级新增 `verify` 脚本，串联类型检查、共享测试、场景只读验证、覆盖矩阵、服务端和前端单元测试。
+- [x] `test:guided` 纳入统一验证入口。
+- [x] 新增 `.github/workflows/verify.yml` 最小 CI：只运行不依赖本机 MySQL 的静态检查、单元测试、共享测试、场景验证、覆盖矩阵和 `git diff --check`。
+- [x] CI 生成 Prisma client 后再类型检查；只读权限，不输出 `.env`、凭据或数据库秘密；数据库集成/Smoke/Playwright 留给本机发布验收。
+- [x] 验证：`pnpm verify` 端到端通过（typecheck + shared 51 + guided 31 + coverage + server 285 + web 250），退出码 0。
+
+当前状态：`LT-018` 已完成；下一项进入 `LT-019` 学习路径、搜索筛选和长期统计方案。
+
 # 2026-07-23 最新进展：LT-017 专用化 malware.ransomware（专用证据分析）
 
 - [x] 新增后端专用服务 `apps/server/src/services/ransomware-lab.ts`，用第二版状态机驱动两步证据分析（行为关联策略 → 主机处置决策）。

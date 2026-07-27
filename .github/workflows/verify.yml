@@ -1,0 +1,61 @@
+name: verify
+
+# 最小 CI 门禁：只运行不依赖本机 MySQL 的静态检查、单元测试、
+# 共享目录测试、场景只读验证和覆盖矩阵校验。
+# 数据库集成、Smoke 和 Playwright E2E 依赖本机 MySQL / 浏览器，
+# 不在本工作流运行，留给本机发布验收（见 docs/execution 发布文档）。
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+# 只读 CI：不需要写权限，也不输出任何 .env、凭据或数据库连接秘密。
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10.0.0
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Generate Prisma client
+        run: pnpm --filter @network-safe/server prisma:generate
+
+      - name: Type check (server + web)
+        run: pnpm typecheck
+
+      - name: Shared package tests
+        run: pnpm test:shared
+
+      - name: Guided scenario read-only verification
+        run: pnpm test:guided
+
+      - name: Security coverage matrix
+        run: pnpm test:coverage
+
+      - name: Server unit and API tests
+        run: pnpm test:server
+
+      - name: Web unit tests
+        run: pnpm test:web -- --run
+
+      - name: Trailing whitespace and diff check
+        run: git diff --check

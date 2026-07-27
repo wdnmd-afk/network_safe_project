@@ -465,8 +465,8 @@
 
 ### 10.2 长期补强
 
-- [ ] 建立根级统一 `verify` 命令，组合类型、单元、共享、场景和轻量 E2E。
-- [ ] 将 `test:guided` 纳入统一验证入口。
+- [x] 建立根级统一 `verify` 命令，组合类型、单元、共享、场景和覆盖矩阵（完成时间：2026-07-23 15:05:00 +08:00；`LT-018`）。
+- [x] 将 `test:guided` 纳入统一验证入口（完成时间：2026-07-23 15:05:00 +08:00）。
 - [ ] 增加 130 个变体的页面路由和元数据入口一致性检查。
 - [ ] 增加 API 路由与 `meta.json` entrypoints 的反向检查。
 - [ ] 增加数据库 schema、迁移和代码模型一致性检查。
@@ -511,13 +511,13 @@
 
 ### 12.2 CI 和质量门禁
 
-- [ ] 建立最小 CI，优先运行不依赖本机 MySQL 的静态和单元验证。
-- [ ] 运行共享包测试、元数据校验和场景只读验证。
-- [ ] 运行前后端类型检查。
-- [ ] 运行服务端和前端单元测试。
+- [x] 建立最小 CI，优先运行不依赖本机 MySQL 的静态和单元验证（完成时间：2026-07-23 15:05:00 +08:00；`.github/workflows/verify.yml`）。
+- [x] 运行共享包测试、元数据校验和场景只读验证（完成时间：2026-07-23 15:05:00 +08:00）。
+- [x] 运行前后端类型检查（完成时间：2026-07-23 15:05:00 +08:00）。
+- [x] 运行服务端和前端单元测试（完成时间：2026-07-23 15:05:00 +08:00）。
 - [ ] 根据环境能力决定是否运行数据库集成和代表性 E2E。
-- [ ] 禁止 CI 输出 `.env`、凭据、Cookie、token 或数据库连接秘密。
-- [ ] 建立提交前和合并前的最小通过标准。
+- [x] 禁止 CI 输出 `.env`、凭据、Cookie、token 或数据库连接秘密（完成时间：2026-07-23 15:05:00 +08:00；工作流只读、不打印环境变量）。
+- [x] 建立提交前和合并前的最小通过标准（完成时间：2026-07-23 15:05:00 +08:00；`pnpm verify` 与 push/PR CI 门禁）。
 
 ### 12.3 依赖和版本治理
 
@@ -768,7 +768,7 @@
 - [x] `LT-015`：规划检测响应和固定安全事件数据集（完成时间：2026-07-23 13:55:00 +08:00；交付：`docs/design/detection-response-labs.md` 规划文档，确认首批切片、固定安全事件数据模型、模式、前置确认项和安全边界）。
 - [x] `LT-016`：选择一个客户端主题升级为专用模拟（完成时间：2026-07-23 14:15:00 +08:00；验证：server 276、web 247、shared 51、guided-all 32/32、coverage、专用 verify.ts 和前后端类型检查全部通过；`client.formjacking` 从引导式目录毕业为 D3 专用模拟，三个 canonical 信号保持不变）。
 - [x] `LT-017`：选择一个恶意软件主题升级为专用证据分析实验（完成时间：2026-07-23 14:30:00 +08:00；验证：server 285、web 250、shared 51、guided-all 31/31、coverage、专用 verify.ts 和前后端类型检查全部通过；`malware.ransomware` 从引导式 case-study 毕业为 D3 专用证据分析，保持 case-study ready 例外，三个 canonical 信号不变；顺带修复 LT-016 formjacking 服务端 optionKey 与前端/测试不一致的缺陷）。
-- [ ] `LT-018`：建立统一验证入口和 CI 最小门禁。
+- [x] `LT-018`：建立统一验证入口和 CI 最小门禁（完成时间：2026-07-23 15:05:00 +08:00；验证：新增根级 `typecheck`/`verify` 脚本与 `.github/workflows/verify.yml`；`pnpm verify` 端到端通过：类型检查、shared 51、guided 31、coverage、server 285、web 250；CI 只运行不依赖本机 MySQL 的静态与单元验证，不输出任何秘密）。
 - [ ] `LT-019`：建立学习路径、搜索筛选和长期统计方案。
 - [ ] `LT-020`：执行长期目标首轮阶段审计并重新排序后续任务。
 
@@ -806,3 +806,4 @@
 | `LT-015` | 2026-07-23 13:55:00 +08:00 | 检测响应与固定安全事件数据集规划文档 `docs/design/detection-response-labs.md`：确认统一事件数据模型、固定数据集、检测规则匹配、告警研判和处置决策首批切片、模式、前置确认项和安全边界 | 规划任务，不含运行时代码；文档明确固定脱敏事件数据、只读研判边界、不执行外部查询、不使用真实恶意样本，供后续 LT 单独实现 |
 | `LT-016` | 2026-07-23 14:10:00 +08:00 | `client.formjacking` 专用服务（第二版两步状态机：脚本信任 → 表单目标决策）、专用工作台/评估 API、前端专用视图与路由、独立 verify.ts、专用测试；从引导式 simulation 毕业为专用 D3 模拟 | server、web、shared、coverage（专用 33、引导式 32）、guided-all、前后端类型检查、专用 verify.ts 全通过；三个 canonical 信号保持不变 |
 | `LT-017` | 2026-07-23 14:30:00 +08:00 | `malware.ransomware` 专用服务（第二版两步状态机：行为关联 → 主机处置决策）、专用工作台/评估 API、前端专用视图与路由、独立 verify.ts、专用测试；从引导式 case-study 毕业为专用 D3 证据分析，保持 case-study ready 例外与无 exploit.py；并修复 LT-016 formjacking 服务与前端 optionKey 不一致缺陷 | server 285/285、web 250/250、shared 51/51、coverage（专用 34、引导式 31）、guided-all 31/31、前后端类型检查、专用 verify.ts 全通过；三个 canonical 信号保持不变 |
+| `LT-018` | 2026-07-23 14:50:00 +08:00 | 根级统一 `verify` 入口（typecheck + shared + guided + coverage + server + web）、`typecheck`/`typecheck:server`/`typecheck:web` 脚本、最小 CI 工作流 `.github/workflows/verify.yml`（只读、不依赖 MySQL/浏览器、不输出秘密） | `pnpm verify` 端到端 EXIT=0：typecheck、shared 51、guided-all 31、coverage、server 285、web 250 全通过 |
