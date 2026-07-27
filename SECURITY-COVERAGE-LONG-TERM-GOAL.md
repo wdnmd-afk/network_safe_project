@@ -761,7 +761,7 @@
 - [x] `LT-008`：专用化 `auth.credential-stuffing`（完成时间：2026-07-20 11:05:00 +08:00；验证：服务端 249、前端 238、共享 51、guided-all 35/35、coverage（专用 30、引导式 35）、专用 verify.ts 和前后端类型检查全部通过；credential-stuffing 从引导式目录毕业为 D4 专用交互，三个 canonical 信号保持不变）。
 - [x] `LT-009`：专用化 `auth.session-hijacking`（完成时间：2026-07-20 12:30:00 +08:00；验证：服务端 258、前端 241、共享 51、guided-all 34/34、coverage（专用 31、引导式 34）、专用 verify.ts 和前后端类型检查全部通过；session-hijacking 从引导式目录毕业为 D4 专用交互，三个 canonical 信号保持不变）。
 - [x] `LT-010`：专用化 `auth.oauth`（完成时间：2026-07-20 12:40:00 +08:00；验证：服务端 267、前端 244、共享 51、guided-all 33/33、coverage、专用 verify.ts 和前后端类型检查全部通过；oauth 从引导式目录毕业为 D4 专用交互，三个 canonical 信号保持不变；至此阶段 2 第一批 5 个通用交互实验全部专用化完成）。
-- [ ] `LT-011`：规划 API 安全和业务逻辑首批实验。
+- [x] `LT-011`：规划 API 安全和业务逻辑首批实验（完成时间：2026-07-23 12:20:00 +08:00；交付：`docs/design/api-and-business-logic-labs.md`，确认首批切片分类、目录、字段、接口和安全边界，并明确复用现有 idor/privilege/order/product 模型，不重造同义实验）。
 - [ ] `LT-012`：规划密码学、秘密和数据保护首批实验。
 - [ ] `LT-013`：规划 Windows 主机与身份基础设施实验。
 - [ ] `LT-014`：规划云原生和 IaC 安全实验。
@@ -799,3 +799,4 @@
 | `LT-008` | 2026-07-23 11:40:00 +08:00 | `auth.credential-stuffing` 专用服务（第二版两步状态机：风险关联 → 挑战决策）、专用工作台/评估 API、前端专用视图与路由、独立 verify.ts、专用测试；并从引导式目录毕业到专用（D4） | server 249/249、web 238/238、shared 51/51、guided-all 35/35、coverage（专用 30、引导式 35）、前后端类型检查、专用 verify.ts 全通过；三个 canonical 信号保持不变 |
 | `LT-009` | 2026-07-23 12:05:00 +08:00 | `auth.session-hijacking` 专用服务（第二版两步状态机：上下文绑定 → 会话处置）、专用工作台/评估 API、前端专用视图与路由、独立 verify.ts、专用测试；并从引导式目录毕业到专用（D4） | server 258/258、web 241/241、shared 51/51、guided-all 34/34、coverage（专用 31、引导式 34）、前后端类型检查、专用 verify.ts 全通过；三个 canonical 信号保持不变 |
 | `LT-010` | 2026-07-23 12:35:00 +08:00 | `auth.oauth` 专用服务（第二版两步状态机：授权绑定 → 授权响应决策）、专用工作台/评估 API、前端专用视图与路由、独立 verify.ts、专用测试；并从引导式目录毕业到专用（D4）；阶段 2 首批专用化收官 | server 267/267、web 244/244、shared 51/51、guided-all 33/33、coverage（专用 32、引导式 33）、前后端类型检查、专用 verify.ts 全通过；三个 canonical 信号保持不变 |
+| `LT-011` | 2026-07-23 12:55:00 +08:00 | API 安全与业务逻辑首批实验规划文档 `docs/design/api-and-business-logic-labs.md`：确认分类、目录、元数据字段、接口结构、复用现有 idor/privilege/订单/商品模型和安全边界 | 规划任务，不含运行时代码；文档明确首批切片、字段来源、接口契约、复用策略和不做项，供后续 LT 单独实现 |
