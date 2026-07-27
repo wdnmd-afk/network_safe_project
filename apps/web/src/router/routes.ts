@@ -496,6 +496,22 @@ export const routes: RouteRecordRaw[] = [
     },
   },
   {
+    path: "/labs/web/open-redirect/vuln",
+    name: "lab-web-open-redirect-vuln",
+    component: () => import("../views/OpenRedirectLabView.vue"),
+    props: {
+      variant: "vuln",
+    },
+  },
+  {
+    path: "/labs/web/open-redirect/fixed",
+    name: "lab-web-open-redirect-fixed",
+    component: () => import("../views/OpenRedirectLabView.vue"),
+    props: {
+      variant: "fixed",
+    },
+  },
+  {
     path: "/labs/:category/:scene/:variant(vuln|fixed)",
     name: "guided-scenario-lab",
     component: () => import("../views/GuidedScenarioLabView.vue"),

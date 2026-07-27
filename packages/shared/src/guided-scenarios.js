@@ -90,28 +90,6 @@ function createScenario(input) {
 // 引导式目录」判定 D2/D4，移出目录即为其专用化的唯一事实来源。
 const scenarioInputs = [
   {
-    id: "web.open-redirect",
-    category: "web",
-    scene: "open-redirect",
-    title: "开放重定向",
-    mode: "interactive",
-    severity: "medium",
-    difficulty: "beginner",
-    summary: "通过固定跳转目标观察任意重定向与受控站内目标校验的差异。",
-    scenarioKey: "untrusted-return-target",
-    scenarioTitle: "未受信任返回地址",
-    scenarioDescription: "固定案例展示登录完成后直接采用未校验返回地址的风险。",
-    riskIndicators: ["untrusted-target", "brand-abuse", "redirect-chain"],
-    weakControlKey: "target-allowlist-missing",
-    weakControlTitle: "未校验跳转目标",
-    strongControlKey: "relative-path-verified",
-    strongControlTitle: "站内相对路径已校验",
-    rootCause: "服务端直接信任跳转目标且没有规范化与允许列表",
-    defense: "站内相对路径约束、规范化和目标允许列表",
-    tags: ["web", "redirect", "input-validation"],
-    knowledgePoints: ["重定向信任边界", "URL 规范化", "允许列表"],
-  },
-  {
     id: "auth.credential-stuffing",
     category: "auth",
     scene: "credential-stuffing",

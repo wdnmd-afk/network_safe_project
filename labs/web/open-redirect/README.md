@@ -1,11 +1,10 @@
-<!-- 由 tools/generate-guided-lab-assets.mjs 生成 -->
 # 开放重定向
 
 ## 场景目标
 
-通过固定跳转目标观察任意重定向与受控站内目标校验的差异。
+通过固定登录返回地址案例 `untrusted-return-target` 的两步决策（跳转目标来源 → 重定向决策），对比任意重定向与受控站内目标校验的差异。
 
-本实验只使用固定案例 `untrusted-return-target`，用于观察服务端直接信任跳转目标且没有规范化与允许列表，并对比漏洞版与修复版的后端判定、学习信号和统一事件日志。
+本实验已在 LT-007 专用化为两步决策交互，评估请求只接受固定 `scenarioKey` 和有序 `decisions` 决策路径，对比漏洞路径、防御拦截路径和站内正常跳转路径的后端判定、学习信号和统一事件日志。
 
 ## 前置条件
 
@@ -15,16 +14,15 @@
 
 ## 使用方式
 
-1. 访问 `/labs/web/open-redirect/vuln`。
-2. 使用固定案例和默认控制策略观察风险被接受。
-3. 切换到 `/labs/web/open-redirect/fixed`，观察高风险动作被阻断。
-4. 选择“站内相对路径已校验”，确认正常受控流程仍可继续。
-5. 在实验详情或账户中心复盘统一事件日志。
+1. 访问 `/labs/web/open-redirect/vuln`，依次选择“直接信任外部输入的目标”和“未校验直接重定向”，运行固定评估，观察 `web-open-redirect-risk-accepted`。
+2. 切换到 `/labs/web/open-redirect/fixed`，选择“启用站内相对路径与目标允许列表”和“防御拦截未受信任重定向”，观察 `web-open-redirect-defense-blocked`。
+3. 在修复版选择“重定向到已校验的站内相对路径”，确认 `web-open-redirect-normal-verified` 正常流程仍可继续。
+4. 在实验详情或账户中心复盘统一事件日志。
 
 ## 安全边界
 
 - 只处理固定本机 Web 教学场景，不生成可用于外部站点的攻击载荷。
-- 页面和 API 只接受共享目录中声明的 scenarioKey 与 controlKey。
+- 页面和 API 只接受本实验声明的固定 scenarioKey 与决策 optionKey。
 - 未知 key 会被脱敏阻断，不写入原始输入或外部目标信息。
 
 该实验仅提供本机受控固定场景和只读验证，不允许扩展为通用攻击工具。

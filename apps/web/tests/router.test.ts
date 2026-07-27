@@ -72,6 +72,8 @@ describe("SafeMart 路由清单", () => {
       "/labs/infrastructure/misconfiguration/fixed",
       "/labs/web/clickjacking/vuln",
       "/labs/web/clickjacking/fixed",
+      "/labs/web/open-redirect/vuln",
+      "/labs/web/open-redirect/fixed",
       "/labs/:category/:scene/:variant(vuln|fixed)",
     ]);
   });

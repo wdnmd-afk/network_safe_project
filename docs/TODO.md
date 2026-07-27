@@ -1,3 +1,16 @@
+# 2026-07-23 最新进展：LT-007 专用化 web.open-redirect
+
+- [x] 新增后端专用服务 `apps/server/src/services/open-redirect-lab.ts`，用第二版状态机驱动两步决策（跳转目标来源 → 重定向决策）。
+- [x] `apps/server/src/app.ts` 注册专用 `GET /workbench` 与 `POST /:variant/evaluate` 路由，置于通用引导式 catch-all 之前。
+- [x] 新增前端 `apps/web/src/api/open-redirect-lab.ts`、`apps/web/src/labs/open-redirect.ts` 和 `OpenRedirectLabView.vue`，专用 vuln/fixed 路由置于 catch-all 之前。
+- [x] 三个 canonical 终止信号（risk-accepted / defense-blocked / normal-verified）保持不变，向后兼容 exploit.py 与手工验证。
+- [x] `web.open-redirect` 从引导式目录（37→36）毕业为专用实现（28→29）；覆盖矩阵行由 D2 引导式改为 D4 专用交互。
+- [x] `verify.ts` 改为独立只读一致性验证；更新 meta.json、README、攻防文档、手工验证文档和 exploit.py 决策路径契约。
+- [x] 新增服务端 `open-redirect-lab.test.ts` 和前端 `open-redirect-api.test.ts`；把受影响的引导式/覆盖/v2 测试样例改用仍在目录内的 `auth.oauth`。
+- [x] 验证：server 240/240、web 235/235、shared 51/51、guided-all 36/36、coverage、前后端类型检查、`git diff --check` 全部通过。
+
+当前状态：`LT-007` 已完成；下一项进入 `LT-008` 专用化 `auth.credential-stuffing`。
+
 # 2026-07-23 最新进展：LT-006 专用化 web.clickjacking
 
 - [x] 新增后端专用服务 `apps/server/src/services/clickjacking-lab.ts`，用第二版状态机驱动两步决策（框架策略 → 敏感动作确认）。

@@ -12,10 +12,11 @@ import {
 import { validateLabMetadata } from "../src/lab-metadata.js";
 
 test("guided scenario catalog covers the remaining guided master-goal topics", () => {
-  // web.clickjacking 已在 LT-006 专用化并移出引导式目录，因此当前为 37 个引导式场景。
-  assert.equal(guidedScenarioCatalog.length, 37);
-  assert.equal(new Set(listGuidedScenarioIds()).size, 37);
+  // web.clickjacking(LT-006)与 web.open-redirect(LT-007)已专用化并移出引导式目录，因此当前为 36 个引导式场景。
+  assert.equal(guidedScenarioCatalog.length, 36);
+  assert.equal(new Set(listGuidedScenarioIds()).size, 36);
   assert.equal(getGuidedScenarioById("web.clickjacking"), undefined);
+  assert.equal(getGuidedScenarioById("web.open-redirect"), undefined);
 });
 
 test("guided scenario entries expose exact fixed case and control fields", () => {
@@ -48,11 +49,13 @@ test("guided case studies explicitly retain the no attack-script boundary", () =
 });
 
 test("guided scenario lookup uses confirmed id and route fields", () => {
-  const openRedirect = getGuidedScenarioById("web.open-redirect");
-  const oauth = getGuidedScenarioByRoute("auth", "oauth");
+  // web.clickjacking (LT-006) 与 web.open-redirect (LT-007) 已专用化并移出引导式目录。
+  const oauth = getGuidedScenarioById("auth.oauth");
+  const smishing = getGuidedScenarioByRoute("social", "smishing");
 
-  assert.equal(openRedirect?.title, "开放重定向");
-  assert.equal(oauth?.id, "auth.oauth");
+  assert.equal(oauth?.title, "OAuth 漏洞");
+  assert.equal(smishing?.id, "social.smishing");
+  assert.equal(getGuidedScenarioById("web.open-redirect"), undefined);
   assert.equal(getGuidedScenarioByRoute("web", "unknown"), undefined);
 });
 

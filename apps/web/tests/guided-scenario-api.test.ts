@@ -6,23 +6,23 @@ import {
 } from "../src/api/guided-scenario-lab";
 
 const workbench = {
-  id: "web.open-redirect",
-  slug: "open-redirect",
-  category: "web",
-  subcategory: "open-redirect",
-  title: "开放重定向",
+  id: "auth.oauth",
+  slug: "oauth",
+  category: "auth",
+  subcategory: "oauth",
+  title: "OAuth 漏洞",
   mode: "interactive",
-  severity: "medium",
-  difficulty: "beginner",
-  summary: "固定开放重定向场景",
+  severity: "high",
+  difficulty: "advanced",
+  summary: "固定 OAuth 授权场景",
   phase: "phase-1",
-  defaultScenarioKey: "untrusted-return-target",
-  defaultControlKey: "target-allowlist-missing",
+  defaultScenarioKey: "tampered-authorization-response",
+  defaultControlKey: "authorization-binding-missing",
   scenarios: [],
   controls: [],
   vulnerableOutcome: {
     decision: "accepted",
-    signal: "web-open-redirect-risk-accepted",
+    signal: "auth-oauth-risk-accepted",
     message: "risk accepted",
   },
   safeBoundaries: [],
@@ -42,12 +42,12 @@ describe("guided scenario lab api client", () => {
       }),
     );
 
-    const result = await fetchGuidedScenarioWorkbench("web", "open-redirect");
+    const result = await fetchGuidedScenarioWorkbench("auth", "oauth");
 
     expect(fetchMock).toHaveBeenCalledWith(
-      "/api/labs/web/open-redirect/workbench",
+      "/api/labs/auth/oauth/workbench",
     );
-    expect(result.workbench.id).toBe("web.open-redirect");
+    expect(result.workbench.id).toBe("auth.oauth");
   });
 
   it("posts only scenarioKey and controlKey", async () => {
@@ -57,28 +57,28 @@ describe("guided scenario lab api client", () => {
           status: "ok",
           result: {
             status: "ok",
-            labKey: "web.open-redirect",
+            labKey: "auth.oauth",
             variantKey: "vuln",
-            scenarioKey: "untrusted-return-target",
-            controlKey: "target-allowlist-missing",
-            scenarioTitle: "未受信任返回地址",
-            controlTitle: "未校验跳转目标",
+            scenarioKey: "tampered-authorization-response",
+            controlKey: "authorization-binding-missing",
+            scenarioTitle: "授权响应关联缺失",
+            controlTitle: "授权请求未绑定",
             decision: "accepted",
-            signal: "web-open-redirect-risk-accepted",
+            signal: "auth-oauth-risk-accepted",
             message: "risk accepted",
             nextStep: "compare fixed",
             assessment: {
               matchedScenario: true,
               matchedControl: true,
               controlApplied: false,
-              riskLevel: "medium",
+              riskLevel: "high",
               riskIndicatorCount: 3,
               riskIndicators: [
-                "untrusted-target",
-                "brand-abuse",
-                "redirect-chain",
+                "redirect-uri-mismatch",
+                "state-missing",
+                "pkce-missing",
               ],
-              rootCause: "missing target allowlist",
+              rootCause: "missing authorization binding",
             },
           },
         }),
@@ -90,18 +90,18 @@ describe("guided scenario lab api client", () => {
     );
 
     const result = await submitGuidedScenarioEvaluation(
-      "web",
-      "open-redirect",
+      "auth",
+      "oauth",
       "vuln",
       "local-session-token",
       {
-        scenarioKey: "untrusted-return-target",
-        controlKey: "target-allowlist-missing",
+        scenarioKey: "tampered-authorization-response",
+        controlKey: "authorization-binding-missing",
       },
     );
 
     expect(fetchMock).toHaveBeenCalledWith(
-      "/api/labs/web/open-redirect/vuln/evaluate",
+      "/api/labs/auth/oauth/vuln/evaluate",
       {
         method: "POST",
         headers: {
@@ -109,8 +109,8 @@ describe("guided scenario lab api client", () => {
           "content-type": "application/json",
         },
         body: JSON.stringify({
-          scenarioKey: "untrusted-return-target",
-          controlKey: "target-allowlist-missing",
+          scenarioKey: "tampered-authorization-response",
+          controlKey: "authorization-binding-missing",
         }),
       },
     );
@@ -118,14 +118,14 @@ describe("guided scenario lab api client", () => {
     const requestBody = String(fetchMock.mock.calls[0]?.[1]?.body);
 
     expect(JSON.parse(requestBody)).toEqual({
-      scenarioKey: "untrusted-return-target",
-      controlKey: "target-allowlist-missing",
+      scenarioKey: "tampered-authorization-response",
+      controlKey: "authorization-binding-missing",
     });
     expect(requestBody).not.toContain("targetUrl");
     expect(requestBody).not.toContain("password");
     expect(requestBody).not.toContain("token");
     expect(requestBody).not.toContain("command");
-    expect(result.result.signal).toBe("web-open-redirect-risk-accepted");
+    expect(result.result.signal).toBe("auth-oauth-risk-accepted");
   });
 
   it("returns controlled fixed blocked responses", async () => {
@@ -135,12 +135,12 @@ describe("guided scenario lab api client", () => {
           status: "blocked",
           result: {
             status: "blocked",
-            labKey: "web.open-redirect",
+            labKey: "auth.oauth",
             variantKey: "fixed",
-            scenarioKey: "untrusted-return-target",
-            controlKey: "target-allowlist-missing",
+            scenarioKey: "tampered-authorization-response",
+            controlKey: "authorization-binding-missing",
             decision: "blocked",
-            signal: "web-open-redirect-defense-blocked",
+            signal: "auth-oauth-defense-blocked",
             assessment: {},
           },
         }),
@@ -152,17 +152,17 @@ describe("guided scenario lab api client", () => {
     );
 
     const result = await submitGuidedScenarioEvaluation(
-      "web",
-      "open-redirect",
+      "auth",
+      "oauth",
       "fixed",
       "local-session-token",
       {
-        scenarioKey: "untrusted-return-target",
-        controlKey: "target-allowlist-missing",
+        scenarioKey: "tampered-authorization-response",
+        controlKey: "authorization-binding-missing",
       },
     );
 
     expect(result.status).toBe("blocked");
-    expect(result.result.signal).toBe("web-open-redirect-defense-blocked");
+    expect(result.result.signal).toBe("auth-oauth-defense-blocked");
   });
 });

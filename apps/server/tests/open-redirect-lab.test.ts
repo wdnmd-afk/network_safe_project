@@ -3,12 +3,12 @@ import { after, test } from "node:test";
 
 import { createApp } from "../src/app.js";
 import {
-  createClickjackingLabService,
-  clickjackingScenarioKey,
-  clickjackingRiskSignal,
-  clickjackingDefenseSignal,
-  clickjackingNormalSignal,
-} from "../src/services/clickjacking-lab.js";
+  createOpenRedirectLabService,
+  openRedirectScenarioKey,
+  openRedirectRiskSignal,
+  openRedirectDefenseSignal,
+  openRedirectNormalSignal,
+} from "../src/services/open-redirect-lab.js";
 import type { LabEventInput } from "../src/services/lab-event-logs.js";
 
 const demoUser = {
@@ -32,70 +32,70 @@ async function listen(app: ReturnType<typeof createApp>) {
   return `http://127.0.0.1:${address.port}`;
 }
 
-test("clickjacking service walks the risk path to the canonical accepted signal", () => {
-  const service = createClickjackingLabService();
+test("open redirect service walks the risk path to the canonical accepted signal", () => {
+  const service = createOpenRedirectLabService();
   const result = service.evaluate({
     variantKey: "vuln",
-    scenarioKey: clickjackingScenarioKey,
-    decisions: ["allow-any-origin-framing", "execute-without-confirmation"],
+    scenarioKey: openRedirectScenarioKey,
+    decisions: ["trust-user-supplied-target", "redirect-without-validation"],
   });
 
   assert.equal(result.status, "ok");
   assert.equal(result.completed, true);
   assert.equal(result.decision, "accepted");
-  assert.equal(result.signal, clickjackingRiskSignal);
+  assert.equal(result.signal, openRedirectRiskSignal);
   assert.equal(result.steps.length, 2);
   assert.equal(result.recap.terminalOutcome, "risk");
   assert.equal(result.recap.outcomeCounts.risk, 2);
 });
 
-test("clickjacking service blocks the clickjacked action on the defense path", () => {
-  const service = createClickjackingLabService();
+test("open redirect service blocks the untrusted redirect on the defense path", () => {
+  const service = createOpenRedirectLabService();
   const result = service.evaluate({
     variantKey: "fixed",
-    scenarioKey: clickjackingScenarioKey,
+    scenarioKey: openRedirectScenarioKey,
     decisions: [
-      "enforce-frame-ancestors",
-      "defense-intercepts-clickjacked-action",
+      "enforce-target-allowlist",
+      "defense-blocks-untrusted-redirect",
     ],
   });
 
   assert.equal(result.status, "blocked");
   assert.equal(result.decision, "blocked");
-  assert.equal(result.signal, clickjackingDefenseSignal);
+  assert.equal(result.signal, openRedirectDefenseSignal);
   assert.equal(result.recap.terminalOutcome, "fix");
 });
 
-test("clickjacking service verifies the normal confirmation path", () => {
-  const service = createClickjackingLabService();
+test("open redirect service verifies the normal in-site redirect path", () => {
+  const service = createOpenRedirectLabService();
   const result = service.evaluate({
     variantKey: "fixed",
-    scenarioKey: clickjackingScenarioKey,
+    scenarioKey: openRedirectScenarioKey,
     decisions: [
-      "enforce-frame-ancestors",
-      "require-explicit-confirmation",
+      "enforce-target-allowlist",
+      "redirect-to-verified-relative-path",
     ],
   });
 
   assert.equal(result.status, "ok");
   assert.equal(result.decision, "accepted");
-  assert.equal(result.signal, clickjackingNormalSignal);
+  assert.equal(result.signal, openRedirectNormalSignal);
   assert.equal(result.recap.terminalOutcome, "normal");
 });
 
-test("clickjacking service blocks unknown scenario and option keys without echoing input", () => {
-  const service = createClickjackingLabService();
+test("open redirect service blocks unknown scenario and option keys without echoing input", () => {
+  const service = createOpenRedirectLabService();
   const rawScenario = "external-target-secret-scenario";
-  const rawOption = "steal-real-credentials";
+  const rawOption = "redirect-to-real-external-domain";
 
   const unknownScenario = service.evaluate({
     variantKey: "vuln",
     scenarioKey: rawScenario,
-    decisions: ["allow-any-origin-framing"],
+    decisions: ["trust-user-supplied-target"],
   });
   const unknownOption = service.evaluate({
     variantKey: "vuln",
-    scenarioKey: clickjackingScenarioKey,
+    scenarioKey: openRedirectScenarioKey,
     decisions: [rawOption],
   });
 
@@ -104,16 +104,16 @@ test("clickjacking service blocks unknown scenario and option keys without echoi
   assert.equal(JSON.stringify(unknownScenario).includes(rawScenario), false);
 
   assert.equal(unknownOption.decision, "blocked");
-  assert.equal(unknownOption.signal, "web-clickjacking-boundary-blocked");
+  assert.equal(unknownOption.signal, "web-open-redirect-boundary-blocked");
   assert.equal(JSON.stringify(unknownOption).includes(rawOption), false);
 });
 
-test("clickjacking service blocks an incomplete decision path", () => {
-  const service = createClickjackingLabService();
+test("open redirect service blocks an incomplete decision path", () => {
+  const service = createOpenRedirectLabService();
   const result = service.evaluate({
     variantKey: "vuln",
-    scenarioKey: clickjackingScenarioKey,
-    decisions: ["allow-any-origin-framing"],
+    scenarioKey: openRedirectScenarioKey,
+    decisions: ["trust-user-supplied-target"],
   });
 
   assert.equal(result.status, "blocked");
@@ -121,11 +121,11 @@ test("clickjacking service blocks an incomplete decision path", () => {
   assert.equal(result.blockedReason, "path-incomplete");
 });
 
-test("clickjacking workbench API exposes the fixed multi-step case", async () => {
+test("open redirect workbench API exposes the fixed multi-step case", async () => {
   const app = createApp();
   const origin = await listen(app);
 
-  const response = await fetch(`${origin}/api/labs/web/clickjacking/workbench`);
+  const response = await fetch(`${origin}/api/labs/web/open-redirect/workbench`);
   const body = (await response.json()) as {
     status: string;
     workbench: {
@@ -137,23 +137,26 @@ test("clickjacking workbench API exposes the fixed multi-step case", async () =>
 
   assert.equal(response.status, 200);
   assert.equal(body.status, "ok");
-  assert.equal(body.workbench.id, "web.clickjacking");
-  assert.equal(body.workbench.defaultScenarioKey, clickjackingScenarioKey);
+  assert.equal(body.workbench.id, "web.open-redirect");
+  assert.equal(body.workbench.defaultScenarioKey, openRedirectScenarioKey);
   assert.equal(body.workbench.cases[0]?.steps.length, 2);
 });
 
-test("clickjacking evaluate API requires login", async () => {
+test("open redirect evaluate API requires login", async () => {
   const app = createApp();
   const origin = await listen(app);
 
   const response = await fetch(
-    `${origin}/api/labs/web/clickjacking/vuln/evaluate`,
+    `${origin}/api/labs/web/open-redirect/vuln/evaluate`,
     {
       method: "POST",
       headers: { "content-type": "application/json" },
       body: JSON.stringify({
-        scenarioKey: clickjackingScenarioKey,
-        decisions: ["allow-any-origin-framing", "execute-without-confirmation"],
+        scenarioKey: openRedirectScenarioKey,
+        decisions: [
+          "trust-user-supplied-target",
+          "redirect-without-validation",
+        ],
       }),
     },
   );
@@ -161,7 +164,7 @@ test("clickjacking evaluate API requires login", async () => {
   assert.equal(response.status, 401);
 });
 
-test("clickjacking evaluate API records a safe event and never echoes raw input", async () => {
+test("open redirect evaluate API records a safe event and never echoes raw input", async () => {
   const eventCalls: LabEventInput[] = [];
   const app = createApp({
     authService: {
@@ -183,7 +186,7 @@ test("clickjacking evaluate API records a safe event and never echoes raw input"
   const origin = await listen(app);
 
   const response = await fetch(
-    `${origin}/api/labs/web/clickjacking/vuln/evaluate`,
+    `${origin}/api/labs/web/open-redirect/vuln/evaluate`,
     {
       method: "POST",
       headers: {
@@ -191,10 +194,10 @@ test("clickjacking evaluate API records a safe event and never echoes raw input"
         "content-type": "application/json",
       },
       body: JSON.stringify({
-        scenarioKey: clickjackingScenarioKey,
+        scenarioKey: openRedirectScenarioKey,
         decisions: [
-          "allow-any-origin-framing",
-          "execute-without-confirmation",
+          "trust-user-supplied-target",
+          "redirect-without-validation",
         ],
         targetUrl: "https://external.example/should-not-appear",
         password: "raw-password-should-not-appear",
@@ -207,8 +210,8 @@ test("clickjacking evaluate API records a safe event and never echoes raw input"
   };
 
   assert.equal(response.status, 200);
-  assert.equal(body.result.labKey, "web.clickjacking");
-  assert.equal(body.result.signal, clickjackingRiskSignal);
+  assert.equal(body.result.labKey, "web.open-redirect");
+  assert.equal(body.result.signal, openRedirectRiskSignal);
   assert.equal(eventCalls.length, 1);
 
   const serialized = JSON.stringify(eventCalls[0]);
@@ -216,7 +219,7 @@ test("clickjacking evaluate API records a safe event and never echoes raw input"
   assert.equal(serialized.includes("raw-password"), false);
 });
 
-test("clickjacking evaluate API returns 403 on the blocked defense path", async () => {
+test("open redirect evaluate API returns 403 on the blocked defense path", async () => {
   const app = createApp({
     authService: {
       login: async () => null,
@@ -234,7 +237,7 @@ test("clickjacking evaluate API returns 403 on the blocked defense path", async 
   const origin = await listen(app);
 
   const response = await fetch(
-    `${origin}/api/labs/web/clickjacking/fixed/evaluate`,
+    `${origin}/api/labs/web/open-redirect/fixed/evaluate`,
     {
       method: "POST",
       headers: {
@@ -242,30 +245,14 @@ test("clickjacking evaluate API returns 403 on the blocked defense path", async 
         "content-type": "application/json",
       },
       body: JSON.stringify({
-        scenarioKey: clickjackingScenarioKey,
+        scenarioKey: openRedirectScenarioKey,
         decisions: [
-          "enforce-frame-ancestors",
-          "defense-intercepts-clickjacked-action",
+          "enforce-target-allowlist",
+          "defense-blocks-untrusted-redirect",
         ],
       }),
     },
   );
 
   assert.equal(response.status, 403);
-});
-
-test("generic guided scenario workbench still works for other labs", async () => {
-  const app = createApp();
-  const origin = await listen(app);
-
-  const response = await fetch(
-    `${origin}/api/labs/auth/oauth/workbench`,
-  );
-  const body = (await response.json()) as {
-    status: string;
-    workbench: { id: string };
-  };
-
-  assert.equal(response.status, 200);
-  assert.equal(body.workbench.id, "auth.oauth");
 });
