@@ -6,23 +6,23 @@ import {
 } from "../src/api/guided-scenario-lab";
 
 const workbench = {
-  id: "auth.oauth",
-  slug: "oauth",
-  category: "auth",
-  subcategory: "oauth",
-  title: "OAuth 漏洞",
-  mode: "interactive",
+  id: "social.smishing",
+  slug: "smishing",
+  category: "social",
+  subcategory: "smishing",
+  title: "短信钓鱼",
+  mode: "case-study",
   severity: "high",
-  difficulty: "advanced",
-  summary: "固定 OAuth 授权场景",
-  phase: "phase-1",
-  defaultScenarioKey: "tampered-authorization-response",
-  defaultControlKey: "authorization-binding-missing",
+  difficulty: "beginner",
+  summary: "固定短信钓鱼场景",
+  phase: "phase-3",
+  defaultScenarioKey: "synthetic-delivery-alert",
+  defaultControlKey: "message-context-trusted",
   scenarios: [],
   controls: [],
   vulnerableOutcome: {
     decision: "accepted",
-    signal: "auth-oauth-risk-accepted",
+    signal: "social-smishing-risk-accepted",
     message: "risk accepted",
   },
   safeBoundaries: [],
@@ -42,12 +42,12 @@ describe("guided scenario lab api client", () => {
       }),
     );
 
-    const result = await fetchGuidedScenarioWorkbench("auth", "oauth");
+    const result = await fetchGuidedScenarioWorkbench("social", "smishing");
 
     expect(fetchMock).toHaveBeenCalledWith(
-      "/api/labs/auth/oauth/workbench",
+      "/api/labs/social/smishing/workbench",
     );
-    expect(result.workbench.id).toBe("auth.oauth");
+    expect(result.workbench.id).toBe("social.smishing");
   });
 
   it("posts only scenarioKey and controlKey", async () => {
@@ -57,14 +57,14 @@ describe("guided scenario lab api client", () => {
           status: "ok",
           result: {
             status: "ok",
-            labKey: "auth.oauth",
+            labKey: "social.smishing",
             variantKey: "vuln",
-            scenarioKey: "tampered-authorization-response",
-            controlKey: "authorization-binding-missing",
-            scenarioTitle: "授权响应关联缺失",
-            controlTitle: "授权请求未绑定",
+            scenarioKey: "synthetic-delivery-alert",
+            controlKey: "message-context-trusted",
+            scenarioTitle: "虚构物流异常提醒",
+            controlTitle: "只相信消息上下文",
             decision: "accepted",
-            signal: "auth-oauth-risk-accepted",
+            signal: "social-smishing-risk-accepted",
             message: "risk accepted",
             nextStep: "compare fixed",
             assessment: {
@@ -74,11 +74,11 @@ describe("guided scenario lab api client", () => {
               riskLevel: "high",
               riskIndicatorCount: 3,
               riskIndicators: [
-                "redirect-uri-mismatch",
-                "state-missing",
-                "pkce-missing",
+                "short-link",
+                "urgency-pressure",
+                "sender-spoofing",
               ],
-              rootCause: "missing authorization binding",
+              rootCause: "message context trusted",
             },
           },
         }),
@@ -90,18 +90,18 @@ describe("guided scenario lab api client", () => {
     );
 
     const result = await submitGuidedScenarioEvaluation(
-      "auth",
-      "oauth",
+      "social",
+      "smishing",
       "vuln",
       "local-session-token",
       {
-        scenarioKey: "tampered-authorization-response",
-        controlKey: "authorization-binding-missing",
+        scenarioKey: "synthetic-delivery-alert",
+        controlKey: "message-context-trusted",
       },
     );
 
     expect(fetchMock).toHaveBeenCalledWith(
-      "/api/labs/auth/oauth/vuln/evaluate",
+      "/api/labs/social/smishing/vuln/evaluate",
       {
         method: "POST",
         headers: {
@@ -109,8 +109,8 @@ describe("guided scenario lab api client", () => {
           "content-type": "application/json",
         },
         body: JSON.stringify({
-          scenarioKey: "tampered-authorization-response",
-          controlKey: "authorization-binding-missing",
+          scenarioKey: "synthetic-delivery-alert",
+          controlKey: "message-context-trusted",
         }),
       },
     );
@@ -118,14 +118,14 @@ describe("guided scenario lab api client", () => {
     const requestBody = String(fetchMock.mock.calls[0]?.[1]?.body);
 
     expect(JSON.parse(requestBody)).toEqual({
-      scenarioKey: "tampered-authorization-response",
-      controlKey: "authorization-binding-missing",
+      scenarioKey: "synthetic-delivery-alert",
+      controlKey: "message-context-trusted",
     });
     expect(requestBody).not.toContain("targetUrl");
     expect(requestBody).not.toContain("password");
     expect(requestBody).not.toContain("token");
     expect(requestBody).not.toContain("command");
-    expect(result.result.signal).toBe("auth-oauth-risk-accepted");
+    expect(result.result.signal).toBe("social-smishing-risk-accepted");
   });
 
   it("returns controlled fixed blocked responses", async () => {
@@ -135,12 +135,12 @@ describe("guided scenario lab api client", () => {
           status: "blocked",
           result: {
             status: "blocked",
-            labKey: "auth.oauth",
+            labKey: "social.smishing",
             variantKey: "fixed",
-            scenarioKey: "tampered-authorization-response",
-            controlKey: "authorization-binding-missing",
+            scenarioKey: "synthetic-delivery-alert",
+            controlKey: "message-context-trusted",
             decision: "blocked",
-            signal: "auth-oauth-defense-blocked",
+            signal: "social-smishing-defense-blocked",
             assessment: {},
           },
         }),
@@ -152,17 +152,17 @@ describe("guided scenario lab api client", () => {
     );
 
     const result = await submitGuidedScenarioEvaluation(
-      "auth",
-      "oauth",
+      "social",
+      "smishing",
       "fixed",
       "local-session-token",
       {
-        scenarioKey: "tampered-authorization-response",
-        controlKey: "authorization-binding-missing",
+        scenarioKey: "synthetic-delivery-alert",
+        controlKey: "message-context-trusted",
       },
     );
 
     expect(result.status).toBe("blocked");
-    expect(result.result.signal).toBe("auth-oauth-defense-blocked");
+    expect(result.result.signal).toBe("social-smishing-defense-blocked");
   });
 });

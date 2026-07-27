@@ -89,7 +89,7 @@
 | `auth.session-fixation` | interactive | D4 专用 | OWASP A07；CWE-384 | E1–E5 | 补会话轮换和 Cookie 生命周期 |
 | `auth.credential-stuffing` | interactive | D4 专用交互 | OWASP A07；ATT&CK Credential Access | E1–E5 | 已专用化为两步风险关联与自适应挑战状态机（LT-008） |
 | `auth.session-hijacking` | interactive | D4 专用交互 | OWASP A07；ATT&CK Session Hijacking | E1–E5 | 已专用化为两步上下文绑定与会话处置状态机（LT-009） |
-| `auth.oauth` | interactive | D2 引导式 | OWASP A07；OAuth state/PKCE 风险 | E1–E5 | 升级为专用授权码流程实验 |
+| `auth.oauth` | interactive | D4 专用交互 | OWASP A07；OAuth state/PKCE 风险 | E1–E5 | 已专用化为两步授权绑定与授权响应决策状态机（LT-010） |
 
 **判断：**认证主线已经可用，但 MFA、密码找回、SSO/SAML、设备信任、令牌生命周期和 API 功能级授权仍需补强。
 

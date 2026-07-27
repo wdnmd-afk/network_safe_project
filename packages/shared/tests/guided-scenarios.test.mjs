@@ -12,13 +12,14 @@ import {
 import { validateLabMetadata } from "../src/lab-metadata.js";
 
 test("guided scenario catalog covers the remaining guided master-goal topics", () => {
-  // web.clickjacking(LT-006）、web.open-redirect(LT-007）、auth.credential-stuffing(LT-008）与 auth.session-hijacking(LT-009）已专用化并移出引导式目录，因此当前为 34 个引导式场景。
-  assert.equal(guidedScenarioCatalog.length, 34);
-  assert.equal(new Set(listGuidedScenarioIds()).size, 34);
+  // web.clickjacking(LT-006）、web.open-redirect(LT-007）、auth.credential-stuffing(LT-008）、auth.session-hijacking(LT-009）与 auth.oauth(LT-010）已专用化并移出引导式目录，因此当前为 33 个引导式场景。
+  assert.equal(guidedScenarioCatalog.length, 33);
+  assert.equal(new Set(listGuidedScenarioIds()).size, 33);
   assert.equal(getGuidedScenarioById("web.clickjacking"), undefined);
   assert.equal(getGuidedScenarioById("web.open-redirect"), undefined);
   assert.equal(getGuidedScenarioById("auth.credential-stuffing"), undefined);
   assert.equal(getGuidedScenarioById("auth.session-hijacking"), undefined);
+  assert.equal(getGuidedScenarioById("auth.oauth"), undefined);
 });
 
 test("guided scenario entries expose exact fixed case and control fields", () => {
@@ -51,13 +52,14 @@ test("guided case studies explicitly retain the no attack-script boundary", () =
 });
 
 test("guided scenario lookup uses confirmed id and route fields", () => {
-  // web.clickjacking (LT-006) 与 web.open-redirect (LT-007) 已专用化并移出引导式目录。
-  const oauth = getGuidedScenarioById("auth.oauth");
-  const smishing = getGuidedScenarioByRoute("social", "smishing");
+  // LT-006~LT-010 已把 clickjacking、open-redirect、credential-stuffing、
+  // session-hijacking、oauth 专用化并移出引导式目录。
+  const smishing = getGuidedScenarioById("social.smishing");
+  const bec = getGuidedScenarioByRoute("social", "bec");
 
-  assert.equal(oauth?.title, "OAuth 漏洞");
-  assert.equal(smishing?.id, "social.smishing");
-  assert.equal(getGuidedScenarioById("web.open-redirect"), undefined);
+  assert.equal(smishing?.title, "短信钓鱼");
+  assert.equal(bec?.id, "social.bec");
+  assert.equal(getGuidedScenarioById("auth.oauth"), undefined);
   assert.equal(getGuidedScenarioByRoute("web", "unknown"), undefined);
 });
 

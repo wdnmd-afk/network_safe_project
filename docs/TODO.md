@@ -1,3 +1,24 @@
+# 2026-07-23 最新进展：LT-010 专用化 auth.oauth
+
+- [x] 新增后端专用服务 `apps/server/src/services/oauth-lab.ts`，用第二版状态机驱动两步决策（授权绑定策略 → 授权响应决策）。
+- [x] `apps/server/src/app.ts` 注册专用 `GET /workbench` 与 `POST /:variant/evaluate` 路由，置于通用引导式 catch-all 之前。
+- [x] 新增前端 `apps/web/src/api/oauth-lab.ts`、`apps/web/src/labs/oauth.ts` 和 `OauthLabView.vue`，专用 vuln/fixed 路由置于 catch-all 之前。
+- [x] 三个 canonical 终止信号（risk-accepted / defense-blocked / normal-verified）保持不变。
+- [x] `auth.oauth` 从引导式目录（34→33）毕业为专用实现（31→32）；覆盖矩阵行改为 D4 专用交互。
+- [x] `verify.ts` 改为独立只读一致性验证；更新 meta.json、文档和 exploit.py 决策路径契约。
+- [x] 新增服务端与前端专用测试；把引导式相关测试样例迁移到 social.smishing。
+- [x] 验证：server 267/267、web 244/244、shared 51/51、guided-all 33/33、coverage、前后端类型检查、`git diff --check` 全部通过。
+
+当前状态：`LT-010` 已完成，阶段 2 第一批专用化（LT-006~LT-010）全部收口；下一项进入 `LT-011` 规划 API 安全和业务逻辑首批实验。
+
+# 2026-07-23 最新进展：LT-009 专用化 auth.session-hijacking
+
+- [x] 新增后端专用服务 `apps/server/src/services/session-hijacking-lab.ts`，用第二版状态机驱动两步决策（上下文绑定策略 → 会话处置决策）。
+- [x] `apps/server/src/app.ts` 注册专用路由，置于通用引导式 catch-all 之前；前端新增 API、labs 模块、专用视图与路由。
+- [x] 三个 canonical 终止信号保持不变；`auth.session-hijacking` 从引导式目录（35→34）毕业为专用实现（30→31）。
+- [x] `verify.ts` 改为独立只读一致性验证；更新 meta.json、文档和 exploit.py 决策路径契约。
+- [x] 验证：server 258/258、web 241/241、shared 51/51、guided-all 34/34、coverage、前后端类型检查全部通过。
+
 # 2026-07-23 最新进展：LT-008 专用化 auth.credential-stuffing
 
 - [x] 新增后端专用服务 `apps/server/src/services/credential-stuffing-lab.ts`，用第二版状态机驱动两步决策（风险关联策略 → 挑战决策）。

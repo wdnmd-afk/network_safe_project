@@ -544,6 +544,22 @@ export const routes: RouteRecordRaw[] = [
     },
   },
   {
+    path: "/labs/auth/oauth/vuln",
+    name: "lab-auth-oauth-vuln",
+    component: () => import("../views/OauthLabView.vue"),
+    props: {
+      variant: "vuln",
+    },
+  },
+  {
+    path: "/labs/auth/oauth/fixed",
+    name: "lab-auth-oauth-fixed",
+    component: () => import("../views/OauthLabView.vue"),
+    props: {
+      variant: "fixed",
+    },
+  },
+  {
     path: "/labs/:category/:scene/:variant(vuln|fixed)",
     name: "guided-scenario-lab",
     component: () => import("../views/GuidedScenarioLabView.vue"),

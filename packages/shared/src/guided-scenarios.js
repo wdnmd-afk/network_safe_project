@@ -90,28 +90,6 @@ function createScenario(input) {
 // 引导式目录」判定 D2/D4，移出目录即为其专用化的唯一事实来源。
 const scenarioInputs = [
   {
-    id: "auth.oauth",
-    category: "auth",
-    scene: "oauth",
-    title: "OAuth 漏洞",
-    mode: "interactive",
-    severity: "high",
-    difficulty: "advanced",
-    summary: "通过固定授权请求观察回调地址、state、PKCE 和最小 scope 校验。",
-    scenarioKey: "tampered-authorization-response",
-    scenarioTitle: "授权响应关联缺失",
-    scenarioDescription: "固定授权摘要展示回调地址和请求关联校验缺失的风险。",
-    riskIndicators: ["redirect-uri-mismatch", "state-missing", "pkce-missing"],
-    weakControlKey: "authorization-binding-missing",
-    weakControlTitle: "授权请求未绑定",
-    strongControlKey: "pkce-state-verified",
-    strongControlTitle: "PKCE 与 state 已验证",
-    rootCause: "授权响应没有与原始客户端、回调地址和请求上下文严格绑定",
-    defense: "精确回调地址、state、nonce、PKCE 和最小 scope",
-    tags: ["auth", "oauth", "pkce"],
-    knowledgePoints: ["授权码流程", "回调地址校验", "PKCE 与 state"],
-  },
-  {
     id: "network.ddos",
     category: "network",
     scene: "ddos",

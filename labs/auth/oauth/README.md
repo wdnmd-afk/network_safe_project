@@ -1,11 +1,10 @@
-<!-- 由 tools/generate-guided-lab-assets.mjs 生成 -->
 # OAuth 漏洞
 
 ## 场景目标
 
-通过固定授权请求观察回调地址、state、PKCE 和最小 scope 校验。
+通过固定授权请求的两步决策，对比授权响应未绑定与精确回调地址、state、PKCE 校验的差异。
 
-本实验只使用固定案例 `tampered-authorization-response`，用于观察授权响应没有与原始客户端、回调地址和请求上下文严格绑定，并对比漏洞版与修复版的后端判定、学习信号和统一事件日志。
+本实验已在 LT-010 专用化为两步决策交互，使用固定案例 `tampered-authorization-response`：先选择授权绑定策略，再选择授权响应处置方式，对比漏洞路径、防御拦截路径和正常授权路径的后端判定、学习信号和统一事件日志。
 
 ## 前置条件
 
@@ -15,16 +14,15 @@
 
 ## 使用方式
 
-1. 访问 `/labs/auth/oauth/vuln`。
-2. 使用固定案例和默认控制策略观察风险被接受。
-3. 切换到 `/labs/auth/oauth/fixed`，观察高风险动作被阻断。
-4. 选择“PKCE 与 state 已验证”，确认正常受控流程仍可继续。
-5. 在实验详情或账户中心复盘统一事件日志。
+1. 访问 `/labs/auth/oauth/vuln`，沿风险路径观察被篡改授权响应被接受（`auth-oauth-risk-accepted`）。
+2. 切换到 `/labs/auth/oauth/fixed`，沿防御路径观察被篡改授权响应被阻断（`auth-oauth-defense-blocked`）。
+3. 在修复版选择“正常授权流程”，确认校验通过后正常授权码流程仍可继续（`auth-oauth-normal-verified`）。
+4. 在实验详情或账户中心复盘统一事件日志。
 
 ## 安全边界
 
 - 只处理固定虚构身份与会话数据，不读取真实账号、密码、Cookie 或 token。
-- 页面和 API 只接受共享目录中声明的 scenarioKey 与 controlKey。
+- 页面和 API 只接受本实验声明的固定 scenarioKey 与决策 optionKey。
 - 未知 key 会被脱敏阻断，不写入原始输入或外部目标信息。
 
 该实验仅提供本机受控固定场景和只读验证，不允许扩展为通用攻击工具。

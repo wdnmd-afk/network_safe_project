@@ -264,7 +264,7 @@ test("liftV1Scenario expresses every existing guided scenario as a valid v2 defi
 
 test("liftV1Scenario preserves fixed control signals in the normal path", () => {
   const sample = guidedScenarioCatalog.find(
-    (scenario) => scenario.id === "auth.oauth",
+    (scenario) => scenario.id === "social.smishing",
   );
   const lifted = liftV1Scenario(sample);
   const machine = createGuidedScenarioMachine(lifted);

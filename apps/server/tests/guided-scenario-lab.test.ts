@@ -71,8 +71,8 @@ test("guided scenario service blocks unknown keys without echoing raw values", (
   const rawScenarioKey = "external-target-secret-scenario";
   const rawControlKey = "real-credential-control";
   const result = service.evaluate({
-    category: "auth",
-    scene: "oauth",
+    category: "social",
+    scene: "smishing",
     variantKey: "vuln",
     scenarioKey: rawScenarioKey,
     controlKey: rawControlKey,

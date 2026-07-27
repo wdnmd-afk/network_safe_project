@@ -78,6 +78,8 @@ describe("SafeMart 路由清单", () => {
       "/labs/auth/credential-stuffing/fixed",
       "/labs/auth/session-hijacking/vuln",
       "/labs/auth/session-hijacking/fixed",
+      "/labs/auth/oauth/vuln",
+      "/labs/auth/oauth/fixed",
       "/labs/:category/:scene/:variant(vuln|fixed)",
     ]);
   });
