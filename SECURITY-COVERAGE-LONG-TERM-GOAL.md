@@ -769,7 +769,7 @@
 - [x] `LT-016`：选择一个客户端主题升级为专用模拟（完成时间：2026-07-23 14:15:00 +08:00；验证：server 276、web 247、shared 51、guided-all 32/32、coverage、专用 verify.ts 和前后端类型检查全部通过；`client.formjacking` 从引导式目录毕业为 D3 专用模拟，三个 canonical 信号保持不变）。
 - [x] `LT-017`：选择一个恶意软件主题升级为专用证据分析实验（完成时间：2026-07-23 14:30:00 +08:00；验证：server 285、web 250、shared 51、guided-all 31/31、coverage、专用 verify.ts 和前后端类型检查全部通过；`malware.ransomware` 从引导式 case-study 毕业为 D3 专用证据分析，保持 case-study ready 例外，三个 canonical 信号不变；顺带修复 LT-016 formjacking 服务端 optionKey 与前端/测试不一致的缺陷）。
 - [x] `LT-018`：建立统一验证入口和 CI 最小门禁（完成时间：2026-07-23 15:05:00 +08:00；验证：新增根级 `typecheck`/`verify` 脚本与 `.github/workflows/verify.yml`；`pnpm verify` 端到端通过：类型检查、shared 51、guided 31、coverage、server 285、web 250；CI 只运行不依赖本机 MySQL 的静态与单元验证，不输出任何秘密）。
-- [ ] `LT-019`：建立学习路径、搜索筛选和长期统计方案。
+- [x] `LT-019`：建立学习路径、搜索筛选和长期统计方案（完成时间：2026-07-23 15:20:00 +08:00；规划任务，产出 `docs/design/learning-paths-search-statistics.md`，确认学习路径、筛选、搜索、长期统计的数据来源、接口结构、复用现有元数据/事件日志/复盘模型和安全边界）。
 - [ ] `LT-020`：执行长期目标首轮阶段审计并重新排序后续任务。
 
 ## 22. 更新规则
