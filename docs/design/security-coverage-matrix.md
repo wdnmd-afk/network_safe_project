@@ -165,7 +165,7 @@
 |---|---|---|---|---|---|
 | `client.drive-by-download` | case-study | D2 引导式 | ATT&CK T1189 Drive-by Compromise | E1–E5 | 增加浏览器行为时间线 |
 | `client.malicious-extension` | case-study | D2 引导式 | ATT&CK T1176 Browser Extensions | E1–E5 | 增加权限 diff 和发布者来源 |
-| `client.formjacking` | simulation | D2 引导式 | Web skimming；CSP/SRI；Input Capture | E1–E5 | 增加固定 DOM 和完整性校验 |
+| `client.formjacking` | simulation | D3 专用模拟 | Web skimming；CSP/SRI；Input Capture | E1–E5 | 已专用化为脚本信任与表单目标两步状态机（LT-016） |
 | `client.malvertising` | case-study | D2 引导式 | Drive-by；广告供应链 | E1–E5 | 增加重定向链和内容沙箱 |
 | `client.mitb` | case-study | D2 引导式 | ATT&CK T1185 Browser Session Hijacking | E1–E5 | 增加交易签名和带外确认 |
 

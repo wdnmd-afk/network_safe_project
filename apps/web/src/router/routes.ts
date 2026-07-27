@@ -560,6 +560,22 @@ export const routes: RouteRecordRaw[] = [
     },
   },
   {
+    path: "/labs/client/formjacking/vuln",
+    name: "lab-client-formjacking-vuln",
+    component: () => import("../views/FormjackingLabView.vue"),
+    props: {
+      variant: "vuln",
+    },
+  },
+  {
+    path: "/labs/client/formjacking/fixed",
+    name: "lab-client-formjacking-fixed",
+    component: () => import("../views/FormjackingLabView.vue"),
+    props: {
+      variant: "fixed",
+    },
+  },
+  {
     path: "/labs/:category/:scene/:variant(vuln|fixed)",
     name: "guided-scenario-lab",
     component: () => import("../views/GuidedScenarioLabView.vue"),

@@ -129,7 +129,7 @@
       },
       "apiTest": {
         "enabled": true,
-        "specPath": "apps/server/tests/guided-scenario-lab.test.ts"
+        "specPath": "apps/server/tests/formjacking-lab.test.ts"
       },
       "scriptVerification": {
         "enabled": true,

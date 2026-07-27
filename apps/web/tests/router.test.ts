@@ -80,6 +80,8 @@ describe("SafeMart 路由清单", () => {
       "/labs/auth/session-hijacking/fixed",
       "/labs/auth/oauth/vuln",
       "/labs/auth/oauth/fixed",
+      "/labs/client/formjacking/vuln",
+      "/labs/client/formjacking/fixed",
       "/labs/:category/:scene/:variant(vuln|fixed)",
     ]);
   });

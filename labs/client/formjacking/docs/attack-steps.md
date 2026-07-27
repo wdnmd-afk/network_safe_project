@@ -1,12 +1,11 @@
-<!-- 由 tools/generate-guided-lab-assets.mjs 生成 -->
-# Formjacking风险观察步骤
+# Formjacking 风险观察步骤
+
+本实验专用化为两步固定决策模拟，风险路径用于观察敏感页面信任未受约束的第三方脚本和提交目标如何被接受。
 
 1. 登录本机学习平台。
 2. 打开 `/labs/client/formjacking/vuln`。
-3. 选择固定案例“虚构结账提交目标变更”。
-4. 选择“表单完整性缺失”。
-5. 点击“运行固定评估”。
-6. 观察决策 `accepted`、学习信号 `client-formjacking-risk-accepted` 和风险标签。
-7. 在统一事件日志中确认只记录固定 key 和安全摘要。
+3. 第 1 步（第三方脚本信任策略）选择“信任未受约束的第三方脚本”，观察 `client-formjacking-script-open` 信号。
+4. 第 2 步（表单提交目标决策）选择“提交到被篡改目标”，观察终止决策 `accepted` 与学习信号 `client-formjacking-risk-accepted`。
+5. 在统一事件日志中确认只记录固定 key、决策路径信号和结果计数。
 
-该流程只观察固定本机教学结果，不提供外部目标操作步骤。
+该流程只观察固定本机教学结果，只使用固定浏览器行为摘要，不注入真实页面、不采集表单数据，不提供外部目标操作步骤。
