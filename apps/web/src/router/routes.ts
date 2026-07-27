@@ -512,6 +512,22 @@ export const routes: RouteRecordRaw[] = [
     },
   },
   {
+    path: "/labs/auth/credential-stuffing/vuln",
+    name: "lab-auth-credential-stuffing-vuln",
+    component: () => import("../views/CredentialStuffingLabView.vue"),
+    props: {
+      variant: "vuln",
+    },
+  },
+  {
+    path: "/labs/auth/credential-stuffing/fixed",
+    name: "lab-auth-credential-stuffing-fixed",
+    component: () => import("../views/CredentialStuffingLabView.vue"),
+    props: {
+      variant: "fixed",
+    },
+  },
+  {
     path: "/labs/:category/:scene/:variant(vuln|fixed)",
     name: "guided-scenario-lab",
     component: () => import("../views/GuidedScenarioLabView.vue"),

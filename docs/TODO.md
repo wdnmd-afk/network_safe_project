@@ -1,3 +1,16 @@
+# 2026-07-23 最新进展：LT-008 专用化 auth.credential-stuffing
+
+- [x] 新增后端专用服务 `apps/server/src/services/credential-stuffing-lab.ts`，用第二版状态机驱动两步决策（风险关联策略 → 挑战决策）。
+- [x] `apps/server/src/app.ts` 注册专用 `GET /workbench` 与 `POST /:variant/evaluate` 路由，置于通用引导式 catch-all 之前。
+- [x] 新增前端 `apps/web/src/api/credential-stuffing-lab.ts`、`apps/web/src/labs/credential-stuffing.ts` 和 `CredentialStuffingLabView.vue`，专用 vuln/fixed 路由置于 catch-all 之前。
+- [x] 三个 canonical 终止信号（risk-accepted / defense-blocked / normal-verified）保持不变，向后兼容 exploit.py 与手工验证。
+- [x] `auth.credential-stuffing` 从引导式目录（36→35）毕业为专用实现（29→30）；覆盖矩阵行由 D2 引导式改为 D4 专用交互。
+- [x] `verify.ts` 改为独立只读一致性验证；更新 meta.json、README、攻防文档、手工验证文档和 exploit.py 决策路径契约。
+- [x] 新增服务端 `credential-stuffing-lab.test.ts` 和前端 `credential-stuffing-api.test.ts`；更新受影响的路由与覆盖测试样例。
+- [x] 验证：server 249/249、web 238/238、shared 51/51、guided-all 35/35、coverage（专用 30、引导式 35）、前后端类型检查、`git diff --check` 全部通过。
+
+当前状态：`LT-008` 已完成；下一项进入 `LT-009` 专用化 `auth.session-hijacking`。
+
 # 2026-07-23 最新进展：LT-007 专用化 web.open-redirect
 
 - [x] 新增后端专用服务 `apps/server/src/services/open-redirect-lab.ts`，用第二版状态机驱动两步决策（跳转目标来源 → 重定向决策）。

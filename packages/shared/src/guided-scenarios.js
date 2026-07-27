@@ -90,28 +90,6 @@ function createScenario(input) {
 // 引导式目录」判定 D2/D4，移出目录即为其专用化的唯一事实来源。
 const scenarioInputs = [
   {
-    id: "auth.credential-stuffing",
-    category: "auth",
-    scene: "credential-stuffing",
-    title: "凭据填充",
-    mode: "interactive",
-    severity: "high",
-    difficulty: "intermediate",
-    summary: "使用固定虚构登录批次观察重复凭据尝试与风险控制策略。",
-    scenarioKey: "reused-credential-batch",
-    scenarioTitle: "重复凭据登录批次",
-    scenarioDescription: "固定虚构账号摘要展示跨站重复凭据带来的批量登录风险。",
-    riskIndicators: ["credential-reuse", "distributed-attempts", "account-takeover"],
-    weakControlKey: "risk-correlation-missing",
-    weakControlTitle: "缺少跨请求关联",
-    strongControlKey: "adaptive-challenge-enabled",
-    strongControlTitle: "自适应挑战已完成",
-    rootCause: "认证只判断单次口令结果且没有设备、速率和泄露凭据风险关联",
-    defense: "速率限制、泄露凭据检测、自适应验证和异常登录告警",
-    tags: ["auth", "credential-stuffing", "account-security"],
-    knowledgePoints: ["凭据复用风险", "自适应认证", "异常登录关联"],
-  },
-  {
     id: "auth.session-hijacking",
     category: "auth",
     scene: "session-hijacking",

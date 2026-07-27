@@ -87,7 +87,7 @@
 | `auth.jwt` | interactive | D4 专用 | OWASP A02/A07；CWE-347 | E1–E5 | 补 issuer/audience、过期、轮换和吊销 |
 | `auth.privilege-escalation` | interactive | D4 专用 | OWASP A01；CWE-269；API BFLA | E1–E5 | 补功能级授权矩阵 |
 | `auth.session-fixation` | interactive | D4 专用 | OWASP A07；CWE-384 | E1–E5 | 补会话轮换和 Cookie 生命周期 |
-| `auth.credential-stuffing` | interactive | D2 引导式 | OWASP A07；ATT&CK Credential Access | E1–E5 | 升级为专用异常登录实验 |
+| `auth.credential-stuffing` | interactive | D4 专用交互 | OWASP A07；ATT&CK Credential Access | E1–E5 | 已专用化为两步风险关联与自适应挑战状态机（LT-008） |
 | `auth.session-hijacking` | interactive | D2 引导式 | OWASP A07；ATT&CK Session Hijacking | E1–E5 | 升级为专用上下文绑定和吊销实验 |
 | `auth.oauth` | interactive | D2 引导式 | OWASP A07；OAuth state/PKCE 风险 | E1–E5 | 升级为专用授权码流程实验 |
 
