@@ -1,3 +1,17 @@
+# 2026-07-23 最新进展：LT-005 引导式工作台第二版共享模型
+
+- [x] 新增 `docs/design/guided-workbench-v2-model.md`，记录第二版数据模型、状态机语义、安全边界和分批接入计划。
+- [x] 新增 `packages/shared/src/guided-scenarios-v2.d.ts` 第二版共享类型（多案例、多步骤、证据/时间线/资产卡、三类结果、评分维度）。
+- [x] 新增 `packages/shared/src/guided-scenarios-v2.js`：schema 校验器（可达性/无环/终止性/交叉引用）、确定性状态机骨架和第一版兼容适配器。
+- [x] 校验器强制固定 key、kebab-case 信号、未知输入脱敏阻断，`recap` 只输出安全摘要。
+- [x] `liftV1Scenario` 将 38 个第一版场景全部提升为合法第二版定义，证明模型无损表达。
+- [x] 在 `packages/shared/package.json` 增加 `./guided-scenarios-v2` 导出。
+- [x] 本轮只交付共享层，不接入运行时后端服务、前端页面和实验元数据；运行时接入拆到 `LT-006` 及后续。
+- [x] `pnpm test:shared` 51/51 通过（含 13 项第二版新测试）；`guided-scenarios-v2.d.ts` 严格类型检查通过。
+- [x] `git diff --check` 和行尾空白检查通过。
+
+当前状态：`LT-005` 已完成（共享层）；下一项进入 `LT-006` 专用化 `web.clickjacking`，届时把第二版模型接入运行时。
+
 # 2026-07-23 最新进展：LT-004 安全覆盖矩阵
 
 - [x] 新增 `docs/design/security-coverage-matrix.md`，逐项记录 65 个实验的模式、实现深度、参考体系、证据和长期动作。

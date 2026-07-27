@@ -5,6 +5,7 @@
   "type": "module",
   "exports": {
     "./guided-scenarios": "./src/guided-scenarios.js",
+    "./guided-scenarios-v2": "./src/guided-scenarios-v2.js",
     "./lab-metadata": "./src/lab-metadata.js"
   },
   "scripts": {
