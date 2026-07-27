@@ -73,7 +73,7 @@
 | `web.path-traversal` | interactive | D4 专用 | CWE-22；OWASP A01 | E1–E5 | 补规范化、根目录和符号链接概念 |
 | `web.ssrf` | interactive | D4 专用 | OWASP A10 SSRF；CWE-918 | E1–E5 | 补协议、重定向和云元数据模拟 |
 | `web.info-disclosure` | interactive | D4 专用 | CWE-200；OWASP A01/A05 | E1–E5 | 补错误页、日志和响应字段最小化 |
-| `web.clickjacking` | interactive | D2 引导式 | CWE-1021；OWASP A05 | E1–E5 | 升级为专用嵌入与确认流程 |
+| `web.clickjacking` | interactive | D4 专用交互 | CWE-1021；OWASP A05 | E1–E5 | 已专用化为两步框架策略与动作确认状态机（LT-006） |
 | `web.open-redirect` | interactive | D2 引导式 | CWE-601；OWASP A01 | E1–E5 | 升级为专用 URL 规范化和允许列表 |
 
 **判断：**当前最成熟的领域。主要缺口不是基础注入，而是请求走私、缓存投毒、原型污染、反序列化、WebSocket、CORS 和 GraphQL 等高级 Web/API 边界。

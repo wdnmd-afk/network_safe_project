@@ -1,4 +1,3 @@
-<!-- 由 tools/generate-guided-lab-assets.mjs 生成 -->
 # 点击劫持修复说明
 
 ## 根因
@@ -7,10 +6,11 @@
 
 ## 修复策略
 
-- 验证落实“CSP frame-ancestors、X-Frame-Options 和敏感动作确认”后的正常受控流程。
-- 未知 `scenarioKey` 或 `controlKey` 必须阻断且不回显原始值。
-- 事件日志只记录固定 key、风险标签、后端决策和学习信号。
-- 正常受控流程必须通过“防嵌入策略已启用”验证，不得一刀切破坏正常业务。
+- 第一步启用 CSP frame-ancestors 与 X-Frame-Options，使页面不再被任意来源嵌入（`enforce-frame-ancestors`）。
+- 第二步对敏感审批动作要求处置：防御拦截被劫持动作（`defense-intercepts-clickjacked-action`），或在明确用户确认后放行正常流程（`require-explicit-confirmation`）。
+- 未知 `scenarioKey` 或决策 `optionKey` 必须脱敏阻断且不回显原始值。
+- 事件日志只记录固定案例 key、决策路径信号、后端决策和结果计数。
+- 正常受控流程必须通过“要求明确的用户确认”验证，不得一刀切破坏正常业务。
 
 ## 生产补充
 

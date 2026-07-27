@@ -79,6 +79,13 @@ import {
   type GuidedScenarioVariantKey,
 } from "./services/guided-scenario-lab.js";
 import {
+  clickjackingScenarioKey,
+  createClickjackingLabService,
+  type ClickjackingEvaluationResult,
+  type ClickjackingLabService,
+  type ClickjackingVariantKey,
+} from "./services/clickjacking-lab.js";
+import {
   createLabEventLogsService,
   type LabEventInput,
   type LabEventLogsService,
@@ -176,6 +183,7 @@ type CreateAppOptions = {
   idorLabService?: IdorLabService;
   jwtLabService?: JwtLabService;
   guidedScenarioLabService?: GuidedScenarioLabService;
+  clickjackingLabService?: ClickjackingLabService;
   labEventLogsService?: LabEventLogsService;
   labRecapQuestionCompletionsService?: LabRecapQuestionCompletionsService;
   ldapInjectionLabService?: LdapInjectionLabService;
@@ -257,6 +265,8 @@ export function createApp(options: CreateAppOptions = {}) {
   const jwtLabService = options.jwtLabService ?? createJwtLabService();
   const guidedScenarioLabService =
     options.guidedScenarioLabService ?? createGuidedScenarioLabService();
+  const clickjackingLabService =
+    options.clickjackingLabService ?? createClickjackingLabService();
   const labEventLogsService =
     options.labEventLogsService ?? createLabEventLogsService();
   const labRecapQuestionCompletionsService =
@@ -488,6 +498,12 @@ export function createApp(options: CreateAppOptions = {}) {
   function readGuidedScenarioVariantKey(
     value: string,
   ): GuidedScenarioVariantKey | undefined {
+    return value === "vuln" || value === "fixed" ? value : undefined;
+  }
+
+  function readClickjackingVariantKey(
+    value: string,
+  ): ClickjackingVariantKey | undefined {
     return value === "vuln" || value === "fixed" ? value : undefined;
   }
 
@@ -4133,6 +4149,94 @@ export function createApp(options: CreateAppOptions = {}) {
           statusCode: responseStatus,
           message: result.message,
           riskLevel: riskyCase ? result.assessment.riskLevel : "low",
+        });
+
+        res.status(responseStatus).json({
+          status: result.status,
+          result,
+        });
+      } catch (error) {
+        next(error);
+      }
+    },
+  );
+
+  app.get("/api/labs/web/clickjacking/workbench", (_req, res) => {
+    res.status(200).json({
+      status: "ok",
+      workbench: clickjackingLabService.getWorkbench(),
+    });
+  });
+
+  app.post(
+    "/api/labs/web/clickjacking/:variant/evaluate",
+    async (req, res, next) => {
+      try {
+        const currentUser = await readCurrentUser(req);
+
+        if (!currentUser.ok) {
+          res.status(currentUser.status).json(currentUser.body);
+          return;
+        }
+
+        const variantKey = readClickjackingVariantKey(req.params.variant);
+
+        if (!variantKey) {
+          res.status(404).json({
+            status: "error",
+            message: "clickjacking variant not found",
+          });
+          return;
+        }
+
+        const scenarioKey = readRequiredString(req.body?.scenarioKey);
+        const decisions = readRequiredStringArray(req.body?.decisions);
+
+        if (!scenarioKey || decisions.length === 0) {
+          res.status(400).json({
+            status: "error",
+            message: "scenarioKey and decisions are required",
+          });
+          return;
+        }
+
+        const result = clickjackingLabService.evaluate({
+          variantKey,
+          scenarioKey,
+          decisions,
+        });
+        const responseStatus = result.status === "blocked" ? 403 : 200;
+        const riskAccepted =
+          result.recap.terminalOutcome === "risk" &&
+          result.decision === "accepted";
+
+        await recordLabEventSafely({
+          traceId: readOptionalTraceId(req),
+          userId: currentUser.user.id,
+          labKey: result.labKey,
+          variantKey,
+          phase:
+            variantKey === "vuln"
+              ? "attack"
+              : result.recap.terminalOutcome === "normal"
+                ? "normal"
+                : "defense",
+          eventType: result.status === "blocked" ? "blocked" : "success",
+          actorPerspective: riskAccepted ? "attacker" : "system",
+          method: req.method,
+          path: req.path,
+          inputSummary: {
+            scenarioKey: result.scenarioKey,
+            stepCount: result.assessment.stepCount,
+            outcomeCounts: result.recap.outcomeCounts,
+            terminalOutcome: result.recap.terminalOutcome,
+            signal: result.signal,
+          },
+          decision: result.decision,
+          signal: result.signal,
+          statusCode: responseStatus,
+          message: result.message,
+          riskLevel: riskAccepted ? "high" : result.assessment.riskLevel,
         });
 
         res.status(responseStatus).json({

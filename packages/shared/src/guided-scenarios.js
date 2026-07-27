@@ -85,29 +85,10 @@ function createScenario(input) {
   };
 }
 
+// 注意：web.clickjacking 已在 LT-006 专用化（专用状态机服务、专用 API 与页面），
+// 从引导式目录毕业为专用实验（深度 D4），因此不再登记于此。覆盖验证器据「是否在
+// 引导式目录」判定 D2/D4，移出目录即为其专用化的唯一事实来源。
 const scenarioInputs = [
-  {
-    id: "web.clickjacking",
-    category: "web",
-    scene: "clickjacking",
-    title: "点击劫持",
-    mode: "interactive",
-    severity: "medium",
-    difficulty: "beginner",
-    summary: "通过固定嵌入式审批界面对比缺少框架限制与启用防嵌入策略的差异。",
-    scenarioKey: "embedded-approval-overlay",
-    scenarioTitle: "透明覆盖审批按钮",
-    scenarioDescription: "固定案例展示敏感审批按钮被嵌入并由透明层诱导点击的风险。",
-    riskIndicators: ["frame-embedding", "transparent-overlay", "sensitive-action"],
-    weakControlKey: "frame-policy-missing",
-    weakControlTitle: "缺少框架限制",
-    strongControlKey: "frame-policy-enforced",
-    strongControlTitle: "防嵌入策略已启用",
-    rootCause: "页面允许被任意来源嵌入且敏感动作缺少二次确认",
-    defense: "CSP frame-ancestors、X-Frame-Options 和敏感动作确认",
-    tags: ["web", "clickjacking", "browser-policy"],
-    knowledgePoints: ["框架嵌入边界", "用户意图确认", "CSP frame-ancestors"],
-  },
   {
     id: "web.open-redirect",
     category: "web",

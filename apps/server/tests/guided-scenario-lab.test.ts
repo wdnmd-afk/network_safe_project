@@ -31,7 +31,7 @@ async function listen(app: ReturnType<typeof createApp>) {
   return `http://127.0.0.1:${address.port}`;
 }
 
-test("guided scenario service covers vulnerable, blocked, and normal fixed outcomes for all 38 labs", () => {
+test("guided scenario service covers vulnerable, blocked, and normal fixed outcomes for all guided labs", () => {
   const service = createGuidedScenarioLabService();
 
   for (const scenario of guidedScenarioCatalog) {
@@ -72,7 +72,7 @@ test("guided scenario service blocks unknown keys without echoing raw values", (
   const rawControlKey = "real-credential-control";
   const result = service.evaluate({
     category: "web",
-    scene: "clickjacking",
+    scene: "open-redirect",
     variantKey: "vuln",
     scenarioKey: rawScenarioKey,
     controlKey: rawControlKey,

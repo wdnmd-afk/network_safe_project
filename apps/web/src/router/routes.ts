@@ -480,6 +480,22 @@ export const routes: RouteRecordRaw[] = [
     },
   },
   {
+    path: "/labs/web/clickjacking/vuln",
+    name: "lab-web-clickjacking-vuln",
+    component: () => import("../views/ClickjackingLabView.vue"),
+    props: {
+      variant: "vuln",
+    },
+  },
+  {
+    path: "/labs/web/clickjacking/fixed",
+    name: "lab-web-clickjacking-fixed",
+    component: () => import("../views/ClickjackingLabView.vue"),
+    props: {
+      variant: "fixed",
+    },
+  },
+  {
     path: "/labs/:category/:scene/:variant(vuln|fixed)",
     name: "guided-scenario-lab",
     component: () => import("../views/GuidedScenarioLabView.vue"),

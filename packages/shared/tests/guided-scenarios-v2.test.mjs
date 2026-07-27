@@ -263,14 +263,14 @@ test("liftV1Scenario expresses every existing guided scenario as a valid v2 defi
 });
 
 test("liftV1Scenario preserves fixed control signals in the normal path", () => {
-  const clickjacking = guidedScenarioCatalog.find(
-    (scenario) => scenario.id === "web.clickjacking",
+  const sample = guidedScenarioCatalog.find(
+    (scenario) => scenario.id === "web.open-redirect",
   );
-  const lifted = liftV1Scenario(clickjacking);
+  const lifted = liftV1Scenario(sample);
   const machine = createGuidedScenarioMachine(lifted);
 
-  const normal = machine.choose(clickjacking.controls[1].key);
+  const normal = machine.choose(sample.controls[1].key);
   assert.equal(normal.outcome, "normal");
-  assert.equal(normal.signal, clickjacking.controls[1].fixedSignal);
+  assert.equal(normal.signal, sample.controls[1].fixedSignal);
   assert.equal(normal.decision, "accepted");
 });

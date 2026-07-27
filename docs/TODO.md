@@ -1,3 +1,16 @@
+# 2026-07-23 最新进展：LT-006 专用化 web.clickjacking
+
+- [x] 新增后端专用服务 `apps/server/src/services/clickjacking-lab.ts`，用第二版状态机驱动两步决策（框架策略 → 敏感动作确认）。
+- [x] `apps/server/src/app.ts` 注册专用 `GET /workbench` 与 `POST /:variant/evaluate` 路由，置于通用引导式 catch-all 之前。
+- [x] 新增前端 `apps/web/src/api/clickjacking-lab.ts`、`apps/web/src/labs/clickjacking.ts` 和 `ClickjackingLabView.vue`，专用 vuln/fixed 路由置于 catch-all 之前。
+- [x] 三个 canonical 终止信号（risk-accepted / defense-blocked / normal-verified）保持不变，向后兼容 exploit.py 与手工验证。
+- [x] `web.clickjacking` 从引导式目录（38→37）毕业为专用实现（27→28）；覆盖矩阵行由 D2 引导式改为 D4 专用交互。
+- [x] `verify.ts` 改为独立只读一致性验证；更新 meta.json、README、攻防文档、手工验证文档和 exploit.py 决策路径契约。
+- [x] 新增服务端 `clickjacking-lab.test.ts`（10 项）和前端 `clickjacking-api.test.ts`（3 项）；更新受影响的引导式与覆盖测试样例。
+- [x] 验证：server 231/231、web 232/232、shared 51/51、guided-all 37/37、coverage、前后端类型检查、`git diff --check` 全部通过。
+
+当前状态：`LT-006` 已完成；下一项进入 `LT-007` 专用化 `web.open-redirect`。
+
 # 2026-07-23 最新进展：LT-005 引导式工作台第二版共享模型
 
 - [x] 新增 `docs/design/guided-workbench-v2-model.md`，记录第二版数据模型、状态机语义、安全边界和分批接入计划。

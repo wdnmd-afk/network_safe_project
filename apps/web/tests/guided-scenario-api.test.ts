@@ -6,23 +6,23 @@ import {
 } from "../src/api/guided-scenario-lab";
 
 const workbench = {
-  id: "web.clickjacking",
-  slug: "clickjacking",
+  id: "web.open-redirect",
+  slug: "open-redirect",
   category: "web",
-  subcategory: "clickjacking",
-  title: "点击劫持",
+  subcategory: "open-redirect",
+  title: "开放重定向",
   mode: "interactive",
   severity: "medium",
   difficulty: "beginner",
-  summary: "固定点击劫持场景",
+  summary: "固定开放重定向场景",
   phase: "phase-1",
-  defaultScenarioKey: "embedded-approval-overlay",
-  defaultControlKey: "frame-policy-missing",
+  defaultScenarioKey: "untrusted-return-target",
+  defaultControlKey: "target-allowlist-missing",
   scenarios: [],
   controls: [],
   vulnerableOutcome: {
     decision: "accepted",
-    signal: "web-clickjacking-risk-accepted",
+    signal: "web-open-redirect-risk-accepted",
     message: "risk accepted",
   },
   safeBoundaries: [],
@@ -42,12 +42,12 @@ describe("guided scenario lab api client", () => {
       }),
     );
 
-    const result = await fetchGuidedScenarioWorkbench("web", "clickjacking");
+    const result = await fetchGuidedScenarioWorkbench("web", "open-redirect");
 
     expect(fetchMock).toHaveBeenCalledWith(
-      "/api/labs/web/clickjacking/workbench",
+      "/api/labs/web/open-redirect/workbench",
     );
-    expect(result.workbench.id).toBe("web.clickjacking");
+    expect(result.workbench.id).toBe("web.open-redirect");
   });
 
   it("posts only scenarioKey and controlKey", async () => {
@@ -57,14 +57,14 @@ describe("guided scenario lab api client", () => {
           status: "ok",
           result: {
             status: "ok",
-            labKey: "web.clickjacking",
+            labKey: "web.open-redirect",
             variantKey: "vuln",
-            scenarioKey: "embedded-approval-overlay",
-            controlKey: "frame-policy-missing",
-            scenarioTitle: "透明覆盖审批按钮",
-            controlTitle: "缺少框架限制",
+            scenarioKey: "untrusted-return-target",
+            controlKey: "target-allowlist-missing",
+            scenarioTitle: "未受信任返回地址",
+            controlTitle: "未校验跳转目标",
             decision: "accepted",
-            signal: "web-clickjacking-risk-accepted",
+            signal: "web-open-redirect-risk-accepted",
             message: "risk accepted",
             nextStep: "compare fixed",
             assessment: {
@@ -74,11 +74,11 @@ describe("guided scenario lab api client", () => {
               riskLevel: "medium",
               riskIndicatorCount: 3,
               riskIndicators: [
-                "frame-embedding",
-                "transparent-overlay",
-                "sensitive-action",
+                "untrusted-target",
+                "brand-abuse",
+                "redirect-chain",
               ],
-              rootCause: "missing frame policy",
+              rootCause: "missing target allowlist",
             },
           },
         }),
@@ -91,17 +91,17 @@ describe("guided scenario lab api client", () => {
 
     const result = await submitGuidedScenarioEvaluation(
       "web",
-      "clickjacking",
+      "open-redirect",
       "vuln",
       "local-session-token",
       {
-        scenarioKey: "embedded-approval-overlay",
-        controlKey: "frame-policy-missing",
+        scenarioKey: "untrusted-return-target",
+        controlKey: "target-allowlist-missing",
       },
     );
 
     expect(fetchMock).toHaveBeenCalledWith(
-      "/api/labs/web/clickjacking/vuln/evaluate",
+      "/api/labs/web/open-redirect/vuln/evaluate",
       {
         method: "POST",
         headers: {
@@ -109,8 +109,8 @@ describe("guided scenario lab api client", () => {
           "content-type": "application/json",
         },
         body: JSON.stringify({
-          scenarioKey: "embedded-approval-overlay",
-          controlKey: "frame-policy-missing",
+          scenarioKey: "untrusted-return-target",
+          controlKey: "target-allowlist-missing",
         }),
       },
     );
@@ -118,14 +118,14 @@ describe("guided scenario lab api client", () => {
     const requestBody = String(fetchMock.mock.calls[0]?.[1]?.body);
 
     expect(JSON.parse(requestBody)).toEqual({
-      scenarioKey: "embedded-approval-overlay",
-      controlKey: "frame-policy-missing",
+      scenarioKey: "untrusted-return-target",
+      controlKey: "target-allowlist-missing",
     });
     expect(requestBody).not.toContain("targetUrl");
     expect(requestBody).not.toContain("password");
     expect(requestBody).not.toContain("token");
     expect(requestBody).not.toContain("command");
-    expect(result.result.signal).toBe("web-clickjacking-risk-accepted");
+    expect(result.result.signal).toBe("web-open-redirect-risk-accepted");
   });
 
   it("returns controlled fixed blocked responses", async () => {
@@ -135,12 +135,12 @@ describe("guided scenario lab api client", () => {
           status: "blocked",
           result: {
             status: "blocked",
-            labKey: "web.clickjacking",
+            labKey: "web.open-redirect",
             variantKey: "fixed",
-            scenarioKey: "embedded-approval-overlay",
-            controlKey: "frame-policy-missing",
+            scenarioKey: "untrusted-return-target",
+            controlKey: "target-allowlist-missing",
             decision: "blocked",
-            signal: "web-clickjacking-defense-blocked",
+            signal: "web-open-redirect-defense-blocked",
             assessment: {},
           },
         }),
@@ -153,16 +153,16 @@ describe("guided scenario lab api client", () => {
 
     const result = await submitGuidedScenarioEvaluation(
       "web",
-      "clickjacking",
+      "open-redirect",
       "fixed",
       "local-session-token",
       {
-        scenarioKey: "embedded-approval-overlay",
-        controlKey: "frame-policy-missing",
+        scenarioKey: "untrusted-return-target",
+        controlKey: "target-allowlist-missing",
       },
     );
 
     expect(result.status).toBe("blocked");
-    expect(result.result.signal).toBe("web-clickjacking-defense-blocked");
+    expect(result.result.signal).toBe("web-open-redirect-defense-blocked");
   });
 });
