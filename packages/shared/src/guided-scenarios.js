@@ -90,28 +90,6 @@ function createScenario(input) {
 // 引导式目录」判定 D2/D4，移出目录即为其专用化的唯一事实来源。
 const scenarioInputs = [
   {
-    id: "auth.session-hijacking",
-    category: "auth",
-    scene: "session-hijacking",
-    title: "会话劫持",
-    mode: "interactive",
-    severity: "high",
-    difficulty: "intermediate",
-    summary: "通过固定脱敏会话摘要观察会话复用与上下文绑定防护。",
-    scenarioKey: "replayed-session-summary",
-    scenarioTitle: "异地会话摘要复用",
-    scenarioDescription: "固定摘要展示同一会话在不一致设备上下文中被重复使用的风险。",
-    riskIndicators: ["session-replay", "context-mismatch", "missing-rotation"],
-    weakControlKey: "context-binding-missing",
-    weakControlTitle: "未绑定会话上下文",
-    strongControlKey: "session-rotated-and-bound",
-    strongControlTitle: "会话已轮换并绑定",
-    rootCause: "会话标识长期有效且没有轮换、设备上下文或高风险动作再验证",
-    defense: "安全 Cookie、会话轮换、上下文校验和高风险动作再认证",
-    tags: ["auth", "session", "hijacking"],
-    knowledgePoints: ["会话生命周期", "Cookie 安全属性", "上下文绑定"],
-  },
-  {
     id: "auth.oauth",
     category: "auth",
     scene: "oauth",

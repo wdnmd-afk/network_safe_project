@@ -12,12 +12,13 @@ import {
 import { validateLabMetadata } from "../src/lab-metadata.js";
 
 test("guided scenario catalog covers the remaining guided master-goal topics", () => {
-  // web.clickjacking(LT-006）、web.open-redirect(LT-007）与 auth.credential-stuffing(LT-008）已专用化并移出引导式目录，因此当前为 35 个引导式场景。
-  assert.equal(guidedScenarioCatalog.length, 35);
-  assert.equal(new Set(listGuidedScenarioIds()).size, 35);
+  // web.clickjacking(LT-006）、web.open-redirect(LT-007）、auth.credential-stuffing(LT-008）与 auth.session-hijacking(LT-009）已专用化并移出引导式目录，因此当前为 34 个引导式场景。
+  assert.equal(guidedScenarioCatalog.length, 34);
+  assert.equal(new Set(listGuidedScenarioIds()).size, 34);
   assert.equal(getGuidedScenarioById("web.clickjacking"), undefined);
   assert.equal(getGuidedScenarioById("web.open-redirect"), undefined);
   assert.equal(getGuidedScenarioById("auth.credential-stuffing"), undefined);
+  assert.equal(getGuidedScenarioById("auth.session-hijacking"), undefined);
 });
 
 test("guided scenario entries expose exact fixed case and control fields", () => {

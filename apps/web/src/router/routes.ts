@@ -528,6 +528,22 @@ export const routes: RouteRecordRaw[] = [
     },
   },
   {
+    path: "/labs/auth/session-hijacking/vuln",
+    name: "lab-auth-session-hijacking-vuln",
+    component: () => import("../views/SessionHijackingLabView.vue"),
+    props: {
+      variant: "vuln",
+    },
+  },
+  {
+    path: "/labs/auth/session-hijacking/fixed",
+    name: "lab-auth-session-hijacking-fixed",
+    component: () => import("../views/SessionHijackingLabView.vue"),
+    props: {
+      variant: "fixed",
+    },
+  },
+  {
     path: "/labs/:category/:scene/:variant(vuln|fixed)",
     name: "guided-scenario-lab",
     component: () => import("../views/GuidedScenarioLabView.vue"),

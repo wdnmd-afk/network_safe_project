@@ -76,6 +76,8 @@ describe("SafeMart 路由清单", () => {
       "/labs/web/open-redirect/fixed",
       "/labs/auth/credential-stuffing/vuln",
       "/labs/auth/credential-stuffing/fixed",
+      "/labs/auth/session-hijacking/vuln",
+      "/labs/auth/session-hijacking/fixed",
       "/labs/:category/:scene/:variant(vuln|fixed)",
     ]);
   });
