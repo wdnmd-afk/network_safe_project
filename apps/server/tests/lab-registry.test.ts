@@ -10,14 +10,14 @@ test("lab registry scans all current metadata files", async () => {
 
   assert.equal(labs.length, 66);
   assert.equal(new Set(labIds).size, 66);
-  assert.equal(labs.filter((lab) => lab.status === "ready").length, 65);
+  assert.equal(labs.filter((lab) => lab.status === "ready").length, 66);
   assert.ok(labIds.includes("ai.prompt-injection"));
   assert.ok(labIds.includes("auth.brute-force"));
   assert.ok(
     labs.some(
       (lab) =>
         lab.id === "api.functional-authorization" &&
-        lab.status === "in-progress",
+        lab.status === "ready",
     ),
   );
   assert.ok(

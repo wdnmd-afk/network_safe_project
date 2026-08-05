@@ -1538,7 +1538,7 @@ test("parseLabMetadataJson accepts utf8 bom json", () => {
   });
 });
 
-test("bfla metadata declares the in-progress dedicated API contract", async () => {
+test("bfla metadata declares the ready dedicated API contract", async () => {
   const metadata = await readFixture(
     "labs/api/functional-authorization/meta.json",
   );
@@ -1547,7 +1547,7 @@ test("bfla metadata declares the in-progress dedicated API contract", async () =
   assert.equal(result.ok, true);
   assert.equal(result.value.id, "api.functional-authorization");
   assert.equal(result.value.category, "api");
-  assert.equal(result.value.status, "in-progress");
+  assert.equal(result.value.status, "ready");
   assert.deepEqual(
     result.value.entrypoints.web.map((entrypoint) => entrypoint.path),
     [

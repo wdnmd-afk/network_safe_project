@@ -45,6 +45,7 @@
 
 - API 对象级授权（BOLA）不在首批新建，改为在 `auth.idor` 上补 API 安全视角与标准映射，作为独立小切片处理。
 - 是否新增 `api`、`business-logic` 两个分类，需在实现首个实验前确认分类注册、种子、页面分组和统计支持（见第 7 节）。
+- `LT-021` 已完成 `api.functional-authorization` 专用 D4 实验并推进到 `ready`；`LT-022` 开始前仍须确认 `business-logic` 分类注册与固定订单阶段字段。
 
 ## 5. 每个候选的固定模型与边界
 

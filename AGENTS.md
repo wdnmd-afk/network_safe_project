@@ -201,13 +201,13 @@ chore(root): 同步 pnpm 工作区依赖锁文件
 
 ## 13. 当前阶段说明
 
-当前仓库处于 65 个安全学习实验全量 `ready` 收口后的持续维护阶段，并有 1 个 BFLA 新增实验处于 `in-progress` 收口阶段。
+当前仓库处于 66 个安全学习实验全量 `ready` 收口后的持续维护阶段。
 
 当前已完成：
 
 - Vue 前端、Node.js 后端、MySQL 平台数据链路与 monorepo 基础设施
 - 实验元数据扫描、注册、学习进度、验证记录、统一事件日志和复盘能力
-- 66 个实验（65 个 `ready`、1 个 `in-progress`）、10 个分类和 132 个漏洞版 / 修复版变体
+- 66 个 `ready` 实验、10 个分类和 132 个漏洞版 / 修复版变体
 - 35 个专用实验实现与 31 个通用引导式实验实现
 - `interactive`、`simulation`、`case-study` 三类安全边界及 case-study ready 校验
 - 单元、API、共享校验、只读脚本和代表性 Playwright 自动化证据

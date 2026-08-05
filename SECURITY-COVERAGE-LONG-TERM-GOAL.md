@@ -4,7 +4,7 @@
 >
 > 初始版本：2026-07-23
 >
-> 当前基线：66 个安全学习实验（65 个 `ready`、1 个 `in-progress`）
+> 当前基线：66 个 `ready` 安全学习实验
 
 ## 1. 文档定位
 
@@ -28,7 +28,7 @@
 
 ## 2. 长期总目标
 
-将当前“65 个安全类型已有可运行学习闭环、BFLA 新增实验正在收口”的平台，逐步建设为一个具备以下能力的 Windows 本机网络安全学习系统：
+将当前“66 个安全学习实验已有可运行学习闭环”的平台，逐步建设为一个具备以下能力的 Windows 本机网络安全学习系统：
 
 - 安全知识覆盖有清晰边界，并能映射常见安全知识体系。
 - 每个安全主题都能区分攻击视角、根因、风险信号、修复策略和正常业务流程。
@@ -65,7 +65,7 @@
 
 | 指标 | 当前状态 | 长期方向 |
 |---|---:|---|
-| 实验总数 | 66（65 ready、1 in-progress） | 数量不设硬性上限，优先补结构性缺口和深度 |
+| 实验总数 | 66（全部 ready） | 数量不设硬性上限，优先补结构性缺口和深度 |
 | 分类数 | 10 | 评估新增业务逻辑、Windows 主机、密码学、检测响应等领域 |
 | 漏洞版 / 修复版变体 | 132 | 新主题继续保持双视角或满足高风险案例化例外 |
 | `interactive` | 24 | 优先提升通用交互主题的专用实现深度 |
@@ -146,7 +146,7 @@
 
 | 场景 | 模式 | 当前实现 | 长期动作 |
 |---|---|---|---|
-| `api.functional-authorization` | interactive | 专用（in-progress） | 完成 LT-021 自动化验证后推进 ready，再扩展属性级授权和资源消耗 |
+| `api.functional-authorization` | interactive | 专用（ready） | 已完成 LT-021，再扩展属性级授权和资源消耗 |
 
 ### 6.4 网络与传输层
 
@@ -340,7 +340,7 @@
 ### 9.1 API 安全
 
 - [ ] API 对象级授权：复用 `auth.idor`，补充 API 安全视角和映射，不重复造同义实验。
-- [ ] API 功能级授权：普通用户访问管理功能、服务端策略和审计（`LT-021` 已进入 `in-progress`，等待自动化验证收口）。
+- [x] API 功能级授权：普通用户访问管理功能、服务端策略和审计（`LT-021` 已完成专用 D4 实验与自动化验证收口）。
 - [ ] 属性级授权与批量绑定：固定 DTO 字段、允许列表和服务端覆盖策略。
 - [ ] 过度数据暴露：响应字段最小化、不同角色视图和敏感字段过滤。
 - [ ] 资源消耗与限流：固定请求批次、配额、节流和降级策略。
@@ -782,7 +782,7 @@
 
 首轮审计（`LT-020`）后，按“先实现规划批次、再深化高风险主题、持续巩固质量”重排。每项仍需单独执行文档。
 
-- [ ] `LT-021`：实现 API 功能级授权（BFLA）专用实验（当前代码、文档、测试和只读验证资产已接入，元数据为 `in-progress`；等待命令验证后收口）。
+- [x] `LT-021`：实现 API 功能级授权（BFLA）专用实验（完成时间：2026-08-05 14:22:30 +08:00；验证：BFLA 专用只读验证 13/13、`pnpm verify` 端到端 EXIT=0，shared 52/52、guided 31/31、coverage 66/66、server 294/294、web 262/262 与前后端类型检查全部通过）。
 - [ ] `LT-022`：实现业务流程跳步专用实验。
 - [ ] `LT-023`：实现不安全随机数 / token 熵专用实验（依据 `docs/design/cryptography-and-data-protection-labs.md`）。
 - [ ] `LT-024`：实现固定检测规则匹配与告警研判实验（依据 `docs/design/detection-response-labs.md`）。
@@ -828,3 +828,4 @@
 | `LT-016` | 2026-07-23 14:10:00 +08:00 | `client.formjacking` 专用服务（第二版两步状态机：脚本信任 → 表单目标决策）、专用工作台/评估 API、前端专用视图与路由、独立 verify.ts、专用测试；从引导式 simulation 毕业为专用 D3 模拟 | server、web、shared、coverage（专用 33、引导式 32）、guided-all、前后端类型检查、专用 verify.ts 全通过；三个 canonical 信号保持不变 |
 | `LT-017` | 2026-07-23 14:30:00 +08:00 | `malware.ransomware` 专用服务（第二版两步状态机：行为关联 → 主机处置决策）、专用工作台/评估 API、前端专用视图与路由、独立 verify.ts、专用测试；从引导式 case-study 毕业为专用 D3 证据分析，保持 case-study ready 例外与无 exploit.py；并修复 LT-016 formjacking 服务与前端 optionKey 不一致缺陷 | server 285/285、web 250/250、shared 51/51、coverage（专用 34、引导式 31）、guided-all 31/31、前后端类型检查、专用 verify.ts 全通过；三个 canonical 信号保持不变 |
 | `LT-018` | 2026-07-23 14:50:00 +08:00 | 根级统一 `verify` 入口（typecheck + shared + guided + coverage + server + web）、`typecheck`/`typecheck:server`/`typecheck:web` 脚本、最小 CI 工作流 `.github/workflows/verify.yml`（只读、不依赖 MySQL/浏览器、不输出秘密） | `pnpm verify` 端到端 EXIT=0：typecheck、shared 51、guided-all 31、coverage、server 285、web 250 全通过 |
+| `LT-021` | 2026-08-05 14:22:30 +08:00 | `api.functional-authorization` 专用 D4 两步决策实验、独立 API 分类、固定服务端状态机、专用页面/API、统一事件摘要、标准实验文档、专用测试和只读验证器 | BFLA 专用只读验证 13/13；`pnpm verify` EXIT=0：前后端类型检查、shared 52/52、guided 31/31、coverage 66/66、server 294/294、web 262/262 全通过；未运行 build、smoke、数据库集成或 Playwright |

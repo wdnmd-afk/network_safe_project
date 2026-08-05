@@ -191,8 +191,8 @@ export function runBflaConsistencyVerification(): BflaConsistencyReport {
       "metadata-basic-state",
       metadata.id === "api.functional-authorization" &&
         metadata.mode === "interactive" &&
-        metadata.status === "in-progress",
-      "自动化验证完成前，BFLA 元数据应保持 api.functional-authorization / interactive / in-progress。",
+        metadata.status === "ready",
+      "完成自动化验证后，BFLA 元数据应保持 api.functional-authorization / interactive / ready。",
     ),
     createCheck(
       "web-entrypoints",
@@ -296,7 +296,7 @@ export function runBflaConsistencyVerification(): BflaConsistencyReport {
     notes: [
       "本脚本只读取仓库内 BFLA 元数据、文档、实现和测试文件。",
       "本脚本不发起 HTTP 请求，不访问外部目标，不读取账户、角色或凭据。",
-      "完成自动化验证并回填执行证据后，才能把元数据推进到 ready。",
+      "ready 只表示本机固定案例学习闭环通过验证，不代表可操作真实账户、角色或外部目标。",
     ],
   };
 }

@@ -95,6 +95,8 @@
 
 - 已补齐专用后端服务、精确路由、前端 API/模型/页面、标准实验目录、分类注册、平台统计标签、服务端 API 测试、前端 API 测试和只读 `verify.ts`。
 - 已统一 `privileged-operation-request`、两步 optionKey 和三个 canonical 终止信号，修复前后端固定案例 key 漂移与服务端漏导入问题。
-- 当前元数据保持 `in-progress`。按照项目规则，尚未执行本节列出的测试、类型检查和只读验证命令，因此不得标记 LT-021 完成或推进到 `ready`。
-- 静态审计确认：66 份元数据、65/1 状态分布、132 个变体、24/15/27 模式分布和 66 行覆盖矩阵一致；旧固定 key 无残留；专用前后端路由位于 catch-all 之前；BFLA 实现未发现外部 URL、子进程或命令执行能力。
-- `git diff --check` 无空白错误，仅有 Windows 工作区 LF/CRLF 转换提示；命令验证仍需用户明确授权后执行。
+- BFLA 专用只读验证通过，13 项元数据、入口、固定契约、文件和安全边界检查全部为 `passed`。
+- `pnpm verify` 端到端 EXIT=0：前后端 TypeScript 类型检查通过，shared 52/52、guided 31/31、coverage 66/66、server 294/294、web 262/262 全部通过。
+- 元数据已从 `in-progress` 推进到 `ready`；静态审计同步确认 66 份元数据全部为 `ready`、132 个变体、24/15/27 模式分布和 66 行覆盖矩阵一致。
+- 专用前后端路由位于 catch-all 之前；BFLA 实现未发现外部 URL、子进程或命令执行能力；`git diff --check` 无空白错误。
+- 本轮未执行 build、smoke、数据库集成或 Playwright；这些项目不属于 LT-021 最小收口门禁，后续发布或页面级验证切片再执行。

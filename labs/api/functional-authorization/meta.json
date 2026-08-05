@@ -8,7 +8,7 @@
   "severity": "high",
   "difficulty": "intermediate",
   "summary": "通过固定管理操作请求的两步决策，对比仅前端隐藏与服务端功能级授权的差异。",
-  "status": "in-progress",
+  "status": "ready",
   "phase": "phase-1",
   "sortOrder": 340,
   "estimatedMinutes": 25,
