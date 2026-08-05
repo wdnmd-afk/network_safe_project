@@ -44,8 +44,8 @@
 说明：
 
 - API 对象级授权（BOLA）不在首批新建，改为在 `auth.idor` 上补 API 安全视角与标准映射，作为独立小切片处理。
-- 是否新增 `api`、`business-logic` 两个分类，需在实现首个实验前确认分类注册、种子、页面分组和统计支持（见第 7 节）。
-- `LT-021` 已完成 `api.functional-authorization` 专用 D4 实验并推进到 `ready`；`LT-022` 开始前仍须确认 `business-logic` 分类注册与固定订单阶段字段。
+- `api` 与 `business-logic` 分类已分别在 `LT-021`、`LT-022` 确认，并接入分类注册、动态种子同步、页面分组和统计标签（见第 7 节）。
+- `LT-021` 已完成 `api.functional-authorization` 专用 D4 实验；`LT-022` 已完成 `business-logic.workflow-bypass` 专用 D4 实验，两者均已推进到 `ready`。
 
 ## 5. 每个候选的固定模型与边界
 
@@ -87,7 +87,7 @@
 ## 7. 前置确认项（进入实现前必须解决）
 
 - [x] `LT-021` 确认新增 `api` 分类；`LT-022` 确认新增 `business-logic` 分类，首个实验为 `business-logic.workflow-bypass`。
-- [x] `api` 已接入动态种子同步、`getLabCategoryProfile`、实验列表分组标题和平台状态统计标签。
+- [x] `api` 与 `business-logic` 已接入动态种子同步、`getLabCategoryProfile`、实验列表分组标题和平台状态统计标签。
 - [x] BFLA 覆盖矩阵行按 `interactive` / D4 专用交互登记，验证器将其计入专用实现。
 - [ ] 确认 BOLA 复用 `auth.idor` 的具体补充方式（映射、正常流程说明），不新建同义实验。
 - [x] BFLA 已锁定 `privileged-operation-request` 和两步 kebab-case optionKey；后续实验仍须逐项确认。

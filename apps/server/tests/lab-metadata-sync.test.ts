@@ -87,6 +87,11 @@ test("getLabCategoryProfile returns documented labels for phase-one categories",
     name: "API 安全",
     description: "固定 API 授权与业务逻辑边界实验",
   });
+  assert.deepEqual(getLabCategoryProfile("business-logic"), {
+    code: "business-logic",
+    name: "业务逻辑",
+    description: "固定业务状态与服务端流程约束实验",
+  });
   assert.deepEqual(getLabCategoryProfile("malware"), {
     code: "malware",
     name: "恶意软件",

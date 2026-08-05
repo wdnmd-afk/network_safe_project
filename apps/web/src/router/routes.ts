@@ -608,6 +608,22 @@ export const routes: RouteRecordRaw[] = [
     },
   },
   {
+    path: "/labs/business-logic/workflow-bypass/vuln",
+    name: "lab-business-logic-workflow-bypass-vuln",
+    component: () => import("../views/WorkflowBypassLabView.vue"),
+    props: {
+      variant: "vuln",
+    },
+  },
+  {
+    path: "/labs/business-logic/workflow-bypass/fixed",
+    name: "lab-business-logic-workflow-bypass-fixed",
+    component: () => import("../views/WorkflowBypassLabView.vue"),
+    props: {
+      variant: "fixed",
+    },
+  },
+  {
     path: "/labs/:category/:scene/:variant(vuln|fixed)",
     name: "guided-scenario-lab",
     component: () => import("../views/GuidedScenarioLabView.vue"),

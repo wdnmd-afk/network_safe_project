@@ -11,6 +11,7 @@ const categoryTitles: Record<string, string> = {
   web: "Web 漏洞",
   auth: "认证授权",
   api: "API 安全",
+  "business-logic": "业务逻辑",
   network: "网络与传输层",
   ai: "AI 与新型攻击",
   social: "社会工程学",

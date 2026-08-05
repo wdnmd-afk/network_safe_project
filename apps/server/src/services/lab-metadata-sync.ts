@@ -71,6 +71,11 @@ const categoryProfiles: Record<string, LabCategoryProfile> = {
     name: "API 安全",
     description: "固定 API 授权与业务逻辑边界实验",
   },
+  "business-logic": {
+    code: "business-logic",
+    name: "业务逻辑",
+    description: "固定业务状态与服务端流程约束实验",
+  },
   network: {
     code: "network",
     name: "网络与传输层",

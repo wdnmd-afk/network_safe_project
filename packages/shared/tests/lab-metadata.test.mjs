@@ -1572,3 +1572,38 @@ test("bfla metadata declares the ready dedicated API contract", async () => {
     scriptKeys: ["api-functional-authorization-verify"],
   });
 });
+
+test("workflow bypass metadata declares the ready business logic contract", async () => {
+  const metadata = await readFixture(
+    "labs/business-logic/workflow-bypass/meta.json",
+  );
+  const result = validateLabMetadata(metadata);
+
+  assert.equal(result.ok, true);
+  assert.equal(result.value.id, "business-logic.workflow-bypass");
+  assert.equal(result.value.category, "business-logic");
+  assert.equal(result.value.status, "ready");
+  assert.deepEqual(
+    result.value.entrypoints.web.map((entrypoint) => entrypoint.path),
+    [
+      "/labs/business-logic/workflow-bypass/vuln",
+      "/labs/business-logic/workflow-bypass/fixed",
+    ],
+  );
+  assert.deepEqual(
+    result.value.entrypoints.api.map((entrypoint) => entrypoint.path),
+    [
+      "/api/labs/business-logic/workflow-bypass/workbench",
+      "/api/labs/business-logic/workflow-bypass/vuln/evaluate",
+      "/api/labs/business-logic/workflow-bypass/fixed/evaluate",
+    ],
+  );
+  assert.deepEqual(result.value.verification.automation.apiTest, {
+    enabled: true,
+    specPath: "apps/server/tests/workflow-bypass-lab.test.ts",
+  });
+  assert.deepEqual(result.value.verification.automation.scriptVerification, {
+    enabled: true,
+    scriptKeys: ["business-logic-workflow-bypass-verify"],
+  });
+});

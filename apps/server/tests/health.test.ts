@@ -86,7 +86,7 @@ test("GET /api/labs returns scanned lab metadata list", async () => {
   };
 
   assert.equal(response.status, 200);
-  assert.equal(body.total, 66);
+  assert.equal(body.total, 67);
   assert.ok(
     body.items.some(
       (item) =>
@@ -180,6 +180,13 @@ test("GET /api/labs returns scanned lab metadata list", async () => {
     body.items.some(
       (item) =>
         item.id === "api.functional-authorization" &&
+        item.status === "ready",
+    ),
+  );
+  assert.ok(
+    body.items.some(
+      (item) =>
+        item.id === "business-logic.workflow-bypass" &&
         item.status === "ready",
     ),
   );

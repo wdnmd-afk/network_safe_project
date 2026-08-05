@@ -1,15 +1,19 @@
-# 2026-08-05 最新进展：LT-022 业务流程跳步实验契约已确认
+# 2026-08-05 最新进展：LT-022 业务流程跳步实验已完成
 
 - [x] 新增 `docs/execution/2026-08-05-business-logic-workflow-bypass-lab.md`，明确目标、范围、步骤、建议、风险、优化方案、验证方式和完成条件。
 - [x] 确认新增 `business-logic` 分类，首个实验 ID 为 `business-logic.workflow-bypass`，模式为 `interactive` / D4 专用交互。
 - [x] 固定案例复用待支付订单 `SM-20260608-1099`，阶段语义复用 `pending`、`paid`、`shipping`，合法顺序为 `pending -> paid -> shipping`。
 - [x] 评估 API 只接受 `pending-order-shipping-request` 和有序 `decisions`，不接受订单 ID、阶段、金额、用户或自由文本。
-- [ ] 按执行文档实现服务端状态机、精确路由、事件摘要和专用测试。
-- [ ] 接入前端 API、专用工作台、路由、学习进度和验证记录。
-- [ ] 补齐标准实验目录、只读验证器、覆盖矩阵及 67/11/134 全局计数。
-- [ ] 经授权执行专项验证和 `pnpm verify`，通过后推进 `ready` 并回填 LT-022 完成证据。
+- [x] 按执行文档实现服务端第二版两步状态机、精确路由、脱敏事件摘要和专用服务/API 测试。
+- [x] 接入前端 API、专用工作台、精确路由、学习进度、验证记录、前端 API 测试和路由断言。
+- [x] 补齐标准实验目录、本机只读 `verify.ts`、`business-logic` 分类注册/标签、覆盖矩阵及 67/11/134 全局计数。
+- [x] 静态审计确认 67 份元数据全部为 `ready`、134 个变体、25/15/27 模式分布和 67 行覆盖矩阵一致；专用路由位于 catch-all 之前，未引入数据库订单、外部调用、子进程或命令执行能力。
+- [x] 首次 `pnpm verify` 已通过类型检查、shared 53/53、guided 31/31 和 coverage 67/67；服务端并发加载触发 Windows `spawn UNKNOWN` / `EPIPE`，已将 Node 测试并发显式限制为 4。
+- [x] 专项只读验证 13/13 通过；`pnpm verify` 端到端 EXIT=0，前后端类型检查、shared 53/53、guided 31/31、coverage 67/67、server 303/303、web 265/265 全部通过。
+- [x] 元数据从 `in-progress` 推进为 `ready`，已回填执行文档、覆盖矩阵和长期目标 LT-022 完成证据。
+- 说明：本轮未执行 build、smoke、数据库集成或 Playwright；这些高成本验证不属于 LT-022 最小收口门禁。
 
-当前状态：`LT-022` 已完成执行契约与字段确认，运行时代码尚未开始；下一步实现服务端专用状态机和 `business-logic` 分类注册。
+当前状态：`LT-022` 已完成；下一项按队列进入 `LT-023` 不安全随机数 / token 熵专用实验，实施前必须先编写独立执行文档。
 
 # 2026-08-05 最新进展：LT-021 API 功能级授权实验已完成
 

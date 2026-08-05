@@ -1,0 +1,170 @@
+{
+  "id": "business-logic.workflow-bypass",
+  "slug": "workflow-bypass",
+  "title": "业务流程跳步",
+  "category": "business-logic",
+  "subcategory": "workflow-bypass",
+  "mode": "interactive",
+  "severity": "high",
+  "difficulty": "intermediate",
+  "summary": "通过固定待支付订单的两步决策，对比信任客户端阶段与服务端状态迁移顺序校验的差异。",
+  "status": "ready",
+  "phase": "phase-1",
+  "sortOrder": 350,
+  "estimatedMinutes": 25,
+  "tags": [
+    "business-logic",
+    "workflow",
+    "state-machine"
+  ],
+  "knowledgePoints": [
+    "流程跳步",
+    "服务端状态机",
+    "阶段顺序约束"
+  ],
+  "variants": [
+    {
+      "key": "vuln",
+      "title": "业务流程跳步风险观察版",
+      "enabled": true,
+      "description": "观察服务端信任客户端目标阶段时，待支付订单直接进入发货流程的固定风险判定。",
+      "entryKey": "business-logic-workflow-bypass-vuln",
+      "expectedOutcome": "返回 business-logic-workflow-bypass-risk-accepted 学习信号。",
+      "supportsAutomation": true
+    },
+    {
+      "key": "fixed",
+      "title": "业务流程跳步防御复盘版",
+      "enabled": true,
+      "description": "观察服务端状态机阻断乱序迁移，并放行已支付订单进入发货阶段的正常流程。",
+      "entryKey": "business-logic-workflow-bypass-fixed",
+      "expectedOutcome": "乱序迁移被阻断，合法阶段迁移通过复核。",
+      "supportsAutomation": true
+    }
+  ],
+  "entrypoints": {
+    "web": [
+      {
+        "key": "business-logic-workflow-bypass-vuln",
+        "variant": "vuln",
+        "path": "/labs/business-logic/workflow-bypass/vuln",
+        "description": "业务流程跳步风险观察版工作台"
+      },
+      {
+        "key": "business-logic-workflow-bypass-fixed",
+        "variant": "fixed",
+        "path": "/labs/business-logic/workflow-bypass/fixed",
+        "description": "业务流程跳步防御复盘版工作台"
+      }
+    ],
+    "api": [
+      {
+        "key": "business-logic-workflow-bypass-workbench",
+        "variant": "shared",
+        "method": "GET",
+        "path": "/api/labs/business-logic/workflow-bypass/workbench",
+        "description": "业务流程跳步固定工作台配置"
+      },
+      {
+        "key": "business-logic-workflow-bypass-vuln-evaluate",
+        "variant": "vuln",
+        "method": "POST",
+        "path": "/api/labs/business-logic/workflow-bypass/vuln/evaluate",
+        "description": "业务流程跳步漏洞版固定案例评估"
+      },
+      {
+        "key": "business-logic-workflow-bypass-fixed-evaluate",
+        "variant": "fixed",
+        "method": "POST",
+        "path": "/api/labs/business-logic/workflow-bypass/fixed/evaluate",
+        "description": "业务流程跳步修复版固定案例评估"
+      }
+    ],
+    "scripts": [
+      {
+        "key": "business-logic-workflow-bypass-verify",
+        "language": "ts",
+        "path": "tools/lab-scripts/business-logic/workflow-bypass/verify.ts",
+        "description": "业务流程跳步本机只读一致性验证"
+      }
+    ],
+    "docs": [
+      {
+        "key": "business-logic-workflow-bypass-readme",
+        "path": "labs/business-logic/workflow-bypass/README.md",
+        "description": "业务流程跳步场景说明"
+      },
+      {
+        "key": "business-logic-workflow-bypass-attack-steps",
+        "path": "labs/business-logic/workflow-bypass/docs/attack-steps.md",
+        "description": "业务流程跳步风险观察步骤"
+      },
+      {
+        "key": "business-logic-workflow-bypass-fix-notes",
+        "path": "labs/business-logic/workflow-bypass/docs/fix-notes.md",
+        "description": "业务流程跳步修复思路"
+      },
+      {
+        "key": "business-logic-workflow-bypass-manual-verification",
+        "path": "labs/business-logic/workflow-bypass/docs/manual-verification.md",
+        "description": "业务流程跳步手工验证矩阵"
+      }
+    ]
+  },
+  "verification": {
+    "manual": {
+      "supported": true,
+      "stepsDocPath": "labs/business-logic/workflow-bypass/docs/manual-verification.md",
+      "expectedSignals": [
+        "business-logic-workflow-bypass-risk-accepted",
+        "business-logic-workflow-bypass-defense-blocked",
+        "business-logic-workflow-bypass-normal-verified"
+      ]
+    },
+    "automation": {
+      "supported": true,
+      "playwright": {
+        "enabled": false,
+        "specPath": "packages/testing/tests/e2e/platform.spec.mjs"
+      },
+      "apiTest": {
+        "enabled": true,
+        "specPath": "apps/server/tests/workflow-bypass-lab.test.ts"
+      },
+      "scriptVerification": {
+        "enabled": true,
+        "scriptKeys": [
+          "business-logic-workflow-bypass-verify"
+        ]
+      }
+    }
+  },
+  "prerequisites": [
+    {
+      "type": "service",
+      "value": "本机后端服务运行于 http://127.0.0.1:6667",
+      "required": true
+    },
+    {
+      "type": "browser",
+      "value": "使用本机浏览器访问实验工作台",
+      "required": true
+    }
+  ],
+  "safeBoundaries": [
+    "只使用固定虚构订单快照和 pending / paid / shipping 阶段枚举。",
+    "页面和 API 只接受本实验声明的 scenarioKey 与有序 optionKey 决策数组。",
+    "未知 key 会被脱敏阻断，不写入订单、用户、金额、支付信息或外部目标。"
+  ],
+  "paths": {
+    "root": "labs/business-logic/workflow-bypass",
+    "readme": "labs/business-logic/workflow-bypass/README.md",
+    "vuln": "labs/business-logic/workflow-bypass/vuln",
+    "fixed": "labs/business-logic/workflow-bypass/fixed",
+    "mock": "labs/business-logic/workflow-bypass/mock",
+    "docs": "labs/business-logic/workflow-bypass/docs",
+    "scripts": "tools/lab-scripts/business-logic/workflow-bypass"
+  },
+  "references": [],
+  "notes": "该实验不连接真实订单、支付或物流系统，也不提供可迁移的流程绕过工具。"
+}

@@ -86,6 +86,8 @@ describe("SafeMart 路由清单", () => {
       "/labs/malware/ransomware/fixed",
       "/labs/api/functional-authorization/vuln",
       "/labs/api/functional-authorization/fixed",
+      "/labs/business-logic/workflow-bypass/vuln",
+      "/labs/business-logic/workflow-bypass/fixed",
       "/labs/:category/:scene/:variant(vuln|fixed)",
     ]);
   });
