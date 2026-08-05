@@ -8,11 +8,17 @@ test("lab registry scans all ready metadata files", async () => {
   const labs = await registry.listLabs();
   const labIds = labs.map((lab) => lab.id);
 
-  assert.equal(labs.length, 65);
-  assert.equal(new Set(labIds).size, 65);
+  assert.equal(labs.length, 66);
+  assert.equal(new Set(labIds).size, 66);
   assert.ok(labs.every((lab) => lab.status === "ready"));
   assert.ok(labIds.includes("ai.prompt-injection"));
   assert.ok(labIds.includes("auth.brute-force"));
+  assert.ok(
+    labs.some(
+      (lab) =>
+        lab.id === "api.functional-authorization" && lab.status === "ready",
+    ),
+  );
   assert.ok(
     labs.some(
       (lab) =>

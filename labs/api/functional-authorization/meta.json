@@ -1,0 +1,170 @@
+{
+  "id": "api.functional-authorization",
+  "slug": "functional-authorization",
+  "title": "API 功能级授权",
+  "category": "api",
+  "subcategory": "functional-authorization",
+  "mode": "interactive",
+  "severity": "high",
+  "difficulty": "intermediate",
+  "summary": "通过固定管理操作请求的两步决策，对比仅前端隐藏与服务端功能级授权的差异。",
+  "status": "ready",
+  "phase": "phase-1",
+  "sortOrder": 340,
+  "estimatedMinutes": 25,
+  "tags": [
+    "api",
+    "authorization",
+    "bfla"
+  ],
+  "knowledgePoints": [
+    "功能级授权",
+    "服务端策略校验",
+    "越权操作审计"
+  ],
+  "variants": [
+    {
+      "key": "vuln",
+      "title": "API 功能级授权风险观察版",
+      "enabled": true,
+      "description": "观察管理功能只依赖前端隐藏、缺少服务端功能级授权导致的固定越权风险判定。",
+      "entryKey": "api-functional-authorization-vuln",
+      "expectedOutcome": "返回 api-functional-authorization-risk-accepted 学习信号。",
+      "supportsAutomation": true
+    },
+    {
+      "key": "fixed",
+      "title": "API 功能级授权防御复盘版",
+      "enabled": true,
+      "description": "观察验证落实“服务端功能级授权、角色策略校验和越权审计”后的正常受控流程。",
+      "entryKey": "api-functional-authorization-fixed",
+      "expectedOutcome": "高风险动作被阻断，正常受控流程通过复核。",
+      "supportsAutomation": true
+    }
+  ],
+  "entrypoints": {
+    "web": [
+      {
+        "key": "api-functional-authorization-vuln",
+        "variant": "vuln",
+        "path": "/labs/api/functional-authorization/vuln",
+        "description": "API 功能级授权风险观察版工作台"
+      },
+      {
+        "key": "api-functional-authorization-fixed",
+        "variant": "fixed",
+        "path": "/labs/api/functional-authorization/fixed",
+        "description": "API 功能级授权防御复盘版工作台"
+      }
+    ],
+    "api": [
+      {
+        "key": "api-functional-authorization-workbench",
+        "variant": "shared",
+        "method": "GET",
+        "path": "/api/labs/api/functional-authorization/workbench",
+        "description": "API 功能级授权固定工作台配置"
+      },
+      {
+        "key": "api-functional-authorization-vuln-evaluate",
+        "variant": "vuln",
+        "method": "POST",
+        "path": "/api/labs/api/functional-authorization/vuln/evaluate",
+        "description": "API 功能级授权漏洞版固定案例评估"
+      },
+      {
+        "key": "api-functional-authorization-fixed-evaluate",
+        "variant": "fixed",
+        "method": "POST",
+        "path": "/api/labs/api/functional-authorization/fixed/evaluate",
+        "description": "API 功能级授权修复版固定案例评估"
+      }
+    ],
+    "scripts": [
+      {
+        "key": "api-functional-authorization-verify",
+        "language": "ts",
+        "path": "tools/lab-scripts/api/functional-authorization/verify.ts",
+        "description": "API 功能级授权本机只读一致性验证"
+      }
+    ],
+    "docs": [
+      {
+        "key": "api-functional-authorization-readme",
+        "path": "labs/api/functional-authorization/README.md",
+        "description": "API 功能级授权场景说明"
+      },
+      {
+        "key": "api-functional-authorization-attack-steps",
+        "path": "labs/api/functional-authorization/docs/attack-steps.md",
+        "description": "API 功能级授权风险观察步骤"
+      },
+      {
+        "key": "api-functional-authorization-fix-notes",
+        "path": "labs/api/functional-authorization/docs/fix-notes.md",
+        "description": "API 功能级授权修复思路"
+      },
+      {
+        "key": "api-functional-authorization-manual-verification",
+        "path": "labs/api/functional-authorization/docs/manual-verification.md",
+        "description": "API 功能级授权手工验证矩阵"
+      }
+    ]
+  },
+  "verification": {
+    "manual": {
+      "supported": true,
+      "stepsDocPath": "labs/api/functional-authorization/docs/manual-verification.md",
+      "expectedSignals": [
+        "api-functional-authorization-risk-accepted",
+        "api-functional-authorization-defense-blocked",
+        "api-functional-authorization-normal-verified"
+      ]
+    },
+    "automation": {
+      "supported": true,
+      "playwright": {
+        "enabled": false,
+        "specPath": "packages/testing/tests/e2e/platform.spec.mjs"
+      },
+      "apiTest": {
+        "enabled": true,
+        "specPath": "apps/server/tests/bfla-lab.test.ts"
+      },
+      "scriptVerification": {
+        "enabled": true,
+        "scriptKeys": [
+          "api-functional-authorization-verify"
+        ]
+      }
+    }
+  },
+  "prerequisites": [
+    {
+      "type": "service",
+      "value": "本机后端服务运行于 http://127.0.0.1:6667",
+      "required": true
+    },
+    {
+      "type": "browser",
+      "value": "使用本机浏览器访问实验工作台",
+      "required": true
+    }
+  ],
+  "safeBoundaries": [
+    "只使用固定虚构用户与管理操作枚举，不修改真实账户、角色或数据。",
+    "页面和 API 只接受共享目录中声明的 scenarioKey 与 controlKey。",
+    "未知 key 会被脱敏阻断，不写入原始输入或外部目标信息。"
+  ],
+  "paths": {
+    "root": "labs/api/functional-authorization",
+    "readme": "labs/api/functional-authorization/README.md",
+    "vuln": "labs/api/functional-authorization/vuln",
+    "fixed": "labs/api/functional-authorization/fixed",
+    "mock": "labs/api/functional-authorization/mock",
+    "docs": "labs/api/functional-authorization/docs",
+    "scripts": "tools/lab-scripts/api/functional-authorization"
+  },
+  "references": [],
+  "notes": "该实验仅提供本机受控固定场景和只读验证，不允许扩展为通用攻击工具。"
+}

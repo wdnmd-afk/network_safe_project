@@ -66,6 +66,11 @@ const categoryProfiles: Record<string, LabCategoryProfile> = {
     name: "认证授权",
     description: "认证授权与业务逻辑实验",
   },
+  api: {
+    code: "api",
+    name: "API 安全",
+    description: "固定 API 授权与业务逻辑边界实验",
+  },
   network: {
     code: "network",
     name: "网络与传输层",

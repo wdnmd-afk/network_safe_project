@@ -592,6 +592,22 @@ export const routes: RouteRecordRaw[] = [
     },
   },
   {
+    path: "/labs/api/functional-authorization/vuln",
+    name: "lab-api-functional-authorization-vuln",
+    component: () => import("../views/BflaLabView.vue"),
+    props: {
+      variant: "vuln",
+    },
+  },
+  {
+    path: "/labs/api/functional-authorization/fixed",
+    name: "lab-api-functional-authorization-fixed",
+    component: () => import("../views/BflaLabView.vue"),
+    props: {
+      variant: "fixed",
+    },
+  },
+  {
     path: "/labs/:category/:scene/:variant(vuln|fixed)",
     name: "guided-scenario-lab",
     component: () => import("../views/GuidedScenarioLabView.vue"),
