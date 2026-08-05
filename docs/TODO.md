@@ -1,3 +1,16 @@
+# 2026-08-05 最新进展：LT-023 不安全随机数实验契约已确认
+
+- [x] 新增 `docs/execution/2026-08-05-crypto-insecure-randomness-lab.md`，明确目标、范围、步骤、建议、风险、优化方案、验证方式和完成条件。
+- [x] 确认新增 `crypto` 分类，首个实验 ID 为 `crypto.insecure-randomness`，模式为 `simulation` / D3 专用模拟。
+- [x] 准确区分现有 HMAC 签名会话令牌与随机 token；本实验只使用固定熵摘要和不可用指纹，不修改认证链路。
+- [x] 评估 API 只接受 `predictable-session-token-sequence` 和有序 `decisions`，不接受 token、secret、seed、时间戳、计数器、用户或自由文本。
+- [ ] 按执行文档实现服务端状态机、精确路由、事件摘要和专用测试。
+- [ ] 接入前端 API、专用工作台、路由、学习进度和验证记录。
+- [ ] 补齐标准实验目录、只读验证器、覆盖矩阵及 68/12/136 全局计数。
+- [ ] 经授权执行专项验证和 `pnpm verify`，通过后推进 `ready` 并回填 LT-023 完成证据。
+
+当前状态：`LT-023` 已完成执行契约与字段确认，运行时代码尚未开始；下一步实现服务端专用状态机和 `crypto` 分类注册。
+
 # 2026-08-05 最新进展：LT-022 业务流程跳步实验已完成
 
 - [x] 新增 `docs/execution/2026-08-05-business-logic-workflow-bypass-lab.md`，明确目标、范围、步骤、建议、风险、优化方案、验证方式和完成条件。

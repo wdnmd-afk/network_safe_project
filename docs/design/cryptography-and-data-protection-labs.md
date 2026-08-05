@@ -45,7 +45,7 @@
 说明：
 
 - TLS 与证书校验、数字签名与完整性、加密传输与静态数据、敏感数据生命周期列为第二批，先待首批四项形成纵向样板后再评估。
-- 是否新增 `crypto` 分类，需在实现首个实验前确认分类注册、种子、页面分组和统计支持（见第 7 节）。
+- `LT-023` 已确认新增 `crypto` 分类；分类注册、种子、页面分组和统计支持在首个实验切片同步接入（见第 7 节）。
 
 ## 5. 每个候选的固定模型与边界
 
@@ -86,12 +86,12 @@
 
 ## 7. 前置确认项（进入实现前必须解决）
 
-- [ ] 确认是否新增 `crypto` 分类，或归入现有 `auth`/`web` 分类。
+- [x] `LT-023` 确认新增 `crypto` 分类，首个实验为 `crypto.insecure-randomness`。
 - [ ] 若新增分类，确认分类注册、种子、`getLabCategoryProfile`、前端分组标题和统计支持。
-- [ ] 确认覆盖矩阵新增行的深度等级（D3 `simulation` / D4 `interactive`）判定与验证器兼容。
-- [ ] 确认口令哈希/随机数实验的样例只用固定预生成字符串，绝不接收真实口令或生成真实 token。
+- [x] `crypto.insecure-randomness` 按 `simulation` / D3 专用模拟登记，与覆盖验证器规则兼容。
+- [x] 随机数实验只使用固定预生成摘要和不可用指纹，绝不接收或生成真实 token。
 - [ ] 确认秘密泄露扫描只匹配固定内嵌样例，不读取真实 `.env`、凭据或仓库历史。
-- [ ] 确认每个实验的 scenarioKey / optionKey 命名与既有 kebab-case 约定一致。
+- [x] `crypto.insecure-randomness` 已锁定 `predictable-session-token-sequence` 和两步 kebab-case optionKey；后续实验仍须逐项确认。
 
 ## 8. 安全边界总纲
 
