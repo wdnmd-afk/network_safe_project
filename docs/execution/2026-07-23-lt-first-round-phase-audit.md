@@ -68,18 +68,18 @@
 
 | 新任务 | 内容 | 依据 |
 |---|---|---|
-| `LT-021` | 确认并落地 `api` / `business-logic` 分类的注册、种子、`getLabCategoryProfile`、前端分组与统计支持 | 阶段 3 前置确认项，阻塞后续 API/业务逻辑实现 |
-| `LT-022` | 实现 API 功能级授权（BFLA），复用 `auth.privilege-escalation` | `docs/design/api-and-business-logic-labs.md` 首批第 1 项 |
-| `LT-023` | 实现业务流程跳步（固定订单阶段状态机） | 同上第 4 项，复用订单模型 |
-| `LT-024` | 实现不安全随机数与 token 熵分析 | `docs/design/cryptography-and-data-protection-labs.md` 首批 |
-| `LT-025` | 实现密码哈希策略分析，复用 `password.ts` 固定样例 | 同上 |
-| `LT-026` | 实现检测响应固定事件数据集 + 告警研判首个样板 | `docs/design/detection-response-labs.md` |
-| `LT-027` | 实现学习路径 v1（Web/认证路径、前置条件、完成度） | `docs/design/learning-paths-search-statistics.md` 第一批 |
-| `LT-028` | 实现目录筛选与知识点搜索 | 同上 |
-| `LT-029` | 评估把高价值引导式主题升级到第二版多步骤状态机 | 深度分布缺口 |
+| `LT-021` | 实现 API 功能级授权（BFLA）专用实验，并在同一切片落地 `api` 分类注册、种子同步、前端分组与统计支持 | `docs/design/api-and-business-logic-labs.md` 首批第 1 项 |
+| `LT-022` | 实现业务流程跳步专用实验，并在该切片确认 `business-logic` 分类 | 同上第 4 项，复用订单模型 |
+| `LT-023` | 实现不安全随机数与 token 熵专用实验 | `docs/design/cryptography-and-data-protection-labs.md` 首批 |
+| `LT-024` | 实现固定检测规则匹配与告警研判实验 | `docs/design/detection-response-labs.md` |
+| `LT-025` | 实现 Windows ACL / 服务权限固定审计实验 | `docs/design/windows-host-identity-labs.md` |
+| `LT-026` | 实现云 IAM 策略固定审计实验 | `docs/design/cloud-native-iac-labs.md` |
+| `LT-027` | 再选一个客户端或恶意软件主题升级为专用模拟 | 深度分布缺口 |
+| `LT-028` | 为全部变体增加路由与元数据 entrypoints 一致性检查并纳入 `verify` | 平台一致性缺口 |
+| `LT-029` | 为代表性分类补充 Playwright 页面差异验证 | 页面级证据缺口 |
 | `LT-030` | 第二轮阶段审计并重排 | 周期性审计 |
 
-重排原则：先解除分类/统计前置阻塞（`LT-021`），再按“每个弱领域先建一个高质量纵向样板”推进（`LT-022`～`LT-026`），随后补学习体验（`LT-027`、`LT-028`），最后处理深度统一（`LT-029`）。高风险主题继续只用固定数据、状态机与只读验证，不发展真实攻击能力。
+重排原则：分类前置确认并入首个对应实验切片，先按“每个弱领域建立一个高质量纵向样板”推进 `LT-021`～`LT-027`，再补入口一致性和页面级证据（`LT-028`、`LT-029`），最后执行第二轮审计。高风险主题继续只用固定数据、状态机与只读验证，不发展真实攻击能力。
 
 ## 7. 安全边界复核
 

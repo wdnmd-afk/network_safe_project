@@ -97,6 +97,7 @@ export type EventStatusSummary = {
 const categoryLabels: Record<string, string> = {
   web: "Web 漏洞",
   auth: "认证授权",
+  api: "API 安全",
   network: "网络 / 传输层",
   ai: "AI / 新型攻击",
   social: "社会工程学",

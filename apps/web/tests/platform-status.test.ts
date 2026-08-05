@@ -125,6 +125,7 @@ function createEvent(
 describe("platform-status 标签工具", () => {
   it("已知 category / status 返回中文标签，未知回退原值", () => {
     expect(getCategoryLabel("web")).toBe("Web 漏洞");
+    expect(getCategoryLabel("api")).toBe("API 安全");
     expect(getCategoryLabel("social")).toBe("社会工程学");
     expect(getCategoryLabel("unknown-category")).toBe("unknown-category");
     expect(getStatusLabel("ready")).toBe("已就绪");

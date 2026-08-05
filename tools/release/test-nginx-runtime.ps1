@@ -147,11 +147,11 @@ try {
     }
 
     $labsResponse = Invoke-RestMethod "$NginxBaseUrl/api/labs" -TimeoutSec 10
-    if ($labsResponse.total -ne 65 -or @($labsResponse.items).Count -ne 65) {
+    if ($labsResponse.total -ne 66 -or @($labsResponse.items).Count -ne 66) {
         throw "unexpected lab registry count: total=$($labsResponse.total); items=$(@($labsResponse.items).Count)"
     }
 
-    Write-Output "lab-count=65"
+    Write-Output "lab-count=66"
 
     if ($RunAuthenticatedChecks) {
         $demoPassword = $env:NETWORK_SAFE_DEMO_PASSWORD

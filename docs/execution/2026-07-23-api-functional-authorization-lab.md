@@ -37,12 +37,12 @@
 
 固定案例 `privileged-operation-request`，两步状态机：
 
-1. `identity-check`（身份角色校验策略）：
-   - `trust-client-side-hiding`（risk，accepted，`api-functional-authorization-check-open`，进入操作处置）。
-   - `enforce-server-side-authorization`（fix，blocked，`api-functional-authorization-check-enforced`，进入操作处置）。
+1. `role-check`（身份角色校验策略）：
+   - `frontend-only-hidden`（risk，accepted，`api-functional-authorization-control-open`，进入操作处置）。
+   - `enforce-server-side-authorization`（fix，blocked，`api-functional-authorization-control-enforced`，进入操作处置）。
 2. `operation-decision`（操作处置决策）：
    - `execute-privileged-operation`（risk，accepted，`api-functional-authorization-risk-accepted`，终止）。
-   - `defense-blocks-unauthorized-operation`（fix，blocked，`api-functional-authorization-defense-blocked`，终止）。
+   - `defense-blocks-privileged-operation`（fix，blocked，`api-functional-authorization-defense-blocked`，终止）。
    - `allow-verified-admin-operation`（normal，accepted，`api-functional-authorization-normal-verified`，终止）。
 
 三个 canonical 终止信号与实验元数据 `expectedSignals` 一致。
@@ -93,4 +93,8 @@
 
 ## 8. 验证结果
 
-（实施后回填）
+- 已补齐专用后端服务、精确路由、前端 API/模型/页面、标准实验目录、分类注册、平台统计标签、服务端 API 测试、前端 API 测试和只读 `verify.ts`。
+- 已统一 `privileged-operation-request`、两步 optionKey 和三个 canonical 终止信号，修复前后端固定案例 key 漂移与服务端漏导入问题。
+- 当前元数据保持 `in-progress`。按照项目规则，尚未执行本节列出的测试、类型检查和只读验证命令，因此不得标记 LT-021 完成或推进到 `ready`。
+- 静态审计确认：66 份元数据、65/1 状态分布、132 个变体、24/15/27 模式分布和 66 行覆盖矩阵一致；旧固定 key 无残留；专用前后端路由位于 catch-all 之前；BFLA 实现未发现外部 URL、子进程或命令执行能力。
+- `git diff --check` 无空白错误，仅有 Windows 工作区 LF/CRLF 转换提示；命令验证仍需用户明确授权后执行。

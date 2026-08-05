@@ -128,6 +128,11 @@ import {
   type RansomwareVariantKey,
 } from "./services/ransomware-lab.js";
 import {
+  createBflaLabService,
+  type BflaLabService,
+  type BflaVariantKey,
+} from "./services/bfla-lab.js";
+import {
   createLabEventLogsService,
   type LabEventInput,
   type LabEventLogsService,

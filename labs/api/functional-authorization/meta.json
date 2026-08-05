@@ -8,7 +8,7 @@
   "severity": "high",
   "difficulty": "intermediate",
   "summary": "通过固定管理操作请求的两步决策，对比仅前端隐藏与服务端功能级授权的差异。",
-  "status": "ready",
+  "status": "in-progress",
   "phase": "phase-1",
   "sortOrder": 340,
   "estimatedMinutes": 25,
@@ -153,7 +153,7 @@
   ],
   "safeBoundaries": [
     "只使用固定虚构用户与管理操作枚举，不修改真实账户、角色或数据。",
-    "页面和 API 只接受共享目录中声明的 scenarioKey 与 controlKey。",
+    "页面和 API 只接受本实验声明的 scenarioKey 与有序 optionKey 决策数组。",
     "未知 key 会被脱敏阻断，不写入原始输入或外部目标信息。"
   ],
   "paths": {

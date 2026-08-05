@@ -3,20 +3,21 @@ import test from "node:test";
 
 import { createLabRegistry } from "../src/services/lab-registry.js";
 
-test("lab registry scans all ready metadata files", async () => {
+test("lab registry scans all current metadata files", async () => {
   const registry = createLabRegistry();
   const labs = await registry.listLabs();
   const labIds = labs.map((lab) => lab.id);
 
   assert.equal(labs.length, 66);
   assert.equal(new Set(labIds).size, 66);
-  assert.ok(labs.every((lab) => lab.status === "ready"));
+  assert.equal(labs.filter((lab) => lab.status === "ready").length, 65);
   assert.ok(labIds.includes("ai.prompt-injection"));
   assert.ok(labIds.includes("auth.brute-force"));
   assert.ok(
     labs.some(
       (lab) =>
-        lab.id === "api.functional-authorization" && lab.status === "ready",
+        lab.id === "api.functional-authorization" &&
+        lab.status === "in-progress",
     ),
   );
   assert.ok(

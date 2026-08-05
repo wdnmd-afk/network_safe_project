@@ -176,6 +176,13 @@ test("GET /api/labs returns scanned lab metadata list", async () => {
         item.id === "infrastructure.zero-day" && item.status === "ready",
     ),
   );
+  assert.ok(
+    body.items.some(
+      (item) =>
+        item.id === "api.functional-authorization" &&
+        item.status === "in-progress",
+    ),
+  );
 });
 
 test("GET /api/labs/:category/:scene returns one lab", async () => {

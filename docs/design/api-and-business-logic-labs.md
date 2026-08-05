@@ -85,11 +85,11 @@
 
 ## 7. 前置确认项（进入实现前必须解决）
 
-- [ ] 确认是否新增 `api`、`business-logic` 分类，或复用 `auth`/`web` 现有分类。
-- [ ] 若新增分类，确认分类注册、种子、`getLabCategoryProfile`、前端分组标题和统计支持。
-- [ ] 确认覆盖矩阵新增行的深度等级（D3 `simulation` / D4 `interactive`）判定与验证器兼容。
+- [x] `LT-021` 确认新增 `api` 分类；`business-logic` 分类留待 `LT-022` 业务流程跳步切片确认。
+- [x] `api` 已接入动态种子同步、`getLabCategoryProfile`、实验列表分组标题和平台状态统计标签。
+- [x] BFLA 覆盖矩阵行按 `interactive` / D4 专用交互登记，验证器将其计入专用实现。
 - [ ] 确认 BOLA 复用 `auth.idor` 的具体补充方式（映射、正常流程说明），不新建同义实验。
-- [ ] 确认每个实验的 scenarioKey / optionKey 命名与既有 kebab-case 约定一致。
+- [x] BFLA 已锁定 `privileged-operation-request` 和两步 kebab-case optionKey；后续实验仍须逐项确认。
 
 ## 8. 安全边界总纲
 

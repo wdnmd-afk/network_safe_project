@@ -35,7 +35,7 @@ export type BflaVerificationRecordInput = {
   };
 };
 
-export const bflaScenarioKey = "admin-only-operation-request";
+export const bflaScenarioKey = "privileged-operation-request";
 
 const bflaVariantConfigs: Record<BflaVariantKey, BflaVariantConfig> = {
   vuln: {

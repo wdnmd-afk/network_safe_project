@@ -1537,3 +1537,38 @@ test("parseLabMetadataJson accepts utf8 bom json", () => {
     },
   });
 });
+
+test("bfla metadata declares the in-progress dedicated API contract", async () => {
+  const metadata = await readFixture(
+    "labs/api/functional-authorization/meta.json",
+  );
+  const result = validateLabMetadata(metadata);
+
+  assert.equal(result.ok, true);
+  assert.equal(result.value.id, "api.functional-authorization");
+  assert.equal(result.value.category, "api");
+  assert.equal(result.value.status, "in-progress");
+  assert.deepEqual(
+    result.value.entrypoints.web.map((entrypoint) => entrypoint.path),
+    [
+      "/labs/api/functional-authorization/vuln",
+      "/labs/api/functional-authorization/fixed",
+    ],
+  );
+  assert.deepEqual(
+    result.value.entrypoints.api.map((entrypoint) => entrypoint.path),
+    [
+      "/api/labs/api/functional-authorization/workbench",
+      "/api/labs/api/functional-authorization/vuln/evaluate",
+      "/api/labs/api/functional-authorization/fixed/evaluate",
+    ],
+  );
+  assert.deepEqual(result.value.verification.automation.apiTest, {
+    enabled: true,
+    specPath: "apps/server/tests/bfla-lab.test.ts",
+  });
+  assert.deepEqual(result.value.verification.automation.scriptVerification, {
+    enabled: true,
+    scriptKeys: ["api-functional-authorization-verify"],
+  });
+});
