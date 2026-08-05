@@ -1,3 +1,16 @@
+# 2026-08-05 最新进展：LT-022 业务流程跳步实验契约已确认
+
+- [x] 新增 `docs/execution/2026-08-05-business-logic-workflow-bypass-lab.md`，明确目标、范围、步骤、建议、风险、优化方案、验证方式和完成条件。
+- [x] 确认新增 `business-logic` 分类，首个实验 ID 为 `business-logic.workflow-bypass`，模式为 `interactive` / D4 专用交互。
+- [x] 固定案例复用待支付订单 `SM-20260608-1099`，阶段语义复用 `pending`、`paid`、`shipping`，合法顺序为 `pending -> paid -> shipping`。
+- [x] 评估 API 只接受 `pending-order-shipping-request` 和有序 `decisions`，不接受订单 ID、阶段、金额、用户或自由文本。
+- [ ] 按执行文档实现服务端状态机、精确路由、事件摘要和专用测试。
+- [ ] 接入前端 API、专用工作台、路由、学习进度和验证记录。
+- [ ] 补齐标准实验目录、只读验证器、覆盖矩阵及 67/11/134 全局计数。
+- [ ] 经授权执行专项验证和 `pnpm verify`，通过后推进 `ready` 并回填 LT-022 完成证据。
+
+当前状态：`LT-022` 已完成执行契约与字段确认，运行时代码尚未开始；下一步实现服务端专用状态机和 `business-logic` 分类注册。
+
 # 2026-08-05 最新进展：LT-021 API 功能级授权实验已完成
 
 - [x] 新增 `api.functional-authorization` 标准实验目录、专用第二版两步状态机、工作台/评估 API、前端专用页面与路由。

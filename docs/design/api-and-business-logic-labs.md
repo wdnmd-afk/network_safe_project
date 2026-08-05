@@ -86,11 +86,12 @@
 
 ## 7. 前置确认项（进入实现前必须解决）
 
-- [x] `LT-021` 确认新增 `api` 分类；`business-logic` 分类留待 `LT-022` 业务流程跳步切片确认。
+- [x] `LT-021` 确认新增 `api` 分类；`LT-022` 确认新增 `business-logic` 分类，首个实验为 `business-logic.workflow-bypass`。
 - [x] `api` 已接入动态种子同步、`getLabCategoryProfile`、实验列表分组标题和平台状态统计标签。
 - [x] BFLA 覆盖矩阵行按 `interactive` / D4 专用交互登记，验证器将其计入专用实现。
 - [ ] 确认 BOLA 复用 `auth.idor` 的具体补充方式（映射、正常流程说明），不新建同义实验。
 - [x] BFLA 已锁定 `privileged-operation-request` 和两步 kebab-case optionKey；后续实验仍须逐项确认。
+- [x] workflow-bypass 已锁定 `pending-order-shipping-request`、`pending -> paid -> shipping` 固定阶段语义和两步 kebab-case optionKey；API 不接受订单 ID 或阶段自由输入。
 
 ## 8. 安全边界总纲
 
