@@ -1,0 +1,170 @@
+{
+  "id": "crypto.insecure-randomness",
+  "slug": "insecure-randomness",
+  "title": "不安全随机数与 token 熵",
+  "category": "crypto",
+  "subcategory": "insecure-randomness",
+  "mode": "simulation",
+  "severity": "high",
+  "difficulty": "intermediate",
+  "summary": "通过固定 token 模式摘要，对比时间戳/自增序列与操作系统 CSPRNG 策略的可预测性边界。",
+  "status": "ready",
+  "phase": "phase-3",
+  "sortOrder": 360,
+  "estimatedMinutes": 25,
+  "tags": [
+    "crypto",
+    "randomness",
+    "token-entropy"
+  ],
+  "knowledgePoints": [
+    "不安全随机数",
+    "token 熵",
+    "CSPRNG 策略"
+  ],
+  "variants": [
+    {
+      "key": "vuln",
+      "title": "不安全随机数风险观察版",
+      "enabled": true,
+      "description": "观察把时间戳/自增结构误当作随机熵并继续接受弱随机来源时的固定风险判定。",
+      "entryKey": "crypto-insecure-randomness-vuln",
+      "expectedOutcome": "返回 crypto-insecure-randomness-risk-accepted 学习信号。",
+      "supportsAutomation": true
+    },
+    {
+      "key": "fixed",
+      "title": "不安全随机数防御复盘版",
+      "enabled": true,
+      "description": "观察识别低熵模式、阻断弱随机来源并验证固定 CSPRNG 策略摘要后的判定差异。",
+      "entryKey": "crypto-insecure-randomness-fixed",
+      "expectedOutcome": "弱随机来源被阻断，固定 CSPRNG 正常策略通过复核。",
+      "supportsAutomation": true
+    }
+  ],
+  "entrypoints": {
+    "web": [
+      {
+        "key": "crypto-insecure-randomness-vuln",
+        "variant": "vuln",
+        "path": "/labs/crypto/insecure-randomness/vuln",
+        "description": "不安全随机数风险观察版工作台"
+      },
+      {
+        "key": "crypto-insecure-randomness-fixed",
+        "variant": "fixed",
+        "path": "/labs/crypto/insecure-randomness/fixed",
+        "description": "不安全随机数防御复盘版工作台"
+      }
+    ],
+    "api": [
+      {
+        "key": "crypto-insecure-randomness-workbench",
+        "variant": "shared",
+        "method": "GET",
+        "path": "/api/labs/crypto/insecure-randomness/workbench",
+        "description": "不安全随机数固定摘要工作台配置"
+      },
+      {
+        "key": "crypto-insecure-randomness-vuln-evaluate",
+        "variant": "vuln",
+        "method": "POST",
+        "path": "/api/labs/crypto/insecure-randomness/vuln/evaluate",
+        "description": "不安全随机数漏洞版固定案例评估"
+      },
+      {
+        "key": "crypto-insecure-randomness-fixed-evaluate",
+        "variant": "fixed",
+        "method": "POST",
+        "path": "/api/labs/crypto/insecure-randomness/fixed/evaluate",
+        "description": "不安全随机数修复版固定案例评估"
+      }
+    ],
+    "scripts": [
+      {
+        "key": "crypto-insecure-randomness-verify",
+        "language": "ts",
+        "path": "tools/lab-scripts/crypto/insecure-randomness/verify.ts",
+        "description": "不安全随机数本机只读一致性验证"
+      }
+    ],
+    "docs": [
+      {
+        "key": "crypto-insecure-randomness-readme",
+        "path": "labs/crypto/insecure-randomness/README.md",
+        "description": "不安全随机数场景说明"
+      },
+      {
+        "key": "crypto-insecure-randomness-attack-steps",
+        "path": "labs/crypto/insecure-randomness/docs/attack-steps.md",
+        "description": "不安全随机数风险观察步骤"
+      },
+      {
+        "key": "crypto-insecure-randomness-fix-notes",
+        "path": "labs/crypto/insecure-randomness/docs/fix-notes.md",
+        "description": "不安全随机数修复思路"
+      },
+      {
+        "key": "crypto-insecure-randomness-manual-verification",
+        "path": "labs/crypto/insecure-randomness/docs/manual-verification.md",
+        "description": "不安全随机数手工验证矩阵"
+      }
+    ]
+  },
+  "verification": {
+    "manual": {
+      "supported": true,
+      "stepsDocPath": "labs/crypto/insecure-randomness/docs/manual-verification.md",
+      "expectedSignals": [
+        "crypto-insecure-randomness-risk-accepted",
+        "crypto-insecure-randomness-defense-blocked",
+        "crypto-insecure-randomness-normal-verified"
+      ]
+    },
+    "automation": {
+      "supported": true,
+      "playwright": {
+        "enabled": false,
+        "specPath": "packages/testing/tests/e2e/platform.spec.mjs"
+      },
+      "apiTest": {
+        "enabled": true,
+        "specPath": "apps/server/tests/insecure-randomness-lab.test.ts"
+      },
+      "scriptVerification": {
+        "enabled": true,
+        "scriptKeys": [
+          "crypto-insecure-randomness-verify"
+        ]
+      }
+    }
+  },
+  "prerequisites": [
+    {
+      "type": "service",
+      "value": "本机后端服务运行于 http://127.0.0.1:6667",
+      "required": true
+    },
+    {
+      "type": "browser",
+      "value": "使用本机浏览器访问实验工作台",
+      "required": true
+    }
+  ],
+  "safeBoundaries": [
+    "只使用固定预生成的来源、模式、强度摘要和不可用指纹，不生成真实 token。",
+    "页面和 API 只接受本实验声明的 scenarioKey 与有序 optionKey 决策数组。",
+    "未知 key 会被脱敏阻断，不写入 token、secret、seed、时间戳、计数器、用户或原始随机材料。"
+  ],
+  "paths": {
+    "root": "labs/crypto/insecure-randomness",
+    "readme": "labs/crypto/insecure-randomness/README.md",
+    "vuln": "labs/crypto/insecure-randomness/vuln",
+    "fixed": "labs/crypto/insecure-randomness/fixed",
+    "mock": "labs/crypto/insecure-randomness/mock",
+    "docs": "labs/crypto/insecure-randomness/docs",
+    "scripts": "tools/lab-scripts/crypto/insecure-randomness"
+  },
+  "references": [],
+  "notes": "该实验只提供固定摘要和确定性状态判定，不生成、签发、保存或验证真实 token，也不提供序列预测、枚举、爆破或会话接管能力。"
+}

@@ -88,6 +88,8 @@ describe("SafeMart 路由清单", () => {
       "/labs/api/functional-authorization/fixed",
       "/labs/business-logic/workflow-bypass/vuln",
       "/labs/business-logic/workflow-bypass/fixed",
+      "/labs/crypto/insecure-randomness/vuln",
+      "/labs/crypto/insecure-randomness/fixed",
       "/labs/:category/:scene/:variant(vuln|fixed)",
     ]);
   });

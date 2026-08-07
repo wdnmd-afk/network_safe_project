@@ -1607,3 +1607,39 @@ test("workflow bypass metadata declares the ready business logic contract", asyn
     scriptKeys: ["business-logic-workflow-bypass-verify"],
   });
 });
+
+test("insecure randomness metadata declares the ready crypto contract", async () => {
+  const metadata = await readFixture(
+    "labs/crypto/insecure-randomness/meta.json",
+  );
+  const result = validateLabMetadata(metadata);
+
+  assert.equal(result.ok, true);
+  assert.equal(result.value.id, "crypto.insecure-randomness");
+  assert.equal(result.value.category, "crypto");
+  assert.equal(result.value.mode, "simulation");
+  assert.equal(result.value.status, "ready");
+  assert.deepEqual(
+    result.value.entrypoints.web.map((entrypoint) => entrypoint.path),
+    [
+      "/labs/crypto/insecure-randomness/vuln",
+      "/labs/crypto/insecure-randomness/fixed",
+    ],
+  );
+  assert.deepEqual(
+    result.value.entrypoints.api.map((entrypoint) => entrypoint.path),
+    [
+      "/api/labs/crypto/insecure-randomness/workbench",
+      "/api/labs/crypto/insecure-randomness/vuln/evaluate",
+      "/api/labs/crypto/insecure-randomness/fixed/evaluate",
+    ],
+  );
+  assert.deepEqual(result.value.verification.automation.apiTest, {
+    enabled: true,
+    specPath: "apps/server/tests/insecure-randomness-lab.test.ts",
+  });
+  assert.deepEqual(result.value.verification.automation.scriptVerification, {
+    enabled: true,
+    scriptKeys: ["crypto-insecure-randomness-verify"],
+  });
+});

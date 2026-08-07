@@ -8,9 +8,13 @@ test("lab registry scans all current metadata files", async () => {
   const labs = await registry.listLabs();
   const labIds = labs.map((lab) => lab.id);
 
-  assert.equal(labs.length, 67);
-  assert.equal(new Set(labIds).size, 67);
-  assert.equal(labs.filter((lab) => lab.status === "ready").length, 67);
+  assert.equal(labs.length, 68);
+  assert.equal(new Set(labIds).size, 68);
+  assert.equal(labs.filter((lab) => lab.status === "ready").length, 68);
+  assert.equal(
+    labs.filter((lab) => lab.status === "in-progress").length,
+    0,
+  );
   assert.ok(labIds.includes("ai.prompt-injection"));
   assert.ok(labIds.includes("auth.brute-force"));
   assert.ok(
@@ -24,6 +28,13 @@ test("lab registry scans all current metadata files", async () => {
     labs.some(
       (lab) =>
         lab.id === "business-logic.workflow-bypass" &&
+        lab.status === "ready",
+    ),
+  );
+  assert.ok(
+    labs.some(
+      (lab) =>
+        lab.id === "crypto.insecure-randomness" &&
         lab.status === "ready",
     ),
   );

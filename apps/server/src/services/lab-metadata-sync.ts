@@ -76,6 +76,11 @@ const categoryProfiles: Record<string, LabCategoryProfile> = {
     name: "业务逻辑",
     description: "固定业务状态与服务端流程约束实验",
   },
+  crypto: {
+    code: "crypto",
+    name: "密码学与数据保护",
+    description: "固定密码学误用、秘密与数据保护策略实验",
+  },
   network: {
     code: "network",
     name: "网络与传输层",

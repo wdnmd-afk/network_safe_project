@@ -624,6 +624,22 @@ export const routes: RouteRecordRaw[] = [
     },
   },
   {
+    path: "/labs/crypto/insecure-randomness/vuln",
+    name: "lab-crypto-insecure-randomness-vuln",
+    component: () => import("../views/InsecureRandomnessLabView.vue"),
+    props: {
+      variant: "vuln",
+    },
+  },
+  {
+    path: "/labs/crypto/insecure-randomness/fixed",
+    name: "lab-crypto-insecure-randomness-fixed",
+    component: () => import("../views/InsecureRandomnessLabView.vue"),
+    props: {
+      variant: "fixed",
+    },
+  },
+  {
     path: "/labs/:category/:scene/:variant(vuln|fixed)",
     name: "guided-scenario-lab",
     component: () => import("../views/GuidedScenarioLabView.vue"),
