@@ -143,6 +143,16 @@ import {
   type InsecureRandomnessVariantKey,
 } from "./services/insecure-randomness-lab.js";
 import {
+  createRuleAlertTriageLabService,
+  type RuleAlertTriageLabService,
+  type RuleAlertTriageVariantKey,
+} from "./services/rule-alert-triage-lab.js";
+import {
+  createServicePermissionAuditLabService,
+  type ServicePermissionAuditLabService,
+  type ServicePermissionAuditVariantKey,
+} from "./services/service-permission-audit-lab.js";
+import {
   createLabEventLogsService,
   type LabEventInput,
   type LabEventLogsService,
@@ -250,6 +260,8 @@ type CreateAppOptions = {
   bflaLabService?: BflaLabService;
   workflowBypassLabService?: WorkflowBypassLabService;
   insecureRandomnessLabService?: InsecureRandomnessLabService;
+  ruleAlertTriageLabService?: RuleAlertTriageLabService;
+  servicePermissionAuditLabService?: ServicePermissionAuditLabService;
   labEventLogsService?: LabEventLogsService;
   labRecapQuestionCompletionsService?: LabRecapQuestionCompletionsService;
   ldapInjectionLabService?: LdapInjectionLabService;
@@ -353,6 +365,11 @@ export function createApp(options: CreateAppOptions = {}) {
     options.workflowBypassLabService ?? createWorkflowBypassLabService();
   const insecureRandomnessLabService =
     options.insecureRandomnessLabService ?? createInsecureRandomnessLabService();
+  const ruleAlertTriageLabService =
+    options.ruleAlertTriageLabService ?? createRuleAlertTriageLabService();
+  const servicePermissionAuditLabService =
+    options.servicePermissionAuditLabService ??
+    createServicePermissionAuditLabService();
   const labEventLogsService =
     options.labEventLogsService ?? createLabEventLogsService();
   const labRecapQuestionCompletionsService =
@@ -644,6 +661,18 @@ export function createApp(options: CreateAppOptions = {}) {
   function readInsecureRandomnessVariantKey(
     value: string,
   ): InsecureRandomnessVariantKey | undefined {
+    return value === "vuln" || value === "fixed" ? value : undefined;
+  }
+
+  function readRuleAlertTriageVariantKey(
+    value: string,
+  ): RuleAlertTriageVariantKey | undefined {
+    return value === "vuln" || value === "fixed" ? value : undefined;
+  }
+
+  function readServicePermissionAuditVariantKey(
+    value: string,
+  ): ServicePermissionAuditVariantKey | undefined {
     return value === "vuln" || value === "fixed" ? value : undefined;
   }
 
@@ -5167,6 +5196,200 @@ export function createApp(options: CreateAppOptions = {}) {
             scenarioKey: result.scenarioKey,
             stepCount: result.assessment.stepCount,
             outcomeCounts: result.recap.outcomeCounts,
+            terminalOutcome: result.recap.terminalOutcome,
+            signal: result.signal,
+          },
+          decision: result.decision,
+          signal: result.signal,
+          statusCode: responseStatus,
+          message: result.message,
+          riskLevel: riskAccepted ? "high" : result.assessment.riskLevel,
+        });
+
+        res.status(responseStatus).json({
+          status: result.status,
+          result,
+        });
+      } catch (error) {
+        next(error);
+      }
+    },
+  );
+
+  app.get(
+    "/api/labs/detection/rule-alert-triage/workbench",
+    (_req, res) => {
+      res.status(200).json({
+        status: "ok",
+        workbench: ruleAlertTriageLabService.getWorkbench(),
+      });
+    },
+  );
+
+  app.post(
+    "/api/labs/detection/rule-alert-triage/:variant/evaluate",
+    async (req, res, next) => {
+      try {
+        const currentUser = await readCurrentUser(req);
+
+        if (!currentUser.ok) {
+          res.status(currentUser.status).json(currentUser.body);
+          return;
+        }
+
+        const variantKey = readRuleAlertTriageVariantKey(req.params.variant);
+
+        if (!variantKey) {
+          res.status(404).json({
+            status: "error",
+            message: "rule alert triage variant not found",
+          });
+          return;
+        }
+
+        const scenarioKey = readRequiredString(req.body?.scenarioKey);
+        const decisions = readRequiredStringArray(req.body?.decisions);
+
+        if (!scenarioKey || decisions.length === 0) {
+          res.status(400).json({
+            status: "error",
+            message: "scenarioKey and decisions are required",
+          });
+          return;
+        }
+
+        const result = ruleAlertTriageLabService.evaluate({
+          variantKey,
+          scenarioKey,
+          decisions,
+        });
+        const responseStatus = result.status === "blocked" ? 403 : 200;
+        const riskAccepted =
+          result.recap.terminalOutcome === "risk" &&
+          result.decision === "accepted";
+
+        await recordLabEventSafely({
+          traceId: readOptionalTraceId(req),
+          userId: currentUser.user.id,
+          labKey: result.labKey,
+          variantKey,
+          phase:
+            variantKey === "vuln"
+              ? "attack"
+              : result.recap.terminalOutcome === "normal"
+                ? "normal"
+                : "defense",
+          eventType: result.status === "blocked" ? "blocked" : "success",
+          actorPerspective: riskAccepted ? "attacker" : "system",
+          method: req.method,
+          path: req.path,
+          inputSummary: {
+            scenarioKey: result.scenarioKey,
+            ruleProfileKey:
+              result.ruleAnalysis?.ruleProfileKey ?? "blocked-rule-profile",
+            truePositiveCount: result.ruleAnalysis?.truePositiveCount ?? 0,
+            falsePositiveCount: result.ruleAnalysis?.falsePositiveCount ?? 0,
+            falseNegativeCount: result.ruleAnalysis?.falseNegativeCount ?? 0,
+            stepCount: result.assessment.stepCount,
+            terminalOutcome: result.recap.terminalOutcome,
+            signal: result.signal,
+          },
+          decision: result.decision,
+          signal: result.signal,
+          statusCode: responseStatus,
+          message: result.message,
+          riskLevel: riskAccepted ? "high" : result.assessment.riskLevel,
+        });
+
+        res.status(responseStatus).json({
+          status: result.status,
+          result,
+        });
+      } catch (error) {
+        next(error);
+      }
+    },
+  );
+
+  app.get(
+    "/api/labs/host/service-permission-audit/workbench",
+    (_req, res) => {
+      res.status(200).json({
+        status: "ok",
+        workbench: servicePermissionAuditLabService.getWorkbench(),
+      });
+    },
+  );
+
+  app.post(
+    "/api/labs/host/service-permission-audit/:variant/evaluate",
+    async (req, res, next) => {
+      try {
+        const currentUser = await readCurrentUser(req);
+
+        if (!currentUser.ok) {
+          res.status(currentUser.status).json(currentUser.body);
+          return;
+        }
+
+        const variantKey = readServicePermissionAuditVariantKey(
+          req.params.variant,
+        );
+
+        if (!variantKey) {
+          res.status(404).json({
+            status: "error",
+            message: "service permission audit variant not found",
+          });
+          return;
+        }
+
+        const scenarioKey = readRequiredString(req.body?.scenarioKey);
+        const decisions = readRequiredStringArray(req.body?.decisions);
+
+        if (!scenarioKey || decisions.length === 0) {
+          res.status(400).json({
+            status: "error",
+            message: "scenarioKey and decisions are required",
+          });
+          return;
+        }
+
+        const result = servicePermissionAuditLabService.evaluate({
+          variantKey,
+          scenarioKey,
+          decisions,
+        });
+        const responseStatus = result.status === "blocked" ? 403 : 200;
+        const riskAccepted =
+          result.recap.terminalOutcome === "risk" &&
+          result.decision === "accepted";
+
+        await recordLabEventSafely({
+          traceId: readOptionalTraceId(req),
+          userId: currentUser.user.id,
+          labKey: result.labKey,
+          variantKey,
+          phase:
+            variantKey === "vuln"
+              ? "attack"
+              : result.recap.terminalOutcome === "normal"
+                ? "normal"
+                : "defense",
+          eventType: result.status === "blocked" ? "blocked" : "success",
+          actorPerspective: riskAccepted ? "attacker" : "system",
+          method: req.method,
+          path: req.path,
+          inputSummary: {
+            scenarioKey: result.scenarioKey,
+            serviceKey:
+              result.profileAssessment?.serviceKey ?? "blocked-service-profile",
+            findingCount: result.profileAssessment?.findingCount ?? 0,
+            criticalFindingCount:
+              result.profileAssessment?.criticalFindingCount ?? 0,
+            hardenedControlCount:
+              result.profileAssessment?.hardenedControlCount ?? 0,
+            stepCount: result.assessment.stepCount,
             terminalOutcome: result.recap.terminalOutcome,
             signal: result.signal,
           },

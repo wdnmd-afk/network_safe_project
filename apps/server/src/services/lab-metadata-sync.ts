@@ -81,6 +81,11 @@ const categoryProfiles: Record<string, LabCategoryProfile> = {
     name: "密码学与数据保护",
     description: "固定密码学误用、秘密与数据保护策略实验",
   },
+  detection: {
+    code: "detection",
+    name: "检测与响应",
+    description: "固定安全事件、检测规则和告警研判模拟实验",
+  },
   network: {
     code: "network",
     name: "网络与传输层",

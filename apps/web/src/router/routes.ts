@@ -640,6 +640,38 @@ export const routes: RouteRecordRaw[] = [
     },
   },
   {
+    path: "/labs/detection/rule-alert-triage/vuln",
+    name: "lab-detection-rule-alert-triage-vuln",
+    component: () => import("../views/RuleAlertTriageLabView.vue"),
+    props: {
+      variant: "vuln",
+    },
+  },
+  {
+    path: "/labs/detection/rule-alert-triage/fixed",
+    name: "lab-detection-rule-alert-triage-fixed",
+    component: () => import("../views/RuleAlertTriageLabView.vue"),
+    props: {
+      variant: "fixed",
+    },
+  },
+  {
+    path: "/labs/host/service-permission-audit/vuln",
+    name: "lab-host-service-permission-audit-vuln",
+    component: () => import("../views/ServicePermissionAuditLabView.vue"),
+    props: {
+      variant: "vuln",
+    },
+  },
+  {
+    path: "/labs/host/service-permission-audit/fixed",
+    name: "lab-host-service-permission-audit-fixed",
+    component: () => import("../views/ServicePermissionAuditLabView.vue"),
+    props: {
+      variant: "fixed",
+    },
+  },
+  {
     path: "/labs/:category/:scene/:variant(vuln|fixed)",
     name: "guided-scenario-lab",
     component: () => import("../views/GuidedScenarioLabView.vue"),

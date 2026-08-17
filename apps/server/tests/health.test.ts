@@ -86,7 +86,7 @@ test("GET /api/labs returns scanned lab metadata list", async () => {
   };
 
   assert.equal(response.status, 200);
-  assert.equal(body.total, 68);
+  assert.equal(body.total, 69);
   assert.ok(
     body.items.some(
       (item) =>
@@ -195,6 +195,13 @@ test("GET /api/labs returns scanned lab metadata list", async () => {
       (item) =>
         item.id === "crypto.insecure-randomness" &&
         item.status === "ready",
+    ),
+  );
+  assert.ok(
+    body.items.some(
+      (item) =>
+        item.id === "detection.rule-alert-triage" &&
+        item.status === "in-progress",
     ),
   );
 });

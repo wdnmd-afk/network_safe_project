@@ -1643,3 +1643,39 @@ test("insecure randomness metadata declares the ready crypto contract", async ()
     scriptKeys: ["crypto-insecure-randomness-verify"],
   });
 });
+
+test("rule alert triage metadata declares the in-progress detection contract", async () => {
+  const metadata = await readFixture(
+    "labs/detection/rule-alert-triage/meta.json",
+  );
+  const result = validateLabMetadata(metadata);
+
+  assert.equal(result.ok, true);
+  assert.equal(result.value.id, "detection.rule-alert-triage");
+  assert.equal(result.value.category, "detection");
+  assert.equal(result.value.mode, "simulation");
+  assert.equal(result.value.status, "in-progress");
+  assert.deepEqual(
+    result.value.entrypoints.web.map((entrypoint) => entrypoint.path),
+    [
+      "/labs/detection/rule-alert-triage/vuln",
+      "/labs/detection/rule-alert-triage/fixed",
+    ],
+  );
+  assert.deepEqual(
+    result.value.entrypoints.api.map((entrypoint) => entrypoint.path),
+    [
+      "/api/labs/detection/rule-alert-triage/workbench",
+      "/api/labs/detection/rule-alert-triage/vuln/evaluate",
+      "/api/labs/detection/rule-alert-triage/fixed/evaluate",
+    ],
+  );
+  assert.deepEqual(result.value.verification.automation.apiTest, {
+    enabled: true,
+    specPath: "apps/server/tests/rule-alert-triage-lab.test.ts",
+  });
+  assert.deepEqual(result.value.verification.automation.scriptVerification, {
+    enabled: true,
+    scriptKeys: ["detection-rule-alert-triage-verify"],
+  });
+});

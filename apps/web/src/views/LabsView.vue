@@ -13,6 +13,7 @@ const categoryTitles: Record<string, string> = {
   api: "API 安全",
   "business-logic": "业务逻辑",
   crypto: "密码学与数据保护",
+  detection: "检测与响应",
   network: "网络与传输层",
   ai: "AI 与新型攻击",
   social: "社会工程学",

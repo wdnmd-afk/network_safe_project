@@ -1,0 +1,173 @@
+{
+  "id": "detection.rule-alert-triage",
+  "slug": "rule-alert-triage",
+  "title": "固定检测规则匹配与告警研判",
+  "category": "detection",
+  "subcategory": "rule-alert-triage",
+  "mode": "simulation",
+  "severity": "high",
+  "difficulty": "intermediate",
+  "summary": "使用固定脱敏事件，对比过宽、过窄和跨来源关联规则的误报漏报，并完成告警研判决策。",
+  "status": "in-progress",
+  "phase": "phase-3",
+  "sortOrder": 370,
+  "estimatedMinutes": 30,
+  "tags": [
+    "detection",
+    "alert-triage",
+    "false-positive",
+    "false-negative"
+  ],
+  "knowledgePoints": [
+    "固定规则画像",
+    "误报与漏报",
+    "多源证据关联",
+    "告警研判"
+  ],
+  "variants": [
+    {
+      "key": "vuln",
+      "title": "检测规则与告警研判风险观察版",
+      "enabled": true,
+      "description": "观察信任过宽或过窄规则并把关联告警错误关闭时的固定风险结果。",
+      "entryKey": "detection-rule-alert-triage-vuln",
+      "expectedOutcome": "返回 detection-rule-alert-triage-risk-accepted 学习信号。",
+      "supportsAutomation": true
+    },
+    {
+      "key": "fixed",
+      "title": "检测规则与告警研判防御复盘版",
+      "enabled": true,
+      "description": "观察跨来源关联规则准确命中，并按固定证据升级告警或正常关闭维护事件。",
+      "entryKey": "detection-rule-alert-triage-fixed",
+      "expectedOutcome": "关联告警升级研判，已知维护事件凭证据正常关闭。",
+      "supportsAutomation": true
+    }
+  ],
+  "entrypoints": {
+    "web": [
+      {
+        "key": "detection-rule-alert-triage-vuln",
+        "variant": "vuln",
+        "path": "/labs/detection/rule-alert-triage/vuln",
+        "description": "检测规则与告警研判风险观察版工作台"
+      },
+      {
+        "key": "detection-rule-alert-triage-fixed",
+        "variant": "fixed",
+        "path": "/labs/detection/rule-alert-triage/fixed",
+        "description": "检测规则与告警研判防御复盘版工作台"
+      }
+    ],
+    "api": [
+      {
+        "key": "detection-rule-alert-triage-workbench",
+        "variant": "shared",
+        "method": "GET",
+        "path": "/api/labs/detection/rule-alert-triage/workbench",
+        "description": "固定事件时间线、规则画像和指标工作台"
+      },
+      {
+        "key": "detection-rule-alert-triage-vuln-evaluate",
+        "variant": "vuln",
+        "method": "POST",
+        "path": "/api/labs/detection/rule-alert-triage/vuln/evaluate",
+        "description": "检测规则与告警研判漏洞版固定路径评估"
+      },
+      {
+        "key": "detection-rule-alert-triage-fixed-evaluate",
+        "variant": "fixed",
+        "method": "POST",
+        "path": "/api/labs/detection/rule-alert-triage/fixed/evaluate",
+        "description": "检测规则与告警研判修复版固定路径评估"
+      }
+    ],
+    "scripts": [
+      {
+        "key": "detection-rule-alert-triage-verify",
+        "language": "ts",
+        "path": "tools/lab-scripts/detection/rule-alert-triage/verify.ts",
+        "description": "检测规则与告警研判本机只读一致性验证"
+      }
+    ],
+    "docs": [
+      {
+        "key": "detection-rule-alert-triage-readme",
+        "path": "labs/detection/rule-alert-triage/README.md",
+        "description": "检测规则与告警研判场景说明"
+      },
+      {
+        "key": "detection-rule-alert-triage-attack-steps",
+        "path": "labs/detection/rule-alert-triage/docs/attack-steps.md",
+        "description": "告警错误研判风险观察步骤"
+      },
+      {
+        "key": "detection-rule-alert-triage-fix-notes",
+        "path": "labs/detection/rule-alert-triage/docs/fix-notes.md",
+        "description": "规则关联与告警研判修复思路"
+      },
+      {
+        "key": "detection-rule-alert-triage-manual-verification",
+        "path": "labs/detection/rule-alert-triage/docs/manual-verification.md",
+        "description": "检测规则与告警研判手工验证矩阵"
+      }
+    ]
+  },
+  "verification": {
+    "manual": {
+      "supported": true,
+      "stepsDocPath": "labs/detection/rule-alert-triage/docs/manual-verification.md",
+      "expectedSignals": [
+        "detection-rule-alert-triage-risk-accepted",
+        "detection-rule-alert-triage-defense-escalated",
+        "detection-rule-alert-triage-normal-verified"
+      ]
+    },
+    "automation": {
+      "supported": true,
+      "playwright": {
+        "enabled": false,
+        "specPath": "packages/testing/tests/e2e/platform.spec.mjs"
+      },
+      "apiTest": {
+        "enabled": true,
+        "specPath": "apps/server/tests/rule-alert-triage-lab.test.ts"
+      },
+      "scriptVerification": {
+        "enabled": true,
+        "scriptKeys": [
+          "detection-rule-alert-triage-verify"
+        ]
+      }
+    }
+  },
+  "prerequisites": [
+    {
+      "type": "service",
+      "value": "本机后端服务运行于 http://127.0.0.1:6667",
+      "required": true
+    },
+    {
+      "type": "browser",
+      "value": "使用本机浏览器访问实验工作台",
+      "required": true
+    }
+  ],
+  "safeBoundaries": [
+    "只使用共享包中的固定脱敏教学事件，不连接真实 SIEM、EDR、日志源或主机。",
+    "规则画像只登记固定 eventId 命中集合，不保存、解析或执行 Sigma、YARA、正则或查询表达式。",
+    "页面和 API 只接受已登记 scenarioKey 与 optionKey，未知输入会被脱敏阻断。",
+    "研判结果仅为教学摘要，不执行真实隔离、封禁、告警关闭或其他处置动作。"
+  ],
+  "paths": {
+    "root": "labs/detection/rule-alert-triage",
+    "readme": "labs/detection/rule-alert-triage/README.md",
+    "vuln": "labs/detection/rule-alert-triage/vuln",
+    "fixed": "labs/detection/rule-alert-triage/fixed",
+    "mock": "labs/detection/rule-alert-triage/mock",
+    "docs": "labs/detection/rule-alert-triage/docs",
+    "scripts": "tools/lab-scripts/detection/rule-alert-triage"
+  },
+  "references": [],
+  "notes": "该实验只计算固定事件与预登记命中集合的教学指标，并返回固定研判摘要；不执行真实检测查询或处置动作。"
+}

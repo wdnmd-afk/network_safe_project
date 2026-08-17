@@ -128,6 +128,7 @@ describe("platform-status 标签工具", () => {
     expect(getCategoryLabel("api")).toBe("API 安全");
     expect(getCategoryLabel("business-logic")).toBe("业务逻辑");
     expect(getCategoryLabel("crypto")).toBe("密码学与数据保护");
+    expect(getCategoryLabel("detection")).toBe("检测与响应");
     expect(getCategoryLabel("social")).toBe("社会工程学");
     expect(getCategoryLabel("unknown-category")).toBe("unknown-category");
     expect(getStatusLabel("ready")).toBe("已就绪");

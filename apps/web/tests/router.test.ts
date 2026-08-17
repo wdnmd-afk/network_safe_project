@@ -90,6 +90,10 @@ describe("SafeMart 路由清单", () => {
       "/labs/business-logic/workflow-bypass/fixed",
       "/labs/crypto/insecure-randomness/vuln",
       "/labs/crypto/insecure-randomness/fixed",
+      "/labs/detection/rule-alert-triage/vuln",
+      "/labs/detection/rule-alert-triage/fixed",
+      "/labs/host/service-permission-audit/vuln",
+      "/labs/host/service-permission-audit/fixed",
       "/labs/:category/:scene/:variant(vuln|fixed)",
     ]);
   });
