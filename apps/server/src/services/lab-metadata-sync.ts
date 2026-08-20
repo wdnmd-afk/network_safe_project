@@ -121,6 +121,11 @@ const categoryProfiles: Record<string, LabCategoryProfile> = {
     name: "基础设施",
     description: "固定配置、资产和运行边界模拟实验",
   },
+  host: {
+    code: "host",
+    name: "Windows 主机安全",
+    description: "固定虚构服务、权限与主机加固策略审计实验",
+  },
 };
 
 export function getLabCategoryProfile(category: string): LabCategoryProfile {

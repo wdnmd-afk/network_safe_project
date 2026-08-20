@@ -1644,7 +1644,7 @@ test("insecure randomness metadata declares the ready crypto contract", async ()
   });
 });
 
-test("rule alert triage metadata declares the in-progress detection contract", async () => {
+test("rule alert triage metadata declares the ready detection contract", async () => {
   const metadata = await readFixture(
     "labs/detection/rule-alert-triage/meta.json",
   );
@@ -1654,7 +1654,7 @@ test("rule alert triage metadata declares the in-progress detection contract", a
   assert.equal(result.value.id, "detection.rule-alert-triage");
   assert.equal(result.value.category, "detection");
   assert.equal(result.value.mode, "simulation");
-  assert.equal(result.value.status, "in-progress");
+  assert.equal(result.value.status, "ready");
   assert.deepEqual(
     result.value.entrypoints.web.map((entrypoint) => entrypoint.path),
     [
@@ -1677,5 +1677,96 @@ test("rule alert triage metadata declares the in-progress detection contract", a
   assert.deepEqual(result.value.verification.automation.scriptVerification, {
     enabled: true,
     scriptKeys: ["detection-rule-alert-triage-verify"],
+  });
+});
+
+test("mitb metadata declares the dedicated ready client contract", async () => {
+  const metadata = await readFixture("labs/client/mitb/meta.json");
+  const result = validateLabMetadata(metadata);
+
+  assert.equal(result.ok, true);
+  assert.equal(result.value.id, "client.mitb");
+  assert.equal(result.value.category, "client");
+  assert.equal(result.value.mode, "case-study");
+  assert.equal(result.value.status, "ready");
+  assert.deepEqual(result.value.verification.automation.apiTest, {
+    enabled: true,
+    specPath: "apps/server/tests/mitb-transaction-lab.test.ts",
+  });
+  assert.deepEqual(result.value.verification.automation.scriptVerification, {
+    enabled: true,
+    scriptKeys: ["client-mitb-verify"],
+  });
+});
+
+test("service permission audit metadata declares the ready host contract", async () => {
+  const metadata = await readFixture(
+    "labs/host/service-permission-audit/meta.json",
+  );
+  const result = validateLabMetadata(metadata);
+
+  assert.equal(result.ok, true);
+  assert.equal(result.value.id, "host.service-permission-audit");
+  assert.equal(result.value.category, "host");
+  assert.equal(result.value.mode, "simulation");
+  assert.equal(result.value.status, "ready");
+  assert.deepEqual(
+    result.value.entrypoints.web.map((entrypoint) => entrypoint.path),
+    [
+      "/labs/host/service-permission-audit/vuln",
+      "/labs/host/service-permission-audit/fixed",
+    ],
+  );
+  assert.deepEqual(
+    result.value.entrypoints.api.map((entrypoint) => entrypoint.path),
+    [
+      "/api/labs/host/service-permission-audit/workbench",
+      "/api/labs/host/service-permission-audit/vuln/evaluate",
+      "/api/labs/host/service-permission-audit/fixed/evaluate",
+    ],
+  );
+  assert.deepEqual(result.value.verification.automation.apiTest, {
+    enabled: true,
+    specPath: "apps/server/tests/service-permission-audit-lab.test.ts",
+  });
+  assert.deepEqual(result.value.verification.automation.scriptVerification, {
+    enabled: true,
+    scriptKeys: ["host-service-permission-audit-verify"],
+  });
+});
+
+test("iam policy audit metadata declares the ready infrastructure contract", async () => {
+  const metadata = await readFixture(
+    "labs/infrastructure/iam-policy-audit/meta.json",
+  );
+  const result = validateLabMetadata(metadata);
+
+  assert.equal(result.ok, true);
+  assert.equal(result.value.id, "infrastructure.iam-policy-audit");
+  assert.equal(result.value.category, "infrastructure");
+  assert.equal(result.value.mode, "simulation");
+  assert.equal(result.value.status, "ready");
+  assert.deepEqual(
+    result.value.entrypoints.web.map((entrypoint) => entrypoint.path),
+    [
+      "/labs/infrastructure/iam-policy-audit/vuln",
+      "/labs/infrastructure/iam-policy-audit/fixed",
+    ],
+  );
+  assert.deepEqual(
+    result.value.entrypoints.api.map((entrypoint) => entrypoint.path),
+    [
+      "/api/labs/infrastructure/iam-policy-audit/workbench",
+      "/api/labs/infrastructure/iam-policy-audit/vuln/evaluate",
+      "/api/labs/infrastructure/iam-policy-audit/fixed/evaluate",
+    ],
+  );
+  assert.deepEqual(result.value.verification.automation.apiTest, {
+    enabled: true,
+    specPath: "apps/server/tests/iam-policy-audit-lab.test.ts",
+  });
+  assert.deepEqual(result.value.verification.automation.scriptVerification, {
+    enabled: true,
+    scriptKeys: ["infrastructure-iam-policy-audit-verify"],
   });
 });

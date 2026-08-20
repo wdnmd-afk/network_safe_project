@@ -286,7 +286,8 @@ export type ServicePermissionAuditWorkbench = {
   cases: GuidedScenarioV2Definition["cases"];
   safeBoundaries: string[];
   notes: string;
-  serviceProfiles: FixedServicePermissionProfile[];
+  // 固定服务配置是冻结的教学数据，工作台只返回只读副本，避免服务端下游意外改写基线
+  serviceProfiles: readonly FixedServicePermissionProfile[];
   profileAssessments: ServicePermissionProfileAssessment[];
 };
 

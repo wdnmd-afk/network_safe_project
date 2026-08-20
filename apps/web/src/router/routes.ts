@@ -672,6 +672,38 @@ export const routes: RouteRecordRaw[] = [
     },
   },
   {
+    path: "/labs/client/mitb/vuln",
+    name: "lab-client-mitb-vuln",
+    component: () => import("../views/MitbTransactionLabView.vue"),
+    props: {
+      variant: "vuln",
+    },
+  },
+  {
+    path: "/labs/client/mitb/fixed",
+    name: "lab-client-mitb-fixed",
+    component: () => import("../views/MitbTransactionLabView.vue"),
+    props: {
+      variant: "fixed",
+    },
+  },
+  {
+    path: "/labs/infrastructure/iam-policy-audit/vuln",
+    name: "lab-infrastructure-iam-policy-audit-vuln",
+    component: () => import("../views/IamPolicyAuditLabView.vue"),
+    props: {
+      variant: "vuln",
+    },
+  },
+  {
+    path: "/labs/infrastructure/iam-policy-audit/fixed",
+    name: "lab-infrastructure-iam-policy-audit-fixed",
+    component: () => import("../views/IamPolicyAuditLabView.vue"),
+    props: {
+      variant: "fixed",
+    },
+  },
+  {
     path: "/labs/:category/:scene/:variant(vuln|fixed)",
     name: "guided-scenario-lab",
     component: () => import("../views/GuidedScenarioLabView.vue"),

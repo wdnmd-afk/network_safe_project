@@ -1,4 +1,33 @@
-# 2026-08-07 最新进展：LT-024 固定检测规则与告警研判实验待验证
+# 2026-08-20 最新进展：LT-026 云 IAM 策略固定审计实验已完成
+
+- [x] 补写 `docs/design/cloud-native-iac-labs.md`。`LT-014` 的提交 `d0f21e5` 只更新了 TODO 与长期目标，该规划文档从未被创建，但三处记录都声称已交付；本轮按当时 TODO 记录的规划决策补齐，不追加新范围。
+- [x] 新增 `docs/execution/2026-08-20-cloud-iam-policy-audit-lab.md`，锁定分类归属、字段、固定策略、状态机、安全边界与验证条件。
+- [x] 分类归属决策：新实验 `infrastructure.iam-policy-audit` 复用现有 `infrastructure` 分类，**不新增 `cloud` 分类**。理由是 `infrastructure.cloud-security`、`container-escape`、`iot` 已承载云与容器主题，另立分类会把云相关实验拆散、破坏列表分组与统计口径。该决策可逆，条件记录在规划文档第 3 节。
+- [x] 实现服务端固定四要素策略快照（主体/动作/资源/条件）、审计纯函数、第二版两步状态机、精确路由和脱敏事件摘要。
+- [x] 接入前端 API、展示模型、策略对比工作台、两步决策、学习进度、验证记录和精确路由。
+- [x] 补齐标准实验目录七份文档、只读 `verify.ts` 与 README、服务端专用测试 9 项；不提供 `exploit.py`。
+- [x] 实现态计数同步为 71 个实验（71 `ready`）、14 个分类、142 个变体、25/19/27 模式分布、40 个专用实现和 31 个引导式实现；覆盖矩阵第 15 节标题更新为基础设施（6）。
+- [x] 门禁证据：专项只读验证 18/18 `ok: true`；`pnpm verify` 晋升前后均为 EXIT=0，最终 shared 64/64、guided 31/31、coverage 71/71（14 分类、infrastructure 6）、server 339/339、web 271/271。
+- 说明：固定策略只使用 `virtual-*` 虚构标识与语义枚举，不连接真实云账户、集群或 IaC 后端，不调用云 SDK/CLI/Terraform/Kubernetes API，也不读取本机云凭据与 kubeconfig。
+- 说明：本轮未执行 build、smoke、数据库集成或 Playwright。
+
+当前状态：`LT-026` 已完成；下一项按队列进入 `LT-027` 客户端或恶意软件主题专用化升级。
+
+# 2026-08-20 历史进展：LT-024 与 LT-025 已完成并通过门禁
+
+- [x] `LT-024` 元数据由 `in-progress` 推进为 `ready`，并同步 `lab-metadata.test.mjs` 测试名与断言、`lab-registry.test.ts` 状态计数、`health.test.ts` 状态断言和覆盖矩阵证据列。
+- [x] 修复 `service-permission-audit-lab.ts` 中 `serviceProfiles` 声明为可变数组导致的 TS2322：固定配置是冻结 `readonly` 数据，工作台字段改为 `readonly`。该缺陷此前使 `pnpm verify` 在第一步类型检查即失败，LT-025 代码从未被编译。
+- [x] 补齐 `LT-025` 实验目录侧：新增 `host` 分类注册三处（`lab-metadata-sync.ts`、`platform-status.ts`、`LabsView.vue`）、`labs/host/service-permission-audit/` 标准目录与元数据、`tools/lab-scripts/host/service-permission-audit/verify.ts` 与 README。
+- [x] 纠正固定审计计数：按 `assessFixedServicePermissionProfile` 实现核准为风险配置 4 发现 / 2 关键 / 0 加固、加固配置 0 / 0 / 4，同步验证器断言与三份实验文档。
+- [x] 覆盖矩阵新增第 16 节 Windows 主机安全与实验行，顺延原 16–19 节为 17–20 节，统计表按实算值更新。
+- [x] 实现态计数同步为 70 个实验（70 `ready`）、14 个分类、140 个变体、25/18/27 模式分布、39 个专用实现和 31 个引导式实现。
+- [x] 门禁证据：LT-024 专项只读验证 17/17、LT-025 专项只读验证 19/19，均 `ok: true`；`pnpm verify` EXIT=0，其中前后端类型检查通过、shared 63/63、guided 31/31、coverage 70/70（14 分类、host 1）、server 330/330、web 271/271。
+- 说明：本轮未执行 build、smoke、数据库集成或 Playwright，这些不属于两项任务的最小收口门禁。
+- 说明：`host` 实验只使用服务端内存中的两组虚构服务配置与语义 ACL 枚举，不读取真实 Windows 服务、注册表、文件系统或凭据，也不执行 PowerShell、`sc.exe`、WMI 或任何权限修改。
+
+当前状态：`LT-024` 与 `LT-025` 均已完成；下一项按队列进入 `LT-026` 云 IAM 策略固定审计实验。
+
+# 2026-08-07 历史进展：LT-024 固定检测规则与告警研判实验待验证
 
 - [x] 新增 `docs/execution/2026-08-07-detection-rule-alert-triage-lab.md`，锁定分类、字段、固定案例、规则画像、状态机、安全边界和验证条件。
 - [x] 新增共享固定安全事件数据集、结构校验器、三组规则画像指标计算、类型声明和共享测试。

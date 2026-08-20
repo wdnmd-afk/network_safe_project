@@ -1,45 +1,47 @@
 {
   "id": "client.mitb",
   "slug": "mitb",
-  "title": "浏览器 MITB",
+  "title": "浏览器 MITB 交易视图固定审计",
   "category": "client",
   "subcategory": "mitb",
   "mode": "case-study",
   "severity": "critical",
   "difficulty": "advanced",
-  "summary": "通过固定交易视图差异学习浏览器内篡改与交易签名。",
+  "summary": "通过两组固定交易视图三方对照，区分浏览器显示被篡改与三方一致的处置结论。",
   "status": "ready",
   "phase": "phase-3",
   "sortOrder": 333,
-  "estimatedMinutes": 20,
+  "estimatedMinutes": 30,
   "tags": [
     "client",
     "mitb",
-    "case-study"
+    "transaction-integrity",
+    "trusted-path"
   ],
   "knowledgePoints": [
     "浏览器内篡改",
+    "三方视图对照",
     "交易签名",
     "带外确认"
   ],
   "variants": [
     {
       "key": "vuln",
-      "title": "浏览器 MITB风险观察版",
+      "title": "浏览器 MITB 风险观察版",
       "enabled": true,
-      "description": "观察高风险交易确认完全依赖可能被篡改的浏览器上下文导致的固定风险判定。",
+      "description": "观察固定交易在浏览器显示、服务端记录与带外通道三方不一致且未签名时被提交的风险。",
       "entryKey": "client-mitb-vuln",
       "expectedOutcome": "返回 client-mitb-risk-accepted 学习信号。",
-      "supportsAutomation": false
+      "supportsAutomation": true
     },
     {
       "key": "fixed",
-      "title": "浏览器 MITB防御复盘版",
+      "title": "浏览器 MITB 防御复盘版",
       "enabled": true,
-      "description": "观察验证落实“交易签名、带外确认、受信终端和服务端风险校验”后的正常受控流程。",
+      "description": "观察比对服务端记录与带外确认通道后阻断不一致交易，并复核三方一致交易正常放行。",
       "entryKey": "client-mitb-fixed",
-      "expectedOutcome": "高风险动作被阻断，正常受控流程通过复核。",
-      "supportsAutomation": false
+      "expectedOutcome": "视图不一致交易被阻断，三方一致交易凭固定控制正常通过确认。",
+      "supportsAutomation": true
     }
   ],
   "entrypoints": {
@@ -129,7 +131,7 @@
       },
       "apiTest": {
         "enabled": true,
-        "specPath": "apps/server/tests/guided-scenario-lab.test.ts"
+        "specPath": "apps/server/tests/mitb-transaction-lab.test.ts"
       },
       "scriptVerification": {
         "enabled": true,
@@ -153,9 +155,10 @@
   ],
   "safeBoundaries": [
     "浏览器 MITB 按 case-study ready 例外收口，只代表固定案例学习闭环完成。",
-    "只使用固定浏览器行为案例，不注入真实页面、不采集表单数据。",
-    "页面和 API 只接受共享目录中声明的 scenarioKey 与 controlKey。",
-    "未知 key 会被脱敏阻断，不写入原始输入或外部目标信息。"
+    "只使用服务端内存中的两组虚构交易视图，不读取真实浏览器 DOM、扩展、Cookie、会话或凭据。",
+    "收款方固定使用 virtual-* 标识，金额为教学常量，不含真实账户、卡号、IBAN 或商户号。",
+    "页面和 API 只接受已登记 scenarioKey 与 optionKey，未知输入会被脱敏阻断。",
+    "不发起真实支付、转账、扣款、撤销或任何金融接口调用，也不实现浏览器内篡改能力。"
   ],
   "paths": {
     "root": "labs/client/mitb",
@@ -167,5 +170,5 @@
     "scripts": "tools/lab-scripts/client/mitb"
   },
   "references": [],
-  "notes": "该实验按 case-study ready 例外收口，不提供 exploit.py、攻击脚本、外部连接或真实样本。"
+  "notes": "该实验按 case-study ready 例外收口，只生成固定交易视图对照与学习摘要；不描述任何注入或篡改手法，也不提供 exploit.py、攻击脚本、外部连接或真实样本。"
 }

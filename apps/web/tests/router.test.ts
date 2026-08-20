@@ -94,6 +94,10 @@ describe("SafeMart 路由清单", () => {
       "/labs/detection/rule-alert-triage/fixed",
       "/labs/host/service-permission-audit/vuln",
       "/labs/host/service-permission-audit/fixed",
+      "/labs/client/mitb/vuln",
+      "/labs/client/mitb/fixed",
+      "/labs/infrastructure/iam-policy-audit/vuln",
+      "/labs/infrastructure/iam-policy-audit/fixed",
       "/labs/:category/:scene/:variant(vuln|fixed)",
     ]);
   });

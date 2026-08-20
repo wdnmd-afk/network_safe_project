@@ -1,12 +1,10 @@
-<!-- 由 tools/generate-guided-lab-assets.mjs 生成 -->
-# 浏览器 MITB风险观察步骤
+# 风险观察步骤
 
-1. 登录本机学习平台。
-2. 打开 `/labs/client/mitb/vuln`。
-3. 选择固定案例“虚构交易视图不一致”。
-4. 选择“只信任浏览器显示”。
-5. 点击“运行固定评估”。
-6. 观察决策 `accepted`、学习信号 `client-mitb-risk-accepted` 和风险标签。
-7. 在统一事件日志中确认只记录固定 key 和安全摘要。
+1. 登录本机学习平台并打开浏览器 MITB 风险观察版。
+2. 确认固定 scenarioKey 为 `fixed-browser-transaction-view-audit`。
+3. 第一阶段选择 `trust-browser-rendered-view`，观察 `virtual-tampered-transfer-view` 的 4 项发现与 3 项三方不一致。
+4. 第二阶段选择 `submit-transaction-from-browser-view`。
+5. 运行固定对照，确认服务端返回 `client-mitb-risk-accepted`。
+6. 复盘事件摘要，只应看到固定案例 / 视图 key、三项计数、步数、终止结果和 signal。
 
-该流程只观察固定本机教学结果，不提供外部目标操作步骤。
+该流程只读取服务端固定虚构交易视图，不提交真实账户、卡号、金额或收款方，不发起任何支付、转账或撤销调用，也不读取真实浏览器 DOM、扩展或凭据。本文档只描述"如何观察不一致结果"，不描述任何浏览器内篡改或注入手法。

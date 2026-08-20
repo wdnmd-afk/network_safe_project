@@ -153,6 +153,16 @@ import {
   type ServicePermissionAuditVariantKey,
 } from "./services/service-permission-audit-lab.js";
 import {
+  createIamPolicyAuditLabService,
+  type IamPolicyAuditLabService,
+  type IamPolicyAuditVariantKey,
+} from "./services/iam-policy-audit-lab.js";
+import {
+  createMitbTransactionLabService,
+  type MitbTransactionLabService,
+  type MitbTransactionVariantKey,
+} from "./services/mitb-transaction-lab.js";
+import {
   createLabEventLogsService,
   type LabEventInput,
   type LabEventLogsService,
@@ -262,6 +272,8 @@ type CreateAppOptions = {
   insecureRandomnessLabService?: InsecureRandomnessLabService;
   ruleAlertTriageLabService?: RuleAlertTriageLabService;
   servicePermissionAuditLabService?: ServicePermissionAuditLabService;
+  iamPolicyAuditLabService?: IamPolicyAuditLabService;
+  mitbTransactionLabService?: MitbTransactionLabService;
   labEventLogsService?: LabEventLogsService;
   labRecapQuestionCompletionsService?: LabRecapQuestionCompletionsService;
   ldapInjectionLabService?: LdapInjectionLabService;
@@ -370,6 +382,10 @@ export function createApp(options: CreateAppOptions = {}) {
   const servicePermissionAuditLabService =
     options.servicePermissionAuditLabService ??
     createServicePermissionAuditLabService();
+  const iamPolicyAuditLabService =
+    options.iamPolicyAuditLabService ?? createIamPolicyAuditLabService();
+  const mitbTransactionLabService =
+    options.mitbTransactionLabService ?? createMitbTransactionLabService();
   const labEventLogsService =
     options.labEventLogsService ?? createLabEventLogsService();
   const labRecapQuestionCompletionsService =
@@ -667,6 +683,18 @@ export function createApp(options: CreateAppOptions = {}) {
   function readRuleAlertTriageVariantKey(
     value: string,
   ): RuleAlertTriageVariantKey | undefined {
+    return value === "vuln" || value === "fixed" ? value : undefined;
+  }
+
+  function readIamPolicyAuditVariantKey(
+    value: string,
+  ): IamPolicyAuditVariantKey | undefined {
+    return value === "vuln" || value === "fixed" ? value : undefined;
+  }
+
+  function readMitbTransactionVariantKey(
+    value: string,
+  ): MitbTransactionVariantKey | undefined {
     return value === "vuln" || value === "fixed" ? value : undefined;
   }
 
@@ -5389,6 +5417,195 @@ export function createApp(options: CreateAppOptions = {}) {
               result.profileAssessment?.criticalFindingCount ?? 0,
             hardenedControlCount:
               result.profileAssessment?.hardenedControlCount ?? 0,
+            stepCount: result.assessment.stepCount,
+            terminalOutcome: result.recap.terminalOutcome,
+            signal: result.signal,
+          },
+          decision: result.decision,
+          signal: result.signal,
+          statusCode: responseStatus,
+          message: result.message,
+          riskLevel: riskAccepted ? "high" : result.assessment.riskLevel,
+        });
+
+        res.status(responseStatus).json({
+          status: result.status,
+          result,
+        });
+      } catch (error) {
+        next(error);
+      }
+    },
+  );
+
+  app.get("/api/labs/infrastructure/iam-policy-audit/workbench", (_req, res) => {
+    res.status(200).json({
+      status: "ok",
+      workbench: iamPolicyAuditLabService.getWorkbench(),
+    });
+  });
+
+  app.post(
+    "/api/labs/infrastructure/iam-policy-audit/:variant/evaluate",
+    async (req, res, next) => {
+      try {
+        const currentUser = await readCurrentUser(req);
+
+        if (!currentUser.ok) {
+          res.status(currentUser.status).json(currentUser.body);
+          return;
+        }
+
+        const variantKey = readIamPolicyAuditVariantKey(req.params.variant);
+
+        if (!variantKey) {
+          res.status(404).json({
+            status: "error",
+            message: "iam policy audit variant not found",
+          });
+          return;
+        }
+
+        const scenarioKey = readRequiredString(req.body?.scenarioKey);
+        const decisions = readRequiredStringArray(req.body?.decisions);
+
+        if (!scenarioKey || decisions.length === 0) {
+          res.status(400).json({
+            status: "error",
+            message: "scenarioKey and decisions are required",
+          });
+          return;
+        }
+
+        const result = iamPolicyAuditLabService.evaluate({
+          variantKey,
+          scenarioKey,
+          decisions,
+        });
+        const responseStatus = result.status === "blocked" ? 403 : 200;
+        const riskAccepted =
+          result.recap.terminalOutcome === "risk" &&
+          result.decision === "accepted";
+
+        await recordLabEventSafely({
+          traceId: readOptionalTraceId(req),
+          userId: currentUser.user.id,
+          labKey: result.labKey,
+          variantKey,
+          phase:
+            variantKey === "vuln"
+              ? "attack"
+              : result.recap.terminalOutcome === "normal"
+                ? "normal"
+                : "defense",
+          eventType: result.status === "blocked" ? "blocked" : "success",
+          actorPerspective: riskAccepted ? "attacker" : "system",
+          method: req.method,
+          path: req.path,
+          // 只记录固定策略 key 与计数，不写入策略正文、ARN、账号或原始输入
+          inputSummary: {
+            scenarioKey: result.scenarioKey,
+            policyKey:
+              result.policyAssessment?.policyKey ?? "blocked-policy-snapshot",
+            findingCount: result.policyAssessment?.findingCount ?? 0,
+            criticalFindingCount:
+              result.policyAssessment?.criticalFindingCount ?? 0,
+            leastPrivilegeControlCount:
+              result.policyAssessment?.leastPrivilegeControlCount ?? 0,
+            stepCount: result.assessment.stepCount,
+            terminalOutcome: result.recap.terminalOutcome,
+            signal: result.signal,
+          },
+          decision: result.decision,
+          signal: result.signal,
+          statusCode: responseStatus,
+          message: result.message,
+          riskLevel: riskAccepted ? "high" : result.assessment.riskLevel,
+        });
+
+        res.status(responseStatus).json({
+          status: result.status,
+          result,
+        });
+      } catch (error) {
+        next(error);
+      }
+    },
+  );
+
+  app.get("/api/labs/client/mitb/workbench", (_req, res) => {
+    res.status(200).json({
+      status: "ok",
+      workbench: mitbTransactionLabService.getWorkbench(),
+    });
+  });
+
+  app.post(
+    "/api/labs/client/mitb/:variant/evaluate",
+    async (req, res, next) => {
+      try {
+        const currentUser = await readCurrentUser(req);
+
+        if (!currentUser.ok) {
+          res.status(currentUser.status).json(currentUser.body);
+          return;
+        }
+
+        const variantKey = readMitbTransactionVariantKey(req.params.variant);
+
+        if (!variantKey) {
+          res.status(404).json({
+            status: "error",
+            message: "mitb transaction variant not found",
+          });
+          return;
+        }
+
+        const scenarioKey = readRequiredString(req.body?.scenarioKey);
+        const decisions = readRequiredStringArray(req.body?.decisions);
+
+        if (!scenarioKey || decisions.length === 0) {
+          res.status(400).json({
+            status: "error",
+            message: "scenarioKey and decisions are required",
+          });
+          return;
+        }
+
+        const result = mitbTransactionLabService.evaluate({
+          variantKey,
+          scenarioKey,
+          decisions,
+        });
+        const responseStatus = result.status === "blocked" ? 403 : 200;
+        const riskAccepted =
+          result.recap.terminalOutcome === "risk" &&
+          result.decision === "accepted";
+
+        await recordLabEventSafely({
+          traceId: readOptionalTraceId(req),
+          userId: currentUser.user.id,
+          labKey: result.labKey,
+          variantKey,
+          phase:
+            variantKey === "vuln"
+              ? "attack"
+              : result.recap.terminalOutcome === "normal"
+                ? "normal"
+                : "defense",
+          eventType: result.status === "blocked" ? "blocked" : "success",
+          actorPerspective: riskAccepted ? "attacker" : "system",
+          method: req.method,
+          path: req.path,
+          // 只记录固定视图 key 与对照计数，不写入收款方、金额或原始输入
+          inputSummary: {
+            scenarioKey: result.scenarioKey,
+            viewKey:
+              result.viewAssessment?.viewKey ?? "blocked-transaction-view",
+            findingCount: result.viewAssessment?.findingCount ?? 0,
+            mismatchCount: result.viewAssessment?.mismatchCount ?? 0,
+            trustedPathControlCount:
+              result.viewAssessment?.trustedPathControlCount ?? 0,
             stepCount: result.assessment.stepCount,
             terminalOutcome: result.recap.terminalOutcome,
             signal: result.signal,

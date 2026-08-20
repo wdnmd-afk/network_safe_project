@@ -1,0 +1,173 @@
+{
+  "id": "host.service-permission-audit",
+  "slug": "service-permission-audit",
+  "title": "Windows 服务 ACL 与权限固定审计",
+  "category": "host",
+  "subcategory": "service-permission-audit",
+  "mode": "simulation",
+  "severity": "high",
+  "difficulty": "intermediate",
+  "summary": "对比两组虚构服务配置的运行身份、路径引号和 ACL 组合，完成服务权限处置决策。",
+  "status": "ready",
+  "phase": "phase-3",
+  "sortOrder": 380,
+  "estimatedMinutes": 30,
+  "tags": [
+    "host",
+    "windows-service",
+    "acl",
+    "privilege-boundary"
+  ],
+  "knowledgePoints": [
+    "服务运行身份最小化",
+    "未加引号服务路径风险",
+    "二进制目录与服务配置 ACL",
+    "主机加固基线复核"
+  ],
+  "variants": [
+    {
+      "key": "vuln",
+      "title": "服务权限风险观察版",
+      "enabled": true,
+      "description": "观察低权限可写目录、未加引号路径与高权限运行身份组合被接受时的固定风险结果。",
+      "entryKey": "host-service-permission-audit-vuln",
+      "expectedOutcome": "返回 host-service-permission-audit-risk-accepted 学习信号。",
+      "supportsAutomation": true
+    },
+    {
+      "key": "fixed",
+      "title": "服务权限加固复盘版",
+      "enabled": true,
+      "description": "观察收敛 ACL 与加引号路径后阻断未授权服务修改，并复核加固基线正常可用。",
+      "entryKey": "host-service-permission-audit-fixed",
+      "expectedOutcome": "未授权修改被阻断，加固基线凭固定控制正常通过复核。",
+      "supportsAutomation": true
+    }
+  ],
+  "entrypoints": {
+    "web": [
+      {
+        "key": "host-service-permission-audit-vuln",
+        "variant": "vuln",
+        "path": "/labs/host/service-permission-audit/vuln",
+        "description": "服务权限风险观察版工作台"
+      },
+      {
+        "key": "host-service-permission-audit-fixed",
+        "variant": "fixed",
+        "path": "/labs/host/service-permission-audit/fixed",
+        "description": "服务权限加固复盘版工作台"
+      }
+    ],
+    "api": [
+      {
+        "key": "host-service-permission-audit-workbench",
+        "variant": "shared",
+        "method": "GET",
+        "path": "/api/labs/host/service-permission-audit/workbench",
+        "description": "固定服务配置摘要与权限审计指标工作台"
+      },
+      {
+        "key": "host-service-permission-audit-vuln-evaluate",
+        "variant": "vuln",
+        "method": "POST",
+        "path": "/api/labs/host/service-permission-audit/vuln/evaluate",
+        "description": "服务权限审计漏洞版固定路径评估"
+      },
+      {
+        "key": "host-service-permission-audit-fixed-evaluate",
+        "variant": "fixed",
+        "method": "POST",
+        "path": "/api/labs/host/service-permission-audit/fixed/evaluate",
+        "description": "服务权限审计修复版固定路径评估"
+      }
+    ],
+    "scripts": [
+      {
+        "key": "host-service-permission-audit-verify",
+        "language": "ts",
+        "path": "tools/lab-scripts/host/service-permission-audit/verify.ts",
+        "description": "服务权限审计本机只读一致性验证"
+      }
+    ],
+    "docs": [
+      {
+        "key": "host-service-permission-audit-readme",
+        "path": "labs/host/service-permission-audit/README.md",
+        "description": "服务权限审计场景说明"
+      },
+      {
+        "key": "host-service-permission-audit-attack-steps",
+        "path": "labs/host/service-permission-audit/docs/attack-steps.md",
+        "description": "服务权限风险观察步骤"
+      },
+      {
+        "key": "host-service-permission-audit-fix-notes",
+        "path": "labs/host/service-permission-audit/docs/fix-notes.md",
+        "description": "服务权限收敛与加固修复思路"
+      },
+      {
+        "key": "host-service-permission-audit-manual-verification",
+        "path": "labs/host/service-permission-audit/docs/manual-verification.md",
+        "description": "服务权限审计手工验证矩阵"
+      }
+    ]
+  },
+  "verification": {
+    "manual": {
+      "supported": true,
+      "stepsDocPath": "labs/host/service-permission-audit/docs/manual-verification.md",
+      "expectedSignals": [
+        "host-service-permission-audit-risk-accepted",
+        "host-service-permission-audit-defense-blocked",
+        "host-service-permission-audit-normal-verified"
+      ]
+    },
+    "automation": {
+      "supported": true,
+      "playwright": {
+        "enabled": false,
+        "specPath": "packages/testing/tests/e2e/platform.spec.mjs"
+      },
+      "apiTest": {
+        "enabled": true,
+        "specPath": "apps/server/tests/service-permission-audit-lab.test.ts"
+      },
+      "scriptVerification": {
+        "enabled": true,
+        "scriptKeys": [
+          "host-service-permission-audit-verify"
+        ]
+      }
+    }
+  },
+  "prerequisites": [
+    {
+      "type": "service",
+      "value": "本机后端服务运行于 http://127.0.0.1:6667",
+      "required": true
+    },
+    {
+      "type": "browser",
+      "value": "使用本机浏览器访问实验工作台",
+      "required": true
+    }
+  ],
+  "safeBoundaries": [
+    "只使用服务端内存中的两组虚构服务配置，不读取真实 Windows 服务、注册表、文件系统或目录 ACL。",
+    "ACL 只登记语义枚举，不保存 SDDL、SID、ACE、真实账号或凭据。",
+    "页面和 API 只接受已登记 scenarioKey 与 optionKey，未知输入会被脱敏阻断。",
+    "不执行 PowerShell、sc.exe、WMI、系统命令、服务修改或权限变更，也不创建可执行文件与计划任务。"
+  ],
+  "paths": {
+    "root": "labs/host/service-permission-audit",
+    "readme": "labs/host/service-permission-audit/README.md",
+    "vuln": "labs/host/service-permission-audit/vuln",
+    "fixed": "labs/host/service-permission-audit/fixed",
+    "mock": "labs/host/service-permission-audit/mock",
+    "docs": "labs/host/service-permission-audit/docs",
+    "scripts": "tools/lab-scripts/host/service-permission-audit"
+  },
+  "references": [],
+  "notes": "该实验只对固定虚构服务配置做权限计数与决策复盘，不接触真实主机状态，也不执行任何服务或 ACL 修改。"
+}

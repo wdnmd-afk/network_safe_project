@@ -8,7 +8,7 @@
   "severity": "high",
   "difficulty": "intermediate",
   "summary": "使用固定脱敏事件，对比过宽、过窄和跨来源关联规则的误报漏报，并完成告警研判决策。",
-  "status": "in-progress",
+  "status": "ready",
   "phase": "phase-3",
   "sortOrder": 370,
   "estimatedMinutes": 30,

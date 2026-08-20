@@ -37,14 +37,14 @@
 
 | 顺序 | 实验 | 分类 | 建议模式 | 结构性价值 |
 |---|---|---|---|---|
-| 1 | Windows 服务权限与不安全服务路径 | `host` | `simulation` | 固定服务配置审计，补不安全路径与最小权限修复 |
+| 1 | Windows 服务权限与不安全服务路径 | `host` | `simulation` | 固定服务配置审计，补不安全路径与最小权限修复（`LT-025` 已交付 `host.service-permission-audit`，D3 专用模拟 `ready`） |
 | 2 | 计划任务与启动项持久化研判 | `host` | `case-study` | 固定持久化时间线证据研判，不创建真实任务 |
 | 3 | Windows 事件日志研判 | `host` | `case-study` | 固定脱敏事件时间线，补告警分级与处置决策 |
 | 4 | 横向移动路径分析 | `host` | `simulation` | 虚拟资产关系图，补分段与凭据边界，不连接真实主机 |
 
 说明：
 
-- 是否新增 `host` 分类，需在实现首个实验前确认分类注册、种子、页面分组和统计支持（见第 7 节）。
+- `host` 分类已于 `LT-025` 落地：分类 profile 注册在 `lab-metadata-sync.ts`，中文标签接入 `platform-status.ts` 与 `LabsView.vue`，覆盖矩阵新增第 16 节；后续 host 实验直接复用，不需重复确认。
 - NTLM/Kerberos、AD ACL 与委派因概念复杂、易被误解为攻击链，放到主机主线稳定后再评估。
 
 ## 5. 每个候选的固定模型与边界

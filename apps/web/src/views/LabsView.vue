@@ -21,6 +21,7 @@ const categoryTitles: Record<string, string> = {
   client: "客户端攻击",
   "supply-chain": "供应链",
   infrastructure: "基础设施",
+  host: "Windows 主机安全",
 };
 
 function formatCategoryTitle(category: string) {

@@ -4,7 +4,7 @@
 >
 > 首次建立：2026-07-23
 >
-> 数据基线：69 个实验（68 个 `ready`、1 个 `in-progress`）、13 个分类、138 个变体
+> 数据基线：71 个实验（71 个 `ready`）、14 个分类、142 个变体
 
 ## 1. 使用说明
 
@@ -27,7 +27,7 @@
 | E5 | 场景独立 `verify.ts` 或等价只读验证 |
 | E6 | 代表性 Playwright 页面差异验证 |
 
-当前 68 个 `ready` 主题至少具备 E1–E5；`detection.rule-alert-triage` 已补齐 E1–E5 对应实现，但在专项与统一命令门禁通过前保持 `in-progress`。标注 `+E6` 的主题还具备页面级验证。
+当前 71 个 `ready` 主题至少具备 E1–E5。标注 `+E6` 的主题还具备页面级验证。
 
 ### 1.2 参考体系说明
 
@@ -44,16 +44,16 @@
 
 | 维度 | 数量 |
 |---|---:|
-| 实验总数 | 69 |
-| `ready` | 68 |
-| `in-progress` | 1 |
-| 专用实现 | 38 |
-| 通用引导式实现 | 31 |
+| 实验总数 | 71 |
+| `ready` | 71 |
+| `in-progress` | 0 |
+| 专用实现 | 41 |
+| 通用引导式实现 | 30 |
 | `interactive` | 25 |
-| `simulation` | 17 |
+| `simulation` | 19 |
 | `case-study` | 27 |
 | `critical` | 18 |
-| `high` | 46 |
+| `high` | 48 |
 | `medium` | 5 |
 | 具备 E6 Playwright | 10 |
 
@@ -123,7 +123,7 @@
 
 | 场景 | 模式 | 深度/实现 | 参考体系 | 证据 | 长期动作 |
 |---|---|---|---|---|---|
-| `detection.rule-alert-triage` | simulation | D3 专用模拟 | MITRE ATT&CK Detection Engineering；告警研判与误报漏报 | E1–E5（待命令验证） | LT-024 已补固定事件、三组规则指标和两步告警研判链路，验证前保持 in-progress |
+| `detection.rule-alert-triage` | simulation | D3 专用模拟 | MITRE ATT&CK Detection Engineering；告警研判与误报漏报 | E1–E5 | LT-024 已完成固定事件、三组规则指标、两步告警研判链路和命令门禁收口 |
 
 **判断：**已建立独立检测与响应分类、共享固定安全事件数据集和首个专用研判样板；告警分级、事件时间线、威胁狩猎与恢复仍需后续切片。
 
@@ -201,11 +201,11 @@
 | `client.malicious-extension` | case-study | D2 引导式 | ATT&CK T1176 Browser Extensions | E1–E5 | 增加权限 diff 和发布者来源 |
 | `client.formjacking` | simulation | D3 专用模拟 | Web skimming；CSP/SRI；Input Capture | E1–E5 | 已专用化为脚本信任与表单目标两步状态机（LT-016） |
 | `client.malvertising` | case-study | D2 引导式 | Drive-by；广告供应链 | E1–E5 | 增加重定向链和内容沙箱 |
-| `client.mitb` | case-study | D2 引导式 | ATT&CK T1185 Browser Session Hijacking | E1–E5 | 增加交易签名和带外确认 |
+| `client.mitb` | case-study | D3 专用模拟 | ATT&CK T1185 Browser Session Hijacking；CWE-345 数据真实性校验不足 | E1–E5 | LT-027 已完成固定交易视图三方对照、两步处置决策和命令门禁收口；后续可扩展多币种与审批链案例 |
 
 **判断：**Formjacking 已形成专用模拟样板，其余四个主题仍为引导式案例，客户端整体深度仍需提升。
 
-## 15. 基础设施（5）
+## 15. 基础设施（6）
 
 | 场景 | 模式 | 深度/实现 | 参考体系 | 证据 | 长期动作 |
 |---|---|---|---|---|---|
@@ -214,12 +214,21 @@
 | `infrastructure.container-escape` | case-study | D2 引导式 | ATT&CK T1611 Escape to Host | E1–E5 | 增加 capabilities、挂载和运行时策略 |
 | `infrastructure.iot` | simulation | D2 引导式 | IoT 身份、固件和网络分区 | E1–E5 | 增加设备生命周期和管理面 |
 | `infrastructure.zero-day` | case-study | D2 引导式 | Exploit Public-Facing Application；补偿控制 | E1–E5 | 增加虚拟补丁、隔离和应急响应 |
+| `infrastructure.iam-policy-audit` | simulation | D3 专用模拟 | CWE-732 权限分配不当；OWASP 云 IAM 最小权限；ATT&CK T1098 Account Manipulation | E1–E5 | LT-026 已完成固定策略四要素审计、两步授权决策和命令门禁收口；后续补对象存储暴露、K8s RBAC 和 IaC 配置审计 |
 
-**判断：**具备安全化边界，但缺少云 IAM、Kubernetes RBAC、IaC 和镜像完整性专用样板。
+**判断：**已建立首个云 IAM 最小权限专用样板；对象存储暴露、Kubernetes RBAC、IaC 配置和镜像完整性仍是后续缺口。
 
-## 16. 结构性缺口矩阵
+## 16. Windows 主机安全（1）
 
-这些领域不应伪装成当前 69 个场景的完整覆盖，后续应单独编写执行文档。
+| 场景 | 模式 | 深度/实现 | 参考体系 | 证据 | 长期动作 |
+|---|---|---|---|---|---|
+| `host.service-permission-audit` | simulation | D3 专用模拟 | CWE-428 未加引号服务路径；CWE-732 权限分配不当；ATT&CK T1574.010 服务文件权限弱化 | E1–E5 | LT-025 已完成固定虚构服务配置、权限计数与两步处置决策；后续补计划任务持久化、UAC 令牌边界和事件日志研判 |
+
+**判断：**已建立独立 Windows 主机分类和首个服务权限纵向样板；文件与目录 ACL、计划任务、本机凭据保护、NTLM/Kerberos 和 AD 委派仍是后续缺口。
+
+## 17. 结构性缺口矩阵
+
+这些领域不应伪装成当前 71 个场景的完整覆盖，后续应单独编写执行文档。
 
 | 缺口领域 | 当前状态 | 优先级 | 首批建议 |
 |---|---|---|---|
@@ -234,7 +243,7 @@
 | 恶意软件深度 | 6 个均为引导式 | P1 | 进程树、文件事件、检测和恢复模拟 |
 | 移动端 | 当前不在正式范围 | P2 | WebView、Deep Link、存储和证书校验 |
 
-## 17. 优先级结论
+## 18. 优先级结论
 
 ### P0：先补应用和主机基础
 
@@ -257,7 +266,7 @@
 - 检测响应、威胁狩猎和安全运营指标。
 - 高级 Web、GraphQL、WebSocket 和移动端。
 
-## 18. 更新规则
+## 19. 更新规则
 
 - 新增实验必须先进入本矩阵的 `planned` 区域，再编写执行文档。
 - 实验从 `planned`、`in-progress` 到 `ready` 时，必须同步模式、深度、证据和长期动作。
@@ -266,10 +275,10 @@
 - 每轮长期任务完成后，执行当前最新总数反向审计。
 - 本矩阵不记录真实目标、凭据、攻击 payload 或外部服务信息。
 
-## 19. 当前审计结论
+## 20. 当前审计结论
 
-- 当前 69 个场景全部进入矩阵；68 个达到 `ready`，`detection.rule-alert-triage` 在命令验证前保持 `in-progress`。
+- 当前 71 个场景全部进入矩阵，且 71 个全部达到 `ready`。
 - Web/注入和认证授权是成熟度最高的两条主线。
-- API、业务逻辑、密码学和检测响应已有首个专用样板；云原生与 Windows 主机仍是主要结构性薄弱点。
-- 31 个引导式场景已满足当前安全化 `ready` 规则，但不等于 31 个独立深度靶场。
+- API、业务逻辑、密码学、检测响应和 Windows 主机已有首个专用样板；云原生与 IaC 仍是主要结构性薄弱点。
+- 30 个引导式场景已满足当前安全化 `ready` 规则，但不等于 30 个独立深度靶场。
 - 后续优先补结构性缺口和专用深度，不以继续增加名称数量为第一目标。

@@ -1,0 +1,173 @@
+{
+  "id": "infrastructure.iam-policy-audit",
+  "slug": "iam-policy-audit",
+  "title": "云 IAM 策略最小权限固定审计",
+  "category": "infrastructure",
+  "subcategory": "iam-policy-audit",
+  "mode": "simulation",
+  "severity": "high",
+  "difficulty": "intermediate",
+  "summary": "对比两份虚构 IAM 策略的主体、动作、资源与条件范围，完成授权处置决策。",
+  "status": "ready",
+  "phase": "phase-3",
+  "sortOrder": 390,
+  "estimatedMinutes": 30,
+  "tags": [
+    "infrastructure",
+    "cloud-iam",
+    "least-privilege",
+    "policy-audit"
+  ],
+  "knowledgePoints": [
+    "主体范围收敛",
+    "动作与资源通配符风险",
+    "条件约束边界",
+    "提权可达性评估"
+  ],
+  "variants": [
+    {
+      "key": "vuln",
+      "title": "云 IAM 策略风险观察版",
+      "enabled": true,
+      "description": "观察通配符主体、动作、资源叠加无条件约束时被批准的固定风险结果。",
+      "entryKey": "infrastructure-iam-policy-audit-vuln",
+      "expectedOutcome": "返回 infrastructure-iam-policy-audit-risk-accepted 学习信号。",
+      "supportsAutomation": true
+    },
+    {
+      "key": "fixed",
+      "title": "云 IAM 策略防御复盘版",
+      "enabled": true,
+      "description": "观察收敛四要素并附加来源条件后阻断过宽授权，并复核最小权限基线正常可用。",
+      "entryKey": "infrastructure-iam-policy-audit-fixed",
+      "expectedOutcome": "过宽授权被阻断，最小权限基线凭固定控制正常通过复核。",
+      "supportsAutomation": true
+    }
+  ],
+  "entrypoints": {
+    "web": [
+      {
+        "key": "infrastructure-iam-policy-audit-vuln",
+        "variant": "vuln",
+        "path": "/labs/infrastructure/iam-policy-audit/vuln",
+        "description": "云 IAM 策略风险观察版工作台"
+      },
+      {
+        "key": "infrastructure-iam-policy-audit-fixed",
+        "variant": "fixed",
+        "path": "/labs/infrastructure/iam-policy-audit/fixed",
+        "description": "云 IAM 策略防御复盘版工作台"
+      }
+    ],
+    "api": [
+      {
+        "key": "infrastructure-iam-policy-audit-workbench",
+        "variant": "shared",
+        "method": "GET",
+        "path": "/api/labs/infrastructure/iam-policy-audit/workbench",
+        "description": "固定 IAM 策略快照与最小权限审计指标工作台"
+      },
+      {
+        "key": "infrastructure-iam-policy-audit-vuln-evaluate",
+        "variant": "vuln",
+        "method": "POST",
+        "path": "/api/labs/infrastructure/iam-policy-audit/vuln/evaluate",
+        "description": "云 IAM 策略审计漏洞版固定路径评估"
+      },
+      {
+        "key": "infrastructure-iam-policy-audit-fixed-evaluate",
+        "variant": "fixed",
+        "method": "POST",
+        "path": "/api/labs/infrastructure/iam-policy-audit/fixed/evaluate",
+        "description": "云 IAM 策略审计修复版固定路径评估"
+      }
+    ],
+    "scripts": [
+      {
+        "key": "infrastructure-iam-policy-audit-verify",
+        "language": "ts",
+        "path": "tools/lab-scripts/infrastructure/iam-policy-audit/verify.ts",
+        "description": "云 IAM 策略审计本机只读一致性验证"
+      }
+    ],
+    "docs": [
+      {
+        "key": "infrastructure-iam-policy-audit-readme",
+        "path": "labs/infrastructure/iam-policy-audit/README.md",
+        "description": "云 IAM 策略审计场景说明"
+      },
+      {
+        "key": "infrastructure-iam-policy-audit-attack-steps",
+        "path": "labs/infrastructure/iam-policy-audit/docs/attack-steps.md",
+        "description": "过宽授权风险观察步骤"
+      },
+      {
+        "key": "infrastructure-iam-policy-audit-fix-notes",
+        "path": "labs/infrastructure/iam-policy-audit/docs/fix-notes.md",
+        "description": "最小权限收敛修复思路"
+      },
+      {
+        "key": "infrastructure-iam-policy-audit-manual-verification",
+        "path": "labs/infrastructure/iam-policy-audit/docs/manual-verification.md",
+        "description": "云 IAM 策略审计手工验证矩阵"
+      }
+    ]
+  },
+  "verification": {
+    "manual": {
+      "supported": true,
+      "stepsDocPath": "labs/infrastructure/iam-policy-audit/docs/manual-verification.md",
+      "expectedSignals": [
+        "infrastructure-iam-policy-audit-risk-accepted",
+        "infrastructure-iam-policy-audit-defense-blocked",
+        "infrastructure-iam-policy-audit-normal-verified"
+      ]
+    },
+    "automation": {
+      "supported": true,
+      "playwright": {
+        "enabled": false,
+        "specPath": "packages/testing/tests/e2e/platform.spec.mjs"
+      },
+      "apiTest": {
+        "enabled": true,
+        "specPath": "apps/server/tests/iam-policy-audit-lab.test.ts"
+      },
+      "scriptVerification": {
+        "enabled": true,
+        "scriptKeys": [
+          "infrastructure-iam-policy-audit-verify"
+        ]
+      }
+    }
+  },
+  "prerequisites": [
+    {
+      "type": "service",
+      "value": "本机后端服务运行于 http://127.0.0.1:6667",
+      "required": true
+    },
+    {
+      "type": "browser",
+      "value": "使用本机浏览器访问实验工作台",
+      "required": true
+    }
+  ],
+  "safeBoundaries": [
+    "只使用服务端内存中的两份虚构 IAM 策略快照，不连接或修改真实云账户、角色与策略。",
+    "标识固定使用 virtual-* 前缀，四要素只使用语义枚举，不含真实账号、ARN 或密钥。",
+    "页面和 API 只接受已登记 scenarioKey 与 optionKey，未知输入会被脱敏阻断。",
+    "不调用云 SDK、CLI、Terraform 或 Kubernetes API，也不读取本机云凭据与 kubeconfig。"
+  ],
+  "paths": {
+    "root": "labs/infrastructure/iam-policy-audit",
+    "readme": "labs/infrastructure/iam-policy-audit/README.md",
+    "vuln": "labs/infrastructure/iam-policy-audit/vuln",
+    "fixed": "labs/infrastructure/iam-policy-audit/fixed",
+    "mock": "labs/infrastructure/iam-policy-audit/mock",
+    "docs": "labs/infrastructure/iam-policy-audit/docs",
+    "scripts": "tools/lab-scripts/infrastructure/iam-policy-audit"
+  },
+  "references": [],
+  "notes": "该实验只对固定虚构 IAM 策略做最小权限计数与决策复盘，不解析真实策略语言，也不执行任何云端变更。"
+}

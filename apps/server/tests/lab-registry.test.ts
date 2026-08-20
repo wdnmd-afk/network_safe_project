@@ -8,17 +8,17 @@ test("lab registry scans all current metadata files", async () => {
   const labs = await registry.listLabs();
   const labIds = labs.map((lab) => lab.id);
 
-  assert.equal(labs.length, 69);
-  assert.equal(new Set(labIds).size, 69);
-  assert.equal(labs.filter((lab) => lab.status === "ready").length, 68);
+  assert.equal(labs.length, 71);
+  assert.equal(new Set(labIds).size, 71);
+  assert.equal(labs.filter((lab) => lab.status === "ready").length, 71);
   assert.equal(
     labs.filter((lab) => lab.status === "in-progress").length,
-    1,
+    0,
   );
-  assert.equal(new Set(labs.map((lab) => lab.category)).size, 13);
+  assert.equal(new Set(labs.map((lab) => lab.category)).size, 14);
   assert.equal(
     labs.reduce((total, lab) => total + lab.variants.length, 0),
-    138,
+    142,
   );
   assert.ok(labIds.includes("ai.prompt-injection"));
   assert.ok(labIds.includes("auth.brute-force"));
@@ -46,8 +46,20 @@ test("lab registry scans all current metadata files", async () => {
   assert.ok(
     labs.some(
       (lab) =>
-        lab.id === "detection.rule-alert-triage" &&
-        lab.status === "in-progress",
+        lab.id === "detection.rule-alert-triage" && lab.status === "ready",
+    ),
+  );
+  assert.ok(
+    labs.some(
+      (lab) =>
+        lab.id === "host.service-permission-audit" && lab.status === "ready",
+    ),
+  );
+  assert.ok(
+    labs.some(
+      (lab) =>
+        lab.id === "infrastructure.iam-policy-audit" &&
+        lab.status === "ready",
     ),
   );
   assert.ok(

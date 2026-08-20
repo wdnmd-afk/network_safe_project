@@ -205,23 +205,23 @@ tools/lab-scripts/<category>/<scene>/
 
 ## 9. 当前状态
 
-当前仓库处于：**68 个 `ready` 实验持续维护、LT-024 检测与响应实验待验证阶段**
+当前仓库处于：**71 个 `ready` 实验持续维护阶段**
 
 当前已完成：
 
 - Vue + Vite 前端、Node.js + Express 后端和 MySQL 平台数据链路。
 - 实验元数据扫描、注册、列表、详情、学习进度、验证记录和复盘能力。
 - 统一 `lab_event_logs` 事件日志和脱敏摘要。
-- 68 个 `ready` 实验、12 个分类、136 个漏洞版 / 修复版变体。
-- 25 个 `interactive`、16 个 `simulation`、27 个 `case-study` 实验模式。
-- 37 个专用实验实现与 31 个通用引导式实验实现。
+- 71 个 `ready` 实验、14 个分类、142 个漏洞版 / 修复版变体。
+- 25 个 `interactive`、19 个 `simulation`、27 个 `case-study` 实验模式。
+- 40 个专用实验实现与 31 个通用引导式实验实现。
 - 单元 / API / 共享校验 / 只读脚本 / Playwright 分层自动化验证。
 - 本机数据库缺失复盘表的幂等补齐入口 `pnpm --filter @network-safe/server schema:ensure`。
 
 当前进行中：
 
-- `detection.rule-alert-triage` 已进入 `in-progress`，实现态为 69 个实验、13 个分类、138 个变体、17 个 `simulation` 和 38 个专用实现。
-- 专项与根级命令门禁通过前不推进为 `ready`。
+- 下一项长期任务为 `LT-027` 客户端或恶意软件主题专用化升级。
+- 新增实验在专项与根级命令门禁通过前不推进为 `ready`。
 
 总纲和最终验证证据见：
 
