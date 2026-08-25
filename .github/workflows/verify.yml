@@ -48,6 +48,12 @@ jobs:
       - name: Guided scenario read-only verification
         run: pnpm test:guided
 
+      - name: Web entrypoint consistency
+        run: pnpm test:entrypoints
+
+      - name: API entrypoint consistency
+        run: pnpm test:api-entrypoints
+
       - name: Security coverage matrix
         run: pnpm test:coverage
 

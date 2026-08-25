@@ -1,0 +1,7 @@
+import path from "node:path";
+import { fileURLToPath } from "node:url";
+import { createWindowsEventLogTriageLabService, windowsEventLogTriageBoundarySignal, windowsEventLogTriageDefenseSignal, windowsEventLogTriageNormalSignal, windowsEventLogTriageRiskSignal, windowsEventLogTriageScenarioKey } from "../../../../apps/server/src/services/windows-event-log-triage-lab.js";
+import { runControlledDecisionConsistencyVerification } from "../../controlled-decision-verifier.js";
+const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../../../..");
+const report = runControlledDecisionConsistencyVerification({ repositoryRoot: root, labId: "host.event-log-triage", category: "host", scene: "event-log-triage", mode: "case-study", scenarioKey: windowsEventLogTriageScenarioKey, riskPath: ["trust-single-event-in-isolation", "dismiss-identity-service-chain"], defensePath: ["correlate-identity-and-service-events", "escalate-correlated-host-timeline"], normalPath: ["correlate-identity-and-service-events", "close-registered-maintenance-baseline"], signals: { risk: windowsEventLogTriageRiskSignal, defense: windowsEventLogTriageDefenseSignal, normal: windowsEventLogTriageNormalSignal, boundary: windowsEventLogTriageBoundarySignal }, service: createWindowsEventLogTriageLabService(), scriptPath: "tools/lab-scripts/host/event-log-triage/verify.ts" });
+console.log(JSON.stringify(report, null, 2)); if (!report.ok) process.exitCode = 1;

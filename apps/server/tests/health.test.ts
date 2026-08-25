@@ -86,7 +86,7 @@ test("GET /api/labs returns scanned lab metadata list", async () => {
   };
 
   assert.equal(response.status, 200);
-  assert.equal(body.total, 71);
+  assert.equal(body.total, 75);
   assert.ok(
     body.items.some(
       (item) =>

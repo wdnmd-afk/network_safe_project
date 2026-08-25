@@ -12,6 +12,8 @@
 - Playwright 验证 `/labs` 页面展示真实实验元数据列表
 - Playwright 验证 `web/xss` 漏洞版与修复版对同一样例 payload 的差异
 - Playwright 验证登录用户完成 `web/xss` 样例后，可在账户中心看到学习进度与最近验证记录
+- Playwright 验证 clickjacking、open-redirect、credential-stuffing、session-hijacking、oauth、formjacking、ransomware 的风险、防御和正常三向页面差异
+- Playwright 验证仍在引导式目录中的 7 个分类代表场景
 
 ## 命令
 
@@ -42,4 +44,4 @@ pnpm --filter @network-safe/server seed:labs
 
 ## 当前边界
 
-Playwright 当前只运行 Chromium，并使用本机系统 Chrome 通道。当前闭环用例覆盖 `web/xss` 漏洞版 / 修复版差异与修复版记录链路，后续实验对照断言会继续放在统一测试体系中。
+Playwright 当前只运行 Chromium，并使用本机系统 Chrome 通道。当前完整套件包含 26 个用例，覆盖平台基础链路、既有专用样板、7 个新增三向专用实验页面证据和跨分类引导式工作台回归。

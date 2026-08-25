@@ -595,6 +595,104 @@ td small {
   gap: 2rem;
 }
 
+.directory-toolbar,
+.learning-path-panel {
+  display: grid;
+  gap: 1rem;
+  border-top: 1px solid rgba(248, 250, 252, 0.12);
+  padding-top: 1rem;
+}
+
+.directory-search {
+  display: grid;
+  gap: 0.35rem;
+  max-width: 640px;
+}
+
+.directory-search label,
+.directory-filters label {
+  color: #cbd5e1;
+  font-size: 0.86rem;
+  font-weight: 700;
+}
+
+.directory-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  align-items: end;
+}
+
+.directory-filters label {
+  display: grid;
+  gap: 0.35rem;
+  min-width: 130px;
+}
+
+.directory-filters select {
+  min-height: 44px;
+  padding: 0.55rem 0.65rem;
+}
+
+.directory-result-count {
+  margin: 0;
+  color: #94a3b8;
+  font-size: 0.88rem;
+}
+
+.learning-path-list {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.learning-path-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 1rem;
+  align-items: center;
+  border-top: 1px solid rgba(248, 250, 252, 0.1);
+  padding-top: 0.85rem;
+}
+
+.learning-path-row > div {
+  display: grid;
+  gap: 0.25rem;
+}
+
+.learning-path-row span,
+.learning-path-row p,
+.detail-context-level {
+  color: #cbd5e1;
+  margin: 0;
+}
+
+.learning-path-sequence {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem 1rem;
+  margin: 0.4rem 0 0;
+  padding-left: 1.15rem;
+  color: #94a3b8;
+  font-size: 0.86rem;
+}
+
+.learning-path-sequence a {
+  color: #e2e8f0;
+}
+
+.path-neighbors {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.7rem;
+  margin-top: 0.5rem;
+  color: #94a3b8;
+  font-size: 0.88rem;
+}
+
+.path-neighbors a {
+  color: #67e8f9;
+}
+
 .compact-heading {
   margin-bottom: 1rem;
 }
@@ -774,6 +872,19 @@ td small {
 .ssrf-workbench {
   display: grid;
   gap: 1rem;
+}
+
+.controlled-decision-workbench,
+.controlled-decision-status-panel {
+  display: grid;
+  gap: 1rem;
+}
+
+.controlled-decision-status-panel {
+  border: 1px solid rgba(248, 250, 252, 0.14);
+  border-radius: 8px;
+  padding: 1rem;
+  background: rgba(15, 23, 42, 0.72);
 }
 
 .secondary-button {
@@ -1033,6 +1144,14 @@ td small {
   .variant-detail-item,
   .inspection-grid,
   .recap-event-summary {
+    grid-template-columns: 1fr;
+  }
+
+  .learning-path-row {
+    grid-template-columns: 1fr;
+  }
+
+  .lab-grid {
     grid-template-columns: 1fr;
   }
 

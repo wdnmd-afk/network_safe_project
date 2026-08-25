@@ -111,3 +111,4 @@
 - 已落地共享数据、专用服务/API、前端页面、标准实验目录、测试和只读验证器。
 - 当前元数据为 `ready`：专项只读验证 17/17 与根级 `pnpm verify` 均已通过，满足完成条件。
 - 后续告警分级、事件时间线和威胁狩猎实验继续复用该固定数据层，不接入真实系统。
+- LT-039 在同一共享模块中新增 `fixedWindowsSecurityEventDataset`，继续复用锁定字段 schema，但由 `host.event-log-triage` 消费；不与平台运行时 `lab_event_logs` 混用。

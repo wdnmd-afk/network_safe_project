@@ -1,6 +1,18 @@
 import { createHmac, timingSafeEqual } from "node:crypto";
 
-const tokenTtlMs = 8 * 60 * 60 * 1000;
+export const defaultTokenTtlMs = 8 * 60 * 60 * 1000;
+
+export function resolveTokenTtlMs(
+  value: string | number | undefined = process.env.AUTH_TOKEN_TTL_SECONDS,
+) {
+  const seconds = typeof value === "number" ? value : Number(value);
+
+  if (!Number.isSafeInteger(seconds) || seconds <= 0) {
+    return defaultTokenTtlMs;
+  }
+
+  return seconds * 1000;
+}
 
 function signPayload(payload: string, secret: string) {
   return createHmac("sha256", secret).update(payload).digest("base64url");
@@ -17,14 +29,30 @@ function signaturesMatch(left: string, right: string) {
   return timingSafeEqual(leftBuffer, rightBuffer);
 }
 
-export function createSessionToken(userId: string, secret: string, issuedAt = Date.now()) {
+export type SessionTokenData = {
+  userId: string;
+  issuedAt: number;
+  expiresAt: number;
+};
+
+export function createSessionToken(
+  userId: string,
+  secret: string,
+  issuedAt = Date.now(),
+  ttlMs = resolveTokenTtlMs(),
+) {
   const payload = `${userId}.${issuedAt}`;
   const signature = signPayload(payload, secret);
 
   return `${payload}.${signature}`;
 }
 
-export function readSessionToken(token: string, secret: string, now = Date.now()) {
+export function readSessionToken(
+  token: string,
+  secret: string,
+  now = Date.now(),
+  ttlMs = resolveTokenTtlMs(),
+): SessionTokenData | null {
   const parts = token.split(".");
 
   if (parts.length !== 3) {
@@ -39,7 +67,14 @@ export function readSessionToken(token: string, secret: string, now = Date.now()
 
   const issuedAt = Number(issuedAtText);
 
-  if (!Number.isSafeInteger(issuedAt) || now - issuedAt > tokenTtlMs) {
+  const expiresAt = issuedAt + ttlMs;
+
+  if (
+    !Number.isSafeInteger(issuedAt) ||
+    !Number.isSafeInteger(expiresAt) ||
+    now < issuedAt ||
+    now >= expiresAt
+  ) {
     return null;
   }
 
@@ -51,5 +86,7 @@ export function readSessionToken(token: string, secret: string, now = Date.now()
 
   return {
     userId,
+    issuedAt,
+    expiresAt,
   };
 }

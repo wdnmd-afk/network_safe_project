@@ -56,12 +56,14 @@
     "api": [
       {
         "key": "prompt-injection-vuln-evaluate",
+        "variant": "vuln",
         "method": "POST",
         "path": "/api/labs/ai/prompt-injection/vuln/evaluate",
         "description": "漏洞版确定性提示词路由观察接口"
       },
       {
         "key": "prompt-injection-fixed-evaluate",
+        "variant": "fixed",
         "method": "POST",
         "path": "/api/labs/ai/prompt-injection/fixed/evaluate",
         "description": "修复版确定性提示词路由防御接口"

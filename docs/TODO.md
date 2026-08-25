@@ -1,3 +1,28 @@
+# 长期目标执行进度
+
+- 总队列：30 项
+- 已完成：30 / 30
+- 当前状态：第二轮阶段审计已完成，`LT-027`～`LT-030` 全部通过约定门禁并回填证据
+- 下一轮队列：`LT-031`～`LT-040`，首项补齐新专用实验的分类代表性 Playwright 三向证据
+- 计数规则：只有实现、文档及约定验证全部完成并回填证据后，任务才计入已完成。
+
+# 2026-08-25 最新进展：LT-027～LT-030 全部完成
+
+- [x] `LT-027`：`client.mitb` 已完成固定交易视图三方对照、两步专用状态机、页面/API、事件摘要、标准文档、测试和只读验证器收口，并从引导式目录毕业；专项验证 19/19 `ok: true`。
+- [x] 修正 `client.mitb` case-study 元数据：`variants[].supportsAutomation` 保持 `false`，Playwright/API/只读脚本证据不再被误标为攻击脚本自动化。
+- [x] `LT-028`：新增结构化 Vue Router 路径匹配与 Web 入口一致性验证器，覆盖静态专用路由和 `:category/:scene/:variant(vuln|fixed)` 参数路由；报告为 71 个实验、92 条路由记录、142 个启用变体、142 个 Web 入口、142 个匹配、错误 0。
+- [x] `LT-028` 已纳入根级 `pnpm verify` 和 `.github/workflows/verify.yml`；新增 5 项正常、缺失、重复和变体错配测试。
+- [x] 修正历史 entryKey 漂移：`infrastructure.misconfiguration`、`supply-chain.dependency-confusion` 和 `web.xpath-injection` 的启用变体入口键与真实 Web 入口精确一致。
+- [x] `LT-029`：为 clickjacking、open-redirect、credential-stuffing、session-hijacking、oauth、formjacking、ransomware 增加 7 个独立 Playwright 风险/防御/正常三向页面用例，并将跨分类通用回归改为只覆盖仍在引导式目录的主题。
+- [x] 目标 Playwright 7/7 通过；完整 `pnpm test:e2e` 26/26 通过；Playwright 元数据证据由 10 个增加为 17 个。
+- [x] `LT-030`：完成第二轮阶段审计，确认当前为 71 个 `ready` 实验、14 个分类、142 个变体、25/19/27 模式分布、41 个专用实现、30 个引导式实现和 17 个 E6 页面证据。
+- [x] 根级 `pnpm verify` EXIT=0：前后端类型检查通过、shared 65/65、guided 30/30、entrypoints 142/142、coverage 71/71、server 348/348、web 276/276。
+- [x] `git diff --check` 通过；仅有 Windows 工作区 LF/CRLF 转换提示，无空白错误。
+- [x] 已建立 `LT-031`～`LT-040` 下一轮队列，优先补全 14 分类代表性 E2E、API entrypoints 反向门禁、学习目录搜索/路径以及认证、API、业务逻辑、密码学和 Windows 日志缺口。
+- 说明：本轮未执行生产 build 或 nginx 发布验收；`LT-027`～`LT-030` 的完成条件不包含生产构建。Playwright 已实际启动本机前后端并完成数据库幂等准备和完整页面回归。
+
+当前状态：长期任务首轮与第二轮共 30 项全部完成；下一项进入 `LT-031`。
+
 # 2026-08-20 最新进展：LT-026 云 IAM 策略固定审计实验已完成
 
 - [x] 补写 `docs/design/cloud-native-iac-labs.md`。`LT-014` 的提交 `d0f21e5` 只更新了 TODO 与长期目标，该规划文档从未被创建，但三处记录都声称已交付；本轮按当时 TODO 记录的规划决策补齐，不追加新范围。

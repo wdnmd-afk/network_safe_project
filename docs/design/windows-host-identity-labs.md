@@ -66,6 +66,8 @@
 - 固定案例：固定脱敏事件序列（异常登录、权限变更、服务安装）。
 - 证据研判：告警分级 → 关联根因 → 处置优先级与升级决策。
 - 边界：只使用固定脱敏事件数据，不读取真实 Windows 事件日志。
+- LT-039 实现 ID 为 `host.event-log-triage`，固定案例为 `fixed-windows-identity-service-timeline`。
+- 复用共享固定事件 schema，新增虚构 Windows Security Log 与服务管理器来源；元数据保持 `in-progress`，等待命令验证。
 
 ### 5.4 横向移动路径分析
 
@@ -86,11 +88,11 @@
 
 ## 7. 前置确认项（进入实现前必须解决）
 
-- [ ] 确认是否新增 `host` 分类，或复用 `infrastructure` 现有分类。
-- [ ] 若新增分类，确认分类注册、种子、`getLabCategoryProfile`、前端分组标题和统计支持。
-- [ ] 确认覆盖矩阵新增行的深度等级（D3 `simulation` / case-study ready）判定与验证器兼容。
-- [ ] 确认固定服务配置、事件数据、资产图的表达方式不泄露真实主机信息。
-- [ ] 确认每个实验的 scenarioKey / optionKey 命名与既有 kebab-case 约定一致。
+- [x] `host` 分类已由 LT-025 建立，LT-039 直接复用。
+- [x] 分类注册、种子、`getLabCategoryProfile`、前端分组标题和统计支持已具备。
+- [x] LT-039 按 `case-study` / D3 登记，变体 `supportsAutomation: false`，API + script 两类证据满足 ready 例外。
+- [x] 固定服务配置与事件数据全部使用 `virtual-*` 来源、相对时间和脱敏摘要。
+- [x] LT-039 scenarioKey / optionKey 全部按 kebab-case 固定登记。
 
 ## 8. 安全边界总纲
 

@@ -1,0 +1,48 @@
+{
+  "id": "api.property-authorization",
+  "slug": "property-authorization",
+  "title": "API 属性级授权与批量绑定",
+  "category": "api",
+  "subcategory": "property-authorization",
+  "mode": "interactive",
+  "severity": "high",
+  "difficulty": "advanced",
+  "summary": "通过固定 DTO 字段快照对比客户端字段全量绑定与服务端所有权校验。",
+  "status": "in-progress",
+  "phase": "phase-1",
+  "sortOrder": 341,
+  "estimatedMinutes": 30,
+  "tags": ["api", "property-authorization", "mass-assignment"],
+  "knowledgePoints": ["属性级授权", "字段允许列表", "服务端所有权"],
+  "variants": [
+    { "key": "vuln", "title": "属性级授权风险观察版", "enabled": true, "description": "观察客户端字段全量绑定导致服务端所有权字段被更新。", "entryKey": "api-property-authorization-vuln", "expectedOutcome": "返回 api-property-authorization-risk-accepted。", "supportsAutomation": true },
+    { "key": "fixed", "title": "属性级授权防御复盘版", "enabled": true, "description": "观察字段允许列表阻断服务端字段，并保留正常资料更新。", "entryKey": "api-property-authorization-fixed", "expectedOutcome": "服务端字段被阻断，displayName 正常更新。", "supportsAutomation": true }
+  ],
+  "entrypoints": {
+    "web": [
+      { "key": "api-property-authorization-vuln", "variant": "vuln", "path": "/labs/api/property-authorization/vuln", "description": "属性级授权风险观察版工作台" },
+      { "key": "api-property-authorization-fixed", "variant": "fixed", "path": "/labs/api/property-authorization/fixed", "description": "属性级授权防御复盘版工作台" }
+    ],
+    "api": [
+      { "key": "api-property-authorization-workbench", "variant": "shared", "method": "GET", "path": "/api/labs/api/property-authorization/workbench", "description": "固定 DTO 工作台" },
+      { "key": "api-property-authorization-vuln-evaluate", "variant": "vuln", "method": "POST", "path": "/api/labs/api/property-authorization/vuln/evaluate", "description": "风险路径评估" },
+      { "key": "api-property-authorization-fixed-evaluate", "variant": "fixed", "method": "POST", "path": "/api/labs/api/property-authorization/fixed/evaluate", "description": "防御路径评估" }
+    ],
+    "scripts": [{ "key": "api-property-authorization-verify", "language": "ts", "path": "tools/lab-scripts/api/property-authorization/verify.ts", "description": "本机只读一致性验证" }],
+    "docs": [
+      { "key": "api-property-authorization-readme", "path": "labs/api/property-authorization/README.md", "description": "场景说明" },
+      { "key": "api-property-authorization-attack-steps", "path": "labs/api/property-authorization/docs/attack-steps.md", "description": "风险观察步骤" },
+      { "key": "api-property-authorization-fix-notes", "path": "labs/api/property-authorization/docs/fix-notes.md", "description": "修复说明" },
+      { "key": "api-property-authorization-manual", "path": "labs/api/property-authorization/docs/manual-verification.md", "description": "手工验证矩阵" }
+    ]
+  },
+  "verification": {
+    "manual": { "supported": true, "stepsDocPath": "labs/api/property-authorization/docs/manual-verification.md", "expectedSignals": ["api-property-authorization-risk-accepted", "api-property-authorization-defense-blocked", "api-property-authorization-normal-verified"] },
+    "automation": { "supported": true, "playwright": { "enabled": false, "specPath": "packages/testing/tests/e2e/platform.spec.mjs" }, "apiTest": { "enabled": true, "specPath": "apps/server/tests/controlled-decision-labs.test.ts" }, "scriptVerification": { "enabled": true, "scriptKeys": ["api-property-authorization-verify"] } }
+  },
+  "prerequisites": [{ "type": "service", "value": "本机后端服务运行于 http://127.0.0.1:6667", "required": true }, { "type": "browser", "value": "使用本机浏览器访问实验工作台", "required": true }],
+  "safeBoundaries": ["只使用固定 DTO 字段快照，不修改真实账户、角色或数据库字段。", "页面和 API 只接受固定 scenarioKey 与 optionKey。", "未知 key 会被脱敏阻断，不写入原始输入。"],
+  "paths": { "root": "labs/api/property-authorization", "readme": "labs/api/property-authorization/README.md", "vuln": "labs/api/property-authorization/vuln", "fixed": "labs/api/property-authorization/fixed", "mock": "labs/api/property-authorization/mock", "docs": "labs/api/property-authorization/docs", "scripts": "tools/lab-scripts/api/property-authorization" },
+  "references": [],
+  "notes": "该实验只模拟属性级授权与批量绑定，不提供真实用户字段修改能力。"
+}

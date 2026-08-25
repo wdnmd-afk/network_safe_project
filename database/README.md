@@ -28,7 +28,7 @@ pnpm db:prepare
 3. 在数据库中写入 `network_safe_schema_migrations` 迁移记录。
 4. 幂等补齐 `lab_recap_question_completions`。
 5. 写入本机演示账号。
-6. 同步 14 个分类、71 个实验和 142 个变体（全部为 `ready`）。
+6. 同步 14 个分类、75 个实验和 150 个变体（当前 71 个 `ready`、4 个 `in-progress`，待 LT-036～LT-039 验证后收口）。
 
 也可以分步执行：
 

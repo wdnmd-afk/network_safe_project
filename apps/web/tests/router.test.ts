@@ -98,6 +98,14 @@ describe("SafeMart 路由清单", () => {
       "/labs/client/mitb/fixed",
       "/labs/infrastructure/iam-policy-audit/vuln",
       "/labs/infrastructure/iam-policy-audit/fixed",
+      "/labs/api/property-authorization/vuln",
+      "/labs/api/property-authorization/fixed",
+      "/labs/business-logic/race-condition/vuln",
+      "/labs/business-logic/race-condition/fixed",
+      "/labs/crypto/secret-lifecycle-audit/vuln",
+      "/labs/crypto/secret-lifecycle-audit/fixed",
+      "/labs/host/event-log-triage/vuln",
+      "/labs/host/event-log-triage/fixed",
       "/labs/:category/:scene/:variant(vuln|fixed)",
     ]);
   });

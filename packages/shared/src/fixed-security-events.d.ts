@@ -1,7 +1,9 @@
 export type FixedSecurityEventSource =
   | "virtual-auth-service"
   | "virtual-endpoint"
-  | "virtual-network-sensor";
+  | "virtual-network-sensor"
+  | "virtual-windows-security-log"
+  | "virtual-service-manager";
 
 export type FixedSecurityEventCategory =
   | "auth"
@@ -60,6 +62,7 @@ export type FixedDetectionRuleAnalysis = {
 };
 
 export const fixedSecurityEventDataset: FixedSecurityEventDataset;
+export const fixedWindowsSecurityEventDataset: FixedSecurityEventDataset;
 
 export function validateFixedSecurityEventDataset(
   value: unknown,

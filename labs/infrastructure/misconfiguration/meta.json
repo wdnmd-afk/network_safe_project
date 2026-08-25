@@ -30,7 +30,7 @@
       "title": "配置风险观察版",
       "enabled": true,
       "description": "使用固定静态配置摘要展示调试入口、目录索引、过宽 CORS、公开管理状态页和详细错误信息等暴露面信号。",
-      "entryKey": "vuln-entry",
+      "entryKey": "misconfiguration-vuln-workbench",
       "expectedOutcome": "通过受控 audit API 观察 misconfiguration-debug-surface-visible、misconfiguration-directory-index-visible 或 misconfiguration-cors-too-broad 等学习信号。",
       "supportsAutomation": false
     },
@@ -39,7 +39,7 @@
       "title": "配置审计复盘版",
       "enabled": true,
       "description": "使用同一批固定样例展示默认关闭、认证要求、最小权限 CORS、错误信息收敛和配置审计的防御流程。",
-      "entryKey": "fixed-entry",
+      "entryKey": "misconfiguration-fixed-workbench",
       "expectedOutcome": "通过受控 audit API 观察 misconfiguration-exposure-reduced、misconfiguration-auth-required、misconfiguration-cors-policy-restricted 或 misconfiguration-safe-error-reporting 等学习信号。",
       "supportsAutomation": false
     }

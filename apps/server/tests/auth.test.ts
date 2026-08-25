@@ -2,6 +2,8 @@ import assert from "node:assert/strict";
 import { after, test } from "node:test";
 
 import { createApp } from "../src/app.js";
+import { createAuthService } from "../src/services/auth.js";
+import { hashPassword } from "../src/services/password.js";
 
 type AuthUserResponse = {
   id: string;
@@ -14,6 +16,7 @@ type AuthUserResponse = {
 type LoginResponse = {
   token: string;
   user: AuthUserResponse;
+  expiresAt?: string;
 };
 
 const demoUser: AuthUserResponse = {
@@ -126,7 +129,7 @@ test("GET /api/auth/me returns current user from bearer token", async () => {
   assert.deepEqual(body.user, demoUser);
 });
 
-test("POST /api/auth/logout returns a local session clear signal", async () => {
+test("POST /api/auth/logout rejects a request without a bearer token", async () => {
   const app = createApp({
     authService: {
       login: async () => null,
@@ -149,6 +152,57 @@ test("POST /api/auth/logout returns a local session clear signal", async () => {
     status: string;
   };
 
+  assert.equal(response.status, 401);
+  assert.equal(body.status, "error");
+});
+
+test("POST /api/auth/logout forwards the bearer token to the auth service", async () => {
+  let logoutToken = "";
+  const app = createApp({
+    authService: {
+      login: async () => null,
+      getCurrentUser: async () => demoUser,
+      logout: async (token) => {
+        logoutToken = token;
+      },
+    },
+  });
+  const server = app.listen(0);
+  after(() => {
+    server.close();
+  });
+
+  const address = server.address();
+  assert.ok(address && typeof address === "object");
+
+  const response = await fetch(`http://127.0.0.1:${address.port}/api/auth/logout`, {
+    method: "POST",
+    headers: { authorization: "Bearer local-session-token" },
+  });
+
   assert.equal(response.status, 200);
-  assert.equal(body.status, "ok");
+  assert.equal(logoutToken, "local-session-token");
+});
+
+test("default auth service revokes a token after logout", async () => {
+  const passwordHash = await hashPassword("Demo@123456", "fixed-test-salt");
+  const authService = createAuthService({
+    tokenSecret: "fixed-auth-test-secret",
+    tokenTtlMs: 60_000,
+    findUserByUsername: async () => ({ ...demoUser, passwordHash }),
+    findUserById: async () => ({ ...demoUser, passwordHash }),
+  });
+  const loginResult = await authService.login({
+    username: "demo_user",
+    password: "Demo@123456",
+  });
+
+  assert.ok(loginResult);
+  assert.match(loginResult.expiresAt ?? "", /^\d{4}-\d{2}-\d{2}T/);
+  assert.deepEqual(await authService.getCurrentUser(loginResult.token), demoUser);
+
+  await authService.logout?.(loginResult.token);
+
+  assert.equal(await authService.getCurrentUser(loginResult.token), null);
+  assert.equal(authService.getSessionExpiresAt?.(loginResult.token), null);
 });

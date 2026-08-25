@@ -40,6 +40,7 @@
 | 2 | API 资源消耗与限流 | `api` | `simulation` | 固定请求批次状态机 | 补配额、节流、降级的可观察差异 |
 | 3 | 竞态条件 | `business-logic` | `simulation` | 固定余额/库存状态机 | 补重复提交、幂等和顺序约束 |
 | 4 | 业务流程跳步 | `business-logic` | `interactive` | 固定订单阶段状态机 | 补服务端状态校验和阶段顺序 |
+| 5 | API 属性级授权与批量绑定 | `api` | `interactive` | 固定 DTO 字段快照 | 补字段允许列表和服务端所有权 |
 
 说明：
 
@@ -73,6 +74,21 @@
 - 两步决策：阶段校验策略（仅客户端流程 vs 服务端状态机）→ 处置（跳步接受 / 阻断 / 正常顺序放行）。
 - 边界：只使用固定订单阶段枚举，不接入真实订单或支付。
 
+### 5.5 API 属性级授权与批量绑定（LT-036）
+
+- 实验 ID：`api.property-authorization`。
+- 固定案例：`fixed-profile-update-dto`，字段锁定为 `displayName`、`role`、`status`、`accountLimit`。
+- `displayName` 为 `user-editable`；其余字段为 `server-owned`，API 不接受自由 DTO。
+- 两步决策：绑定全部字段 / 字段允许列表与服务端所有权 → 持久化服务端字段 / 阻断 / 正常 displayName 更新。
+- 当前实现与标准目录已落地，元数据保持 `in-progress`，等待专项和根级门禁后推进 `ready`。
+
+### 5.6 业务竞态与幂等（LT-037）
+
+- 实验 ID：`business-logic.race-condition`。
+- 固定案例：`fixed-single-stock-double-request`，虚构库存 1、版本 7、两条固定请求摘要。
+- 两步决策：无版本读写 / 幂等与版本校验 → 双扣 / 阻断重复或陈旧请求 / 单次正常扣减。
+- 不执行真实并发或数据库事务；元数据保持 `in-progress`，等待命令验证。
+
 ## 6. 统一产物要求
 
 每个实验实现时必须具备（与现有专用实验一致）：
@@ -92,6 +108,8 @@
 - [ ] 确认 BOLA 复用 `auth.idor` 的具体补充方式（映射、正常流程说明），不新建同义实验。
 - [x] BFLA 已锁定 `privileged-operation-request` 和两步 kebab-case optionKey；后续实验仍须逐项确认。
 - [x] workflow-bypass 已锁定 `pending-order-shipping-request`、`pending -> paid -> shipping` 固定阶段语义和两步 kebab-case optionKey；API 不接受订单 ID 或阶段自由输入。
+- [x] LT-036 已锁定 `api.property-authorization`、四个固定 DTO 字段和只接受 scenarioKey/decisions 的契约。
+- [x] LT-037 已锁定 `business-logic.race-condition`、单库存双请求快照和幂等/版本决策契约。
 
 ## 8. 安全边界总纲
 

@@ -1,0 +1,7 @@
+import path from "node:path";
+import { fileURLToPath } from "node:url";
+import { createSecretLifecycleAuditLabService, secretLifecycleAuditBoundarySignal, secretLifecycleAuditDefenseSignal, secretLifecycleAuditNormalSignal, secretLifecycleAuditRiskSignal, secretLifecycleAuditScenarioKey } from "../../../../apps/server/src/services/secret-lifecycle-audit-lab.js";
+import { runControlledDecisionConsistencyVerification } from "../../controlled-decision-verifier.js";
+const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../../../..");
+const report = runControlledDecisionConsistencyVerification({ repositoryRoot: root, labId: "crypto.secret-lifecycle-audit", category: "crypto", scene: "secret-lifecycle-audit", mode: "simulation", scenarioKey: secretLifecycleAuditScenarioKey, riskPath: ["publish-without-secret-audit", "continue-with-exposed-static-key"], defensePath: ["scan-fixed-artifacts-and-enforce-lifecycle", "revoke-rotate-and-inject-secret"], normalPath: ["scan-fixed-artifacts-and-enforce-lifecycle", "publish-with-active-version-only"], signals: { risk: secretLifecycleAuditRiskSignal, defense: secretLifecycleAuditDefenseSignal, normal: secretLifecycleAuditNormalSignal, boundary: secretLifecycleAuditBoundarySignal }, service: createSecretLifecycleAuditLabService(), scriptPath: "tools/lab-scripts/crypto/secret-lifecycle-audit/verify.ts" });
+console.log(JSON.stringify(report, null, 2)); if (!report.ok) process.exitCode = 1;

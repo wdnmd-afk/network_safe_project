@@ -8,7 +8,7 @@ import {
   setCurrentUserRecapQuestionCompletion,
   type CurrentUserLabEventLogSummary,
 } from "../api/lab-records";
-import { fetchLab, type LabMetadata } from "../api/labs";
+import { fetchLab, fetchLabs, type LabMetadata } from "../api/labs";
 import EventRecapCard from "../components/EventRecapCard.vue";
 import {
   createCompletedEventRecapQuestionKeys,
@@ -23,6 +23,11 @@ import {
   findVariantWebEntrypoint,
 } from "../labs/lab-detail";
 import { useSessionStore } from "../stores/session";
+import {
+  deriveLabDepth,
+  getLearningPathContexts,
+  type LearningPathContext,
+} from "../utils/lab-directory";
 
 const props = defineProps<{
   category: string;
@@ -31,6 +36,7 @@ const props = defineProps<{
 
 const session = useSessionStore();
 const lab = ref<LabMetadata | null>(null);
+const allLabs = ref<LabMetadata[]>([]);
 const labEventLogs = ref<CurrentUserLabEventLogSummary[]>([]);
 const isLoading = ref(true);
 const isLoadingLabEventLogs = ref(false);
@@ -75,6 +81,41 @@ const currentLabEventLogs = computed(() => {
 
   return filterLabEventLogsForLab(labEventLogs.value, lab.value.id);
 });
+
+const currentLabDepth = computed(() =>
+  lab.value ? deriveLabDepth(lab.value) : "D2",
+);
+const learningPathContexts = computed<LearningPathContext[]>(() =>
+  lab.value ? getLearningPathContexts(lab.value.id) : [],
+);
+
+function findLabTitle(labId: string | undefined) {
+  if (!labId) {
+    return "未登记实验";
+  }
+
+  return allLabs.value.find((item) => item.id === labId)?.title ?? "未登记实验";
+}
+
+function labRoute(labId: string | undefined) {
+  if (!labId) {
+    return "/labs";
+  }
+
+  const separator = labId.indexOf(".");
+  const category = separator > 0 ? labId.slice(0, separator) : "";
+  const scene = separator > 0 ? labId.slice(separator + 1) : "";
+  return category && scene ? `/labs/${category}/${scene}` : "/labs";
+}
+
+function formatLearningPathLevel(level: string) {
+  const labels: Record<string, string> = {
+    beginner: "初级",
+    intermediate: "中级",
+    advanced: "高级",
+  };
+  return labels[level] ?? level;
+}
 
 function createEventRecapQuestionViews(event: CurrentUserLabEventLogSummary) {
   return createLabEventRecapQuestions(event).map((question, questionIndex) => ({
@@ -196,6 +237,13 @@ async function loadLabDetail() {
   try {
     lab.value = await fetchLab(props.category, props.scene);
 
+    try {
+      allLabs.value = (await fetchLabs()).items;
+    } catch {
+      // 路径标题加载失败不阻断实验详情主体。
+      allLabs.value = [];
+    }
+
     if (session.token) {
       void session.loadLabRecordSummary();
       void loadCurrentLabEventLogs(lab.value.id);
@@ -229,6 +277,7 @@ watch(() => [props.category, props.scene], () => void loadLabDetail(), {
           <span>{{ lab.severity }}</span>
           <span>{{ lab.difficulty }}</span>
           <span>{{ lab.mode }}</span>
+          <span>{{ currentLabDepth }}</span>
         </div>
       </div>
 
@@ -263,6 +312,29 @@ watch(() => [props.category, props.scene], () => void loadLabDetail(), {
           <ul class="detail-list">
             <li v-for="point in lab.knowledgePoints" :key="point">{{ point }}</li>
           </ul>
+        </section>
+
+        <section class="detail-panel learning-context-panel">
+          <h2>学习路径</h2>
+          <div v-if="learningPathContexts.length === 0" class="state-text">
+            当前实验暂未加入静态学习路径。
+          </div>
+          <div v-else class="detail-stack">
+            <div v-for="context in learningPathContexts" :key="context.path.id">
+              <strong>{{ context.path.title }} · 第 {{ context.position + 1 }} 项</strong>
+              <span class="detail-context-level">{{ formatLearningPathLevel(context.path.level) }}</span>
+              <div class="path-neighbors">
+                <RouterLink v-if="context.previousLabId" :to="labRoute(context.previousLabId)">
+                  前置：{{ findLabTitle(context.previousLabId) }}
+                </RouterLink>
+                <span v-else>前置：无</span>
+                <RouterLink v-if="context.nextLabId" :to="labRoute(context.nextLabId)">
+                  后续：{{ findLabTitle(context.nextLabId) }}
+                </RouterLink>
+                <span v-else>后续：路径完成</span>
+              </div>
+            </div>
+          </div>
         </section>
 
         <section class="detail-panel">

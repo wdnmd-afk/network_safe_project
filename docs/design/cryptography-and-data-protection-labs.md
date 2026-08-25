@@ -73,6 +73,8 @@
 - 固定案例：固定配置片段、日志行、源码片段与构建产物清单中植入的虚构秘密标记。
 - 状态机：无扫描直接发布接受 → 命中固定秘密模式 → 移除并改用注入后正常发布。
 - 边界：只扫描固定内嵌样例字符串，不读取真实 `.env`、真实凭据或真实仓库历史。
+- LT-038 实现 ID 为 `crypto.secret-lifecycle-audit`，将固定秘密标记与 `virtual-key-v1/v2` 生命周期台账合并为两步 D3 模拟。
+- 当前服务/API、页面、标准目录和只读验证入口已落地，元数据保持 `in-progress`，等待命令验证。
 
 ## 6. 统一产物要求
 
@@ -91,7 +93,7 @@
 - [x] `LT-023` 已补齐 `crypto` 分类注册、种子 profile、前端分组标题和统计支持。
 - [x] `crypto.insecure-randomness` 按 `simulation` / D3 专用模拟登记，与覆盖验证器规则兼容。
 - [x] 随机数实验只使用固定预生成摘要和不可用指纹，绝不接收或生成真实 token。
-- [ ] 确认秘密泄露扫描只匹配固定内嵌样例，不读取真实 `.env`、凭据或仓库历史。
+- [x] LT-038 确认秘密泄露扫描只匹配 `virtual-secret-marker-*` 固定内嵌样例，不读取真实 `.env`、凭据或仓库历史。
 - [x] `crypto.insecure-randomness` 已锁定 `predictable-session-token-sequence` 和两步 kebab-case optionKey；后续实验仍须逐项确认。
 
 ## 8. 安全边界总纲

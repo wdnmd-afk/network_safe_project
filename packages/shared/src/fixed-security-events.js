@@ -7,6 +7,8 @@ const SOURCES = new Set([
   "virtual-auth-service",
   "virtual-endpoint",
   "virtual-network-sensor",
+  "virtual-windows-security-log",
+  "virtual-service-manager",
 ]);
 const CATEGORIES = new Set(["auth", "process", "network", "file"]);
 const SEVERITIES = new Set(["low", "medium", "high", "critical"]);
@@ -134,6 +136,84 @@ export const fixedSecurityEventDataset = deepFreeze({
         "auth-success-new-context",
         "unsigned-script-start",
         "unusual-egress-burst",
+      ],
+    },
+  ],
+});
+
+export const fixedWindowsSecurityEventDataset = deepFreeze({
+  key: "fixed-windows-identity-service-timeline",
+  title: "固定 Windows 身份与服务事件时间线",
+  description:
+    "五条脱敏虚构事件用于关联异常登录、特权组变更、服务安装与登记维护基线。",
+  events: [
+    {
+      eventId: "windows-new-context-logon",
+      timestamp: "T+00:00",
+      source: "virtual-windows-security-log",
+      category: "auth",
+      severity: "high",
+      signalTags: ["new-context-logon", "identity-anomaly"],
+      summary: "虚构账号从新上下文完成一次高风险登录。",
+      expectedDisposition: "suspicious",
+    },
+    {
+      eventId: "windows-privileged-group-change",
+      timestamp: "T+00:02",
+      source: "virtual-windows-security-log",
+      category: "auth",
+      severity: "critical",
+      signalTags: ["privileged-group-change", "post-logon-change"],
+      summary: "登录后出现虚构特权组成员关系变更。",
+      expectedDisposition: "suspicious",
+    },
+    {
+      eventId: "windows-unapproved-service-install",
+      timestamp: "T+00:04",
+      source: "virtual-service-manager",
+      category: "process",
+      severity: "critical",
+      signalTags: ["service-install", "unapproved-change"],
+      summary: "虚构服务管理器记录未登记服务安装摘要。",
+      expectedDisposition: "suspicious",
+    },
+    {
+      eventId: "windows-service-start-after-install",
+      timestamp: "T+00:05",
+      source: "virtual-service-manager",
+      category: "process",
+      severity: "high",
+      signalTags: ["service-start", "post-install-start"],
+      summary: "未登记服务安装后立即出现固定启动事件。",
+      expectedDisposition: "suspicious",
+    },
+    {
+      eventId: "windows-approved-maintenance-service",
+      timestamp: "T+00:08",
+      source: "virtual-service-manager",
+      category: "process",
+      severity: "low",
+      signalTags: ["approved-maintenance", "registered-window"],
+      summary: "登记维护窗口内运行虚构签名服务更新。",
+      expectedDisposition: "benign",
+    },
+  ],
+  ruleProfiles: [
+    {
+      key: "windows-single-service-rule",
+      title: "单服务事件规则",
+      description: "只观察未登记服务安装，遗漏身份与后续启动证据。",
+      matchedEventIds: ["windows-unapproved-service-install"],
+    },
+    {
+      key: "windows-correlated-identity-service-rule",
+      title: "身份与服务关联规则",
+      description: "关联异常登录、特权变更、服务安装和启动，并排除维护基线。",
+      matchedEventIds: [
+        "windows-new-context-logon",
+        "windows-privileged-group-change",
+        "windows-unapproved-service-install",
+        "windows-service-start-after-install",
       ],
     },
   ],

@@ -30,7 +30,7 @@
       "title": "解析风险观察版",
       "enabled": true,
       "description": "使用固定 manifest 摘要和伪 registry 元数据展示未绑定 scope、缺少来源审计或缺少 lockfile 时可能出现的错误解析倾向。",
-      "entryKey": "vuln-entry",
+      "entryKey": "dependency-confusion-vuln-page",
       "expectedOutcome": "通过受控 resolve API 观察 dependency-confusion-public-source-selected 或 dependency-confusion-private-scope-missing 等学习信号。",
       "supportsAutomation": false
     },
@@ -39,7 +39,7 @@
       "title": "来源审计复盘版",
       "enabled": true,
       "description": "使用同一批固定样例展示 scope 约束、私有 registry 绑定、lockfile 完整性校验和安装源审计的防御流程。",
-      "entryKey": "fixed-entry",
+      "entryKey": "dependency-confusion-fixed-page",
       "expectedOutcome": "通过受控 resolve API 观察 dependency-confusion-private-scope-pinned、dependency-confusion-registry-source-audited、dependency-confusion-lockfile-integrity-blocked 或 dependency-confusion-safe-public-package-accepted 等学习信号。",
       "supportsAutomation": false
     }

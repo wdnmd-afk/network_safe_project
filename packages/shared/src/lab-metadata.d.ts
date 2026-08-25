@@ -23,6 +23,8 @@ export type LabEntrypoint = {
   path: string;
   description: string;
   variant?: string;
+  method?: string;
+  language?: string;
 };
 
 export type LabMetadata = {

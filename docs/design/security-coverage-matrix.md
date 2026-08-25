@@ -4,7 +4,7 @@
 >
 > 首次建立：2026-07-23
 >
-> 数据基线：71 个实验（71 个 `ready`）、14 个分类、142 个变体
+> 数据基线：75 个实验（71 个 `ready`、4 个 `in-progress`）、14 个分类、150 个变体
 
 ## 1. 使用说明
 
@@ -27,7 +27,7 @@
 | E5 | 场景独立 `verify.ts` 或等价只读验证 |
 | E6 | 代表性 Playwright 页面差异验证 |
 
-当前 71 个 `ready` 主题至少具备 E1–E5。标注 `+E6` 的主题还具备页面级验证。
+当前 71 个 `ready` 主题至少具备 E1–E5；4 个 `in-progress` 主题已落地 E1–E5 代码与资料，等待命令门禁。标注 E6 的主题还具备页面级验证。
 
 ### 1.2 参考体系说明
 
@@ -44,18 +44,18 @@
 
 | 维度 | 数量 |
 |---|---:|
-| 实验总数 | 71 |
+| 实验总数 | 75 |
 | `ready` | 71 |
-| `in-progress` | 0 |
-| 专用实现 | 41 |
+| `in-progress` | 4 |
+| 专用实现 | 45 |
 | 通用引导式实现 | 30 |
-| `interactive` | 25 |
-| `simulation` | 19 |
-| `case-study` | 27 |
+| `interactive` | 26 |
+| `simulation` | 21 |
+| `case-study` | 28 |
 | `critical` | 18 |
-| `high` | 48 |
+| `high` | 52 |
 | `medium` | 5 |
-| 具备 E6 Playwright | 10 |
+| 具备 E6 Playwright | 17 |
 
 ## 3. Web 与注入（16）
 
@@ -75,8 +75,8 @@
 | `web.path-traversal` | interactive | D4 专用 | CWE-22；OWASP A01 | E1–E5 | 补规范化、根目录和符号链接概念 |
 | `web.ssrf` | interactive | D4 专用 | OWASP A10 SSRF；CWE-918 | E1–E5 | 补协议、重定向和云元数据模拟 |
 | `web.info-disclosure` | interactive | D4 专用 | CWE-200；OWASP A01/A05 | E1–E5 | 补错误页、日志和响应字段最小化 |
-| `web.clickjacking` | interactive | D4 专用交互 | CWE-1021；OWASP A05 | E1–E5 | 已专用化为两步框架策略与动作确认状态机（LT-006） |
-| `web.open-redirect` | interactive | D4 专用 | CWE-601；OWASP A01 | E1–E5 | LT-007 已专用化为两步目标来源与重定向决策交互 |
+| `web.clickjacking` | interactive | D4 专用交互 | CWE-1021；OWASP A05 | E1–E6 | 已专用化为两步框架策略与动作确认状态机（LT-006），并补三向页面证据（LT-029） |
+| `web.open-redirect` | interactive | D4 专用 | CWE-601；OWASP A01 | E1–E6 | 已专用化为两步目标来源与重定向决策交互，并补三向页面证据（LT-029） |
 
 **判断：**当前最成熟的领域。主要缺口不是基础注入，而是请求走私、缓存投毒、原型污染、反序列化、WebSocket、CORS 和 GraphQL 等高级 Web/API 边界。
 
@@ -89,41 +89,44 @@
 | `auth.jwt` | interactive | D4 专用 | OWASP A02/A07；CWE-347 | E1–E5 | 补 issuer/audience、过期、轮换和吊销 |
 | `auth.privilege-escalation` | interactive | D4 专用 | OWASP A01；CWE-269；API BFLA | E1–E5 | 补功能级授权矩阵 |
 | `auth.session-fixation` | interactive | D4 专用 | OWASP A07；CWE-384 | E1–E5 | 补会话轮换和 Cookie 生命周期 |
-| `auth.credential-stuffing` | interactive | D4 专用交互 | OWASP A07；ATT&CK Credential Access | E1–E5 | 已专用化为两步风险关联与自适应挑战状态机（LT-008） |
-| `auth.session-hijacking` | interactive | D4 专用交互 | OWASP A07；ATT&CK Session Hijacking | E1–E5 | 已专用化为两步上下文绑定与会话处置状态机（LT-009） |
-| `auth.oauth` | interactive | D4 专用交互 | OWASP A07；OAuth state/PKCE 风险 | E1–E5 | 已专用化为两步授权绑定与授权响应决策状态机（LT-010） |
+| `auth.credential-stuffing` | interactive | D4 专用交互 | OWASP A07；ATT&CK Credential Access | E1–E6 | 已专用化为两步风险关联与自适应挑战状态机，并补三向页面证据（LT-029） |
+| `auth.session-hijacking` | interactive | D4 专用交互 | OWASP A07；ATT&CK Session Hijacking | E1–E6 | 已专用化为两步上下文绑定与会话处置状态机，并补三向页面证据（LT-029） |
+| `auth.oauth` | interactive | D4 专用交互 | OWASP A07；OAuth state/PKCE 风险 | E1–E6 | 已专用化为两步授权绑定与授权响应决策状态机，并补三向页面证据（LT-029） |
 
 **判断：**认证主线已经可用，但 MFA、密码找回、SSO/SAML、设备信任、令牌生命周期和 API 功能级授权仍需补强。
 
-## 5. API 安全（1）
+## 5. API 安全（2）
 
 | 场景 | 模式 | 深度/实现 | 参考体系 | 证据 | 长期动作 |
 |---|---|---|---|---|---|
-| `api.functional-authorization` | interactive | D4 专用交互 | OWASP API5:2023 BFLA；CWE-285 | E1–E5 | LT-021 已完成两步功能级授权决策、事件摘要和独立验证 |
+| `api.functional-authorization` | interactive | D4 专用交互 | OWASP API5:2023 BFLA；CWE-285 | E1–E5 | LT-031 三向页面用例已实现，待命令验证后登记 E6 |
+| `api.property-authorization` | interactive | D4 专用交互 | OWASP API3:2023；CWE-915 | E1–E5 | LT-036 已完成固定 DTO 字段允许列表与服务端所有权实验 |
 
-**判断：**已建立独立 API 分类和首个功能级授权纵向样板；属性级授权、资源消耗、Webhook 重放和 GraphQL/API 协议边界仍是后续缺口。
+**判断：**API 已有功能级与属性级授权两个纵向样板；资源消耗、Webhook 重放和 GraphQL/API 协议边界仍是后续缺口。
 
-## 6. 业务逻辑（1）
-
-| 场景 | 模式 | 深度/实现 | 参考体系 | 证据 | 长期动作 |
-|---|---|---|---|---|---|
-| `business-logic.workflow-bypass` | interactive | D4 专用交互 | CWE-841；OWASP API6:2023 Sensitive Business Flows | E1–E5 | LT-022 已完成服务端阶段顺序校验、事件摘要和独立验证 |
-
-**判断：**已建立独立业务逻辑分类和首个流程跳步纵向样板；竞态、幂等、审批绕过和价格规则仍是后续缺口。
-
-## 7. 密码学与数据保护（1）
+## 6. 业务逻辑（2）
 
 | 场景 | 模式 | 深度/实现 | 参考体系 | 证据 | 长期动作 |
 |---|---|---|---|---|---|
-| `crypto.insecure-randomness` | simulation | D3 专用模拟 | CWE-338；随机 token 熵与 CSPRNG 策略 | E1–E5 | LT-023 已完成固定低熵摘要、两步随机源决策、事件摘要和独立验证收口 |
+| `business-logic.workflow-bypass` | interactive | D4 专用交互 | CWE-841；OWASP API6:2023 Sensitive Business Flows | E1–E5 | LT-031 三向页面用例已实现，待命令验证后登记 E6 |
+| `business-logic.race-condition` | simulation | D3 专用模拟 | CWE-362；幂等与乐观锁 | E1–E5 | LT-037 已完成固定单库存双请求与版本校验实验 |
 
-**判断：**已建立独立密码学分类和首个随机数策略纵向样板；口令哈希策略、密钥生命周期、秘密泄露和 TLS 证书校验仍是后续缺口。
+**判断：**流程跳步与竞态/幂等已有专用样板；审批绕过和价格规则仍是后续缺口。
+
+## 7. 密码学与数据保护（2）
+
+| 场景 | 模式 | 深度/实现 | 参考体系 | 证据 | 长期动作 |
+|---|---|---|---|---|---|
+| `crypto.insecure-randomness` | simulation | D3 专用模拟 | CWE-338；随机 token 熵与 CSPRNG 策略 | E1–E5 | LT-031 三向页面用例已实现，待命令验证后登记 E6 |
+| `crypto.secret-lifecycle-audit` | simulation | D3 专用模拟 | CWE-798；秘密管理与密钥生命周期 | E1–E5 | LT-038 已完成固定秘密标记、轮换、吊销与版本审计 |
+
+**判断：**随机数与秘密生命周期已有专用样板；口令哈希策略和 TLS 证书校验仍是后续缺口。
 
 ## 8. 检测与响应（1）
 
 | 场景 | 模式 | 深度/实现 | 参考体系 | 证据 | 长期动作 |
 |---|---|---|---|---|---|
-| `detection.rule-alert-triage` | simulation | D3 专用模拟 | MITRE ATT&CK Detection Engineering；告警研判与误报漏报 | E1–E5 | LT-024 已完成固定事件、三组规则指标、两步告警研判链路和命令门禁收口 |
+| `detection.rule-alert-triage` | simulation | D3 专用模拟 | MITRE ATT&CK Detection Engineering；告警研判与误报漏报 | E1–E5 | LT-031 三向页面用例已实现，待命令验证后登记 E6 |
 
 **判断：**已建立独立检测与响应分类、共享固定安全事件数据集和首个专用研判样板；告警分级、事件时间线、威胁狩猎与恢复仍需后续切片。
 
@@ -161,7 +164,7 @@
 
 | 场景 | 模式 | 深度/实现 | 参考体系 | 证据 | 长期动作 |
 |---|---|---|---|---|---|
-| `malware.ransomware` | case-study | D3 专用模拟 | ATT&CK T1486 Data Encrypted for Impact | E1–E5 | 已升级为两步行为关联与主机处置证据分析状态机（LT-017） |
+| `malware.ransomware` | case-study | D3 专用模拟 | ATT&CK T1486 Data Encrypted for Impact | E1–E6 | 已升级为两步行为关联与主机处置证据分析状态机，并补三向页面证据（LT-029） |
 | `malware.trojan` | case-study | D2 引导式 | User Execution；Masquerading | E1–E5 | 增加进程树和应用控制分析 |
 | `malware.worm` | case-study | D2 引导式 | 自传播、横向移动和网络分段 | E1–E5 | 增加虚拟传播图 |
 | `malware.spyware` | case-study | D2 引导式 | Collection；Privacy/Endpoint Monitoring | E1–E5 | 增加权限、采集和数据出口证据 |
@@ -199,11 +202,11 @@
 |---|---|---|---|---|---|
 | `client.drive-by-download` | case-study | D2 引导式 | ATT&CK T1189 Drive-by Compromise | E1–E5 | 增加浏览器行为时间线 |
 | `client.malicious-extension` | case-study | D2 引导式 | ATT&CK T1176 Browser Extensions | E1–E5 | 增加权限 diff 和发布者来源 |
-| `client.formjacking` | simulation | D3 专用模拟 | Web skimming；CSP/SRI；Input Capture | E1–E5 | 已专用化为脚本信任与表单目标两步状态机（LT-016） |
+| `client.formjacking` | simulation | D3 专用模拟 | Web skimming；CSP/SRI；Input Capture | E1–E6 | 已专用化为脚本信任与表单目标两步状态机，并补三向页面证据（LT-029） |
 | `client.malvertising` | case-study | D2 引导式 | Drive-by；广告供应链 | E1–E5 | 增加重定向链和内容沙箱 |
-| `client.mitb` | case-study | D3 专用模拟 | ATT&CK T1185 Browser Session Hijacking；CWE-345 数据真实性校验不足 | E1–E5 | LT-027 已完成固定交易视图三方对照、两步处置决策和命令门禁收口；后续可扩展多币种与审批链案例 |
+| `client.mitb` | case-study | D3 专用模拟 | ATT&CK T1185 Browser Session Hijacking；CWE-345 数据真实性校验不足 | E1–E5 | LT-031 三向页面用例已实现，待命令验证后登记 E6 |
 
-**判断：**Formjacking 已形成专用模拟样板，其余四个主题仍为引导式案例，客户端整体深度仍需提升。
+**判断：**Formjacking 与 MITB 已形成两个专用模拟样板，其余三个主题仍为引导式案例，客户端整体深度仍需提升。
 
 ## 15. 基础设施（6）
 
@@ -214,33 +217,34 @@
 | `infrastructure.container-escape` | case-study | D2 引导式 | ATT&CK T1611 Escape to Host | E1–E5 | 增加 capabilities、挂载和运行时策略 |
 | `infrastructure.iot` | simulation | D2 引导式 | IoT 身份、固件和网络分区 | E1–E5 | 增加设备生命周期和管理面 |
 | `infrastructure.zero-day` | case-study | D2 引导式 | Exploit Public-Facing Application；补偿控制 | E1–E5 | 增加虚拟补丁、隔离和应急响应 |
-| `infrastructure.iam-policy-audit` | simulation | D3 专用模拟 | CWE-732 权限分配不当；OWASP 云 IAM 最小权限；ATT&CK T1098 Account Manipulation | E1–E5 | LT-026 已完成固定策略四要素审计、两步授权决策和命令门禁收口；后续补对象存储暴露、K8s RBAC 和 IaC 配置审计 |
+| `infrastructure.iam-policy-audit` | simulation | D3 专用模拟 | CWE-732 权限分配不当；OWASP 云 IAM 最小权限；ATT&CK T1098 Account Manipulation | E1–E5 | LT-031 三向页面用例已实现，待命令验证后登记 E6；后续补 K8s RBAC 和 IaC |
 
 **判断：**已建立首个云 IAM 最小权限专用样板；对象存储暴露、Kubernetes RBAC、IaC 配置和镜像完整性仍是后续缺口。
 
-## 16. Windows 主机安全（1）
+## 16. Windows 主机安全（2）
 
 | 场景 | 模式 | 深度/实现 | 参考体系 | 证据 | 长期动作 |
 |---|---|---|---|---|---|
-| `host.service-permission-audit` | simulation | D3 专用模拟 | CWE-428 未加引号服务路径；CWE-732 权限分配不当；ATT&CK T1574.010 服务文件权限弱化 | E1–E5 | LT-025 已完成固定虚构服务配置、权限计数与两步处置决策；后续补计划任务持久化、UAC 令牌边界和事件日志研判 |
+| `host.service-permission-audit` | simulation | D3 专用模拟 | CWE-428 未加引号服务路径；CWE-732 权限分配不当；ATT&CK T1574.010 服务文件权限弱化 | E1–E5 | LT-031 三向页面用例已实现，待命令验证后登记 E6；后续补事件日志研判 |
+| `host.event-log-triage` | case-study | D3 专用模拟 | Windows Security Log；身份与服务时间线 | E1–E5 | LT-039 已完成固定异常登录、权限变更与服务安装研判 |
 
-**判断：**已建立独立 Windows 主机分类和首个服务权限纵向样板；文件与目录 ACL、计划任务、本机凭据保护、NTLM/Kerberos 和 AD 委派仍是后续缺口。
+**判断：**Windows 主机已具备服务权限与事件时间线两个样板；文件 ACL、计划任务、凭据保护、NTLM/Kerberos 和 AD 委派仍是后续缺口。
 
 ## 17. 结构性缺口矩阵
 
-这些领域不应伪装成当前 71 个场景的完整覆盖，后续应单独编写执行文档。
+这些领域不应伪装成当前 75 个场景的完整覆盖，后续应单独编写执行文档。
 
 | 缺口领域 | 当前状态 | 优先级 | 首批建议 |
 |---|---|---|---|
-| API 安全 | 已新增独立分类和 `ready` BFLA 首个样板 | P0 | 继续属性级授权、资源消耗、Webhook 重放 |
-| 业务逻辑 | 已新增独立分类和 `ready` 流程跳步首个样板 | P0 | 继续竞态、幂等、审批和订单规则 |
-| 密码学与秘密 | 已新增独立分类和 `ready` 不安全随机数样板 | P0 | 继续密码哈希、密钥轮换、秘密泄露、TLS 校验 |
-| Windows 主机/AD | 没有独立分类 | P0 | ACL、服务权限、事件日志、NTLM/Kerberos、横向移动图 |
-| 检测与响应 | 已新增固定数据集与首个规则/研判样板，待命令验证 | P1 | 继续告警分级、事件时间线、威胁狩猎、隔离和恢复 |
-| 云原生/IaC | 目前主要是通用案例 | P1 | IAM、对象存储、K8s RBAC、Pod Security、SBOM |
+| API 安全 | 功能级与属性级授权样板已 ready | P0 | 继续资源消耗、Webhook 重放、GraphQL |
+| 业务逻辑 | 流程跳步与竞态/幂等样板已 ready | P0 | 继续审批、价格和订单规则 |
+| 密码学与秘密 | 随机数与秘密生命周期样板已 ready | P0 | 继续密码哈希、TLS 校验与数据生命周期 |
+| Windows 主机/AD | 服务权限与事件日志样板已 ready | P0 | 文件 ACL、NTLM/Kerberos、横向移动图 |
+| 检测与响应 | 已完成固定数据集与首个规则/研判专用样板 | P1 | 继续告警分级、事件时间线、威胁狩猎、隔离和恢复 |
+| 云原生/IaC | 已有云 IAM 专用样板，其余主要是通用案例 | P1 | 对象存储、K8s RBAC、Pod Security、SBOM |
 | 高级 Web/API | 基础 Web 强，高级协议较少 | P1 | 请求走私、缓存投毒、原型污染、WebSocket、GraphQL |
-| 客户端深度 | 5 个均为引导式 | P1 | 先把 MITB 或 Formjacking 升级为专用模拟 |
-| 恶意软件深度 | 6 个均为引导式 | P1 | 进程树、文件事件、检测和恢复模拟 |
+| 客户端深度 | 2 个专用、3 个引导式 | P1 | 继续权限 diff、浏览器行为时间线和内容沙箱 |
+| 恶意软件深度 | 1 个专用、5 个引导式 | P1 | 进程树、文件事件、传播图、检测和恢复模拟 |
 | 移动端 | 当前不在正式范围 | P2 | WebView、Deep Link、存储和证书校验 |
 
 ## 18. 优先级结论
@@ -277,8 +281,9 @@
 
 ## 20. 当前审计结论
 
-- 当前 71 个场景全部进入矩阵，且 71 个全部达到 `ready`。
+- 当前 75 个场景全部进入矩阵；71 个达到 `ready`，LT-036～LT-039 的 4 个新场景等待命令验证后收口。
 - Web/注入和认证授权是成熟度最高的两条主线。
 - API、业务逻辑、密码学、检测响应和 Windows 主机已有首个专用样板；云原生与 IaC 仍是主要结构性薄弱点。
 - 30 个引导式场景已满足当前安全化 `ready` 规则，但不等于 30 个独立深度靶场。
+- 150 个启用变体等待最终 Web/API 入口门禁复核；当前 17 个实验登记 E6，LT-031 的 7 个页面用例待验证后晋升。
 - 后续优先补结构性缺口和专用深度，不以继续增加名称数量为第一目标。

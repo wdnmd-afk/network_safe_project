@@ -1,7 +1,11 @@
-import { randomBytes } from "node:crypto";
+import { createHash, randomBytes } from "node:crypto";
 
 import { verifyPassword } from "./password.js";
-import { createSessionToken, readSessionToken } from "./session-token.js";
+import {
+  createSessionToken,
+  readSessionToken,
+  resolveTokenTtlMs,
+} from "./session-token.js";
 import {
   findUserById as findStoredUserById,
   findUserByUsername as findStoredUserByUsername,
@@ -25,14 +29,18 @@ export type AuthService = {
   login(input: LoginInput): Promise<{
     token: string;
     user: AuthUser;
+    expiresAt?: string;
   } | null>;
   getCurrentUser(token: string): Promise<AuthUser | null>;
+  getSessionExpiresAt?(token: string): string | null;
+  logout?(token: string): Promise<void>;
 };
 
 type CreateAuthServiceOptions = {
   findUserByUsername?: (username: string) => Promise<StoredUser | null>;
   findUserById?: (id: string) => Promise<StoredUser | null>;
   tokenSecret?: string;
+  tokenTtlMs?: number;
 };
 
 function toAuthUser(user: StoredUser): AuthUser {
@@ -63,6 +71,32 @@ export function createAuthService(options: CreateAuthServiceOptions = {}): AuthS
   const findUserByUsername = options.findUserByUsername ?? findStoredUserByUsername;
   const findUserById = options.findUserById ?? findStoredUserById;
   const tokenSecret = getTokenSecret(options.tokenSecret);
+  const tokenTtlMs = options.tokenTtlMs ?? resolveTokenTtlMs();
+  const revokedTokenFingerprints = new Map<string, number>();
+
+  function tokenFingerprint(token: string) {
+    return createHash("sha256").update(token).digest("hex");
+  }
+
+  function removeExpiredRevocations(now = Date.now()) {
+    for (const [fingerprint, expiresAt] of revokedTokenFingerprints) {
+      if (expiresAt <= now) {
+        revokedTokenFingerprints.delete(fingerprint);
+      }
+    }
+  }
+
+  function readActiveSession(token: string) {
+    const session = readSessionToken(token, tokenSecret, Date.now(), tokenTtlMs);
+
+    if (!session) {
+      return null;
+    }
+
+    removeExpiredRevocations();
+
+    return revokedTokenFingerprints.has(tokenFingerprint(token)) ? null : session;
+  }
 
   return {
     async login(input) {
@@ -84,14 +118,18 @@ export function createAuthService(options: CreateAuthServiceOptions = {}): AuthS
         return null;
       }
 
+      const issuedAt = Date.now();
+      const token = createSessionToken(user.id, tokenSecret, issuedAt, tokenTtlMs);
+
       return {
-        token: createSessionToken(user.id, tokenSecret),
+        token,
         user: toAuthUser(user),
+        expiresAt: new Date(issuedAt + tokenTtlMs).toISOString(),
       };
     },
 
     async getCurrentUser(token) {
-      const session = readSessionToken(token, tokenSecret);
+      const session = readActiveSession(token);
 
       if (!session) {
         return null;
@@ -100,6 +138,22 @@ export function createAuthService(options: CreateAuthServiceOptions = {}): AuthS
       const user = await findUserById(session.userId);
 
       return user ? toAuthUser(user) : null;
+    },
+
+    getSessionExpiresAt(token) {
+      const session = readActiveSession(token);
+      return session ? new Date(session.expiresAt).toISOString() : null;
+    },
+
+    async logout(token) {
+      const session = readSessionToken(token, tokenSecret, Date.now(), tokenTtlMs);
+
+      if (!session) {
+        return;
+      }
+
+      removeExpiredRevocations();
+      revokedTokenFingerprints.set(tokenFingerprint(token), session.expiresAt);
     },
   };
 }

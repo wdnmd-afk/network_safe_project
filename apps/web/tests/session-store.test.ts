@@ -69,9 +69,11 @@ describe("session store", () => {
 
     await session.logout();
 
+    expect(logout).toHaveBeenCalledWith("local-session-token");
     expect(session.isAuthenticated).toBe(false);
     expect(session.user).toBeNull();
     expect(sessionStorage.getItem("network-safe-session-token")).toBeNull();
+    expect(sessionStorage.getItem("network-safe-session-expires-at")).toBeNull();
   });
 
   it("loads current user lab record summary with session token", async () => {

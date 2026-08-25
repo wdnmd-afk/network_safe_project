@@ -32,7 +32,7 @@
       "description": "观察固定交易在浏览器显示、服务端记录与带外通道三方不一致且未签名时被提交的风险。",
       "entryKey": "client-mitb-vuln",
       "expectedOutcome": "返回 client-mitb-risk-accepted 学习信号。",
-      "supportsAutomation": true
+      "supportsAutomation": false
     },
     {
       "key": "fixed",
@@ -41,7 +41,7 @@
       "description": "观察比对服务端记录与带外确认通道后阻断不一致交易，并复核三方一致交易正常放行。",
       "entryKey": "client-mitb-fixed",
       "expectedOutcome": "视图不一致交易被阻断，三方一致交易凭固定控制正常通过确认。",
-      "supportsAutomation": true
+      "supportsAutomation": false
     }
   ],
   "entrypoints": {

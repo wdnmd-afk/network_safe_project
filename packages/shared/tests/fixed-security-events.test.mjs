@@ -4,6 +4,7 @@ import test from "node:test";
 import {
   analyzeFixedDetectionRule,
   fixedSecurityEventDataset,
+  fixedWindowsSecurityEventDataset,
   validateFixedSecurityEventDataset,
 } from "../src/fixed-security-events.js";
 
@@ -17,6 +18,23 @@ test("fixed security event dataset passes schema and cross-reference validation"
   assert.equal(Object.isFrozen(fixedSecurityEventDataset.events), true);
   assert.equal(Object.isFrozen(fixedSecurityEventDataset.events[0]), true);
   assert.equal(Object.isFrozen(fixedSecurityEventDataset.ruleProfiles), true);
+});
+
+test("fixed Windows event timeline reuses the locked security event schema", () => {
+  const result = validateFixedSecurityEventDataset(fixedWindowsSecurityEventDataset);
+
+  assert.equal(result.ok, true);
+  assert.equal(result.value.events.length, 5);
+  assert.equal(result.value.ruleProfiles.length, 2);
+  assert.equal(Object.isFrozen(fixedWindowsSecurityEventDataset), true);
+  const analysis = analyzeFixedDetectionRule(
+    fixedWindowsSecurityEventDataset,
+    "windows-correlated-identity-service-rule",
+  );
+  assert.ok(analysis);
+  assert.equal(analysis.truePositiveCount, 4);
+  assert.equal(analysis.falsePositiveCount, 0);
+  assert.equal(analysis.falseNegativeCount, 0);
 });
 
 test("broad fixed rule exposes one false positive and three false negatives", () => {

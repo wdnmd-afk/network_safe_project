@@ -163,6 +163,19 @@ import {
   type MitbTransactionVariantKey,
 } from "./services/mitb-transaction-lab.js";
 import {
+  createPropertyAuthorizationLabService,
+} from "./services/property-authorization-lab.js";
+import {
+  createRaceConditionLabService,
+} from "./services/race-condition-lab.js";
+import {
+  createSecretLifecycleAuditLabService,
+} from "./services/secret-lifecycle-audit-lab.js";
+import {
+  createWindowsEventLogTriageLabService,
+} from "./services/windows-event-log-triage-lab.js";
+import type { ControlledDecisionLabService } from "./services/controlled-decision-lab.js";
+import {
   createLabEventLogsService,
   type LabEventInput,
   type LabEventLogsService,
@@ -274,6 +287,10 @@ type CreateAppOptions = {
   servicePermissionAuditLabService?: ServicePermissionAuditLabService;
   iamPolicyAuditLabService?: IamPolicyAuditLabService;
   mitbTransactionLabService?: MitbTransactionLabService;
+  propertyAuthorizationLabService?: ControlledDecisionLabService;
+  raceConditionLabService?: ControlledDecisionLabService;
+  secretLifecycleAuditLabService?: ControlledDecisionLabService;
+  windowsEventLogTriageLabService?: ControlledDecisionLabService;
   labEventLogsService?: LabEventLogsService;
   labRecapQuestionCompletionsService?: LabRecapQuestionCompletionsService;
   ldapInjectionLabService?: LdapInjectionLabService;
@@ -386,6 +403,14 @@ export function createApp(options: CreateAppOptions = {}) {
     options.iamPolicyAuditLabService ?? createIamPolicyAuditLabService();
   const mitbTransactionLabService =
     options.mitbTransactionLabService ?? createMitbTransactionLabService();
+  const propertyAuthorizationLabService =
+    options.propertyAuthorizationLabService ?? createPropertyAuthorizationLabService();
+  const raceConditionLabService =
+    options.raceConditionLabService ?? createRaceConditionLabService();
+  const secretLifecycleAuditLabService =
+    options.secretLifecycleAuditLabService ?? createSecretLifecycleAuditLabService();
+  const windowsEventLogTriageLabService =
+    options.windowsEventLogTriageLabService ?? createWindowsEventLogTriageLabService();
   const labEventLogsService =
     options.labEventLogsService ?? createLabEventLogsService();
   const labRecapQuestionCompletionsService =
@@ -507,16 +532,35 @@ export function createApp(options: CreateAppOptions = {}) {
 
       res.status(200).json({
         user,
+        ...(authService.getSessionExpiresAt
+          ? { expiresAt: authService.getSessionExpiresAt(token) }
+          : {}),
       });
     } catch (error) {
       next(error);
     }
   });
 
-  app.post("/api/auth/logout", (_req, res) => {
-    res.status(200).json({
-      status: "ok",
-    });
+  app.post("/api/auth/logout", async (req, res, next) => {
+    try {
+      const authorization = req.header("authorization") ?? "";
+      const token = authorization.startsWith("Bearer ")
+        ? authorization.slice("Bearer ".length)
+        : "";
+
+      if (!token) {
+        res.status(401).json({
+          status: "error",
+          message: "missing session token",
+        });
+        return;
+      }
+
+      await authService.logout?.(token);
+      res.status(200).json({ status: "ok" });
+    } catch (error) {
+      next(error);
+    }
   });
 
   async function readCurrentUser(req: express.Request): Promise<CurrentUserResult> {
@@ -5626,6 +5670,121 @@ export function createApp(options: CreateAppOptions = {}) {
       }
     },
   );
+
+  function registerControlledDecisionLabRoutes(input: {
+    category: string;
+    scene: string;
+    service: ControlledDecisionLabService;
+  }) {
+    const basePath = `/api/labs/${input.category}/${input.scene}`;
+
+    app.get(`${basePath}/workbench`, (_req, res) => {
+      res.status(200).json({
+        status: "ok",
+        workbench: input.service.getWorkbench(),
+      });
+    });
+
+    app.post(`${basePath}/:variant/evaluate`, async (req, res, next) => {
+      try {
+        const currentUser = await readCurrentUser(req);
+
+        if (!currentUser.ok) {
+          res.status(currentUser.status).json(currentUser.body);
+          return;
+        }
+
+        const variantKey = readGuidedScenarioVariantKey(req.params.variant);
+
+        if (!variantKey) {
+          res.status(404).json({
+            status: "error",
+            message: "controlled decision variant not found",
+          });
+          return;
+        }
+
+        const scenarioKey = readRequiredString(req.body?.scenarioKey);
+        const decisions = readRequiredStringArray(req.body?.decisions);
+
+        if (!scenarioKey || decisions.length === 0) {
+          res.status(400).json({
+            status: "error",
+            message: "scenarioKey and decisions are required",
+          });
+          return;
+        }
+
+        const result = input.service.evaluate({
+          variantKey,
+          scenarioKey,
+          decisions,
+        });
+        const responseStatus = result.status === "blocked" ? 403 : 200;
+        const riskAccepted =
+          result.recap.terminalOutcome === "risk" &&
+          result.decision === "accepted";
+
+        // 受控专用实验只记录固定 key、计数和终止信号，不记录原始决策输入。
+        await recordLabEventSafely({
+          traceId: readOptionalTraceId(req),
+          userId: currentUser.user.id,
+          labKey: result.labKey,
+          variantKey,
+          phase:
+            variantKey === "vuln"
+              ? "attack"
+              : result.recap.terminalOutcome === "normal"
+                ? "normal"
+                : "defense",
+          eventType: result.status === "blocked" ? "blocked" : "success",
+          actorPerspective: riskAccepted ? "attacker" : "system",
+          method: req.method,
+          path: req.path,
+          inputSummary: {
+            scenarioKey: result.scenarioKey,
+            stepCount: result.assessment.stepCount,
+            outcomeCounts: result.recap.outcomeCounts,
+            terminalOutcome: result.recap.terminalOutcome,
+            signal: result.signal,
+          },
+          decision: result.decision,
+          signal: result.signal,
+          statusCode: responseStatus,
+          message: result.message,
+          riskLevel: riskAccepted ? "high" : result.assessment.riskLevel,
+        });
+
+        res.status(responseStatus).json({
+          status: result.status,
+          result,
+        });
+      } catch (error) {
+        next(error);
+      }
+    });
+  }
+
+  registerControlledDecisionLabRoutes({
+    category: "api",
+    scene: "property-authorization",
+    service: propertyAuthorizationLabService,
+  });
+  registerControlledDecisionLabRoutes({
+    category: "business-logic",
+    scene: "race-condition",
+    service: raceConditionLabService,
+  });
+  registerControlledDecisionLabRoutes({
+    category: "crypto",
+    scene: "secret-lifecycle-audit",
+    service: secretLifecycleAuditLabService,
+  });
+  registerControlledDecisionLabRoutes({
+    category: "host",
+    scene: "event-log-triage",
+    service: windowsEventLogTriageLabService,
+  });
 
   // 通用场景路由必须位于专用实验路由之后，避免吞掉 Prompt 注入等同名 evaluate 路径。
   app.get(

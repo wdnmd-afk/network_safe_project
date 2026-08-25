@@ -24,7 +24,7 @@
       "title": "漏洞版",
       "enabled": true,
       "description": "后续使用虚拟 XML 产品目录查询模拟器展示固定受控样例如何扩大教学结果范围。",
-      "entryKey": "vuln-search-api",
+      "entryKey": "vuln-entry",
       "expectedOutcome": "出现 xpath-injection-result-scope-expanded 信号。",
       "supportsAutomation": true
     },
@@ -33,7 +33,7 @@
       "title": "修复版",
       "enabled": true,
       "description": "后续展示服务端固定查询模板、查询范围允许列表和文本值处理如何阻断同样风险。",
-      "entryKey": "fixed-search-api",
+      "entryKey": "fixed-entry",
       "expectedOutcome": "出现 xpath-injection-controlled-sample-blocked 信号。",
       "supportsAutomation": true
     }

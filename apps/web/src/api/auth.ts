@@ -14,10 +14,12 @@ export type LoginInput = {
 export type LoginResponse = {
   token: string;
   user: AuthUser;
+  expiresAt?: string;
 };
 
 export type CurrentUserResponse = {
   user: AuthUser;
+  expiresAt?: string | null;
 };
 
 async function readJson<T>(response: Response): Promise<T> {
@@ -50,9 +52,12 @@ export async function fetchCurrentUser(token: string) {
   return readJson<CurrentUserResponse>(response);
 }
 
-export async function logout() {
+export async function logout(token: string) {
   const response = await fetch("/api/auth/logout", {
     method: "POST",
+    headers: {
+      authorization: `Bearer ${token}`,
+    },
   });
 
   return readJson<{ status: string }>(response);

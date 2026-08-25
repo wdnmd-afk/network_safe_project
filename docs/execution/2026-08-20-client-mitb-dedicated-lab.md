@@ -147,6 +147,8 @@ build、smoke、数据库集成与 Playwright 不属于本切片最小门禁。
 
 ## 11. 当前执行状态
 
-- 已完成候选盘点、选型与引导式目录条目预读。
-- 已锁定固定视图字段、两步状态机、canonical 信号与安全边界。
-- 下一步按本文档实现服务端链路。
+- 完成程度：8 / 8，`LT-027` 已完成。
+- 专项只读验证 19/19 `ok: true`。
+- 根级 `pnpm verify` EXIT=0：前后端类型检查、shared 65/65、guided 30/30、entrypoints 142/142、coverage 71/71、server 348/348、web 276/276 全部通过。
+- `client.mitb` 保持 `ready` / `case-study` / D3 专用模拟；变体 `supportsAutomation` 已按 case-study ready 规则保持 `false`。
+- 本轮未执行生产 build；专项门禁和完整 E2E 已覆盖本任务完成条件。

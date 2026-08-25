@@ -1,5 +1,308 @@
 import { expect, test } from "@playwright/test";
 
+const dedicatedLabPageDifferences = [
+  {
+    id: "web.clickjacking",
+    path: "/labs/web/clickjacking",
+    vulnTitle: "点击劫持风险观察版",
+    fixedTitle: "点击劫持防御复盘版",
+    statusPanel: ".clickjacking-status-panel",
+    riskSignal: "风险被接受（漏洞路径）",
+    defenseSignal: "防御拦截被劫持动作",
+    normalButton: "正常确认流程",
+    normalSignal: "正常确认流程通过",
+  },
+  {
+    id: "web.open-redirect",
+    path: "/labs/web/open-redirect",
+    vulnTitle: "开放重定向风险观察版",
+    fixedTitle: "开放重定向防御复盘版",
+    statusPanel: ".open-redirect-status-panel",
+    riskSignal: "任意跳转被接受（漏洞路径）",
+    defenseSignal: "防御拦截未受信任跳转",
+    normalButton: "正常跳转流程",
+    normalSignal: "站内正常跳转流程通过",
+  },
+  {
+    id: "auth.credential-stuffing",
+    path: "/labs/auth/credential-stuffing",
+    vulnTitle: "凭据填充风险观察版",
+    fixedTitle: "凭据填充防御复盘版",
+    statusPanel: ".credential-stuffing-status-panel",
+    riskSignal: "批量登录被接受（漏洞路径）",
+    defenseSignal: "防御阻断高风险登录批次",
+    normalButton: "正常登录流程",
+    normalSignal: "自适应挑战通过后正常登录",
+  },
+  {
+    id: "auth.session-hijacking",
+    path: "/labs/auth/session-hijacking",
+    vulnTitle: "会话劫持风险观察版",
+    fixedTitle: "会话劫持防御复盘版",
+    statusPanel: ".session-hijacking-status-panel",
+    riskSignal: "被复用会话被接受（漏洞路径）",
+    defenseSignal: "防御阻断被复用会话",
+    normalButton: "正常会话流程",
+    normalSignal: "再认证正常会话流程通过",
+  },
+  {
+    id: "auth.oauth",
+    path: "/labs/auth/oauth",
+    vulnTitle: "OAuth 漏洞风险观察版",
+    fixedTitle: "OAuth 漏洞防御复盘版",
+    statusPanel: ".oauth-status-panel",
+    riskSignal: "被篡改授权响应被接受（漏洞路径）",
+    defenseSignal: "防御拦截被篡改授权响应",
+    normalButton: "正常授权流程",
+    normalSignal: "正常授权流程通过",
+  },
+  {
+    id: "client.formjacking",
+    path: "/labs/client/formjacking",
+    vulnTitle: "Formjacking 风险观察版",
+    fixedTitle: "Formjacking 防御复盘版",
+    statusPanel: ".formjacking-status-panel",
+    riskSignal: "被篡改提交被接受（漏洞路径）",
+    defenseSignal: "防御拦截被篡改提交目标",
+    normalButton: "正常提交流程",
+    normalSignal: "正常结账提交通过",
+  },
+  {
+    id: "malware.ransomware",
+    path: "/labs/malware/ransomware",
+    vulnTitle: "勒索软件风险观察版",
+    fixedTitle: "勒索软件防御复盘版",
+    statusPanel: ".ransomware-status-panel",
+    riskSignal: "加密行为被放任（漏洞路径）",
+    defenseSignal: "隔离阻断高风险主机",
+    normalButton: "正常恢复流程",
+    normalSignal: "离线备份恢复正常业务",
+  },
+];
+
+const categoryRepresentativeLabDifferences = [
+  {
+    id: "api.functional-authorization",
+    path: "/labs/api/functional-authorization",
+    vulnTitle: "API 功能级授权风险观察版",
+    fixedTitle: "API 功能级授权防御复盘版",
+    statusPanel: ".bfla-status-panel",
+    runButton: "运行固定评估",
+    normalButton: "正常管理流程",
+    riskSignal: "越权管理操作被接受（漏洞路径）",
+    defenseSignal: "防御拦截越权管理操作",
+    normalSignal: "正常管理操作流程通过",
+  },
+  {
+    id: "business-logic.workflow-bypass",
+    path: "/labs/business-logic/workflow-bypass",
+    vulnTitle: "业务流程跳步风险观察版",
+    fixedTitle: "业务流程跳步防御复盘版",
+    statusPanel: ".workflow-bypass-status-panel",
+    runButton: "运行固定评估",
+    normalButton: "正常订单流程",
+    riskSignal: "待支付订单直接进入发货（漏洞路径）",
+    defenseSignal: "防御阻断乱序阶段迁移",
+    normalSignal: "正常订单阶段迁移通过",
+  },
+  {
+    id: "crypto.insecure-randomness",
+    path: "/labs/crypto/insecure-randomness",
+    vulnTitle: "不安全随机数风险观察版",
+    fixedTitle: "不安全随机数防御复盘版",
+    statusPanel: ".insecure-randomness-status-panel",
+    runButton: "运行固定评估",
+    normalButton: "正常随机源策略",
+    riskSignal: "低熵 token 策略被接受",
+    defenseSignal: "防御阻断弱随机来源",
+    normalSignal: "固定 CSPRNG 策略通过",
+  },
+  {
+    id: "detection.rule-alert-triage",
+    path: "/labs/detection/rule-alert-triage",
+    vulnTitle: "检测规则与告警研判风险观察版",
+    fixedTitle: "检测规则与告警研判防御复盘版",
+    statusPanel: ".triage-status-panel",
+    runButton: "运行固定研判",
+    normalButton: "正常维护路径",
+    riskSignal: "关联告警被错误关闭",
+    defenseSignal: "关联告警已升级研判",
+    normalSignal: "维护事件已凭证据关闭",
+  },
+  {
+    id: "host.service-permission-audit",
+    path: "/labs/host/service-permission-audit",
+    vulnTitle: "Windows 服务权限风险观察版",
+    fixedTitle: "Windows 服务权限防御复盘版",
+    statusPanel: ".audit-status-panel",
+    runButton: "运行固定审计",
+    normalButton: "正常服务基线",
+    riskSignal: "服务替换风险被接受",
+    defenseSignal: "未授权服务修改已阻断",
+    normalSignal: "加固服务基线通过",
+  },
+  {
+    id: "infrastructure.iam-policy-audit",
+    path: "/labs/infrastructure/iam-policy-audit",
+    vulnTitle: "云 IAM 策略风险观察版",
+    fixedTitle: "云 IAM 策略防御复盘版",
+    statusPanel: ".audit-status-panel",
+    runButton: "运行固定审计",
+    normalButton: "最小权限基线",
+    riskSignal: "过宽授权被批准",
+    defenseSignal: "过宽授权已阻断",
+    normalSignal: "最小权限基线通过",
+  },
+  {
+    id: "client.mitb",
+    path: "/labs/client/mitb",
+    vulnTitle: "浏览器 MITB 风险观察版",
+    fixedTitle: "浏览器 MITB 防御复盘版",
+    statusPanel: ".audit-status-panel",
+    runButton: "运行固定对照",
+    normalButton: "一致交易基线",
+    riskSignal: "篡改交易被提交",
+    defenseSignal: "不一致交易已阻断",
+    normalSignal: "一致交易通过确认",
+  },
+  {
+    id: "api.property-authorization",
+    path: "/labs/api/property-authorization",
+    vulnTitle: "API 属性级授权风险观察版",
+    fixedTitle: "API 属性级授权防御复盘版",
+    statusPanel: ".controlled-decision-status-panel",
+    runButton: "运行固定评估",
+    normalButton: "正常字段更新",
+    riskSignal: "批量绑定风险",
+    defenseSignal: "属性级授权防御",
+    normalSignal: "正常字段更新",
+  },
+  {
+    id: "business-logic.race-condition",
+    path: "/labs/business-logic/race-condition",
+    vulnTitle: "业务竞态与幂等风险观察版",
+    fixedTitle: "业务竞态与幂等防御复盘版",
+    statusPanel: ".controlled-decision-status-panel",
+    runButton: "运行固定评估",
+    normalButton: "正常唯一请求",
+    riskSignal: "竞态风险",
+    defenseSignal: "幂等防御",
+    normalSignal: "正常扣减",
+  },
+  {
+    id: "crypto.secret-lifecycle-audit",
+    path: "/labs/crypto/secret-lifecycle-audit",
+    vulnTitle: "秘密生命周期风险观察版",
+    fixedTitle: "秘密生命周期防御复盘版",
+    statusPanel: ".controlled-decision-status-panel",
+    runButton: "运行固定审计",
+    normalButton: "活动版本正常发布",
+    riskSignal: "泄露风险",
+    defenseSignal: "轮换防御",
+    normalSignal: "正常发布",
+  },
+  {
+    id: "host.event-log-triage",
+    path: "/labs/host/event-log-triage",
+    vulnTitle: "Windows 事件日志风险观察版",
+    fixedTitle: "Windows 事件日志防御复盘版",
+    statusPanel: ".controlled-decision-status-panel",
+    runButton: "运行固定研判",
+    normalButton: "正常维护路径",
+    riskSignal: "时间线风险",
+    defenseSignal: "研判升级",
+    normalSignal: "维护关闭",
+  },
+];
+
+async function loginDemoUser(page) {
+  await page.goto("/login");
+  await page.getByLabel("用户名").fill("demo_user");
+  await page.getByLabel("密码").fill("Demo@123456");
+  await page.getByRole("button", { name: "登录" }).click();
+  await expect(page.getByRole("heading", { name: "账户中心" })).toBeVisible();
+}
+
+function learningSignal(page, statusPanel) {
+  return page
+    .locator(statusPanel)
+    .locator(".status-metric, .status-strip > div")
+    .filter({ hasText: "学习信号" })
+    .locator("strong");
+}
+
+test.describe("专用实验页面差异", () => {
+  for (const scenario of dedicatedLabPageDifferences) {
+    test(`${scenario.id} 展示风险、防御和正常三向结果`, async ({ page }) => {
+      await loginDemoUser(page);
+
+      await page.goto(`${scenario.path}/vuln`);
+      await expect(
+        page.getByRole("heading", { name: scenario.vulnTitle }),
+      ).toBeVisible();
+      await expect(page.getByRole("textbox")).toHaveCount(0);
+      await page.getByRole("button", { name: "载入推荐路径" }).click();
+      await page.getByRole("button", { name: "运行固定评估" }).click();
+      await expect(learningSignal(page, scenario.statusPanel)).toHaveText(
+        scenario.riskSignal,
+      );
+
+      await page.goto(`${scenario.path}/fixed`);
+      await expect(
+        page.getByRole("heading", { name: scenario.fixedTitle }),
+      ).toBeVisible();
+      await expect(page.getByRole("textbox")).toHaveCount(0);
+      await page.getByRole("button", { name: "载入推荐路径" }).click();
+      await page.getByRole("button", { name: "运行固定评估" }).click();
+      await expect(learningSignal(page, scenario.statusPanel)).toHaveText(
+        scenario.defenseSignal,
+      );
+
+      await page.getByRole("button", { name: scenario.normalButton }).click();
+      await page.getByRole("button", { name: "运行固定评估" }).click();
+      await expect(learningSignal(page, scenario.statusPanel)).toHaveText(
+        scenario.normalSignal,
+      );
+    });
+  }
+});
+
+test.describe("分类代表性专用实验页面差异", () => {
+  for (const scenario of categoryRepresentativeLabDifferences) {
+    test(`${scenario.id} 展示风险、防御和正常三向结果`, async ({ page }) => {
+      await loginDemoUser(page);
+
+      await page.goto(`${scenario.path}/vuln`);
+      await expect(
+        page.getByRole("heading", { name: scenario.vulnTitle }),
+      ).toBeVisible();
+      await expect(page.getByRole("textbox")).toHaveCount(0);
+      await page.getByRole("button", { name: "载入推荐路径" }).click();
+      await page.getByRole("button", { name: scenario.runButton }).click();
+      await expect(learningSignal(page, scenario.statusPanel)).toHaveText(
+        scenario.riskSignal,
+      );
+
+      await page.goto(`${scenario.path}/fixed`);
+      await expect(
+        page.getByRole("heading", { name: scenario.fixedTitle }),
+      ).toBeVisible();
+      await expect(page.getByRole("textbox")).toHaveCount(0);
+      await page.getByRole("button", { name: "载入推荐路径" }).click();
+      await page.getByRole("button", { name: scenario.runButton }).click();
+      await expect(learningSignal(page, scenario.statusPanel)).toHaveText(
+        scenario.defenseSignal,
+      );
+
+      await page.getByRole("button", { name: scenario.normalButton }).click();
+      await page.getByRole("button", { name: scenario.runButton }).click();
+      await expect(learningSignal(page, scenario.statusPanel)).toHaveText(
+        scenario.normalSignal,
+      );
+    });
+  }
+});
+
 test("首页展示 SafeMart 品牌和核心导航", async ({ page }) => {
   await page.goto("/");
 
@@ -50,6 +353,50 @@ test("实验页展示真实元数据列表", async ({ page }) => {
   await expect(page.getByRole("heading", { name: "JWT 攻击" })).toBeVisible();
   await expect(page.getByRole("link", { name: "漏洞版" }).first()).toBeVisible();
   await expect(page.getByRole("link", { name: "修复版" }).first()).toBeVisible();
+});
+
+test("实验目录支持知识点搜索与深度筛选", async ({ page }) => {
+  await page.goto("/labs");
+  await page.getByLabel("搜索实验").fill("frame-ancestors");
+  await expect(page.getByRole("heading", { name: "点击劫持" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "XSS" })).toHaveCount(0);
+
+  await page.getByRole("button", { name: "清除筛选" }).click();
+  await page.getByLabel("深度").selectOption("D2");
+  await expect(page.getByRole("heading", { name: "DDoS" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "XSS" })).toHaveCount(0);
+});
+
+test("实验详情展示静态学习路径前置与后续关系", async ({ page }) => {
+  await page.goto("/labs/web/csrf");
+  await expect(page.getByRole("heading", { name: "学习路径" })).toBeVisible();
+  await expect(page.getByRole("link", { name: "前置：XSS" })).toHaveAttribute(
+    "href",
+    "/labs/web/xss",
+  );
+  await expect(page.getByRole("link", { name: "后续：SQL 注入" })).toHaveAttribute(
+    "href",
+    "/labs/web/sql-injection",
+  );
+});
+
+test("注销后旧 token 立即失效", async ({ page }) => {
+  await loginDemoUser(page);
+  const token = await page.evaluate(() =>
+    sessionStorage.getItem("network-safe-session-token"),
+  );
+  expect(token).toBeTruthy();
+
+  await page.getByRole("button", { name: "退出登录" }).click();
+  await expect(page.getByRole("heading", { name: "登录 SafeMart" })).toBeVisible();
+
+  const status = await page.evaluate(async (revokedToken) => {
+    const response = await fetch("/api/auth/me", {
+      headers: { authorization: `Bearer ${revokedToken}` },
+    });
+    return response.status;
+  }, token);
+  expect(status).toBe(401);
 });
 
 test("XSS 实验详情页展示元数据、验证方式和变体入口", async ({ page }) => {
@@ -1020,16 +1367,14 @@ test("登录用户可以对比配置错误漏洞版暴露信号与修复版审�
   ).toContainText("safe-error-reporting");
 });
 
-test("登录用户可以跨分类对比通用固定场景的漏洞与修复判定", async ({ page }) => {
+test("登录用户可以跨分类对比仍在引导式目录中的漏洞与修复判定", async ({ page }) => {
   const representativeLabs = [
-    ["web", "clickjacking", "点击劫持"],
-    ["auth", "oauth", "OAuth 漏洞"],
     ["network", "ddos", "DDoS"],
     ["social", "smishing", "短信钓鱼"],
-    ["malware", "ransomware", "勒索软件"],
+    ["malware", "trojan", "木马"],
     ["supply-chain", "malicious-package", "恶意包注入"],
     ["ai", "deepfake", "Deepfake"],
-    ["client", "formjacking", "Formjacking"],
+    ["client", "malvertising", "恶意广告"],
     ["infrastructure", "zero-day", "零日漏洞利用"],
   ];
 

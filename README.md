@@ -214,17 +214,20 @@ tools/lab-scripts/<category>/<scene>/
 - 统一 `lab_event_logs` 事件日志和脱敏摘要。
 - 71 个 `ready` 实验、14 个分类、142 个漏洞版 / 修复版变体。
 - 25 个 `interactive`、19 个 `simulation`、27 个 `case-study` 实验模式。
-- 40 个专用实验实现与 31 个通用引导式实验实现。
-- 单元 / API / 共享校验 / 只读脚本 / Playwright 分层自动化验证。
+- 41 个专用实验实现与 30 个通用引导式实验实现。
+- 单元 / API / 共享校验 / 只读脚本 / Web 入口一致性 / Playwright 分层自动化验证。
 - 本机数据库缺失复盘表的幂等补齐入口 `pnpm --filter @network-safe/server schema:ensure`。
 
-当前进行中：
+当前长期队列：
 
-- 下一项长期任务为 `LT-027` 客户端或恶意软件主题专用化升级。
+- `LT-001`～`LT-030` 已完成并通过第二轮阶段审计。
+- 下一项长期任务为 `LT-031`，补齐 `LT-021`～`LT-027` 新专用实验的分类代表性 Playwright 三向证据。
 - 新增实验在专项与根级命令门禁通过前不推进为 `ready`。
 
 总纲和最终验证证据见：
 
+- `SECURITY-COVERAGE-LONG-TERM-GOAL.md`
+- `docs/execution/2026-08-25-lt-second-round-phase-audit.md`
 - `docs/execution/security-lab-master-goal.md`
 - `docs/execution/2026-07-20-security-lab-master-completion.md`
 

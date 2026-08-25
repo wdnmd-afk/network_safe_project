@@ -89,10 +89,13 @@ describe("auth api client", () => {
       }),
     );
 
-    await logout();
+    await logout("local-session-token");
 
     expect(fetchMock).toHaveBeenCalledWith("/api/auth/logout", {
       method: "POST",
+      headers: {
+        authorization: "Bearer local-session-token",
+      },
     });
   });
 });

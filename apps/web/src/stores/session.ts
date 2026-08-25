@@ -16,6 +16,7 @@ import {
 } from "../api/lab-records";
 
 const tokenStorageKey = "network-safe-session-token";
+const expiresAtStorageKey = "network-safe-session-expires-at";
 
 function readStoredToken() {
   if (typeof sessionStorage === "undefined") {
@@ -29,13 +30,31 @@ function writeStoredToken(token: string) {
   sessionStorage.setItem(tokenStorageKey, token);
 }
 
+function readStoredExpiresAt() {
+  if (typeof sessionStorage === "undefined") {
+    return null;
+  }
+
+  return sessionStorage.getItem(expiresAtStorageKey);
+}
+
+function writeStoredExpiresAt(expiresAt: string | null) {
+  if (expiresAt) {
+    sessionStorage.setItem(expiresAtStorageKey, expiresAt);
+  } else {
+    sessionStorage.removeItem(expiresAtStorageKey);
+  }
+}
+
 function clearStoredToken() {
   sessionStorage.removeItem(tokenStorageKey);
+  sessionStorage.removeItem(expiresAtStorageKey);
 }
 
 export const useSessionStore = defineStore("session", {
   state: () => ({
     token: readStoredToken(),
+    expiresAt: readStoredExpiresAt(),
     user: null as AuthUser | null,
     labRecords: {
       progress: [],
@@ -54,16 +73,19 @@ export const useSessionStore = defineStore("session", {
     displayName: (state) => state.user?.displayName ?? "未登录用户",
   },
   actions: {
-    setSession(session: { token: string; user: AuthUser }) {
+    setSession(session: { token: string; user: AuthUser; expiresAt?: string }) {
       this.token = session.token;
       this.user = session.user;
+      this.expiresAt = session.expiresAt ?? null;
       this.errorMessage = "";
       writeStoredToken(session.token);
+      writeStoredExpiresAt(this.expiresAt);
     },
 
     clearSession() {
       this.token = null;
       this.user = null;
+      this.expiresAt = null;
       this.labRecords = {
         progress: [],
         verifications: [],
@@ -97,12 +119,20 @@ export const useSessionStore = defineStore("session", {
         return;
       }
 
+      if (this.expiresAt && Date.parse(this.expiresAt) <= Date.now()) {
+        this.clearSession();
+        this.errorMessage = "登录状态已失效";
+        return;
+      }
+
       this.isLoading = true;
       this.errorMessage = "";
 
       try {
         const result = await fetchCurrentUser(this.token);
         this.user = result.user;
+        this.expiresAt = result.expiresAt ?? this.expiresAt;
+        writeStoredExpiresAt(this.expiresAt);
       } catch (error) {
         this.clearSession();
         this.errorMessage =
@@ -158,11 +188,17 @@ export const useSessionStore = defineStore("session", {
     },
 
     async logout() {
-      if (this.token) {
-        await logoutRequest();
-      }
+      const token = this.token;
 
-      this.clearSession();
+      try {
+        if (token) {
+          await logoutRequest(token);
+        }
+      } catch {
+        // 服务端不可用时仍应清理本机 token，避免界面残留伪登录状态。
+      } finally {
+        this.clearSession();
+      }
     },
   },
 });
