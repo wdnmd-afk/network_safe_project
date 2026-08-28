@@ -48,6 +48,9 @@ jobs:
       - name: Guided scenario read-only verification
         run: pnpm test:guided
 
+      - name: Controlled decision lab verification
+        run: pnpm test:controlled
+
       - name: Web entrypoint consistency
         run: pnpm test:entrypoints
 
@@ -61,7 +64,7 @@ jobs:
         run: pnpm test:server
 
       - name: Web unit tests
-        run: pnpm test:web -- --run
+        run: pnpm test:web:run
 
       - name: Trailing whitespace and diff check
         run: git diff --check
