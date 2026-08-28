@@ -1,13 +1,28 @@
 # 长期目标执行进度
 
-- 总队列：40 项
-- 已完成：40 / 40
-- 当前状态：`LT-031`～`LT-040` 已完成并通过专项、根级和完整 Playwright 门禁；75 个实验全部 `ready`
-- 待验证：无（生产 build/nginx 发布复验不属于本轮完成条件）
-- 下一轮队列：`LT-041` 全新 Windows 发布复验优先，随后进入 `LT-042` Kubernetes RBAC/IaC 固定审计
+- 总队列：41 项
+- 已完成：41 / 41
+- 当前状态：`LT-041` 已完成 75 实验基线的全新 Windows 发布复验，生产构建与 nginx 发布链路已实际验证；75 个实验全部 `ready`
+- 待验证：无
+- 下一轮队列：`LT-042` Kubernetes RBAC/IaC 固定审计，随后 `LT-043` API 资源消耗/Webhook 重放与幂等、`LT-044` Windows 文件 ACL/计划任务/NTLM-Kerberos 固定案例
 - 计数规则：只有实现、文档及约定验证全部完成并回填证据后，任务才计入已完成。
 
-# 2026-08-27 最新进展：LT-031～LT-040 完成并通过第三轮审计
+# 2026-08-28 最新进展：LT-041 全新 Windows 发布复验完成
+
+- [x] 预检：Node v22.16.0 满足 `>=22 <23`；通过 corepack 将 pnpm 锁定到 `packageManager` 声明的 10.0.0（本机默认 7.33.7 与声明不一致）；MySQL 3306 已监听；6667/6670/8080 空闲；`git diff --check` 通过。
+- [x] 数据库：`pnpm db:prepare` 连续两次输出完全一致——4 个迁移幂等跳过、`lab_recap_question_completions` 已存在、2 个认证账号、14 个分类、75 个实验、150 个变体，确认幂等无重复写入。
+- [x] 生产构建（用户明确授权后执行）：`pnpm build:web` EXIT=0，生成 `dist/index.html` 与 77 个静态资源；`pnpm build:server` EXIT=0，Prisma Client v6.19.3 生成且 `dist/index.js` 就绪。
+- [x] 产物秘密扫描：构建输出未包含 `.env`、固定演示密码、token 或个人路径凭据；唯一命中项为 `auth.js` 中 `process.env.AUTH_TOKEN_SECRET` 变量名读取与错误文案，非硬编码值。
+- [x] 修复缺陷：`tools/release/test-nginx-runtime.ps1` 为 UTF-8 无 BOM，Windows PowerShell 5.1 按 ANSI/GBK 解码导致第 46 行中文注释破坏语法结构，脚本无法解析（`MissingEndCurlyBrace`）。已补 UTF-8 BOM，保留中文注释并恢复可解析性。
+- [x] nginx 发布验收：配置由模板生成到临时目录，`nginx -t` 语法与测试均通过；运行时验收输出 `NGINX_RUNTIME_ACCEPTANCE_PASS`——首页 200、深层路由 `/labs/client/mitb/fixed` history fallback 200、`/api/health` 200、`/api/health/db` 200、`/api/labs` 200、`lab-count=75` 动态断言通过。
+- [x] 认证与实验闭环：登录、当前用户、引导式 `network.mitm` 漏洞版接受/修复版阻断 403/修复版正常接受三向评估、事件日志读取、复盘读写、注销全部通过。
+- [x] 自动化复验：`pnpm verify` EXIT=0——前后端类型检查、shared 67/67、guided 30/30、controlled 四项 `ok: true`、Web 入口 150/150、API 入口 198/198、覆盖矩阵 75/75（45 专用、30 引导式、14 分类、28 个 E6、模式 26/21/28）、server 363/363、web 285/285。
+- [x] `pnpm test:smoke` 4/4 通过；`pnpm test:e2e` 40/40 通过。
+- [x] 清理：6667 与 8080 端口已释放，验收 nginx 进程数为 0。
+- 验证证据：详见 `docs/execution/2026-08-28-lt041-windows-release-reverification.md` 第 9 节；本次会话唯一代码改动为上述 BOM 修复，`git diff --check` 通过。
+- 说明：复验向本机写入了 `demo_user` 在 `network.mitm` 场景下的事件日志与一条复盘完成记录，属于预期的固定演示数据影响范围。
+
+# 2026-08-27 历史进展：LT-031～LT-040 完成并通过第三轮审计
 
 - [x] `LT-031`：7 个目标专用实验均完成风险/防御/正常三向 Playwright 页面验证，目标与完整 E2E 均通过，E6 由 17 增至 28。
 - [x] `LT-032`：Express API 路由与 `meta.json` API entrypoints 双向一致性验证通过，198/198 入口匹配、66/66 实验路由覆盖，并已纳入根级脚本和 CI。

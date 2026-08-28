@@ -220,15 +220,16 @@ tools/lab-scripts/<category>/<scene>/
 
 当前长期队列：
 
-- `LT-001`～`LT-040` 已完成并通过第三轮阶段审计；当前后续队列从 `LT-041` 起。
+- `LT-001`～`LT-041` 已完成；当前后续队列从 `LT-042` 起。
 - `LT-031`～`LT-040` 的专项验证、根级 `pnpm verify` 和完整 40 项 Playwright E2E 已通过。
-- 当前基线为 75/75 `ready`；生产 build/nginx 发布复验不属于本轮完成条件，已列入后续维护队列。
+- `LT-041` 已在 75 实验基线上完成生产构建与 nginx 发布复验：`pnpm db:prepare` 幂等、前后端构建通过、`nginx -t` 通过、静态托管与 `/api` 反向代理全部 200、实验总数动态断言 75、登录与实验闭环通过。
 
 总纲和最终验证证据见：
 
 - `SECURITY-COVERAGE-LONG-TERM-GOAL.md`
 - `docs/execution/2026-08-25-lt-second-round-phase-audit.md`
 - `docs/execution/2026-08-25-lt040-third-round-audit.md`
+- `docs/execution/2026-08-28-lt041-windows-release-reverification.md`
 - `docs/execution/security-lab-master-goal.md`
 - `docs/execution/2026-07-20-security-lab-master-completion.md`
 

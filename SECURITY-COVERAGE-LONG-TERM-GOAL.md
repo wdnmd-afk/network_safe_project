@@ -6,7 +6,7 @@
 >
 > 当前基线：75 个安全学习实验（75 个 `ready`）
 >
-> 长期队列进度：40 / 40 已完成；第三轮阶段审计已收口，后续队列从 `LT-041` 起
+> 长期队列进度：41 / 44 已完成；`LT-041` Windows 发布复验已收口，后续队列从 `LT-042` 起
 
 ## 1. 文档定位
 
@@ -506,7 +506,7 @@
 - [x] 增加漏洞版、修复版和正常业务流程的三向回归（`LT-031`）。
 - [ ] 建立测试覆盖率基线，先观察再决定门禁阈值。
 - [ ] 增加依赖风险和秘密泄露检查。
-- [ ] 增加 Windows 全新环境的可重复验收脚本（纳入后续 `LT-041`）。
+- [x] 增加 Windows 全新环境的可重复验收脚本（`LT-041`；`tools/release/test-nginx-runtime.ps1` 已改为动态实验计数，不再随基线变化腐化）。
 - [ ] 建立失败证据、日志位置和排障说明。
 
 ## 11. 数据库和数据治理
@@ -537,7 +537,7 @@
 - [x] 支持 Vue SPA history fallback（完成时间：2026-07-23 09:16:45 +08:00）。
 - [x] 支持 `/api` 反向代理到本机 Node 服务（完成时间：2026-07-23 09:16:45 +08:00）。
 - [x] 提供 Node 服务与 nginx 的启动、停止、日志和排障说明（完成时间：2026-07-23 09:16:45 +08:00）。
-- [ ] 建立全新 Windows 环境的发布验收记录。
+- [x] 建立全新 Windows 环境的发布验收记录（`LT-041`；证据见 `docs/execution/2026-08-28-lt041-windows-release-reverification.md` 第 9 节）。
 
 执行生产构建前仍须遵守项目规则：只有用户明确要求时才运行 `pnpm build` 或全量打包命令。
 
@@ -838,7 +838,7 @@
 
 第三轮审计确认本轮未执行生产构建和 nginx 发布复验。由于平台已从 65 个实验扩展到 75 个实验，并新增认证生命周期、共享包依赖和入口门禁，下一轮先验证交付可重复性，再扩展新安全主题。
 
-- [ ] `LT-041`：执行全新 Windows 环境发布复验，覆盖数据库初始化、前后端构建、服务启动、nginx SPA fallback、API 反向代理、登录和代表性实验闭环。
+- [x] `LT-041`：执行全新 Windows 环境发布复验，覆盖数据库初始化、前后端构建、服务启动、nginx SPA fallback、API 反向代理、登录和代表性实验闭环（完成时间：2026-08-28 15:37:54 +08:00；验证：`db:prepare` 两次幂等、前后端生产构建、`nginx -t`、nginx 运行时验收 `NGINX_RUNTIME_ACCEPTANCE_PASS`、`pnpm verify` EXIT=0、smoke 4/4、E2E 40/40；修复 `test-nginx-runtime.ps1` 因 UTF-8 无 BOM 导致 Windows PowerShell 解析失败的缺陷）。
 - [ ] `LT-042`：实现 Kubernetes RBAC/IaC 固定配置审计，使用只读 YAML、虚拟角色绑定和固定策略，不连接真实集群或云账户。
 - [ ] `LT-043`：实现 API 资源消耗、Webhook 重放与幂等固定实验，继续使用固定请求批次与内存状态机。
 - [ ] `LT-044`：补充 Windows 文件 ACL、计划任务和 NTLM/Kerberos 固定案例，不读取或修改真实主机状态。
@@ -906,3 +906,4 @@
 | `LT-038` | 2026-08-27 09:55:53 +08:00 | `crypto.secret-lifecycle-audit` 固定秘密标记与密钥生命周期审计专用实验及全链路入口 | 专项 `ok: true`；根级 verify 和 E2E 通过；元数据 `ready` |
 | `LT-039` | 2026-08-27 09:55:53 +08:00 | `host.event-log-triage` 固定脱敏 Windows 事件时间线 case-study 及共享事件 schema 复用 | 专项 `ok: true`；根级 verify 和 E2E 通过；元数据 `ready`，保持无真实主机操作边界 |
 | `LT-040` | 2026-08-27 09:55:53 +08:00 | 第三轮事实审计、当前基线统一和后续队列排序 | 75/75 ready、150 变体、45 专用、30 引导式、14 分类、28 个 E6；`pnpm verify` EXIT=0、E2E 40/40、`git diff --check` 通过 |
+| `LT-041` | 2026-08-28 15:37:54 +08:00 | 75 实验基线的全新 Windows 发布复验：数据库幂等准备、前后端生产构建、构建产物秘密扫描、nginx 生成与运行时验收、认证与实验闭环、全量自动化复验；修复 `test-nginx-runtime.ps1` 在 Windows PowerShell 5.1 下因缺少 UTF-8 BOM 导致的解析失败 | `db:prepare` 两次输出一致（4 迁移幂等、2 账号、14 分类、75 实验、150 变体）；`build:web` 与 `build:server` EXIT=0，产物无硬编码秘密；`nginx -t` 通过；运行时验收 `NGINX_RUNTIME_ACCEPTANCE_PASS`，5 项 HTTP 检查全 200、`lab-count=75`、登录/当前用户/引导式三向/事件日志/复盘/注销全过；`pnpm verify` EXIT=0（shared 67、guided 30/30、controlled 4×`ok: true`、Web 入口 150/150、API 入口 198/198、coverage 75/75、server 363、web 285）；`test:smoke` 4/4；`test:e2e` 40/40；端口 6667/8080 已释放；`git diff --check` 通过 |

@@ -2,9 +2,11 @@
 
 > 对应长期目标：`LT-041`
 >
-> 文档状态：进行中
+> 文档状态：已完成
 >
 > 创建时间：2026-08-28
+>
+> 完成时间：2026-08-28
 
 ## 1. 背景与目标
 
@@ -141,24 +143,152 @@
 
 ## 8. 完成标准
 
-- [ ] 预检通过：Node、pnpm、MySQL、nginx、端口。
-- [ ] 陈旧断言修正完成，脚本改为动态计数。
-- [ ] `pnpm db:prepare` 通过且二次执行幂等。
-- [ ] `pnpm build:web` 与 `pnpm build:server` 通过，产物无秘密。
-- [ ] 构建后 Node 服务启动，`/api/health` 与 `/api/health/db` 正常。
-- [ ] nginx 配置 `nginx -t` 通过。
-- [ ] nginx 静态托管、深层路由 fallback、`/api` 代理全部 200。
-- [ ] 实验总数动态断言通过（当前应为 75）。
-- [ ] 登录、当前用户、引导式三向评估、事件日志、复盘读写、注销全部通过。
-- [ ] `pnpm verify` EXIT=0。
-- [ ] `pnpm test:smoke` 通过。
-- [ ] `pnpm test:e2e` 40/40 通过。
-- [ ] 验收进程与端口清理完成。
-- [ ] 证据回填本文档第 9 节，并同步 `docs/TODO.md`、`SECURITY-COVERAGE-LONG-TERM-GOAL.md`。
+- [x] 预检通过：Node、pnpm、MySQL、nginx、端口。
+- [x] 陈旧断言修正完成，脚本改为动态计数。
+- [x] `pnpm db:prepare` 通过且二次执行幂等。
+- [x] `pnpm build:web` 与 `pnpm build:server` 通过，产物无秘密。
+- [x] 构建后 Node 服务启动，`/api/health` 与 `/api/health/db` 正常。
+- [x] nginx 配置 `nginx -t` 通过。
+- [x] nginx 静态托管、深层路由 fallback、`/api` 代理全部 200。
+- [x] 实验总数动态断言通过（当前应为 75）。
+- [x] 登录、当前用户、引导式三向评估、事件日志、复盘读写、注销全部通过。
+- [x] `pnpm verify` EXIT=0。
+- [x] `pnpm test:smoke` 通过。
+- [x] `pnpm test:e2e` 40/40 通过。
+- [x] 验收进程与端口清理完成。
+- [x] 证据回填本文档第 9 节，并同步 `docs/TODO.md`、`SECURITY-COVERAGE-LONG-TERM-GOAL.md`。
 
 ## 9. 验收证据
 
-待执行后回填。
+执行时间：2026-08-28。全部命令在 Windows 侧执行，只连接 `127.0.0.1`。
+
+### 9.1 环境预检
+
+| 项目 | 实测值 |
+|---|---|
+| Node | v22.16.0（满足 `>=22 <23`） |
+| pnpm | 见 9.2 版本偏差说明 |
+| MySQL 3306 | 已监听 |
+| 6667 / 6670 / 8080 | 执行前均空闲 |
+| nginx | `E:\nginx-1.24.0\nginx.exe` |
+| `apps/server/.env` | 存在，含 `PORT`、`APP_ENV`、`WEB_ORIGIN`、`AUTH_TOKEN_SECRET`、`DATABASE_URL`；未读取或输出任何值 |
+| `git diff --check` | EXIT=0 |
+
+### 9.2 pnpm 版本偏差（新发现，非阻塞）
+
+本机 `PATH` 中的 pnpm 为 7.33.7，与根 `package.json` 的 `packageManager: pnpm@10.0.0` 声明不一致；`pnpm-lock.yaml` 为 `lockfileVersion: 5.4`（pnpm 7 格式）。
+
+本次复验统一通过 `corepack pnpm@10.0.0` 执行，以声明版本为准。已实测确认：pnpm 10 可正常解析该 lockfile 并运行全部脚本，执行前后 `pnpm-lock.yaml` 哈希未发生变化，工作区 `@network-safe/shared` junction 链接完好。
+
+结论：不影响本次交付结论，但属于文档与本机环境的真实偏差，已登记为遗留项（见 9.9）。本任务未改写 lockfile，也未变更 `packageManager` 声明。
+
+### 9.3 数据库准备与幂等
+
+两次 `pnpm db:prepare` 输出完全一致：
+
+```text
+database ready: network_safe_project; applied 0; skipped 4; total 4
+lab_recap_question_completions already exists
+seeded 2 auth users
+synced 14 categories, 75 labs, 150 variants
+EXIT=0
+```
+
+4 个迁移幂等跳过，无重复写入，14 分类 / 75 实验 / 150 变体与当前基线一致。
+
+### 9.4 生产构建
+
+| 命令 | 结果 |
+|---|---|
+| `pnpm build:web` | EXIT=0，`built in 5.28s`，`apps/web/dist/index.html` + 77 个静态资源 |
+| `pnpm build:server` | EXIT=0，Prisma Client v6.19.3 生成，`apps/server/dist/index.js` 存在 |
+
+产物秘密扫描：`dist` 内无 `.env` 副本、无固定演示密码、无 token、无个人路径凭据。唯一命中项为 `apps/server/dist/services/auth.js` 中 `process.env.AUTH_TOKEN_SECRET` 的变量名读取与 `AUTH_TOKEN_SECRET is required in production` 错误文案，属于变量引用而非泄露的值。
+
+### 9.5 已修正的缺陷
+
+第 4 节识别的两处陈旧断言（`test-nginx-runtime.ps1` 硬编码 68、`database/README.md` 的 71 ready 描述）在上一次提交中已完成修正，本次复验确认脚本已按 `labs/*/*/meta.json` 动态计数，文档已同步为 75 ready。
+
+本次复验新发现并修正一处阻塞缺陷：
+
+`tools/release/test-nginx-runtime.ps1` 为 UTF-8 **无 BOM**，而 Windows PowerShell 5.1 在无 BOM 时按 ANSI(GBK) 解码 `.ps1`。第 46 行中文注释的 UTF-8 字节被错误解码，吞掉后续语法结构，导致脚本无法解析：
+
+```text
+Missing closing '}' in statement block or type definition.  (line 39)
+Unexpected token ')' in expression or statement.            (line 48)
+```
+
+该缺陷由上一次提交新增中文注释时引入——仓库其他 `.ps1` 均为纯 ASCII，故此前从未暴露。修复方式为给该文件添加 UTF-8 BOM，既保留中文注释（符合项目注释规则），也让 PS 5.1 正确解码。修复后 `PARSE_OK`，行尾 LF 保持不变。
+
+结论：`LT-041` 的价值不止于确认既有链路可用，它实际拦截了一处会让 Windows 发布验收脚本完全不可执行的回归。
+
+### 9.6 nginx 发布验收
+
+配置生成与校验：
+
+```text
+nginx: the configuration file ...\network-safe-nginx.conf syntax is ok
+nginx: configuration file ...\network-safe-nginx.conf test is successful
+web root: E:\github\network_safe_project\apps\web\dist
+listen: 8080; api upstream: 6667
+```
+
+运行时验收（`test-nginx-runtime.ps1 -RunAuthenticatedChecks`）：
+
+```text
+home status=200 bytes=395
+deep-route status=200 bytes=395
+proxy-health status=200 bytes=73
+proxy-db status=200 bytes=100
+proxy-labs status=200 bytes=262662
+lab-count=75
+authenticated-login-pass
+guided-vulnerable-fixed-pass
+event-log-recap-pass
+NGINX_RUNTIME_ACCEPTANCE_PASS
+```
+
+覆盖内容：静态首页、深层路由 `/labs/client/mitb/fixed` 的 history fallback、`/api/health`、`/api/health/db`、`/api/labs` 反向代理、实验总数动态断言 75、登录、当前用户、`network.mitm` 引导式漏洞版接受 / 修复版阻断 / 修复版正常放行三向评估、事件日志读取、复盘读写、注销。
+
+演示密码仅通过 `NETWORK_SAFE_DEMO_PASSWORD` 进程环境变量传入，未进入命令行、日志、文档或提交记录。
+
+### 9.7 自动化复验
+
+`pnpm verify` EXIT=0，各阶段计数：
+
+| 阶段 | 结果 |
+|---|---|
+| 前后端类型检查 | 通过 |
+| `test:shared` | 67 / 67 |
+| `test:guided` | 30 / 30，`ok: true` |
+| `test:controlled` | 4 个受控实验全部 `ok: true` |
+| `test:entrypoints` | 路由 100，Web 入口 150 / 150 匹配，错误 0 |
+| `test:api-entrypoints` | 路由 79，API 入口 198 / 198 匹配，错误 0 |
+| `test:coverage` | 75 / 75 行，专用 45，引导式 30，模式 26/21/28，14 分类，Playwright 28，`ok: true` |
+| `test:server` | 363 / 363 |
+| `test:web:run` | 80 文件，285 / 285 |
+
+`pnpm test:smoke` EXIT=0：`web-home`、`api-health-direct`、`api-labs-direct`、`api-health-proxy` 全部 200。
+
+`pnpm test:e2e` EXIT=0：40 / 40 通过（1.1m）。
+
+覆盖矩阵实测分布与 `SECURITY-COVERAGE-LONG-TERM-GOAL.md` 第 21.4 节记录的第三轮基线完全一致，未发生漂移。
+
+### 9.8 清理与静态门禁
+
+```text
+6667 released
+8080 released
+nginx-procs=0
+```
+
+`git diff --check` EXIT=0。本次会话唯一代码改动为 `tools/release/test-nginx-runtime.ps1` 的 BOM 修复（1 insertion, 1 deletion）。
+
+### 9.9 遗留项与影响范围
+
+- pnpm 版本与 lockfile 格式偏差（9.2）：建议后续单独切片处理，选项为升级 lockfile 到 pnpm 10 格式，或将 `packageManager` 回落到实际使用版本。本任务不擅自决定该方向。
+- 本次复验向本机数据库写入了 `network.mitm` 的固定演示学习记录、事件日志和一条复盘完成记录，账号为 `demo_user`。属于预期范围内的固定数据，未清库。
+- 未修改任何实验元数据、页面、API 或安全边界。
 
 ## 10. 交付物
 
