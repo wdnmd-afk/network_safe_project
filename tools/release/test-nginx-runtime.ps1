@@ -36,6 +36,19 @@ function Wait-Http([string]$Url, [int]$Attempts = 40) {
     throw "URL did not become ready: $Url"
 }
 
+function Get-LocalLabMetadataCount([string]$RepositoryRoot) {
+    $labsRoot = Join-Path $RepositoryRoot "labs"
+
+    if (-not (Test-Path -LiteralPath $labsRoot -PathType Container)) {
+        throw "labs directory not found: $labsRoot"
+    }
+
+    # 计数来源与 packages/testing 的 smoke 配置保持一致，避免基线变化后断言过期。
+    return @(Get-ChildItem -LiteralPath $labsRoot -Directory |
+        ForEach-Object { Get-ChildItem -LiteralPath $_.FullName -Directory } |
+        Where-Object { Test-Path -LiteralPath (Join-Path $_.FullName "meta.json") -PathType Leaf }).Count
+}
+
 function Assert-PortFree([int]$Port) {
     $listener = Get-NetTCPConnection -State Listen -LocalPort $Port -ErrorAction SilentlyContinue
     if ($listener) {
@@ -86,6 +99,8 @@ if (-not $ServerRoot) {
 
 $ServerRoot = Resolve-AbsolutePath $ServerRoot
 $serverEntry = Join-Path $ServerRoot "dist/index.js"
+$repositoryRoot = Resolve-AbsolutePath (Join-Path $PSScriptRoot "../..")
+$expectedLabTotal = Get-LocalLabMetadataCount $repositoryRoot
 
 if (-not (Test-Path -LiteralPath $nginxExecutable -PathType Leaf)) {
     throw "nginx executable not found: $nginxExecutable"
@@ -147,11 +162,11 @@ try {
     }
 
     $labsResponse = Invoke-RestMethod "$NginxBaseUrl/api/labs" -TimeoutSec 10
-    if ($labsResponse.total -ne 68 -or @($labsResponse.items).Count -ne 68) {
-        throw "unexpected lab registry count: total=$($labsResponse.total); items=$(@($labsResponse.items).Count)"
+    if ($labsResponse.total -ne $expectedLabTotal -or @($labsResponse.items).Count -ne $expectedLabTotal) {
+        throw "unexpected lab registry count: expected=$expectedLabTotal; total=$($labsResponse.total); items=$(@($labsResponse.items).Count)"
     }
 
-    Write-Output "lab-count=68"
+    Write-Output "lab-count=$expectedLabTotal"
 
     if ($RunAuthenticatedChecks) {
         $demoPassword = $env:NETWORK_SAFE_DEMO_PASSWORD
