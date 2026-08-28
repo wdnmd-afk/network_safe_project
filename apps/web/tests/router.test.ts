@@ -110,6 +110,8 @@ describe("SafeMart 路由清单", () => {
       "/labs/crypto/secret-lifecycle-audit/fixed",
       "/labs/host/event-log-triage/vuln",
       "/labs/host/event-log-triage/fixed",
+      "/labs/host/persistence-triage/vuln",
+      "/labs/host/persistence-triage/fixed",
       "/labs/:category/:scene/:variant(vuln|fixed)",
     ]);
   });

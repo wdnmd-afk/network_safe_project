@@ -1,11 +1,23 @@
 # 长期目标执行进度
 
-- 总队列：43 项
-- 已完成：43 / 43
-- 当前状态：`LT-043` 已新增 `api.rate-limit-idempotency` 固定 Webhook 批次配额与幂等审计实验；77 个实验全部 `ready`
+- 总队列：44 项
+- 已完成：44 / 44
+- 当前状态：`LT-044` 已新增 `host.persistence-triage` 固定持久化时间线研判实验；78 个实验全部 `ready`；第三轮审计后的 `LT-041`～`LT-044` 队列全部收口
 - 待验证：无（本轮未执行 build、smoke、数据库集成与 Playwright，按既有切片收口口径不属于完成条件）
-- 下一轮队列：`LT-044` Windows 文件 ACL/计划任务/NTLM-Kerberos 固定案例
+- 下一轮队列：待新一轮阶段审计后重排；已知保留缺口为 Windows 文件/目录 ACL 与 NTLM/Kerberos 固定案例（`LT-044` 范围收窄项）
 - 计数规则：只有实现、文档及约定验证全部完成并回填证据后，任务才计入已完成。
+
+# 2026-08-28 最新进展：LT-044 Windows 固定持久化时间线研判实验完成
+
+- [x] `LT-044`：新增 `host.persistence-triage` 固定自启动项与计划任务持久化研判 case-study，复用 `host` 分类，不新增分类。
+- [x] 固定模型：两份冻结虚构条目快照（`virtual-unsigned-autorun-entry`、`virtual-signed-managed-task`），五要素语义枚举为签名、映像路径 ACL、触发方式、运行账户、变更审计。
+- [x] 审计计数经运行时实测锁定：风险条目 4 发现 / 2 关键风险 / 0 加固控制；加固条目 0 / 0 / 5。
+- [x] 两步状态机：持久化条目评估（接受未签名可写路径 / 收敛签名与 ACL）→ 处置决策（保留 / 阻断并移除 / 验证受管基线）。
+- [x] 全链路落地：服务端服务与两个 API、脱敏事件摘要、前端 API/配置/视图/路由、标准实验目录七份文档、脚本目录与只读验证器。
+- [x] 安全边界：只读固定内存快照，不读取或修改真实计划任务、启动项、注册表、ACL 与系统凭据；case-study 变体保持 `supportsAutomation: false` 且无 `exploit.py`。
+- [x] 已纳入 `test:controlled` 门禁与覆盖矩阵第 16 节；元数据推进 `ready`。
+- 验证证据：专项只读验证 19/19 `ok: true`；`pnpm verify` EXIT=0（前后端类型检查、shared 67、guided 30/30、controlled 6×`ok: true`、Web 入口 156/156、API 入口 207/207、实验路由 72/72、coverage 78/78、server 390/390、web 285/285）；`git diff --check` 通过。
+- **范围收窄说明**：`LT-044` 原始措辞含“Windows 文件 ACL”与“NTLM/Kerberos”两项，本轮未实现。依据 `docs/design/windows-host-identity-labs.md` 第 48 行的既有规划决策（NTLM/Kerberos 因概念复杂、易被误解为攻击链而推迟），这两项保留到后续队列单独立项，长期目标第 9.4 节对应条目仍为未完成。
 
 # 2026-08-28 最新进展：LT-043 API 配额与幂等固定审计实验完成
 

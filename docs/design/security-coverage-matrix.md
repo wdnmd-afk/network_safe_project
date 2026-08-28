@@ -223,14 +223,15 @@
 
 **判断：**已建立云 IAM 与 Kubernetes RBAC 两个最小权限专用样板；对象存储暴露、IaC 配置和镜像完整性仍是后续缺口。
 
-## 16. Windows 主机安全（2）
+## 16. Windows 主机安全（3）
 
 | 场景 | 模式 | 深度/实现 | 参考体系 | 证据 | 长期动作 |
 |---|---|---|---|---|---|
 | `host.service-permission-audit` | simulation | D3 专用模拟 | CWE-428 未加引号服务路径；CWE-732 权限分配不当；ATT&CK T1574.010 服务文件权限弱化 | E1–E6 | LT-031 三向页面验证已通过 |
 | `host.event-log-triage` | case-study | D3 专用模拟 | Windows Security Log；身份与服务时间线 | E1–E6 | LT-039 已完成并推进 ready；case-study 保持无真实主机操作边界 |
+| `host.persistence-triage` | case-study | D3 专用模拟 | ATT&CK T1547.001 注册表 Run 键与启动文件夹；T1053.005 计划任务；CWE-732 权限分配不当 | E1–E5 | LT-044 已完成并推进 ready；后续可补 Playwright 三向页面验证 |
 
-**判断：**Windows 主机已具备服务权限与事件时间线两个样板；文件 ACL、计划任务、凭据保护、NTLM/Kerberos 和 AD 委派仍是后续缺口。
+**判断：**Windows 主机已具备服务权限、事件时间线与自启持久化三个样板；文件 ACL 细粒度、凭据保护、NTLM/Kerberos 和 AD 委派仍是后续缺口。
 
 ## 17. 结构性缺口矩阵
 

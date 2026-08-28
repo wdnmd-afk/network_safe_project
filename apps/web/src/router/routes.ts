@@ -784,6 +784,22 @@ export const routes: RouteRecordRaw[] = [
     props: { category: "host", scene: "event-log-triage", variant: "fixed" },
   },
   {
+    path: "/labs/host/persistence-triage/vuln",
+    name: "lab-host-persistence-triage-vuln",
+    component: () => import("../views/PersistenceTriageLabView.vue"),
+    props: {
+      variant: "vuln",
+    },
+  },
+  {
+    path: "/labs/host/persistence-triage/fixed",
+    name: "lab-host-persistence-triage-fixed",
+    component: () => import("../views/PersistenceTriageLabView.vue"),
+    props: {
+      variant: "fixed",
+    },
+  },
+  {
     path: "/labs/:category/:scene/:variant(vuln|fixed)",
     name: "guided-scenario-lab",
     component: () => import("../views/GuidedScenarioLabView.vue"),

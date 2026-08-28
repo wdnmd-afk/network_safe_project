@@ -4,9 +4,9 @@
 >
 > 初始版本：2026-07-23
 >
-> 当前基线：77 个安全学习实验（77 个 `ready`）
+> 当前基线：78 个安全学习实验（78 个 `ready`）
 >
-> 长期队列进度：43 / 44 已完成；`LT-043` API 配额与幂等固定审计已收口，后续队列从 `LT-044` 起
+> 长期队列进度：44 / 44 已完成；`LT-044` Windows 持久化研判已收口，第三轮后续队列全部完成，下一轮需新建阶段目标
 
 ## 1. 文档定位
 
@@ -67,13 +67,13 @@
 
 | 指标 | 当前状态 | 长期方向 |
 |---|---:|---|
-| 实验总数 | 77（77 ready） | 数量不设硬性上限，优先补结构性缺口和深度 |
+| 实验总数 | 78（78 ready） | 数量不设硬性上限，优先补结构性缺口和深度 |
 | 分类数 | 14 | 已新增 Windows 主机分类，后续评估身份基础设施领域 |
-| 漏洞版 / 修复版变体 | 154 | 新主题继续保持双视角或满足高风险案例化例外 |
+| 漏洞版 / 修复版变体 | 156 | 新主题继续保持双视角或满足高风险案例化例外 |
 | `interactive` | 26 | 优先提升通用交互主题的专用实现深度 |
 | `simulation` | 22 | 增加多步骤状态、证据和策略对比 |
-| `case-study` | 29 | 增加分支决策、时间线、评分和复盘，不增加攻击能力 |
-| 专用实现 | 47 | 每个重要领域至少具备一个高质量纵向样板 |
+| `case-study` | 30 | 增加分支决策、时间线、评分和复盘，不增加攻击能力 |
+| 专用实现 | 48 | 每个重要领域至少具备一个高质量纵向样板 |
 | 通用引导式实现 | 30 | 建设引导式工作台第二版并分批专用化 |
 | 统一事件日志 | 已具备 | 增加学习统计、检测响应和长期趋势能力 |
 | 单元 / API / 脚本 / E2E | 已具备 | 增加覆盖矩阵、发布门禁和全新环境验收 |
@@ -254,7 +254,9 @@
 
 | 场景 | 模式 | 当前实现 | 长期动作 |
 |---|---|---|---|
-| `host.service-permission-audit` | simulation | 专用（ready） | LT-025 已完成固定虚构服务配置、权限计数和两步处置决策；后续补文件目录 ACL、计划任务、UAC 令牌边界和事件日志研判 |
+| `host.service-permission-audit` | simulation | 专用（ready） | LT-025 已完成固定虚构服务配置、权限计数和两步处置决策；后续补文件目录 ACL 和 UAC 令牌边界 |
+| `host.event-log-triage` | case-study | 专用（ready） | LT-039 已完成固定脱敏事件时间线研判 |
+| `host.persistence-triage` | case-study | 专用（ready） | LT-044 已完成固定自启动/计划任务持久化时间线研判；后续补文件目录 ACL 与 NTLM/Kerberos 固定案例 |
 
 ## 7. 平台核心功能长期清单
 
@@ -913,3 +915,4 @@
 | `LT-041` | 2026-08-28 15:37:54 +08:00 | 75 实验基线的全新 Windows 发布复验：数据库幂等准备、前后端生产构建、构建产物秘密扫描、nginx 生成与运行时验收、认证与实验闭环、全量自动化复验；修复 `test-nginx-runtime.ps1` 在 Windows PowerShell 5.1 下因缺少 UTF-8 BOM 导致的解析失败 | `db:prepare` 两次输出一致（4 迁移幂等、2 账号、14 分类、75 实验、150 变体）；`build:web` 与 `build:server` EXIT=0，产物无硬编码秘密；`nginx -t` 通过；运行时验收 `NGINX_RUNTIME_ACCEPTANCE_PASS`，5 项 HTTP 检查全 200、`lab-count=75`、登录/当前用户/引导式三向/事件日志/复盘/注销全过；`pnpm verify` EXIT=0（shared 67、guided 30/30、controlled 4×`ok: true`、Web 入口 150/150、API 入口 198/198、coverage 75/75、server 363、web 285）；`test:smoke` 4/4；`test:e2e` 40/40；端口 6667/8080 已释放；`git diff --check` 通过 |
 | `LT-042` | 2026-08-28 16:59:05 +08:00 | `infrastructure.kubernetes-rbac-audit` 固定 RBAC 绑定审计 case-study：两份冻结虚构绑定快照与五要素语义枚举、确定性审计计数纯函数、两步状态机、专用工作台/评估 API、脱敏事件摘要、前端 API/配置/视图/路由、标准实验目录七份文档、脚本目录与只读验证器；纳入 `test:controlled` 门禁与覆盖矩阵第 15 节 | 专项只读验证 18/18 `ok: true`；`pnpm verify` EXIT=0（前后端类型检查、shared 67、guided 30/30、controlled 5×`ok: true`、Web 入口 152/152、API 入口 201/201、实验路由 68/68、coverage 76/76、server 372/372、web 285/285）；固定计数经运行时实测锁定（风险绑定 4 发现 / 3 关键风险 / 0 控制；加固绑定 0 / 0 / 5）；case-study 变体保持 `supportsAutomation: false` 且无 `exploit.py`；未运行 build、smoke、数据库集成或 Playwright |
 | `LT-043` | 2026-08-28 17:36:52 +08:00 | `api.rate-limit-idempotency` 固定 Webhook 批次配额与幂等审计 simulation：两份冻结虚构批次快照与配额/幂等/时间窗/降级四要素语义枚举、确定性审计计数纯函数、两步状态机、专用工作台/评估 API、脱敏事件摘要、前端 API/配置/视图/路由、标准实验目录七份文档、脚本目录与只读验证器；一个场景同时覆盖资源消耗与 Webhook 重放两个结构性缺口；纳入 `test:controlled` 门禁与覆盖矩阵第 5 节 | 专项只读验证 18/18 `ok: true`；`pnpm verify` EXIT=0（前后端类型检查、shared 67、guided 30/30、controlled 6×`ok: true`、Web 入口 154/154、API 入口 204/204、实验路由 70/70、coverage 77/77、server 381/381、web 285/285）；固定计数经运行时实测锁定（风险批次 4 发现 / 2 关键风险 / 0 控制；加固批次 0 / 0 / 4）；未知 scenarioKey/optionKey 脱敏阻断且不回显，事件日志不含端点、签名密钥或租户标识；无 `exploit.py` 与真实并发请求能力；未运行 build、smoke、数据库集成或 Playwright |
+| `LT-044` | 2026-08-28 18:02:30 +08:00 | `host.persistence-triage` 固定 Windows 自启动/计划任务持久化时间线研判 case-study：两份冻结虚构持久化条目快照与五要素语义枚举、确定性审计计数纯函数、两步状态机、专用工作台/评估 API、脱敏事件摘要、前端 API/配置/视图/路由、标准实验目录七份文档、脚本目录与只读验证器；纳入 `test:controlled` 门禁与覆盖矩阵第 16 节 | 专项只读验证 19/19 `ok: true`；`pnpm verify` EXIT=0（前后端类型检查、shared 67、guided 30/30、controlled 6×`ok: true`、Web 入口 156/156、API 入口 207/207、实验路由 72/72、coverage 78/78、server 390/390、web 285/285）；固定计数经运行时实测锁定（风险条目 4 发现 / 2 关键风险 / 0 控制；加固条目 0 / 0 / 5）；case-study 变体保持 `supportsAutomation: false` 且无 `exploit.py`；**范围收窄**：原措辞中的文件/目录 ACL 与 NTLM/Kerberos 未实现，按规划文档推迟理由保留到后续队列；未运行 build、smoke、数据库集成或 Playwright |

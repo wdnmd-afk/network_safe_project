@@ -1,0 +1,173 @@
+{
+  "id": "host.persistence-triage",
+  "slug": "persistence-triage",
+  "title": "Windows 自启持久化固定研判",
+  "category": "host",
+  "subcategory": "persistence-triage",
+  "mode": "case-study",
+  "severity": "high",
+  "difficulty": "intermediate",
+  "summary": "对比两份虚构自启持久化条目的签名、路径 ACL、触发器、运行账户与审计范围，完成持久化处置决策。",
+  "status": "ready",
+  "phase": "phase-4",
+  "sortOrder": 430,
+  "estimatedMinutes": 30,
+  "tags": [
+    "host",
+    "windows-persistence",
+    "scheduled-task",
+    "autorun-audit"
+  ],
+  "knowledgePoints": [
+    "发布者签名验证",
+    "映像路径 ACL 收敛",
+    "运行账户最小权限",
+    "变更审计与告警"
+  ],
+  "variants": [
+    {
+      "key": "vuln",
+      "title": "自启持久化风险观察版",
+      "enabled": true,
+      "description": "观察未签名、用户可写路径、高权限账户叠加无审计时被保留的固定风险结果。",
+      "entryKey": "host-persistence-triage-vuln",
+      "expectedOutcome": "返回 host-persistence-triage-risk-accepted 学习信号。",
+      "supportsAutomation": false
+    },
+    {
+      "key": "fixed",
+      "title": "自启持久化防御复盘版",
+      "enabled": true,
+      "description": "观察收敛五要素后阻断并移除可疑持久化，并复核受管自启基线正常可用。",
+      "entryKey": "host-persistence-triage-fixed",
+      "expectedOutcome": "可疑持久化被阻断并移除，受管自启基线凭固定控制正常通过复核。",
+      "supportsAutomation": false
+    }
+  ],
+  "entrypoints": {
+    "web": [
+      {
+        "key": "host-persistence-triage-vuln",
+        "variant": "vuln",
+        "path": "/labs/host/persistence-triage/vuln",
+        "description": "自启持久化风险观察版工作台"
+      },
+      {
+        "key": "host-persistence-triage-fixed",
+        "variant": "fixed",
+        "path": "/labs/host/persistence-triage/fixed",
+        "description": "自启持久化防御复盘版工作台"
+      }
+    ],
+    "api": [
+      {
+        "key": "host-persistence-triage-workbench",
+        "variant": "shared",
+        "method": "GET",
+        "path": "/api/labs/host/persistence-triage/workbench",
+        "description": "固定自启持久化快照与研判指标工作台"
+      },
+      {
+        "key": "host-persistence-triage-vuln-evaluate",
+        "variant": "vuln",
+        "method": "POST",
+        "path": "/api/labs/host/persistence-triage/vuln/evaluate",
+        "description": "自启持久化研判漏洞版固定路径评估"
+      },
+      {
+        "key": "host-persistence-triage-fixed-evaluate",
+        "variant": "fixed",
+        "method": "POST",
+        "path": "/api/labs/host/persistence-triage/fixed/evaluate",
+        "description": "自启持久化研判修复版固定路径评估"
+      }
+    ],
+    "scripts": [
+      {
+        "key": "host-persistence-triage-verify",
+        "language": "ts",
+        "path": "tools/lab-scripts/host/persistence-triage/verify.ts",
+        "description": "自启持久化研判本机只读一致性验证"
+      }
+    ],
+    "docs": [
+      {
+        "key": "host-persistence-triage-readme",
+        "path": "labs/host/persistence-triage/README.md",
+        "description": "自启持久化研判场景说明"
+      },
+      {
+        "key": "host-persistence-triage-attack-steps",
+        "path": "labs/host/persistence-triage/docs/attack-steps.md",
+        "description": "可疑持久化风险观察步骤"
+      },
+      {
+        "key": "host-persistence-triage-fix-notes",
+        "path": "labs/host/persistence-triage/docs/fix-notes.md",
+        "description": "持久化加固与移除修复思路"
+      },
+      {
+        "key": "host-persistence-triage-manual-verification",
+        "path": "labs/host/persistence-triage/docs/manual-verification.md",
+        "description": "自启持久化研判手工验证矩阵"
+      }
+    ]
+  },
+  "verification": {
+    "manual": {
+      "supported": true,
+      "stepsDocPath": "labs/host/persistence-triage/docs/manual-verification.md",
+      "expectedSignals": [
+        "host-persistence-triage-risk-accepted",
+        "host-persistence-triage-defense-blocked",
+        "host-persistence-triage-normal-verified"
+      ]
+    },
+    "automation": {
+      "supported": true,
+      "playwright": {
+        "enabled": false,
+        "specPath": "packages/testing/tests/e2e/platform.spec.mjs"
+      },
+      "apiTest": {
+        "enabled": true,
+        "specPath": "apps/server/tests/persistence-triage-lab.test.ts"
+      },
+      "scriptVerification": {
+        "enabled": true,
+        "scriptKeys": [
+          "host-persistence-triage-verify"
+        ]
+      }
+    }
+  },
+  "prerequisites": [
+    {
+      "type": "service",
+      "value": "本机后端服务运行于 http://127.0.0.1:6667",
+      "required": true
+    },
+    {
+      "type": "browser",
+      "value": "使用本机浏览器访问实验工作台",
+      "required": true
+    }
+  ],
+  "safeBoundaries": [
+    "只使用服务端内存中的两份虚构自启持久化条目快照，不枚举、创建、修改或删除真实计划任务、启动项与注册表。",
+    "标识固定使用 virtual-* 前缀，五要素只使用语义枚举，不含真实主机名、文件路径、账户或签名指纹。",
+    "页面和 API 只接受已登记 scenarioKey 与 optionKey，未知输入会被脱敏阻断且不回显原值。",
+    "本实验按 case-study ready 例外收口：只提供 API 测试与只读一致性验证两类自动化证据，不提供 exploit.py，也不读取真实主机状态。"
+  ],
+  "paths": {
+    "root": "labs/host/persistence-triage",
+    "readme": "labs/host/persistence-triage/README.md",
+    "vuln": "labs/host/persistence-triage/vuln",
+    "fixed": "labs/host/persistence-triage/fixed",
+    "mock": "labs/host/persistence-triage/mock",
+    "docs": "labs/host/persistence-triage/docs",
+    "scripts": "tools/lab-scripts/host/persistence-triage"
+  },
+  "references": [],
+  "notes": "该实验按 case-study ready 收口审计推进：只对固定虚构自启条目做确定性计数与处置复盘，变体 supportsAutomation 仍为 false，不提供 exploit.py 或任何攻击脚本，也不执行真实持久化创建、删除与提权操作。"
+}

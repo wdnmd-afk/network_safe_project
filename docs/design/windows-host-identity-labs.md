@@ -45,7 +45,7 @@
 说明：
 
 - `host` 分类已于 `LT-025` 落地：分类 profile 注册在 `lab-metadata-sync.ts`，中文标签接入 `platform-status.ts` 与 `LabsView.vue`，覆盖矩阵新增第 16 节；后续 host 实验直接复用，不需重复确认。
-- NTLM/Kerberos、AD ACL 与委派因概念复杂、易被误解为攻击链，放到主机主线稳定后再评估。
+- NTLM/Kerberos、AD ACL 与委派因概念复杂、易被误解为攻击链，放到主机主线稳定后再评估；`LT-044` 已按此决策把 NTLM/Kerberos 与文件目录 ACL 排除在本轮范围之外，保留到后续队列。
 
 ## 5. 每个候选的固定模型与边界
 
@@ -55,11 +55,14 @@
 - 两步决策：路径与权限策略（保留可写路径 vs 收敛 ACL 与加引号路径）→ 处置（越权替换接受 / 阻断 / 正常受控运行）。
 - 边界：只使用固定服务配置描述字符串，不枚举或修改真实服务与 ACL。
 
-### 5.2 计划任务与启动项持久化研判
+### 5.2 计划任务与启动项持久化研判（LT-044）
 
-- 固定案例：固定持久化时间线出现异常启动项与计划任务注册意图。
-- 证据研判：识别可疑持久化 → 隔离/移除决策 → 正常受控自启项确认。
-- 边界：只展示固定事件卡，不创建、修改或删除真实计划任务与启动项。
+- 实验 ID：`host.persistence-triage`。
+- 固定案例：`fixed-windows-autorun-persistence-timeline`。
+- 两步决策：签名与镜像路径 ACL 评估 → 持久化处置（保留接受 / 阻断并移除 / 受控自启基线复核）。
+- 固定条目：`virtual-unsigned-autorun-entry`（4 发现 / 2 关键风险 / 0 控制、标准用户可篡改）与 `virtual-signed-managed-task`（0 / 0 / 5、不可篡改）。
+- 边界：只展示固定条目快照与语义枚举，不创建、修改或删除真实计划任务、启动项与注册表键。
+- 专项只读验证 19/19、根级门禁通过，元数据已推进 `ready`（case-study ready 例外，`supportsAutomation: false`、无 `exploit.py`）。
 
 ### 5.3 Windows 事件日志研判
 
@@ -113,6 +116,7 @@
 - 前置确认项清单完整，实现前逐项解决。
 - 不在规划文档中重复创建实验代码或元数据；实现状态见第 11 节。
 
-## 11. LT-039 实施状态
+## 11. LT-039 / LT-044 实施状态
 
 - `host.event-log-triage` 已完成固定脱敏 Windows 事件时间线 case-study，三条 canonical 研判路径、共享事件 schema、未知 key 脱敏、API/前端测试、只读验证、入口门禁、根级验证和 Playwright 三向回归均通过，元数据为 `ready`。
+- `host.persistence-triage` 已完成固定自启动/计划任务持久化时间线 case-study，三条 canonical 研判路径、五要素语义枚举、未知 key 脱敏、API 测试、只读验证 19/19、入口门禁和根级验证均通过，元数据为 `ready`；本轮未实现文件/目录 ACL 与 NTLM/Kerberos，两项保留到后续队列。
