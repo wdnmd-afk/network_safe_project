@@ -258,7 +258,9 @@ test.describe("专用实验页面差异", () => {
         scenario.defenseSignal,
       );
 
-      await page.getByRole("button", { name: scenario.normalButton }).click();
+      await page
+        .getByRole("button", { name: scenario.normalButton, exact: true })
+        .click();
       await page.getByRole("button", { name: "运行固定评估" }).click();
       await expect(learningSignal(page, scenario.statusPanel)).toHaveText(
         scenario.normalSignal,
@@ -294,7 +296,9 @@ test.describe("分类代表性专用实验页面差异", () => {
         scenario.defenseSignal,
       );
 
-      await page.getByRole("button", { name: scenario.normalButton }).click();
+      await page
+        .getByRole("button", { name: scenario.normalButton, exact: true })
+        .click();
       await page.getByRole("button", { name: scenario.runButton }).click();
       await expect(learningSignal(page, scenario.statusPanel)).toHaveText(
         scenario.normalSignal,

@@ -124,7 +124,7 @@
     "automation": {
       "supported": true,
       "playwright": {
-        "enabled": false,
+        "enabled": true,
         "specPath": "packages/testing/tests/e2e/platform.spec.mjs"
       },
       "apiTest": {

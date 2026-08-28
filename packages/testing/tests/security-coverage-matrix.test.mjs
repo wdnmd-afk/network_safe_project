@@ -15,7 +15,8 @@ test("security coverage matrix matches all current lab metadata", () => {
   // LT-023 新增 crypto.insecure-randomness，LT-024 新增 detection.rule-alert-triage 专用模拟；
   // LT-025 新增 host.service-permission-audit 专用模拟并建立独立 host 分类；
   // LT-026 在 infrastructure 分类内新增 iam-policy-audit 专用模拟；
-  // LT-027 把 client.mitb 从引导式目录毕业为专用 D3 模拟。
+  // LT-027 把 client.mitb 从引导式目录毕业为专用 D3 模拟；
+  // LT-031 为 7 个既有专用实验补 E6，LT-036~039 的 4 个新增实验也通过页面回归。
   assert.equal(summary.dedicated, 45);
   assert.equal(summary.guided, 30);
   assert.deepEqual(summary.modes, {
@@ -27,5 +28,5 @@ test("security coverage matrix matches all current lab metadata", () => {
   assert.equal(summary.categories.detection, 1);
   assert.equal(summary.categories.host, 1);
   assert.equal(summary.categories.infrastructure, 6);
-  assert.equal(summary.playwright, 17);
+  assert.equal(summary.playwright, 28);
 });

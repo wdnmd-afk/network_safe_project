@@ -8,7 +8,7 @@
   "severity": "high",
   "difficulty": "advanced",
   "summary": "通过固定 DTO 字段快照对比客户端字段全量绑定与服务端所有权校验。",
-  "status": "in-progress",
+  "status": "ready",
   "phase": "phase-1",
   "sortOrder": 341,
   "estimatedMinutes": 30,
@@ -38,7 +38,7 @@
   },
   "verification": {
     "manual": { "supported": true, "stepsDocPath": "labs/api/property-authorization/docs/manual-verification.md", "expectedSignals": ["api-property-authorization-risk-accepted", "api-property-authorization-defense-blocked", "api-property-authorization-normal-verified"] },
-    "automation": { "supported": true, "playwright": { "enabled": false, "specPath": "packages/testing/tests/e2e/platform.spec.mjs" }, "apiTest": { "enabled": true, "specPath": "apps/server/tests/controlled-decision-labs.test.ts" }, "scriptVerification": { "enabled": true, "scriptKeys": ["api-property-authorization-verify"] } }
+    "automation": { "supported": true, "playwright": { "enabled": true, "specPath": "packages/testing/tests/e2e/platform.spec.mjs" }, "apiTest": { "enabled": true, "specPath": "apps/server/tests/controlled-decision-labs.test.ts" }, "scriptVerification": { "enabled": true, "scriptKeys": ["api-property-authorization-verify"] } }
   },
   "prerequisites": [{ "type": "service", "value": "本机后端服务运行于 http://127.0.0.1:6667", "required": true }, { "type": "browser", "value": "使用本机浏览器访问实验工作台", "required": true }],
   "safeBoundaries": ["只使用固定 DTO 字段快照，不修改真实账户、角色或数据库字段。", "页面和 API 只接受固定 scenarioKey 与 optionKey。", "未知 key 会被脱敏阻断，不写入原始输入。"],

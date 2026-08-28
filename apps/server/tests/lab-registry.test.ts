@@ -10,10 +10,10 @@ test("lab registry scans all current metadata files", async () => {
 
   assert.equal(labs.length, 75);
   assert.equal(new Set(labIds).size, 75);
-  assert.equal(labs.filter((lab) => lab.status === "ready").length, 71);
+  assert.equal(labs.filter((lab) => lab.status === "ready").length, 75);
   assert.equal(
     labs.filter((lab) => lab.status === "in-progress").length,
-    4,
+    0,
   );
   assert.equal(new Set(labs.map((lab) => lab.category)).size, 14);
   assert.equal(
@@ -132,10 +132,10 @@ test("lab registry scans all current metadata files", async () => {
       (lab) => lab.id === "client.formjacking" && lab.status === "ready",
     ),
   );
-  assert.ok(labs.some((lab) => lab.id === "api.property-authorization" && lab.status === "in-progress"));
-  assert.ok(labs.some((lab) => lab.id === "business-logic.race-condition" && lab.status === "in-progress"));
-  assert.ok(labs.some((lab) => lab.id === "crypto.secret-lifecycle-audit" && lab.status === "in-progress"));
-  assert.ok(labs.some((lab) => lab.id === "host.event-log-triage" && lab.status === "in-progress"));
+  assert.ok(labs.some((lab) => lab.id === "api.property-authorization" && lab.status === "ready"));
+  assert.ok(labs.some((lab) => lab.id === "business-logic.race-condition" && lab.status === "ready"));
+  assert.ok(labs.some((lab) => lab.id === "crypto.secret-lifecycle-audit" && lab.status === "ready"));
+  assert.ok(labs.some((lab) => lab.id === "host.event-log-triage" && lab.status === "ready"));
   assert.ok(
     labs.some(
       (lab) =>

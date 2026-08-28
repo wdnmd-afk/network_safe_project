@@ -1548,6 +1548,7 @@ test("bfla metadata declares the ready dedicated API contract", async () => {
   assert.equal(result.value.id, "api.functional-authorization");
   assert.equal(result.value.category, "api");
   assert.equal(result.value.status, "ready");
+  assert.equal(result.value.verification.automation.playwright.enabled, true);
   assert.deepEqual(
     result.value.entrypoints.web.map((entrypoint) => entrypoint.path),
     [
@@ -1583,6 +1584,7 @@ test("workflow bypass metadata declares the ready business logic contract", asyn
   assert.equal(result.value.id, "business-logic.workflow-bypass");
   assert.equal(result.value.category, "business-logic");
   assert.equal(result.value.status, "ready");
+  assert.equal(result.value.verification.automation.playwright.enabled, true);
   assert.deepEqual(
     result.value.entrypoints.web.map((entrypoint) => entrypoint.path),
     [
@@ -1619,6 +1621,7 @@ test("insecure randomness metadata declares the ready crypto contract", async ()
   assert.equal(result.value.category, "crypto");
   assert.equal(result.value.mode, "simulation");
   assert.equal(result.value.status, "ready");
+  assert.equal(result.value.verification.automation.playwright.enabled, true);
   assert.deepEqual(
     result.value.entrypoints.web.map((entrypoint) => entrypoint.path),
     [
@@ -1655,6 +1658,7 @@ test("rule alert triage metadata declares the ready detection contract", async (
   assert.equal(result.value.category, "detection");
   assert.equal(result.value.mode, "simulation");
   assert.equal(result.value.status, "ready");
+  assert.equal(result.value.verification.automation.playwright.enabled, true);
   assert.deepEqual(
     result.value.entrypoints.web.map((entrypoint) => entrypoint.path),
     [
@@ -1689,6 +1693,7 @@ test("mitb metadata declares the dedicated ready client contract", async () => {
   assert.equal(result.value.category, "client");
   assert.equal(result.value.mode, "case-study");
   assert.equal(result.value.status, "ready");
+  assert.equal(result.value.verification.automation.playwright.enabled, true);
   assert.deepEqual(result.value.verification.automation.apiTest, {
     enabled: true,
     specPath: "apps/server/tests/mitb-transaction-lab.test.ts",
@@ -1710,6 +1715,7 @@ test("service permission audit metadata declares the ready host contract", async
   assert.equal(result.value.category, "host");
   assert.equal(result.value.mode, "simulation");
   assert.equal(result.value.status, "ready");
+  assert.equal(result.value.verification.automation.playwright.enabled, true);
   assert.deepEqual(
     result.value.entrypoints.web.map((entrypoint) => entrypoint.path),
     [
@@ -1746,6 +1752,7 @@ test("iam policy audit metadata declares the ready infrastructure contract", asy
   assert.equal(result.value.category, "infrastructure");
   assert.equal(result.value.mode, "simulation");
   assert.equal(result.value.status, "ready");
+  assert.equal(result.value.verification.automation.playwright.enabled, true);
   assert.deepEqual(
     result.value.entrypoints.web.map((entrypoint) => entrypoint.path),
     [
@@ -1769,4 +1776,34 @@ test("iam policy audit metadata declares the ready infrastructure contract", asy
     enabled: true,
     scriptKeys: ["infrastructure-iam-policy-audit-verify"],
   });
+});
+
+test("third-round controlled lab metadata is ready with layered evidence", async () => {
+  const fixtures = [
+    ["labs/api/property-authorization/meta.json", "interactive", true],
+    ["labs/business-logic/race-condition/meta.json", "simulation", true],
+    ["labs/crypto/secret-lifecycle-audit/meta.json", "simulation", true],
+    ["labs/host/event-log-triage/meta.json", "case-study", false],
+  ];
+
+  for (const [fixturePath, mode, supportsAutomation] of fixtures) {
+    const metadata = await readFixture(fixturePath);
+    const result = validateLabMetadata(metadata);
+
+    assert.equal(result.ok, true);
+    assert.equal(result.value.status, "ready");
+    assert.equal(result.value.mode, mode);
+    assert.equal(result.value.verification.automation.playwright.enabled, true);
+    assert.equal(result.value.verification.automation.apiTest.enabled, true);
+    assert.equal(
+      result.value.verification.automation.scriptVerification.enabled,
+      true,
+    );
+    assert.equal(
+      result.value.variants.every(
+        (variant) => variant.supportsAutomation === supportsAutomation,
+      ),
+      true,
+    );
+  }
 });
