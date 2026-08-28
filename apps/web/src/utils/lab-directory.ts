@@ -1,6 +1,6 @@
 import type { LabMetadata } from "../api/labs";
 
-import { guidedScenarioCatalog } from "../../../../packages/shared/src/guided-scenarios.js";
+import { guidedScenarioCatalog } from "@network-safe/shared/guided-scenarios";
 
 export type LabDepth = "D2" | "D3" | "D4";
 

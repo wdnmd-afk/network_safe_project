@@ -4,10 +4,22 @@
   "private": true,
   "type": "module",
   "exports": {
-    "./fixed-security-events": "./src/fixed-security-events.js",
-    "./guided-scenarios": "./src/guided-scenarios.js",
-    "./guided-scenarios-v2": "./src/guided-scenarios-v2.js",
-    "./lab-metadata": "./src/lab-metadata.js"
+    "./fixed-security-events": {
+      "types": "./src/fixed-security-events.d.ts",
+      "default": "./src/fixed-security-events.js"
+    },
+    "./guided-scenarios": {
+      "types": "./src/guided-scenarios.d.ts",
+      "default": "./src/guided-scenarios.js"
+    },
+    "./guided-scenarios-v2": {
+      "types": "./src/guided-scenarios-v2.d.ts",
+      "default": "./src/guided-scenarios-v2.js"
+    },
+    "./lab-metadata": {
+      "types": "./src/lab-metadata.d.ts",
+      "default": "./src/lab-metadata.js"
+    }
   },
   "scripts": {
     "test": "node --test tests/**/*.test.mjs"
