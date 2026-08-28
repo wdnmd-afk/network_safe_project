@@ -24,3 +24,13 @@
 - `LT-031`～`LT-040` 均有可核查证据，当前文档无状态漂移。
 - 下一轮任务、Kubernetes/IaC 和 Windows 发布复验优先级结论明确。
 
+## 5. 审计结果（2026-08-27）
+
+- 当前基线：75 个实验全部 `ready`，150 个变体，14 个分类，45 个专用实现，30 个引导式实现；模式分布为 `interactive` 26、`simulation` 21、`case-study` 28。
+- `LT-031`：7 个目标专用实验的风险/防御/正常三向 Playwright 用例全部通过，E6 总数为 28，14 个分类均有代表性页面回归。
+- `LT-032`：API 入口报告为 198/198 匹配、66/66 实验路由覆盖、错误 0；Web 入口报告为 150/150 匹配、错误 0。
+- `LT-033`～`LT-034`：前端目录筛选、全文/知识点搜索、5 条静态学习路径和详情前后关系均通过前端测试与 E2E。
+- `LT-035`：token TTL、`expiresAt`、SHA-256 指纹吊销、Bearer 注销和过期会话清理均通过认证测试、类型检查和注销 E2E。
+- `LT-036`～`LT-039`：四个专项只读验证均 `ok: true`；服务端/前端测试、入口门禁、根级验证和代表性 Playwright 均通过，元数据已推进 `ready`。
+- 综合门禁：`pnpm verify` EXIT=0（shared 67、guided 30/30、server 363、web 285）；`pnpm test:e2e` 40/40；`git diff --check` 通过。
+- 后续优先级：`LT-041` 全新 Windows 发布复验优先于 `LT-042` Kubernetes RBAC/IaC 固定审计；本轮不包含生产 build/nginx 发布验收。

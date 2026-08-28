@@ -4,7 +4,7 @@
 >
 > 首次建立：2026-07-23
 >
-> 数据基线：75 个实验（71 个 `ready`、4 个 `in-progress`）、14 个分类、150 个变体
+> 数据基线：75 个 `ready` 实验、14 个分类、150 个变体
 
 ## 1. 使用说明
 
@@ -27,7 +27,7 @@
 | E5 | 场景独立 `verify.ts` 或等价只读验证 |
 | E6 | 代表性 Playwright 页面差异验证 |
 
-当前 71 个 `ready` 主题至少具备 E1–E5；4 个 `in-progress` 主题已落地 E1–E5 代码与资料，等待命令门禁。标注 E6 的主题还具备页面级验证。
+当前 75 个 `ready` 主题至少具备 E1–E5；标注 E6 的主题还具备页面级验证。
 
 ### 1.2 参考体系说明
 
@@ -45,8 +45,8 @@
 | 维度 | 数量 |
 |---|---:|
 | 实验总数 | 75 |
-| `ready` | 71 |
-| `in-progress` | 4 |
+| `ready` | 75 |
+| `in-progress` | 0 |
 | 专用实现 | 45 |
 | 通用引导式实现 | 30 |
 | `interactive` | 26 |
@@ -55,7 +55,7 @@
 | `critical` | 18 |
 | `high` | 52 |
 | `medium` | 5 |
-| 具备 E6 Playwright | 17 |
+| 具备 E6 Playwright | 28 |
 
 ## 3. Web 与注入（16）
 
@@ -99,8 +99,8 @@
 
 | 场景 | 模式 | 深度/实现 | 参考体系 | 证据 | 长期动作 |
 |---|---|---|---|---|---|
-| `api.functional-authorization` | interactive | D4 专用交互 | OWASP API5:2023 BFLA；CWE-285 | E1–E5 | LT-031 三向页面用例已实现，待命令验证后登记 E6 |
-| `api.property-authorization` | interactive | D4 专用交互 | OWASP API3:2023；CWE-915 | E1–E5 | LT-036 已完成固定 DTO 字段允许列表与服务端所有权实验 |
+| `api.functional-authorization` | interactive | D4 专用交互 | OWASP API5:2023 BFLA；CWE-285 | E1–E6 | LT-031 三向页面验证已通过 |
+| `api.property-authorization` | interactive | D4 专用交互 | OWASP API3:2023；CWE-915 | E1–E6 | LT-036 已完成并推进 ready |
 
 **判断：**API 已有功能级与属性级授权两个纵向样板；资源消耗、Webhook 重放和 GraphQL/API 协议边界仍是后续缺口。
 
@@ -108,8 +108,8 @@
 
 | 场景 | 模式 | 深度/实现 | 参考体系 | 证据 | 长期动作 |
 |---|---|---|---|---|---|
-| `business-logic.workflow-bypass` | interactive | D4 专用交互 | CWE-841；OWASP API6:2023 Sensitive Business Flows | E1–E5 | LT-031 三向页面用例已实现，待命令验证后登记 E6 |
-| `business-logic.race-condition` | simulation | D3 专用模拟 | CWE-362；幂等与乐观锁 | E1–E5 | LT-037 已完成固定单库存双请求与版本校验实验 |
+| `business-logic.workflow-bypass` | interactive | D4 专用交互 | CWE-841；OWASP API6:2023 Sensitive Business Flows | E1–E6 | LT-031 三向页面验证已通过 |
+| `business-logic.race-condition` | simulation | D3 专用模拟 | CWE-362；幂等与乐观锁 | E1–E6 | LT-037 已完成并推进 ready |
 
 **判断：**流程跳步与竞态/幂等已有专用样板；审批绕过和价格规则仍是后续缺口。
 
@@ -117,8 +117,8 @@
 
 | 场景 | 模式 | 深度/实现 | 参考体系 | 证据 | 长期动作 |
 |---|---|---|---|---|---|
-| `crypto.insecure-randomness` | simulation | D3 专用模拟 | CWE-338；随机 token 熵与 CSPRNG 策略 | E1–E5 | LT-031 三向页面用例已实现，待命令验证后登记 E6 |
-| `crypto.secret-lifecycle-audit` | simulation | D3 专用模拟 | CWE-798；秘密管理与密钥生命周期 | E1–E5 | LT-038 已完成固定秘密标记、轮换、吊销与版本审计 |
+| `crypto.insecure-randomness` | simulation | D3 专用模拟 | CWE-338；随机 token 熵与 CSPRNG 策略 | E1–E6 | LT-031 三向页面验证已通过 |
+| `crypto.secret-lifecycle-audit` | simulation | D3 专用模拟 | CWE-798；秘密管理与密钥生命周期 | E1–E6 | LT-038 已完成并推进 ready |
 
 **判断：**随机数与秘密生命周期已有专用样板；口令哈希策略和 TLS 证书校验仍是后续缺口。
 
@@ -126,7 +126,7 @@
 
 | 场景 | 模式 | 深度/实现 | 参考体系 | 证据 | 长期动作 |
 |---|---|---|---|---|---|
-| `detection.rule-alert-triage` | simulation | D3 专用模拟 | MITRE ATT&CK Detection Engineering；告警研判与误报漏报 | E1–E5 | LT-031 三向页面用例已实现，待命令验证后登记 E6 |
+| `detection.rule-alert-triage` | simulation | D3 专用模拟 | MITRE ATT&CK Detection Engineering；告警研判与误报漏报 | E1–E6 | LT-031 三向页面验证已通过 |
 
 **判断：**已建立独立检测与响应分类、共享固定安全事件数据集和首个专用研判样板；告警分级、事件时间线、威胁狩猎与恢复仍需后续切片。
 
@@ -204,7 +204,7 @@
 | `client.malicious-extension` | case-study | D2 引导式 | ATT&CK T1176 Browser Extensions | E1–E5 | 增加权限 diff 和发布者来源 |
 | `client.formjacking` | simulation | D3 专用模拟 | Web skimming；CSP/SRI；Input Capture | E1–E6 | 已专用化为脚本信任与表单目标两步状态机，并补三向页面证据（LT-029） |
 | `client.malvertising` | case-study | D2 引导式 | Drive-by；广告供应链 | E1–E5 | 增加重定向链和内容沙箱 |
-| `client.mitb` | case-study | D3 专用模拟 | ATT&CK T1185 Browser Session Hijacking；CWE-345 数据真实性校验不足 | E1–E5 | LT-031 三向页面用例已实现，待命令验证后登记 E6 |
+| `client.mitb` | case-study | D3 专用模拟 | ATT&CK T1185 Browser Session Hijacking；CWE-345 数据真实性校验不足 | E1–E6 | LT-031 三向页面验证已通过；case-study 保持无攻击脚本边界 |
 
 **判断：**Formjacking 与 MITB 已形成两个专用模拟样板，其余三个主题仍为引导式案例，客户端整体深度仍需提升。
 
@@ -217,7 +217,7 @@
 | `infrastructure.container-escape` | case-study | D2 引导式 | ATT&CK T1611 Escape to Host | E1–E5 | 增加 capabilities、挂载和运行时策略 |
 | `infrastructure.iot` | simulation | D2 引导式 | IoT 身份、固件和网络分区 | E1–E5 | 增加设备生命周期和管理面 |
 | `infrastructure.zero-day` | case-study | D2 引导式 | Exploit Public-Facing Application；补偿控制 | E1–E5 | 增加虚拟补丁、隔离和应急响应 |
-| `infrastructure.iam-policy-audit` | simulation | D3 专用模拟 | CWE-732 权限分配不当；OWASP 云 IAM 最小权限；ATT&CK T1098 Account Manipulation | E1–E5 | LT-031 三向页面用例已实现，待命令验证后登记 E6；后续补 K8s RBAC 和 IaC |
+| `infrastructure.iam-policy-audit` | simulation | D3 专用模拟 | CWE-732 权限分配不当；OWASP 云 IAM 最小权限；ATT&CK T1098 Account Manipulation | E1–E6 | LT-031 三向页面验证已通过；后续补 K8s RBAC 和 IaC |
 
 **判断：**已建立首个云 IAM 最小权限专用样板；对象存储暴露、Kubernetes RBAC、IaC 配置和镜像完整性仍是后续缺口。
 
@@ -225,8 +225,8 @@
 
 | 场景 | 模式 | 深度/实现 | 参考体系 | 证据 | 长期动作 |
 |---|---|---|---|---|---|
-| `host.service-permission-audit` | simulation | D3 专用模拟 | CWE-428 未加引号服务路径；CWE-732 权限分配不当；ATT&CK T1574.010 服务文件权限弱化 | E1–E5 | LT-031 三向页面用例已实现，待命令验证后登记 E6；后续补事件日志研判 |
-| `host.event-log-triage` | case-study | D3 专用模拟 | Windows Security Log；身份与服务时间线 | E1–E5 | LT-039 已完成固定异常登录、权限变更与服务安装研判 |
+| `host.service-permission-audit` | simulation | D3 专用模拟 | CWE-428 未加引号服务路径；CWE-732 权限分配不当；ATT&CK T1574.010 服务文件权限弱化 | E1–E6 | LT-031 三向页面验证已通过 |
+| `host.event-log-triage` | case-study | D3 专用模拟 | Windows Security Log；身份与服务时间线 | E1–E6 | LT-039 已完成并推进 ready；case-study 保持无真实主机操作边界 |
 
 **判断：**Windows 主机已具备服务权限与事件时间线两个样板；文件 ACL、计划任务、凭据保护、NTLM/Kerberos 和 AD 委派仍是后续缺口。
 
@@ -281,9 +281,9 @@
 
 ## 20. 当前审计结论
 
-- 当前 75 个场景全部进入矩阵；71 个达到 `ready`，LT-036～LT-039 的 4 个新场景等待命令验证后收口。
+- 当前 75 个场景全部进入矩阵，75 个达到 `ready`。
 - Web/注入和认证授权是成熟度最高的两条主线。
 - API、业务逻辑、密码学、检测响应和 Windows 主机已有首个专用样板；云原生与 IaC 仍是主要结构性薄弱点。
 - 30 个引导式场景已满足当前安全化 `ready` 规则，但不等于 30 个独立深度靶场。
-- 150 个启用变体等待最终 Web/API 入口门禁复核；当前 17 个实验登记 E6，LT-031 的 7 个页面用例待验证后晋升。
+- 150 个启用变体已通过 Web/API 入口门禁复核；当前 28 个实验登记 E6，14 个分类均有代表性页面回归。
 - 后续优先补结构性缺口和专用深度，不以继续增加名称数量为第一目标。

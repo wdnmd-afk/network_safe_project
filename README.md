@@ -205,29 +205,30 @@ tools/lab-scripts/<category>/<scene>/
 
 ## 9. 当前状态
 
-当前仓库处于：**71 个 `ready` 实验持续维护阶段**
+当前仓库处于：**75 个 `ready` 实验持续维护阶段**
 
 当前已完成：
 
 - Vue + Vite 前端、Node.js + Express 后端和 MySQL 平台数据链路。
 - 实验元数据扫描、注册、列表、详情、学习进度、验证记录和复盘能力。
 - 统一 `lab_event_logs` 事件日志和脱敏摘要。
-- 71 个 `ready` 实验、14 个分类、142 个漏洞版 / 修复版变体。
-- 25 个 `interactive`、19 个 `simulation`、27 个 `case-study` 实验模式。
-- 41 个专用实验实现与 30 个通用引导式实验实现。
+- 75 个 `ready` 实验、14 个分类、150 个漏洞版 / 修复版变体。
+- 26 个 `interactive`、21 个 `simulation`、28 个 `case-study` 实验模式。
+- 45 个专用实验实现与 30 个通用引导式实验实现。
 - 单元 / API / 共享校验 / 只读脚本 / Web 入口一致性 / Playwright 分层自动化验证。
 - 本机数据库缺失复盘表的幂等补齐入口 `pnpm --filter @network-safe/server schema:ensure`。
 
 当前长期队列：
 
-- `LT-001`～`LT-030` 已完成并通过第二轮阶段审计。
-- 下一项长期任务为 `LT-031`，补齐 `LT-021`～`LT-027` 新专用实验的分类代表性 Playwright 三向证据。
-- 新增实验在专项与根级命令门禁通过前不推进为 `ready`。
+- `LT-001`～`LT-040` 已完成并通过第三轮阶段审计；当前后续队列从 `LT-041` 起。
+- `LT-031`～`LT-040` 的专项验证、根级 `pnpm verify` 和完整 40 项 Playwright E2E 已通过。
+- 当前基线为 75/75 `ready`；生产 build/nginx 发布复验不属于本轮完成条件，已列入后续维护队列。
 
 总纲和最终验证证据见：
 
 - `SECURITY-COVERAGE-LONG-TERM-GOAL.md`
 - `docs/execution/2026-08-25-lt-second-round-phase-audit.md`
+- `docs/execution/2026-08-25-lt040-third-round-audit.md`
 - `docs/execution/security-lab-master-goal.md`
 - `docs/execution/2026-07-20-security-lab-master-completion.md`
 

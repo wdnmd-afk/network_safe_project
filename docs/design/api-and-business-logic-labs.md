@@ -10,7 +10,7 @@
 
 本文档承接 `SECURITY-COVERAGE-LONG-TERM-GOAL.md` 第 9.1、9.2 节和阶段 3，用于在进入实现前确认 API 安全与业务逻辑首批实验的分类、目录、元数据字段、接口结构和安全边界。
 
-本文档只做规划，不实现任何实验。每个实验进入实现前仍必须单独编写执行文档，并按第 14 节切片流程推进。
+本文档保留首批规划基线；具体实现由独立执行文档切片推进，当前 `LT-036` / `LT-037` 状态见第 11 节。
 
 ## 2. 规划原则
 
@@ -80,14 +80,14 @@
 - 固定案例：`fixed-profile-update-dto`，字段锁定为 `displayName`、`role`、`status`、`accountLimit`。
 - `displayName` 为 `user-editable`；其余字段为 `server-owned`，API 不接受自由 DTO。
 - 两步决策：绑定全部字段 / 字段允许列表与服务端所有权 → 持久化服务端字段 / 阻断 / 正常 displayName 更新。
-- 当前实现与标准目录已落地，元数据保持 `in-progress`，等待专项和根级门禁后推进 `ready`。
+- 当前实现与标准目录已落地，专项、根级门禁和代表性 Playwright 已通过，元数据已推进 `ready`。
 
 ### 5.6 业务竞态与幂等（LT-037）
 
 - 实验 ID：`business-logic.race-condition`。
 - 固定案例：`fixed-single-stock-double-request`，虚构库存 1、版本 7、两条固定请求摘要。
 - 两步决策：无版本读写 / 幂等与版本校验 → 双扣 / 阻断重复或陈旧请求 / 单次正常扣减。
-- 不执行真实并发或数据库事务；元数据保持 `in-progress`，等待命令验证。
+- 不执行真实并发或数据库事务；专项、根级门禁和代表性 Playwright 已通过，元数据已推进 `ready`。
 
 ## 6. 统一产物要求
 
@@ -127,4 +127,9 @@
 
 - 首批四个候选均有明确的固定模型、模式、复用基础、产物要求和安全边界。
 - 前置确认项清单完整，实现前逐项解决。
-- 不在本轮引入任何实验代码或元数据变更。
+- 不在规划文档中重复创建实验代码或元数据；实现状态见第 11 节。
+
+## 11. LT-036 / LT-037 实施状态
+
+- `api.property-authorization` 已完成固定 DTO 属性级授权实验，三条 canonical 路径、未知 key 脱敏、API/前端测试、只读验证、入口门禁、根级验证和 Playwright 三向回归均通过，元数据为 `ready`。
+- `business-logic.race-condition` 已完成固定库存/幂等状态机实验，三条 canonical 路径、未知 key 脱敏、API/前端测试、只读验证、入口门禁、根级验证和 Playwright 三向回归均通过，元数据为 `ready`。

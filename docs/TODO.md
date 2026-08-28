@@ -1,12 +1,27 @@
 # 长期目标执行进度
 
-- 总队列：30 项
-- 已完成：30 / 30
-- 当前状态：第二轮阶段审计已完成，`LT-027`～`LT-030` 全部通过约定门禁并回填证据
-- 下一轮队列：`LT-031`～`LT-040`，首项补齐新专用实验的分类代表性 Playwright 三向证据
+- 总队列：40 项
+- 已完成：40 / 40
+- 当前状态：`LT-031`～`LT-040` 已完成并通过专项、根级和完整 Playwright 门禁；75 个实验全部 `ready`
+- 待验证：无（生产 build/nginx 发布复验不属于本轮完成条件）
+- 下一轮队列：`LT-041` 全新 Windows 发布复验优先，随后进入 `LT-042` Kubernetes RBAC/IaC 固定审计
 - 计数规则：只有实现、文档及约定验证全部完成并回填证据后，任务才计入已完成。
 
-# 2026-08-25 最新进展：LT-027～LT-030 全部完成
+# 2026-08-27 最新进展：LT-031～LT-040 完成并通过第三轮审计
+
+- [x] `LT-031`：7 个目标专用实验均完成风险/防御/正常三向 Playwright 页面验证，目标与完整 E2E 均通过，E6 由 17 增至 28。
+- [x] `LT-032`：Express API 路由与 `meta.json` API entrypoints 双向一致性验证通过，198/198 入口匹配、66/66 实验路由覆盖，并已纳入根级脚本和 CI。
+- [x] `LT-033`：目录搜索、分类/难度/模式/风险/深度组合筛选、结果计数和清除操作通过前端测试与 E2E。
+- [x] `LT-034`：5 条静态学习路径、引用校验、目录有序入口以及详情页前置/后续关系通过测试与 E2E，不新增数据库表。
+- [x] `LT-035`：token TTL、`expiresAt`、进程内 SHA-256 指纹吊销、Bearer 注销和前端过期清理通过认证测试、类型检查和注销 E2E。
+- [x] `LT-036`：`api.property-authorization` 固定 DTO 属性级授权实验通过专项验证、API/前端测试、入口门禁、根级 verify 和 E2E，元数据推进 `ready`。
+- [x] `LT-037`：`business-logic.race-condition` 固定库存/幂等实验通过专项验证、API/前端测试、入口门禁、根级 verify 和 E2E，元数据推进 `ready`。
+- [x] `LT-038`：`crypto.secret-lifecycle-audit` 固定秘密标记/密钥台账实验通过专项验证、API/前端测试、入口门禁、根级 verify 和 E2E，元数据推进 `ready`。
+- [x] `LT-039`：`host.event-log-triage` 固定脱敏 Windows 事件时间线实验通过专项验证、API/前端测试、入口门禁、根级 verify 和 E2E，元数据推进 `ready`。
+- [x] `LT-040`：完成第三轮事实审计，统一 75/75/150/45/30 基线，并明确下一轮优先执行 Windows 全新环境发布复验，再评估 Kubernetes RBAC/IaC 固定审计。
+- 验证证据：四个专项 `verify.ts` 全部 `ok: true`；`pnpm verify` EXIT=0（server 363、web 285、shared 67、guided 30/30）；`pnpm test:e2e` 40/40；Web 入口 150/150；API 入口 198/198；覆盖矩阵 75/75、E6 28；`git diff --check` 通过。
+
+# 2026-08-25 历史进展：LT-027～LT-030 全部完成
 
 - [x] `LT-027`：`client.mitb` 已完成固定交易视图三方对照、两步专用状态机、页面/API、事件摘要、标准文档、测试和只读验证器收口，并从引导式目录毕业；专项验证 19/19 `ok: true`。
 - [x] 修正 `client.mitb` case-study 元数据：`variants[].supportsAutomation` 保持 `false`，Playwright/API/只读脚本证据不再被误标为攻击脚本自动化。

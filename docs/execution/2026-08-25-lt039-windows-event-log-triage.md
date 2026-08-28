@@ -23,3 +23,8 @@
 
 - 时间线、风险/防御/正常研判均可确定性复现，安全边界证明未读取或处置真实 Windows 状态。
 
+## 5. 验证结果（2026-08-27）
+
+- 共享固定 Windows 事件 schema 测试和专项只读验证均通过，专项报告 `ok: true`。
+- API/前端测试、Web/API 入口门禁、覆盖矩阵、根级 `pnpm verify` 和 Playwright 三向回归均通过。
+- 元数据已推进为 `ready` 并启用 E6；`variants[].supportsAutomation` 保持 `false`，无 `exploit.py` 或真实主机操作。
