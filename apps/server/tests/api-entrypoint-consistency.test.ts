@@ -164,8 +164,8 @@ test("repository API entrypoints match the registered Express routes", () => {
   const report = verifyRepositoryApiEntrypoints();
 
   assert.equal(report.ok, true, report.errors.map((error) => error.message).join("\n"));
-  assert.equal(report.labCount, 75);
-  assert.equal(report.apiEntrypointCount, 198);
-  assert.equal(report.matchedEntrypointCount, 198);
+  assert.equal(report.labCount, 76);
+  assert.equal(report.apiEntrypointCount, 201);
+  assert.equal(report.matchedEntrypointCount, 201);
   assert.equal(report.coveredLabRouteCount, report.labRouteCount);
 });

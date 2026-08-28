@@ -1,13 +1,25 @@
 # 长期目标执行进度
 
-- 总队列：41 项
-- 已完成：41 / 41
-- 当前状态：`LT-041` 已完成 75 实验基线的全新 Windows 发布复验，生产构建与 nginx 发布链路已实际验证；75 个实验全部 `ready`
-- 待验证：无
-- 下一轮队列：`LT-042` Kubernetes RBAC/IaC 固定审计，随后 `LT-043` API 资源消耗/Webhook 重放与幂等、`LT-044` Windows 文件 ACL/计划任务/NTLM-Kerberos 固定案例
+- 总队列：42 项
+- 已完成：42 / 42
+- 当前状态：`LT-042` 已新增 `infrastructure.kubernetes-rbac-audit` 固定 RBAC 绑定审计实验；76 个实验全部 `ready`
+- 待验证：无（本轮未执行 build、smoke、数据库集成与 Playwright，按既有切片收口口径不属于完成条件）
+- 下一轮队列：`LT-043` API 资源消耗/Webhook 重放与幂等，随后 `LT-044` Windows 文件 ACL/计划任务/NTLM-Kerberos 固定案例
 - 计数规则：只有实现、文档及约定验证全部完成并回填证据后，任务才计入已完成。
 
-# 2026-08-28 最新进展：LT-041 全新 Windows 发布复验完成
+# 2026-08-28 最新进展：LT-042 Kubernetes RBAC 固定审计实验完成
+
+- [x] 新增 `infrastructure.kubernetes-rbac-audit`（case-study，D3 专用模拟），复用 `infrastructure` 分类，不新增 `cloud` 分类，遵循 `docs/design/cloud-native-iac-labs.md` 第 3 节决策。
+- [x] 服务端 `kubernetes-rbac-audit-lab.ts`：两份冻结虚构绑定快照（`virtual-cluster-admin-broad-binding` 风险基线、`virtual-namespaced-readonly-binding` 加固基线），五要素语义枚举，两步状态机复用 `createGuidedScenarioMachine`。
+- [x] 固定审计计数：风险绑定 4 发现 / 3 关键风险 / 0 控制；加固绑定 0 / 0 / 5，全部由语义枚举确定性推导。
+- [x] API 挂载工作台与漏洞版/修复版评估路由，位于通用 catch-all 之前；事件日志只写固定绑定 key 与计数，不写 YAML 正文、命名空间或原始输入。
+- [x] 前端 API 客户端、变体配置、专用视图与路由；前端类型已对齐服务端真实字段（`roleScope`/`verbScope`/`resourceScope`/`subjectScope`/`secretsReadable`）。
+- [x] 标准实验目录八份文档、脚本目录 README 与只读 `verify.ts`（18/18 `ok: true`），并纳入根级 `test:controlled` 门禁。
+- [x] 覆盖矩阵新增第 15 节行；计数由 75/45/28/6 更新为 76/46/29/7，`test:coverage` `ok: true`。
+- 验证证据：专项只读验证 18/18 `ok: true`；`pnpm verify` EXIT=0（前后端类型检查、shared 67、guided 30/30、controlled 5×`ok: true`、Web 入口 152/152、API 入口 201/201、实验路由 68/68、coverage 76/76、server 372/372、web 285/285）；`git diff --check` 通过。
+- 过程修正：服务端 `RbacBindingAssessment` 字段名一度写错为 `scopedControlCount`（真实为 `leastPrivilegeControlCount`）；测试与视图曾引用不存在的 `namespaceScope`/`bindingScope`；只读验证器曾把裸字符串 `kubectl` 列入禁用片段，导致服务自身的"不调用 kubectl"边界声明被误判。均已按服务端真实模型修正。
+
+# 2026-08-28 历史进展：LT-041 全新 Windows 发布复验完成
 
 - [x] 预检：Node v22.16.0 满足 `>=22 <23`；通过 corepack 将 pnpm 锁定到 `packageManager` 声明的 10.0.0（本机默认 7.33.7 与声明不一致）；MySQL 3306 已监听；6667/6670/8080 空闲；`git diff --check` 通过。
 - [x] 数据库：`pnpm db:prepare` 连续两次输出完全一致——4 个迁移幂等跳过、`lab_recap_question_completions` 已存在、2 个认证账号、14 个分类、75 个实验、150 个变体，确认幂等无重复写入。

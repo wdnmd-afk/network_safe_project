@@ -4,9 +4,9 @@
 >
 > 初始版本：2026-07-23
 >
-> 当前基线：75 个安全学习实验（75 个 `ready`）
+> 当前基线：76 个安全学习实验（76 个 `ready`）
 >
-> 长期队列进度：41 / 44 已完成；`LT-041` Windows 发布复验已收口，后续队列从 `LT-042` 起
+> 长期队列进度：42 / 44 已完成；`LT-042` Kubernetes RBAC 固定审计已收口，后续队列从 `LT-043` 起
 
 ## 1. 文档定位
 
@@ -67,13 +67,13 @@
 
 | 指标 | 当前状态 | 长期方向 |
 |---|---:|---|
-| 实验总数 | 75（75 ready） | 数量不设硬性上限，优先补结构性缺口和深度 |
+| 实验总数 | 76（76 ready） | 数量不设硬性上限，优先补结构性缺口和深度 |
 | 分类数 | 14 | 已新增 Windows 主机分类，后续评估身份基础设施领域 |
-| 漏洞版 / 修复版变体 | 150 | 新主题继续保持双视角或满足高风险案例化例外 |
+| 漏洞版 / 修复版变体 | 152 | 新主题继续保持双视角或满足高风险案例化例外 |
 | `interactive` | 26 | 优先提升通用交互主题的专用实现深度 |
 | `simulation` | 21 | 增加多步骤状态、证据和策略对比 |
-| `case-study` | 28 | 增加分支决策、时间线、评分和复盘，不增加攻击能力 |
-| 专用实现 | 45 | 每个重要领域至少具备一个高质量纵向样板 |
+| `case-study` | 29 | 增加分支决策、时间线、评分和复盘，不增加攻击能力 |
+| 专用实现 | 46 | 每个重要领域至少具备一个高质量纵向样板 |
 | 通用引导式实现 | 30 | 建设引导式工作台第二版并分批专用化 |
 | 统一事件日志 | 已具备 | 增加学习统计、检测响应和长期趋势能力 |
 | 单元 / API / 脚本 / E2E | 已具备 | 增加覆盖矩阵、发布门禁和全新环境验收 |
@@ -239,6 +239,8 @@
 | `infrastructure.container-escape` | case-study | 引导式 | 增加容器边界、capabilities、挂载和运行时策略分析 |
 | `infrastructure.iot` | simulation | 引导式 | 增加设备身份、固件、分区和管理面策略 |
 | `infrastructure.zero-day` | case-study | 引导式 | 增加补偿控制、虚拟补丁、隔离和应急响应时间线 |
+| `infrastructure.iam-policy-audit` | simulation | 专用（ready） | LT-026 已完成固定四要素策略快照与两步授权处置；后续补对象存储暴露 |
+| `infrastructure.kubernetes-rbac-audit` | case-study | 专用（ready） | LT-042 已完成固定 RBAC 绑定五要素审计与两步处置决策；后续补 Pod Security 与 IaC 配置审计 |
 
 ### 6.13 检测与响应
 
@@ -417,7 +419,7 @@
 - [ ] 对象存储暴露：固定 bucket 策略、公开访问和审计。
 - [ ] 云元数据服务：只做固定请求模型和 SSRF 防护说明。
 - [ ] 安全组和网络边界：固定规则、暴露面和分段策略。
-- [ ] Kubernetes RBAC：固定 YAML、角色、绑定和权限分析。
+- [x] Kubernetes RBAC：固定 YAML、角色、绑定和权限分析（`LT-042`）。
 - [ ] Pod Security 与容器权限：固定配置，不启动真实危险容器。
 - [ ] Kubernetes Secret 使用：固定清单、挂载方式和最小暴露。
 - [ ] 镜像来源、SBOM 和签名：固定镜像清单和来源证明。
@@ -630,7 +632,7 @@
 - [x] Windows 事件日志研判样板（`LT-039`）。
 - [ ] NTLM/Kerberos 固定认证流程样板。
 - [x] 云 IAM 策略模拟（`LT-026`）。
-- [ ] Kubernetes RBAC/IaC 固定配置审计。
+- [x] Kubernetes RBAC/IaC 固定配置审计（`LT-042`）。
 - [ ] SBOM、签名和构建来源证明实验。
 
 完成标准：所有实验保持静态数据、固定策略或虚拟状态，不修改真实主机和云环境。
@@ -839,7 +841,7 @@
 第三轮审计确认本轮未执行生产构建和 nginx 发布复验。由于平台已从 65 个实验扩展到 75 个实验，并新增认证生命周期、共享包依赖和入口门禁，下一轮先验证交付可重复性，再扩展新安全主题。
 
 - [x] `LT-041`：执行全新 Windows 环境发布复验，覆盖数据库初始化、前后端构建、服务启动、nginx SPA fallback、API 反向代理、登录和代表性实验闭环（完成时间：2026-08-28 15:37:54 +08:00；验证：`db:prepare` 两次幂等、前后端生产构建、`nginx -t`、nginx 运行时验收 `NGINX_RUNTIME_ACCEPTANCE_PASS`、`pnpm verify` EXIT=0、smoke 4/4、E2E 40/40；修复 `test-nginx-runtime.ps1` 因 UTF-8 无 BOM 导致 Windows PowerShell 解析失败的缺陷）。
-- [ ] `LT-042`：实现 Kubernetes RBAC/IaC 固定配置审计，使用只读 YAML、虚拟角色绑定和固定策略，不连接真实集群或云账户。
+- [x] `LT-042`：实现 Kubernetes RBAC/IaC 固定配置审计，使用只读 YAML、虚拟角色绑定和固定策略，不连接真实集群或云账户（完成时间：2026-08-28 16:59:05 +08:00；验证：专项只读验证 18/18 `ok: true`、`pnpm verify` EXIT=0，shared 67、guided 30/30、controlled 5×`ok: true`、Web 入口 152/152、API 入口 201/201、coverage 76/76、server 372、web 285；新实验 `infrastructure.kubernetes-rbac-audit` 复用 `infrastructure` 分类，case-study ready 例外，不提供 exploit.py）。
 - [ ] `LT-043`：实现 API 资源消耗、Webhook 重放与幂等固定实验，继续使用固定请求批次与内存状态机。
 - [ ] `LT-044`：补充 Windows 文件 ACL、计划任务和 NTLM/Kerberos 固定案例，不读取或修改真实主机状态。
 
@@ -907,3 +909,4 @@
 | `LT-039` | 2026-08-27 09:55:53 +08:00 | `host.event-log-triage` 固定脱敏 Windows 事件时间线 case-study 及共享事件 schema 复用 | 专项 `ok: true`；根级 verify 和 E2E 通过；元数据 `ready`，保持无真实主机操作边界 |
 | `LT-040` | 2026-08-27 09:55:53 +08:00 | 第三轮事实审计、当前基线统一和后续队列排序 | 75/75 ready、150 变体、45 专用、30 引导式、14 分类、28 个 E6；`pnpm verify` EXIT=0、E2E 40/40、`git diff --check` 通过 |
 | `LT-041` | 2026-08-28 15:37:54 +08:00 | 75 实验基线的全新 Windows 发布复验：数据库幂等准备、前后端生产构建、构建产物秘密扫描、nginx 生成与运行时验收、认证与实验闭环、全量自动化复验；修复 `test-nginx-runtime.ps1` 在 Windows PowerShell 5.1 下因缺少 UTF-8 BOM 导致的解析失败 | `db:prepare` 两次输出一致（4 迁移幂等、2 账号、14 分类、75 实验、150 变体）；`build:web` 与 `build:server` EXIT=0，产物无硬编码秘密；`nginx -t` 通过；运行时验收 `NGINX_RUNTIME_ACCEPTANCE_PASS`，5 项 HTTP 检查全 200、`lab-count=75`、登录/当前用户/引导式三向/事件日志/复盘/注销全过；`pnpm verify` EXIT=0（shared 67、guided 30/30、controlled 4×`ok: true`、Web 入口 150/150、API 入口 198/198、coverage 75/75、server 363、web 285）；`test:smoke` 4/4；`test:e2e` 40/40；端口 6667/8080 已释放；`git diff --check` 通过 |
+| `LT-042` | 2026-08-28 16:59:05 +08:00 | `infrastructure.kubernetes-rbac-audit` 固定 RBAC 绑定审计 case-study：两份冻结虚构绑定快照与五要素语义枚举、确定性审计计数纯函数、两步状态机、专用工作台/评估 API、脱敏事件摘要、前端 API/配置/视图/路由、标准实验目录七份文档、脚本目录与只读验证器；纳入 `test:controlled` 门禁与覆盖矩阵第 15 节 | 专项只读验证 18/18 `ok: true`；`pnpm verify` EXIT=0（前后端类型检查、shared 67、guided 30/30、controlled 5×`ok: true`、Web 入口 152/152、API 入口 201/201、实验路由 68/68、coverage 76/76、server 372/372、web 285/285）；固定计数经运行时实测锁定（风险绑定 4 发现 / 3 关键风险 / 0 控制；加固绑定 0 / 0 / 5）；case-study 变体保持 `supportsAutomation: false` 且无 `exploit.py`；未运行 build、smoke、数据库集成或 Playwright |

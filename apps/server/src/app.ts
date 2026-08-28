@@ -158,6 +158,11 @@ import {
   type IamPolicyAuditVariantKey,
 } from "./services/iam-policy-audit-lab.js";
 import {
+  createKubernetesRbacAuditLabService,
+  type KubernetesRbacAuditLabService,
+  type KubernetesRbacAuditVariantKey,
+} from "./services/kubernetes-rbac-audit-lab.js";
+import {
   createMitbTransactionLabService,
   type MitbTransactionLabService,
   type MitbTransactionVariantKey,
@@ -286,6 +291,7 @@ type CreateAppOptions = {
   ruleAlertTriageLabService?: RuleAlertTriageLabService;
   servicePermissionAuditLabService?: ServicePermissionAuditLabService;
   iamPolicyAuditLabService?: IamPolicyAuditLabService;
+  kubernetesRbacAuditLabService?: KubernetesRbacAuditLabService;
   mitbTransactionLabService?: MitbTransactionLabService;
   propertyAuthorizationLabService?: ControlledDecisionLabService;
   raceConditionLabService?: ControlledDecisionLabService;
@@ -401,6 +407,9 @@ export function createApp(options: CreateAppOptions = {}) {
     createServicePermissionAuditLabService();
   const iamPolicyAuditLabService =
     options.iamPolicyAuditLabService ?? createIamPolicyAuditLabService();
+  const kubernetesRbacAuditLabService =
+    options.kubernetesRbacAuditLabService ??
+    createKubernetesRbacAuditLabService();
   const mitbTransactionLabService =
     options.mitbTransactionLabService ?? createMitbTransactionLabService();
   const propertyAuthorizationLabService =
@@ -733,6 +742,12 @@ export function createApp(options: CreateAppOptions = {}) {
   function readIamPolicyAuditVariantKey(
     value: string,
   ): IamPolicyAuditVariantKey | undefined {
+    return value === "vuln" || value === "fixed" ? value : undefined;
+  }
+
+  function readKubernetesRbacAuditVariantKey(
+    value: string,
+  ): KubernetesRbacAuditVariantKey | undefined {
     return value === "vuln" || value === "fixed" ? value : undefined;
   }
 
@@ -5556,6 +5571,104 @@ export function createApp(options: CreateAppOptions = {}) {
               result.policyAssessment?.criticalFindingCount ?? 0,
             leastPrivilegeControlCount:
               result.policyAssessment?.leastPrivilegeControlCount ?? 0,
+            stepCount: result.assessment.stepCount,
+            terminalOutcome: result.recap.terminalOutcome,
+            signal: result.signal,
+          },
+          decision: result.decision,
+          signal: result.signal,
+          statusCode: responseStatus,
+          message: result.message,
+          riskLevel: riskAccepted ? "high" : result.assessment.riskLevel,
+        });
+
+        res.status(responseStatus).json({
+          status: result.status,
+          result,
+        });
+      } catch (error) {
+        next(error);
+      }
+    },
+  );
+
+  app.get(
+    "/api/labs/infrastructure/kubernetes-rbac-audit/workbench",
+    (_req, res) => {
+      res.status(200).json({
+        status: "ok",
+        workbench: kubernetesRbacAuditLabService.getWorkbench(),
+      });
+    },
+  );
+
+  app.post(
+    "/api/labs/infrastructure/kubernetes-rbac-audit/:variant/evaluate",
+    async (req, res, next) => {
+      try {
+        const currentUser = await readCurrentUser(req);
+
+        if (!currentUser.ok) {
+          res.status(currentUser.status).json(currentUser.body);
+          return;
+        }
+
+        const variantKey = readKubernetesRbacAuditVariantKey(req.params.variant);
+
+        if (!variantKey) {
+          res.status(404).json({
+            status: "error",
+            message: "kubernetes rbac audit variant not found",
+          });
+          return;
+        }
+
+        const scenarioKey = readRequiredString(req.body?.scenarioKey);
+        const decisions = readRequiredStringArray(req.body?.decisions);
+
+        if (!scenarioKey || decisions.length === 0) {
+          res.status(400).json({
+            status: "error",
+            message: "scenarioKey and decisions are required",
+          });
+          return;
+        }
+
+        const result = kubernetesRbacAuditLabService.evaluate({
+          variantKey,
+          scenarioKey,
+          decisions,
+        });
+        const responseStatus = result.status === "blocked" ? 403 : 200;
+        const riskAccepted =
+          result.recap.terminalOutcome === "risk" &&
+          result.decision === "accepted";
+
+        await recordLabEventSafely({
+          traceId: readOptionalTraceId(req),
+          userId: currentUser.user.id,
+          labKey: result.labKey,
+          variantKey,
+          phase:
+            variantKey === "vuln"
+              ? "attack"
+              : result.recap.terminalOutcome === "normal"
+                ? "normal"
+                : "defense",
+          eventType: result.status === "blocked" ? "blocked" : "success",
+          actorPerspective: riskAccepted ? "attacker" : "system",
+          method: req.method,
+          path: req.path,
+          // 只记录固定绑定 key 与计数，不写入 YAML 正文、真实命名空间或原始输入
+          inputSummary: {
+            scenarioKey: result.scenarioKey,
+            bindingKey:
+              result.bindingAssessment?.bindingKey ?? "blocked-rbac-binding",
+            findingCount: result.bindingAssessment?.findingCount ?? 0,
+            criticalFindingCount:
+              result.bindingAssessment?.criticalFindingCount ?? 0,
+            leastPrivilegeControlCount:
+              result.bindingAssessment?.leastPrivilegeControlCount ?? 0,
             stepCount: result.assessment.stepCount,
             terminalOutcome: result.recap.terminalOutcome,
             signal: result.signal,

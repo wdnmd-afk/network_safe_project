@@ -704,6 +704,22 @@ export const routes: RouteRecordRaw[] = [
     },
   },
   {
+    path: "/labs/infrastructure/kubernetes-rbac-audit/vuln",
+    name: "lab-infrastructure-kubernetes-rbac-audit-vuln",
+    component: () => import("../views/KubernetesRbacAuditLabView.vue"),
+    props: {
+      variant: "vuln",
+    },
+  },
+  {
+    path: "/labs/infrastructure/kubernetes-rbac-audit/fixed",
+    name: "lab-infrastructure-kubernetes-rbac-audit-fixed",
+    component: () => import("../views/KubernetesRbacAuditLabView.vue"),
+    props: {
+      variant: "fixed",
+    },
+  },
+  {
     path: "/labs/api/property-authorization/vuln",
     name: "lab-api-property-authorization-vuln",
     component: () => import("../views/ControlledDecisionLabView.vue"),

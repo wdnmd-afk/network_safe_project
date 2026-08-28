@@ -98,6 +98,8 @@ describe("SafeMart 路由清单", () => {
       "/labs/client/mitb/fixed",
       "/labs/infrastructure/iam-policy-audit/vuln",
       "/labs/infrastructure/iam-policy-audit/fixed",
+      "/labs/infrastructure/kubernetes-rbac-audit/vuln",
+      "/labs/infrastructure/kubernetes-rbac-audit/fixed",
       "/labs/api/property-authorization/vuln",
       "/labs/api/property-authorization/fixed",
       "/labs/business-logic/race-condition/vuln",

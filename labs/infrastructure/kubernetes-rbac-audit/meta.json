@@ -1,0 +1,174 @@
+{
+  "id": "infrastructure.kubernetes-rbac-audit",
+  "slug": "kubernetes-rbac-audit",
+  "title": "Kubernetes RBAC 固定配置审计",
+  "category": "infrastructure",
+  "subcategory": "kubernetes-rbac-audit",
+  "mode": "case-study",
+  "severity": "high",
+  "difficulty": "intermediate",
+  "summary": "对比两份虚构 Kubernetes RBAC 绑定快照的角色种类、动词、资源与命名空间范围，完成绑定处置决策。",
+  "status": "ready",
+  "phase": "phase-4",
+  "sortOrder": 400,
+  "estimatedMinutes": 30,
+  "tags": [
+    "infrastructure",
+    "kubernetes-rbac",
+    "least-privilege",
+    "iac-audit"
+  ],
+  "knowledgePoints": [
+    "ClusterRole 与 Role 的作用域差异",
+    "通配符动词与资源风险",
+    "命名空间边界收敛",
+    "Secret 读取与提权可达性"
+  ],
+  "variants": [
+    {
+      "key": "vuln",
+      "title": "Kubernetes RBAC 风险观察版",
+      "enabled": true,
+      "description": "观察集群级通配符动词、通配符资源叠加全命名空间范围时被批准的固定风险结果。",
+      "entryKey": "infrastructure-kubernetes-rbac-audit-vuln",
+      "expectedOutcome": "返回 infrastructure-kubernetes-rbac-audit-risk-accepted 学习信号。",
+      "supportsAutomation": false
+    },
+    {
+      "key": "fixed",
+      "title": "Kubernetes RBAC 防御复盘版",
+      "enabled": true,
+      "description": "观察收敛为命名空间 Role、显式动词与资源后阻断过宽绑定，并复核最小权限基线正常可用。",
+      "entryKey": "infrastructure-kubernetes-rbac-audit-fixed",
+      "expectedOutcome": "过宽绑定被阻断，最小权限基线凭固定控制正常通过复核。",
+      "supportsAutomation": false
+    }
+  ],
+  "entrypoints": {
+    "web": [
+      {
+        "key": "infrastructure-kubernetes-rbac-audit-vuln",
+        "variant": "vuln",
+        "path": "/labs/infrastructure/kubernetes-rbac-audit/vuln",
+        "description": "Kubernetes RBAC 风险观察版工作台"
+      },
+      {
+        "key": "infrastructure-kubernetes-rbac-audit-fixed",
+        "variant": "fixed",
+        "path": "/labs/infrastructure/kubernetes-rbac-audit/fixed",
+        "description": "Kubernetes RBAC 防御复盘版工作台"
+      }
+    ],
+    "api": [
+      {
+        "key": "infrastructure-kubernetes-rbac-audit-workbench",
+        "variant": "shared",
+        "method": "GET",
+        "path": "/api/labs/infrastructure/kubernetes-rbac-audit/workbench",
+        "description": "固定 Kubernetes RBAC 绑定快照与最小权限审计指标工作台"
+      },
+      {
+        "key": "infrastructure-kubernetes-rbac-audit-vuln-evaluate",
+        "variant": "vuln",
+        "method": "POST",
+        "path": "/api/labs/infrastructure/kubernetes-rbac-audit/vuln/evaluate",
+        "description": "Kubernetes RBAC 审计漏洞版固定路径评估"
+      },
+      {
+        "key": "infrastructure-kubernetes-rbac-audit-fixed-evaluate",
+        "variant": "fixed",
+        "method": "POST",
+        "path": "/api/labs/infrastructure/kubernetes-rbac-audit/fixed/evaluate",
+        "description": "Kubernetes RBAC 审计修复版固定路径评估"
+      }
+    ],
+    "scripts": [
+      {
+        "key": "infrastructure-kubernetes-rbac-audit-verify",
+        "language": "ts",
+        "path": "tools/lab-scripts/infrastructure/kubernetes-rbac-audit/verify.ts",
+        "description": "Kubernetes RBAC 审计本机只读一致性验证"
+      }
+    ],
+    "docs": [
+      {
+        "key": "infrastructure-kubernetes-rbac-audit-readme",
+        "path": "labs/infrastructure/kubernetes-rbac-audit/README.md",
+        "description": "Kubernetes RBAC 审计场景说明"
+      },
+      {
+        "key": "infrastructure-kubernetes-rbac-audit-attack-steps",
+        "path": "labs/infrastructure/kubernetes-rbac-audit/docs/attack-steps.md",
+        "description": "过宽绑定风险观察步骤"
+      },
+      {
+        "key": "infrastructure-kubernetes-rbac-audit-fix-notes",
+        "path": "labs/infrastructure/kubernetes-rbac-audit/docs/fix-notes.md",
+        "description": "命名空间收敛修复思路"
+      },
+      {
+        "key": "infrastructure-kubernetes-rbac-audit-manual-verification",
+        "path": "labs/infrastructure/kubernetes-rbac-audit/docs/manual-verification.md",
+        "description": "Kubernetes RBAC 审计手工验证矩阵"
+      }
+    ]
+  },
+  "verification": {
+    "manual": {
+      "supported": true,
+      "stepsDocPath": "labs/infrastructure/kubernetes-rbac-audit/docs/manual-verification.md",
+      "expectedSignals": [
+        "infrastructure-kubernetes-rbac-audit-risk-accepted",
+        "infrastructure-kubernetes-rbac-audit-defense-blocked",
+        "infrastructure-kubernetes-rbac-audit-normal-verified"
+      ]
+    },
+    "automation": {
+      "supported": true,
+      "playwright": {
+        "enabled": false,
+        "specPath": "packages/testing/tests/e2e/platform.spec.mjs"
+      },
+      "apiTest": {
+        "enabled": true,
+        "specPath": "apps/server/tests/kubernetes-rbac-audit-lab.test.ts"
+      },
+      "scriptVerification": {
+        "enabled": true,
+        "scriptKeys": [
+          "infrastructure-kubernetes-rbac-audit-verify"
+        ]
+      }
+    }
+  },
+  "prerequisites": [
+    {
+      "type": "service",
+      "value": "本机后端服务运行于 http://127.0.0.1:6667",
+      "required": true
+    },
+    {
+      "type": "browser",
+      "value": "使用本机浏览器访问实验工作台",
+      "required": true
+    }
+  ],
+  "safeBoundaries": [
+    "只使用服务端内存中的两份虚构 RBAC 绑定快照，不连接或修改真实集群、角色与绑定。",
+    "标识固定使用 virtual-* 前缀，范围只使用语义枚举，不含真实集群、命名空间或令牌。",
+    "页面和 API 只接受已登记 scenarioKey 与 optionKey，未知输入会被脱敏阻断。",
+    "不调用 kubectl、Kubernetes API、Helm 或 Terraform，也不读取本机 kubeconfig 与集群凭据。",
+    "该实验按 case-study ready 例外收口：只依赖固定数据、API 测试与只读一致性验证，不提供 exploit.py。"
+  ],
+  "paths": {
+    "root": "labs/infrastructure/kubernetes-rbac-audit",
+    "readme": "labs/infrastructure/kubernetes-rbac-audit/README.md",
+    "vuln": "labs/infrastructure/kubernetes-rbac-audit/vuln",
+    "fixed": "labs/infrastructure/kubernetes-rbac-audit/fixed",
+    "mock": "labs/infrastructure/kubernetes-rbac-audit/mock",
+    "docs": "labs/infrastructure/kubernetes-rbac-audit/docs",
+    "scripts": "tools/lab-scripts/infrastructure/kubernetes-rbac-audit"
+  },
+  "references": [],
+  "notes": "该实验只对固定虚构 RBAC 绑定做最小权限计数与决策复盘，不解析真实集群配置，也不执行任何集群变更。ready 收口审计依据 API 测试与只读一致性验证，variants 的 supportsAutomation 仍为 false，不提供 exploit.py 或任何集群操作脚本。"
+}

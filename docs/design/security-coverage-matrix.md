@@ -218,8 +218,9 @@
 | `infrastructure.iot` | simulation | D2 引导式 | IoT 身份、固件和网络分区 | E1–E5 | 增加设备生命周期和管理面 |
 | `infrastructure.zero-day` | case-study | D2 引导式 | Exploit Public-Facing Application；补偿控制 | E1–E5 | 增加虚拟补丁、隔离和应急响应 |
 | `infrastructure.iam-policy-audit` | simulation | D3 专用模拟 | CWE-732 权限分配不当；OWASP 云 IAM 最小权限；ATT&CK T1098 Account Manipulation | E1–E6 | LT-031 三向页面验证已通过；后续补 K8s RBAC 和 IaC |
+| `infrastructure.kubernetes-rbac-audit` | case-study | D3 专用模拟 | CWE-732 权限分配不当；CWE-269 权限管理不当；ATT&CK T1078.003 Valid Accounts: Local Accounts | E1–E5 | LT-042 固定 RBAC 绑定审计；后续补 IaC 配置与 Pod Security |
 
-**判断：**已建立首个云 IAM 最小权限专用样板；对象存储暴露、Kubernetes RBAC、IaC 配置和镜像完整性仍是后续缺口。
+**判断：**已建立云 IAM 与 Kubernetes RBAC 两个最小权限专用样板；对象存储暴露、IaC 配置和镜像完整性仍是后续缺口。
 
 ## 16. Windows 主机安全（2）
 
