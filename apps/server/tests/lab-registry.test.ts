@@ -8,9 +8,9 @@ test("lab registry scans all current metadata files", async () => {
   const labs = await registry.listLabs();
   const labIds = labs.map((lab) => lab.id);
 
-  assert.equal(labs.length, 76);
-  assert.equal(new Set(labIds).size, 76);
-  assert.equal(labs.filter((lab) => lab.status === "ready").length, 76);
+  assert.equal(labs.length, 77);
+  assert.equal(new Set(labIds).size, 77);
+  assert.equal(labs.filter((lab) => lab.status === "ready").length, 77);
   assert.equal(
     labs.filter((lab) => lab.status === "in-progress").length,
     0,
@@ -18,7 +18,7 @@ test("lab registry scans all current metadata files", async () => {
   assert.equal(new Set(labs.map((lab) => lab.category)).size, 14);
   assert.equal(
     labs.reduce((total, lab) => total + lab.variants.length, 0),
-    152,
+    154,
   );
   assert.ok(labIds.includes("ai.prompt-injection"));
   assert.ok(labIds.includes("auth.brute-force"));

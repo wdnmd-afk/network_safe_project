@@ -1,0 +1,173 @@
+{
+  "id": "api.rate-limit-idempotency",
+  "slug": "rate-limit-idempotency",
+  "title": "API 配额限流与 Webhook 幂等固定审计",
+  "category": "api",
+  "subcategory": "rate-limit-idempotency",
+  "mode": "simulation",
+  "severity": "high",
+  "difficulty": "intermediate",
+  "summary": "对比两份虚构 Webhook 请求批次的配额、幂等键、签名时间窗与降级策略，完成资源消耗处置决策。",
+  "status": "ready",
+  "phase": "phase-3",
+  "sortOrder": 420,
+  "estimatedMinutes": 30,
+  "tags": [
+    "api",
+    "rate-limiting",
+    "idempotency",
+    "webhook-replay"
+  ],
+  "knowledgePoints": [
+    "窗口配额与节流",
+    "幂等键与重复投递",
+    "签名时间窗与重放",
+    "过载降级策略"
+  ],
+  "variants": [
+    {
+      "key": "vuln",
+      "title": "配额与幂等缺失风险观察版",
+      "enabled": true,
+      "description": "观察无配额、无幂等键、无签名时间窗的固定批次被全量接受并重复处理的结果。",
+      "entryKey": "api-rate-limit-idempotency-vuln",
+      "expectedOutcome": "返回 api-rate-limit-idempotency-risk-accepted 学习信号。",
+      "supportsAutomation": true
+    },
+    {
+      "key": "fixed",
+      "title": "配额与幂等防御复盘版",
+      "enabled": true,
+      "description": "观察施加窗口配额、幂等键、签名时间窗与降级策略后阻断过载重放，并复核正常批次仍可通过。",
+      "entryKey": "api-rate-limit-idempotency-fixed",
+      "expectedOutcome": "过载重放被阻断，受控批次凭固定控制正常通过复核。",
+      "supportsAutomation": true
+    }
+  ],
+  "entrypoints": {
+    "web": [
+      {
+        "key": "api-rate-limit-idempotency-vuln",
+        "variant": "vuln",
+        "path": "/labs/api/rate-limit-idempotency/vuln",
+        "description": "配额与幂等风险观察版工作台"
+      },
+      {
+        "key": "api-rate-limit-idempotency-fixed",
+        "variant": "fixed",
+        "path": "/labs/api/rate-limit-idempotency/fixed",
+        "description": "配额与幂等防御复盘版工作台"
+      }
+    ],
+    "api": [
+      {
+        "key": "api-rate-limit-idempotency-workbench",
+        "variant": "shared",
+        "method": "GET",
+        "path": "/api/labs/api/rate-limit-idempotency/workbench",
+        "description": "固定 Webhook 批次快照与资源消耗审计指标工作台"
+      },
+      {
+        "key": "api-rate-limit-idempotency-vuln-evaluate",
+        "variant": "vuln",
+        "method": "POST",
+        "path": "/api/labs/api/rate-limit-idempotency/vuln/evaluate",
+        "description": "配额与幂等审计漏洞版固定路径评估"
+      },
+      {
+        "key": "api-rate-limit-idempotency-fixed-evaluate",
+        "variant": "fixed",
+        "method": "POST",
+        "path": "/api/labs/api/rate-limit-idempotency/fixed/evaluate",
+        "description": "配额与幂等审计修复版固定路径评估"
+      }
+    ],
+    "scripts": [
+      {
+        "key": "api-rate-limit-idempotency-verify",
+        "language": "ts",
+        "path": "tools/lab-scripts/api/rate-limit-idempotency/verify.ts",
+        "description": "配额与幂等审计本机只读一致性验证"
+      }
+    ],
+    "docs": [
+      {
+        "key": "api-rate-limit-idempotency-readme",
+        "path": "labs/api/rate-limit-idempotency/README.md",
+        "description": "配额与幂等审计场景说明"
+      },
+      {
+        "key": "api-rate-limit-idempotency-attack-steps",
+        "path": "labs/api/rate-limit-idempotency/docs/attack-steps.md",
+        "description": "过载与重放风险观察步骤"
+      },
+      {
+        "key": "api-rate-limit-idempotency-fix-notes",
+        "path": "labs/api/rate-limit-idempotency/docs/fix-notes.md",
+        "description": "配额与幂等收敛修复思路"
+      },
+      {
+        "key": "api-rate-limit-idempotency-manual-verification",
+        "path": "labs/api/rate-limit-idempotency/docs/manual-verification.md",
+        "description": "配额与幂等审计手工验证矩阵"
+      }
+    ]
+  },
+  "verification": {
+    "manual": {
+      "supported": true,
+      "stepsDocPath": "labs/api/rate-limit-idempotency/docs/manual-verification.md",
+      "expectedSignals": [
+        "api-rate-limit-idempotency-risk-accepted",
+        "api-rate-limit-idempotency-defense-blocked",
+        "api-rate-limit-idempotency-normal-verified"
+      ]
+    },
+    "automation": {
+      "supported": true,
+      "playwright": {
+        "enabled": false,
+        "specPath": "packages/testing/tests/e2e/platform.spec.mjs"
+      },
+      "apiTest": {
+        "enabled": true,
+        "specPath": "apps/server/tests/rate-limit-idempotency-lab.test.ts"
+      },
+      "scriptVerification": {
+        "enabled": true,
+        "scriptKeys": [
+          "api-rate-limit-idempotency-verify"
+        ]
+      }
+    }
+  },
+  "prerequisites": [
+    {
+      "type": "service",
+      "value": "本机后端服务运行于 http://127.0.0.1:6667",
+      "required": true
+    },
+    {
+      "type": "browser",
+      "value": "使用本机浏览器访问实验工作台",
+      "required": true
+    }
+  ],
+  "safeBoundaries": [
+    "只使用服务端内存中的两份虚构 Webhook 批次快照，不发起真实并发请求，也不进行任何压测。",
+    "标识固定使用 virtual-* 前缀，四要素只使用语义枚举，不含真实端点、密钥或签名。",
+    "页面和 API 只接受已登记 scenarioKey 与 optionKey，未知输入会被脱敏阻断。",
+    "不提供批量请求器、并发压测工具或可迁移到外部目标的重放载荷。"
+  ],
+  "paths": {
+    "root": "labs/api/rate-limit-idempotency",
+    "readme": "labs/api/rate-limit-idempotency/README.md",
+    "vuln": "labs/api/rate-limit-idempotency/vuln",
+    "fixed": "labs/api/rate-limit-idempotency/fixed",
+    "mock": "labs/api/rate-limit-idempotency/mock",
+    "docs": "labs/api/rate-limit-idempotency/docs",
+    "scripts": "tools/lab-scripts/api/rate-limit-idempotency"
+  },
+  "references": [],
+  "notes": "该实验只对固定虚构 Webhook 批次做配额与幂等计数和决策复盘，不发起真实请求，也不执行任何并发压测。"
+}

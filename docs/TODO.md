@@ -1,13 +1,25 @@
 # 长期目标执行进度
 
-- 总队列：42 项
-- 已完成：42 / 42
-- 当前状态：`LT-042` 已新增 `infrastructure.kubernetes-rbac-audit` 固定 RBAC 绑定审计实验；76 个实验全部 `ready`
+- 总队列：43 项
+- 已完成：43 / 43
+- 当前状态：`LT-043` 已新增 `api.rate-limit-idempotency` 固定 Webhook 批次配额与幂等审计实验；77 个实验全部 `ready`
 - 待验证：无（本轮未执行 build、smoke、数据库集成与 Playwright，按既有切片收口口径不属于完成条件）
-- 下一轮队列：`LT-043` API 资源消耗/Webhook 重放与幂等，随后 `LT-044` Windows 文件 ACL/计划任务/NTLM-Kerberos 固定案例
+- 下一轮队列：`LT-044` Windows 文件 ACL/计划任务/NTLM-Kerberos 固定案例
 - 计数规则：只有实现、文档及约定验证全部完成并回填证据后，任务才计入已完成。
 
-# 2026-08-28 最新进展：LT-042 Kubernetes RBAC 固定审计实验完成
+# 2026-08-28 最新进展：LT-043 API 配额与幂等固定审计实验完成
+
+- [x] 新增 `api.rate-limit-idempotency`（`simulation`，D3 专用模拟），在 `api` 分类内同时覆盖长期目标 9.1 的「资源消耗与限流」和「Webhook 签名与重放」两个缺口，不新建平行分类。
+- [x] 固定模型为两份冻结虚构 Webhook 批次快照：`virtual-unthrottled-replayable-batch`（`quotaScope: unlimited`、`idempotencyScope: none`、`timestampScope: none`、`degradeScope: none`、重放二次入账）与 `virtual-quota-idempotent-batch`（`windowed-quota` + `idempotency-key-required` + `signed-window` + `throttle-then-degrade`）。
+- [x] 审计计数经运行时实测锁定：风险批次 4 项发现 / 2 项关键组合风险 / 0 项资源控制；加固批次 0 / 0 / 4。
+- [x] 两步状态机 `webhook-batch-scope-assessment` → `webhook-batch-decision`，三条 canonical 终止信号为 `api-rate-limit-idempotency-risk-accepted`、`-defense-blocked`、`-normal-verified`，边界阻断为 `-boundary-blocked`。
+- [x] 落地服务端专用服务、工作台/评估 API、脱敏事件摘要、前端 API 客户端/labs 配置/视图/路由（置于通用 catch-all 之前）、标准实验目录七份文档、脚本目录与只读验证器。
+- [x] 已纳入 `test:controlled` 门禁与覆盖矩阵第 5 节；元数据推进 `ready`。
+- [x] 修正三处凭印象写错的字段与值：前端 API 类型 6 个字段名与服务端 `FixedWebhookBatchSnapshot` 不一致、前端 assessment 多出服务端不存在的 `duplicateWriteCount`、测试中 disposition 写成 `overload-replay-approved`（真值为 `overload-and-replay-approved`）。
+- 验证证据：专项只读验证 18/18 `ok: true`；`pnpm verify` EXIT=0（前后端类型检查、shared 67/67、guided 30/30、controlled 6×`ok: true`、Web 入口 154/154、API 入口 204/204、实验路由 70/70、coverage 77/77、server 381/381、web 285/285）；`git diff --check` 通过。
+- 说明：本轮未执行 build、smoke、数据库集成与 Playwright；该实验尚无代表性 E2E，E6 仍为 28，后续如需补页面回归再单独立项。
+
+# 2026-08-28 历史进展：LT-042 Kubernetes RBAC 固定审计实验完成
 
 - [x] 新增 `infrastructure.kubernetes-rbac-audit`（case-study，D3 专用模拟），复用 `infrastructure` 分类，不新增 `cloud` 分类，遵循 `docs/design/cloud-native-iac-labs.md` 第 3 节决策。
 - [x] 服务端 `kubernetes-rbac-audit-lab.ts`：两份冻结虚构绑定快照（`virtual-cluster-admin-broad-binding` 风险基线、`virtual-namespaced-readonly-binding` 加固基线），五要素语义枚举，两步状态机复用 `createGuidedScenarioMachine`。

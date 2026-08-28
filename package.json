@@ -30,7 +30,7 @@
     "test:api-entrypoints": "pnpm --filter @network-safe/server exec tsx ../../tools/entrypoints/verify-api-entrypoints.ts",
     "test:coverage": "node tools/coverage/verify-security-coverage.mjs",
     "test:guided": "node tools/lab-scripts/verify-all-guided-scenarios.mjs",
-    "test:controlled": "pnpm --filter @network-safe/server exec tsx ../../tools/lab-scripts/api/property-authorization/verify.ts && pnpm --filter @network-safe/server exec tsx ../../tools/lab-scripts/business-logic/race-condition/verify.ts && pnpm --filter @network-safe/server exec tsx ../../tools/lab-scripts/crypto/secret-lifecycle-audit/verify.ts && pnpm --filter @network-safe/server exec tsx ../../tools/lab-scripts/host/event-log-triage/verify.ts && pnpm --filter @network-safe/server exec tsx ../../tools/lab-scripts/infrastructure/kubernetes-rbac-audit/verify.ts",
+    "test:controlled": "pnpm --filter @network-safe/server exec tsx ../../tools/lab-scripts/api/property-authorization/verify.ts && pnpm --filter @network-safe/server exec tsx ../../tools/lab-scripts/business-logic/race-condition/verify.ts && pnpm --filter @network-safe/server exec tsx ../../tools/lab-scripts/crypto/secret-lifecycle-audit/verify.ts && pnpm --filter @network-safe/server exec tsx ../../tools/lab-scripts/host/event-log-triage/verify.ts && pnpm --filter @network-safe/server exec tsx ../../tools/lab-scripts/infrastructure/kubernetes-rbac-audit/verify.ts && pnpm --filter @network-safe/server exec tsx ../../tools/lab-scripts/api/rate-limit-idempotency/verify.ts",
     "test:web:run": "pnpm --filter @network-safe/web exec vitest run",
     "test:smoke": "pnpm --filter @network-safe/testing smoke",
     "test:e2e": "pnpm --filter @network-safe/testing e2e",

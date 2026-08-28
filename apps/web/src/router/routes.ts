@@ -732,6 +732,22 @@ export const routes: RouteRecordRaw[] = [
     props: { category: "api", scene: "property-authorization", variant: "fixed" },
   },
   {
+    path: "/labs/api/rate-limit-idempotency/vuln",
+    name: "lab-api-rate-limit-idempotency-vuln",
+    component: () => import("../views/RateLimitIdempotencyLabView.vue"),
+    props: {
+      variant: "vuln",
+    },
+  },
+  {
+    path: "/labs/api/rate-limit-idempotency/fixed",
+    name: "lab-api-rate-limit-idempotency-fixed",
+    component: () => import("../views/RateLimitIdempotencyLabView.vue"),
+    props: {
+      variant: "fixed",
+    },
+  },
+  {
     path: "/labs/business-logic/race-condition/vuln",
     name: "lab-business-logic-race-condition-vuln",
     component: () => import("../views/ControlledDecisionLabView.vue"),

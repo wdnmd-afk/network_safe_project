@@ -163,6 +163,11 @@ import {
   type KubernetesRbacAuditVariantKey,
 } from "./services/kubernetes-rbac-audit-lab.js";
 import {
+  createRateLimitIdempotencyLabService,
+  type RateLimitIdempotencyLabService,
+  type RateLimitIdempotencyVariantKey,
+} from "./services/rate-limit-idempotency-lab.js";
+import {
   createMitbTransactionLabService,
   type MitbTransactionLabService,
   type MitbTransactionVariantKey,
@@ -292,6 +297,7 @@ type CreateAppOptions = {
   servicePermissionAuditLabService?: ServicePermissionAuditLabService;
   iamPolicyAuditLabService?: IamPolicyAuditLabService;
   kubernetesRbacAuditLabService?: KubernetesRbacAuditLabService;
+  rateLimitIdempotencyLabService?: RateLimitIdempotencyLabService;
   mitbTransactionLabService?: MitbTransactionLabService;
   propertyAuthorizationLabService?: ControlledDecisionLabService;
   raceConditionLabService?: ControlledDecisionLabService;
@@ -410,6 +416,9 @@ export function createApp(options: CreateAppOptions = {}) {
   const kubernetesRbacAuditLabService =
     options.kubernetesRbacAuditLabService ??
     createKubernetesRbacAuditLabService();
+  const rateLimitIdempotencyLabService =
+    options.rateLimitIdempotencyLabService ??
+    createRateLimitIdempotencyLabService();
   const mitbTransactionLabService =
     options.mitbTransactionLabService ?? createMitbTransactionLabService();
   const propertyAuthorizationLabService =
@@ -748,6 +757,12 @@ export function createApp(options: CreateAppOptions = {}) {
   function readKubernetesRbacAuditVariantKey(
     value: string,
   ): KubernetesRbacAuditVariantKey | undefined {
+    return value === "vuln" || value === "fixed" ? value : undefined;
+  }
+
+  function readRateLimitIdempotencyVariantKey(
+    value: string,
+  ): RateLimitIdempotencyVariantKey | undefined {
     return value === "vuln" || value === "fixed" ? value : undefined;
   }
 
@@ -5669,6 +5684,106 @@ export function createApp(options: CreateAppOptions = {}) {
               result.bindingAssessment?.criticalFindingCount ?? 0,
             leastPrivilegeControlCount:
               result.bindingAssessment?.leastPrivilegeControlCount ?? 0,
+            stepCount: result.assessment.stepCount,
+            terminalOutcome: result.recap.terminalOutcome,
+            signal: result.signal,
+          },
+          decision: result.decision,
+          signal: result.signal,
+          statusCode: responseStatus,
+          message: result.message,
+          riskLevel: riskAccepted ? "high" : result.assessment.riskLevel,
+        });
+
+        res.status(responseStatus).json({
+          status: result.status,
+          result,
+        });
+      } catch (error) {
+        next(error);
+      }
+    },
+  );
+
+  app.get(
+    "/api/labs/api/rate-limit-idempotency/workbench",
+    (_req, res) => {
+      res.status(200).json({
+        status: "ok",
+        workbench: rateLimitIdempotencyLabService.getWorkbench(),
+      });
+    },
+  );
+
+  app.post(
+    "/api/labs/api/rate-limit-idempotency/:variant/evaluate",
+    async (req, res, next) => {
+      try {
+        const currentUser = await readCurrentUser(req);
+
+        if (!currentUser.ok) {
+          res.status(currentUser.status).json(currentUser.body);
+          return;
+        }
+
+        const variantKey = readRateLimitIdempotencyVariantKey(
+          req.params.variant,
+        );
+
+        if (!variantKey) {
+          res.status(404).json({
+            status: "error",
+            message: "rate limit idempotency variant not found",
+          });
+          return;
+        }
+
+        const scenarioKey = readRequiredString(req.body?.scenarioKey);
+        const decisions = readRequiredStringArray(req.body?.decisions);
+
+        if (!scenarioKey || decisions.length === 0) {
+          res.status(400).json({
+            status: "error",
+            message: "scenarioKey and decisions are required",
+          });
+          return;
+        }
+
+        const result = rateLimitIdempotencyLabService.evaluate({
+          variantKey,
+          scenarioKey,
+          decisions,
+        });
+        const responseStatus = result.status === "blocked" ? 403 : 200;
+        const riskAccepted =
+          result.recap.terminalOutcome === "risk" &&
+          result.decision === "accepted";
+
+        await recordLabEventSafely({
+          traceId: readOptionalTraceId(req),
+          userId: currentUser.user.id,
+          labKey: result.labKey,
+          variantKey,
+          phase:
+            variantKey === "vuln"
+              ? "attack"
+              : result.recap.terminalOutcome === "normal"
+                ? "normal"
+                : "defense",
+          eventType: result.status === "blocked" ? "blocked" : "success",
+          actorPerspective: riskAccepted ? "attacker" : "system",
+          method: req.method,
+          path: req.path,
+          // 只记录固定批次 key 与计数，不写入签名、密钥、URL 或原始请求体
+          inputSummary: {
+            scenarioKey: result.scenarioKey,
+            batchKey:
+              result.batchAssessment?.batchKey ?? "blocked-request-batch",
+            findingCount: result.batchAssessment?.findingCount ?? 0,
+            criticalFindingCount:
+              result.batchAssessment?.criticalFindingCount ?? 0,
+            resourceControlCount:
+              result.batchAssessment?.resourceControlCount ?? 0,
             stepCount: result.assessment.stepCount,
             terminalOutcome: result.recap.terminalOutcome,
             signal: result.signal,

@@ -102,6 +102,8 @@ describe("SafeMart 路由清单", () => {
       "/labs/infrastructure/kubernetes-rbac-audit/fixed",
       "/labs/api/property-authorization/vuln",
       "/labs/api/property-authorization/fixed",
+      "/labs/api/rate-limit-idempotency/vuln",
+      "/labs/api/rate-limit-idempotency/fixed",
       "/labs/business-logic/race-condition/vuln",
       "/labs/business-logic/race-condition/fixed",
       "/labs/crypto/secret-lifecycle-audit/vuln",

@@ -205,25 +205,26 @@ tools/lab-scripts/<category>/<scene>/
 
 ## 9. 当前状态
 
-当前仓库处于：**76 个 `ready` 实验持续维护阶段**
+当前仓库处于：**77 个 `ready` 实验持续维护阶段**
 
 当前已完成：
 
 - Vue + Vite 前端、Node.js + Express 后端和 MySQL 平台数据链路。
 - 实验元数据扫描、注册、列表、详情、学习进度、验证记录和复盘能力。
 - 统一 `lab_event_logs` 事件日志和脱敏摘要。
-- 76 个 `ready` 实验、14 个分类、152 个漏洞版 / 修复版变体。
+- 77 个 `ready` 实验、14 个分类、154 个漏洞版 / 修复版变体。
 - 26 个 `interactive`、21 个 `simulation`、29 个 `case-study` 实验模式。
-- 46 个专用实验实现与 30 个通用引导式实验实现。
+- 47 个专用实验实现与 30 个通用引导式实验实现。
 - 单元 / API / 共享校验 / 只读脚本 / Web 入口一致性 / Playwright 分层自动化验证。
 - 本机数据库缺失复盘表的幂等补齐入口 `pnpm --filter @network-safe/server schema:ensure`。
 
 当前长期队列：
 
-- `LT-001`～`LT-042` 已完成；当前后续队列从 `LT-043` 起。
+- `LT-001`～`LT-043` 已完成；当前后续队列从 `LT-044` 起。
 - `LT-031`～`LT-040` 的专项验证、根级 `pnpm verify` 和完整 40 项 Playwright E2E 已通过。
 - `LT-041` 已在 75 实验基线上完成生产构建与 nginx 发布复验：`pnpm db:prepare` 幂等、前后端构建通过、`nginx -t` 通过、静态托管与 `/api` 反向代理全部 200、实验总数动态断言 75、登录与实验闭环通过。
 - `LT-042` 已新增 `infrastructure.kubernetes-rbac-audit` 固定 RBAC 绑定审计（case-study，D3 专用模拟）：专项只读验证 18/18、根级 `pnpm verify` EXIT=0，实验总数升至 76。
+- `LT-043` 已新增 `api.rate-limit-idempotency` 固定 Webhook 批次配额与幂等审计（simulation，D3 专用模拟）：专项只读验证 18/18、根级 `pnpm verify` EXIT=0，实验总数升至 77。
 
 总纲和最终验证证据见：
 
@@ -231,6 +232,8 @@ tools/lab-scripts/<category>/<scene>/
 - `docs/execution/2026-08-25-lt-second-round-phase-audit.md`
 - `docs/execution/2026-08-25-lt040-third-round-audit.md`
 - `docs/execution/2026-08-28-lt041-windows-release-reverification.md`
+- `docs/execution/2026-08-28-lt042-kubernetes-rbac-audit.md`
+- `docs/execution/2026-08-28-lt043-api-quota-idempotency.md`
 - `docs/execution/security-lab-master-goal.md`
 - `docs/execution/2026-07-20-security-lab-master-completion.md`
 

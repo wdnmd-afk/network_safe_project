@@ -4,9 +4,9 @@
 >
 > 初始版本：2026-07-23
 >
-> 当前基线：76 个安全学习实验（76 个 `ready`）
+> 当前基线：77 个安全学习实验（77 个 `ready`）
 >
-> 长期队列进度：42 / 44 已完成；`LT-042` Kubernetes RBAC 固定审计已收口，后续队列从 `LT-043` 起
+> 长期队列进度：43 / 44 已完成；`LT-043` API 配额与幂等固定审计已收口，后续队列从 `LT-044` 起
 
 ## 1. 文档定位
 
@@ -67,13 +67,13 @@
 
 | 指标 | 当前状态 | 长期方向 |
 |---|---:|---|
-| 实验总数 | 76（76 ready） | 数量不设硬性上限，优先补结构性缺口和深度 |
+| 实验总数 | 77（77 ready） | 数量不设硬性上限，优先补结构性缺口和深度 |
 | 分类数 | 14 | 已新增 Windows 主机分类，后续评估身份基础设施领域 |
-| 漏洞版 / 修复版变体 | 152 | 新主题继续保持双视角或满足高风险案例化例外 |
+| 漏洞版 / 修复版变体 | 154 | 新主题继续保持双视角或满足高风险案例化例外 |
 | `interactive` | 26 | 优先提升通用交互主题的专用实现深度 |
-| `simulation` | 21 | 增加多步骤状态、证据和策略对比 |
+| `simulation` | 22 | 增加多步骤状态、证据和策略对比 |
 | `case-study` | 29 | 增加分支决策、时间线、评分和复盘，不增加攻击能力 |
-| 专用实现 | 46 | 每个重要领域至少具备一个高质量纵向样板 |
+| 专用实现 | 47 | 每个重要领域至少具备一个高质量纵向样板 |
 | 通用引导式实现 | 30 | 建设引导式工作台第二版并分批专用化 |
 | 统一事件日志 | 已具备 | 增加学习统计、检测响应和长期趋势能力 |
 | 单元 / API / 脚本 / E2E | 已具备 | 增加覆盖矩阵、发布门禁和全新环境验收 |
@@ -149,6 +149,8 @@
 | 场景 | 模式 | 当前实现 | 长期动作 |
 |---|---|---|---|
 | `api.functional-authorization` | interactive | 专用（ready） | 已完成 LT-021，再扩展属性级授权和资源消耗 |
+| `api.property-authorization` | interactive | 专用（ready） | 已完成 LT-036 固定 DTO 属性级授权与批量绑定 |
+| `api.rate-limit-idempotency` | simulation | 专用（ready） | LT-043 已完成固定 Webhook 批次配额、时间窗与幂等键审计；后续补 GraphQL 深度限制与 API 资产清单 |
 
 ### 6.4 业务逻辑
 
@@ -371,10 +373,10 @@
 - [x] API 功能级授权：普通用户访问管理功能、服务端策略和审计（`LT-021` 已完成专用 D4 实验与自动化验证收口）。
 - [x] 属性级授权与批量绑定：固定 DTO 字段、允许列表和服务端覆盖策略（`LT-036`）。
 - [ ] 过度数据暴露：响应字段最小化、不同角色视图和敏感字段过滤。
-- [ ] 资源消耗与限流：固定请求批次、配额、节流和降级策略。
+- [x] 资源消耗与限流：固定请求批次、配额、节流和降级策略（`LT-043`）。
 - [ ] 敏感业务流程滥用：固定订单、库存、审批或兑换流程。
 - [ ] API 版本和资产清单：废弃版本、影子接口和文档一致性。
-- [ ] Webhook 签名与重放：固定事件、时间戳、幂等键和签名状态。
+- [x] Webhook 签名与重放：固定事件、时间戳、幂等键和签名状态（`LT-043`；固定批次同时覆盖签名时间窗与幂等键校验）。
 - [ ] 第三方 API 安全消费：固定上游响应、超时、schema 校验和信任边界。
 - [ ] GraphQL 安全：固定 schema、查询深度、字段授权和批量请求限制。
 
@@ -842,7 +844,7 @@
 
 - [x] `LT-041`：执行全新 Windows 环境发布复验，覆盖数据库初始化、前后端构建、服务启动、nginx SPA fallback、API 反向代理、登录和代表性实验闭环（完成时间：2026-08-28 15:37:54 +08:00；验证：`db:prepare` 两次幂等、前后端生产构建、`nginx -t`、nginx 运行时验收 `NGINX_RUNTIME_ACCEPTANCE_PASS`、`pnpm verify` EXIT=0、smoke 4/4、E2E 40/40；修复 `test-nginx-runtime.ps1` 因 UTF-8 无 BOM 导致 Windows PowerShell 解析失败的缺陷）。
 - [x] `LT-042`：实现 Kubernetes RBAC/IaC 固定配置审计，使用只读 YAML、虚拟角色绑定和固定策略，不连接真实集群或云账户（完成时间：2026-08-28 16:59:05 +08:00；验证：专项只读验证 18/18 `ok: true`、`pnpm verify` EXIT=0，shared 67、guided 30/30、controlled 5×`ok: true`、Web 入口 152/152、API 入口 201/201、coverage 76/76、server 372、web 285；新实验 `infrastructure.kubernetes-rbac-audit` 复用 `infrastructure` 分类，case-study ready 例外，不提供 exploit.py）。
-- [ ] `LT-043`：实现 API 资源消耗、Webhook 重放与幂等固定实验，继续使用固定请求批次与内存状态机。
+- [x] `LT-043`：实现 API 资源消耗、Webhook 重放与幂等固定实验，继续使用固定请求批次与内存状态机（完成时间：2026-08-28 17:36:20 +08:00；交付 `api.rate-limit-idempotency` 专用 D3 模拟；验证：专项只读验证 18/18 `ok: true`、`pnpm verify` EXIT=0，shared 67、guided 30/30、controlled 6×`ok: true`、Web 入口 154/154、API 入口 204/204、coverage 77/77、server 381、web 285）。
 - [ ] `LT-044`：补充 Windows 文件 ACL、计划任务和 NTLM/Kerberos 固定案例，不读取或修改真实主机状态。
 
 ### 21.4 第三轮审计完成记录
@@ -910,3 +912,4 @@
 | `LT-040` | 2026-08-27 09:55:53 +08:00 | 第三轮事实审计、当前基线统一和后续队列排序 | 75/75 ready、150 变体、45 专用、30 引导式、14 分类、28 个 E6；`pnpm verify` EXIT=0、E2E 40/40、`git diff --check` 通过 |
 | `LT-041` | 2026-08-28 15:37:54 +08:00 | 75 实验基线的全新 Windows 发布复验：数据库幂等准备、前后端生产构建、构建产物秘密扫描、nginx 生成与运行时验收、认证与实验闭环、全量自动化复验；修复 `test-nginx-runtime.ps1` 在 Windows PowerShell 5.1 下因缺少 UTF-8 BOM 导致的解析失败 | `db:prepare` 两次输出一致（4 迁移幂等、2 账号、14 分类、75 实验、150 变体）；`build:web` 与 `build:server` EXIT=0，产物无硬编码秘密；`nginx -t` 通过；运行时验收 `NGINX_RUNTIME_ACCEPTANCE_PASS`，5 项 HTTP 检查全 200、`lab-count=75`、登录/当前用户/引导式三向/事件日志/复盘/注销全过；`pnpm verify` EXIT=0（shared 67、guided 30/30、controlled 4×`ok: true`、Web 入口 150/150、API 入口 198/198、coverage 75/75、server 363、web 285）；`test:smoke` 4/4；`test:e2e` 40/40；端口 6667/8080 已释放；`git diff --check` 通过 |
 | `LT-042` | 2026-08-28 16:59:05 +08:00 | `infrastructure.kubernetes-rbac-audit` 固定 RBAC 绑定审计 case-study：两份冻结虚构绑定快照与五要素语义枚举、确定性审计计数纯函数、两步状态机、专用工作台/评估 API、脱敏事件摘要、前端 API/配置/视图/路由、标准实验目录七份文档、脚本目录与只读验证器；纳入 `test:controlled` 门禁与覆盖矩阵第 15 节 | 专项只读验证 18/18 `ok: true`；`pnpm verify` EXIT=0（前后端类型检查、shared 67、guided 30/30、controlled 5×`ok: true`、Web 入口 152/152、API 入口 201/201、实验路由 68/68、coverage 76/76、server 372/372、web 285/285）；固定计数经运行时实测锁定（风险绑定 4 发现 / 3 关键风险 / 0 控制；加固绑定 0 / 0 / 5）；case-study 变体保持 `supportsAutomation: false` 且无 `exploit.py`；未运行 build、smoke、数据库集成或 Playwright |
+| `LT-043` | 2026-08-28 17:36:52 +08:00 | `api.rate-limit-idempotency` 固定 Webhook 批次配额与幂等审计 simulation：两份冻结虚构批次快照与配额/幂等/时间窗/降级四要素语义枚举、确定性审计计数纯函数、两步状态机、专用工作台/评估 API、脱敏事件摘要、前端 API/配置/视图/路由、标准实验目录七份文档、脚本目录与只读验证器；一个场景同时覆盖资源消耗与 Webhook 重放两个结构性缺口；纳入 `test:controlled` 门禁与覆盖矩阵第 5 节 | 专项只读验证 18/18 `ok: true`；`pnpm verify` EXIT=0（前后端类型检查、shared 67、guided 30/30、controlled 6×`ok: true`、Web 入口 154/154、API 入口 204/204、实验路由 70/70、coverage 77/77、server 381/381、web 285/285）；固定计数经运行时实测锁定（风险批次 4 发现 / 2 关键风险 / 0 控制；加固批次 0 / 0 / 4）；未知 scenarioKey/optionKey 脱敏阻断且不回显，事件日志不含端点、签名密钥或租户标识；无 `exploit.py` 与真实并发请求能力；未运行 build、smoke、数据库集成或 Playwright |

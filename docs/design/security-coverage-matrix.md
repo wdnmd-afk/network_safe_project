@@ -101,8 +101,9 @@
 |---|---|---|---|---|---|
 | `api.functional-authorization` | interactive | D4 专用交互 | OWASP API5:2023 BFLA；CWE-285 | E1–E6 | LT-031 三向页面验证已通过 |
 | `api.property-authorization` | interactive | D4 专用交互 | OWASP API3:2023；CWE-915 | E1–E6 | LT-036 已完成并推进 ready |
+| `api.rate-limit-idempotency` | simulation | D3 专用模拟 | OWASP API4:2023 无限制资源消耗；CWE-770；CWE-799；CWE-294 重放 | E1–E5 | LT-043 已完成并推进 ready；后续补 GraphQL 查询深度与第三方 API 消费边界 |
 
-**判断：**API 已有功能级与属性级授权两个纵向样板；资源消耗、Webhook 重放和 GraphQL/API 协议边界仍是后续缺口。
+**判断：**API 已有功能级授权、属性级授权和资源消耗/重放幂等三个纵向样板；GraphQL 查询深度、过度数据暴露和 API 版本资产清单仍是后续缺口。
 
 ## 6. 业务逻辑（2）
 
