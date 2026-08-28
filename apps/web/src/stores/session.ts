@@ -18,24 +18,30 @@ import {
 const tokenStorageKey = "network-safe-session-token";
 const expiresAtStorageKey = "network-safe-session-expires-at";
 
-function readStoredToken() {
+function readStoredSession() {
   if (typeof sessionStorage === "undefined") {
-    return null;
+    return { token: null, expiresAt: null };
   }
 
-  return sessionStorage.getItem(tokenStorageKey);
+  const token = sessionStorage.getItem(tokenStorageKey);
+  const expiresAt = sessionStorage.getItem(expiresAtStorageKey);
+
+  if (expiresAt) {
+    const expiresAtTimestamp = Date.parse(expiresAt);
+
+    // 已登记的到期时间必须有效且仍在生效期内，否则初始化时立即清理本地会话。
+    if (!Number.isFinite(expiresAtTimestamp) || expiresAtTimestamp <= Date.now()) {
+      sessionStorage.removeItem(tokenStorageKey);
+      sessionStorage.removeItem(expiresAtStorageKey);
+      return { token: null, expiresAt: null };
+    }
+  }
+
+  return { token, expiresAt };
 }
 
 function writeStoredToken(token: string) {
   sessionStorage.setItem(tokenStorageKey, token);
-}
-
-function readStoredExpiresAt() {
-  if (typeof sessionStorage === "undefined") {
-    return null;
-  }
-
-  return sessionStorage.getItem(expiresAtStorageKey);
 }
 
 function writeStoredExpiresAt(expiresAt: string | null) {
@@ -52,22 +58,26 @@ function clearStoredToken() {
 }
 
 export const useSessionStore = defineStore("session", {
-  state: () => ({
-    token: readStoredToken(),
-    expiresAt: readStoredExpiresAt(),
-    user: null as AuthUser | null,
-    labRecords: {
-      progress: [],
-      verifications: [],
-    } as CurrentUserLabRecordsResponse["records"],
-    labEventLogs: [] as CurrentUserLabEventLogsResponse["events"],
-    isLoading: false,
-    isLoadingLabRecords: false,
-    isLoadingLabEventLogs: false,
-    errorMessage: "",
-    labRecordsErrorMessage: "",
-    labEventLogsErrorMessage: "",
-  }),
+  state: () => {
+    const storedSession = readStoredSession();
+
+    return {
+      token: storedSession.token,
+      expiresAt: storedSession.expiresAt,
+      user: null as AuthUser | null,
+      labRecords: {
+        progress: [],
+        verifications: [],
+      } as CurrentUserLabRecordsResponse["records"],
+      labEventLogs: [] as CurrentUserLabEventLogsResponse["events"],
+      isLoading: false,
+      isLoadingLabRecords: false,
+      isLoadingLabEventLogs: false,
+      errorMessage: "",
+      labRecordsErrorMessage: "",
+      labEventLogsErrorMessage: "",
+    };
+  },
   getters: {
     isAuthenticated: (state) => Boolean(state.token && state.user),
     displayName: (state) => state.user?.displayName ?? "未登录用户",

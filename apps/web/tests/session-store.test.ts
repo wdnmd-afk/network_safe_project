@@ -54,6 +54,32 @@ describe("session store", () => {
     );
   });
 
+  it("clears an expired stored session during initialization", () => {
+    sessionStorage.setItem("network-safe-session-token", "expired-session-token");
+    sessionStorage.setItem(
+      "network-safe-session-expires-at",
+      new Date(Date.now() - 1_000).toISOString(),
+    );
+
+    const session = useSessionStore();
+
+    expect(session.token).toBeNull();
+    expect(session.expiresAt).toBeNull();
+    expect(sessionStorage.getItem("network-safe-session-token")).toBeNull();
+    expect(sessionStorage.getItem("network-safe-session-expires-at")).toBeNull();
+  });
+
+  it("keeps an unexpired stored session for server-side restoration", () => {
+    const expiresAt = new Date(Date.now() + 60_000).toISOString();
+    sessionStorage.setItem("network-safe-session-token", "active-session-token");
+    sessionStorage.setItem("network-safe-session-expires-at", expiresAt);
+
+    const session = useSessionStore();
+
+    expect(session.token).toBe("active-session-token");
+    expect(session.expiresAt).toBe(expiresAt);
+  });
+
   it("clears local session state on logout", async () => {
     const session = useSessionStore();
     session.setSession({
