@@ -42,6 +42,11 @@ export type ControlledDefinition = {
     normal: string;
     boundary: string;
   };
+  paths: {
+    risk: readonly string[];
+    defense: readonly string[];
+    normal: readonly string[];
+  };
 };
 
 export type ControlledStepResult = {
@@ -170,6 +175,34 @@ export function createControlledDecisionLabService(definition: ControlledDefinit
 
       if (input.decisions.length !== definition.steps.length) {
         return blockedResult(definition, input.variantKey, true, "path-length-invalid");
+      }
+
+      const matchedPath = Object.entries(definition.paths).find(
+        ([, path]) =>
+          path.length === input.decisions.length &&
+          path.every((optionKey, index) => optionKey === input.decisions[index]),
+      );
+
+      if (!matchedPath) {
+        return blockedResult(
+          definition,
+          input.variantKey,
+          true,
+          "non-canonical-path",
+        );
+      }
+
+      const [matchedPathKind] = matchedPath;
+      if (
+        (input.variantKey === "vuln" && matchedPathKind !== "risk") ||
+        (input.variantKey === "fixed" && matchedPathKind === "risk")
+      ) {
+        return blockedResult(
+          definition,
+          input.variantKey,
+          true,
+          "variant-path-mismatch",
+        );
       }
 
       const steps: ControlledStepResult[] = [];

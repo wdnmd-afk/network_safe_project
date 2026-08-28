@@ -58,6 +58,21 @@ export function runControlledDecisionConsistencyVerification(
   const normal = config.service.evaluate({ variantKey: "fixed", scenarioKey: config.scenarioKey, decisions: config.normalPath });
   const rawUnknown = "raw-external-secret-or-target";
   const unknown = config.service.evaluate({ variantKey: "vuln", scenarioKey: rawUnknown, decisions: config.riskPath });
+  const mixedPath = config.service.evaluate({
+    variantKey: "fixed",
+    scenarioKey: config.scenarioKey,
+    decisions: [config.defensePath[0], config.riskPath[1]],
+  });
+  const riskOnFixed = config.service.evaluate({
+    variantKey: "fixed",
+    scenarioKey: config.scenarioKey,
+    decisions: config.riskPath,
+  });
+  const defenseOnVuln = config.service.evaluate({
+    variantKey: "vuln",
+    scenarioKey: config.scenarioKey,
+    decisions: config.defensePath,
+  });
 
   checks.push(
     { key: "metadata-state", passed: metadata.id === config.labId && metadata.mode === config.mode && (metadata.status === "in-progress" || metadata.status === "ready"), message: "实验 ID、模式应准确，验证前保持 in-progress，收口后推进 ready。" },
@@ -69,6 +84,9 @@ export function runControlledDecisionConsistencyVerification(
     { key: "defense-path", passed: defense.signal === config.signals.defense && defense.decision === "blocked", message: "防御路径应返回阻断信号。" },
     { key: "normal-path", passed: normal.signal === config.signals.normal && normal.decision === "accepted", message: "正常路径应保持可用。" },
     { key: "unknown-input", passed: unknown.signal === config.signals.boundary && !JSON.stringify(unknown).includes(rawUnknown), message: "未知输入应脱敏阻断。" },
+    { key: "mixed-path", passed: mixedPath.signal === config.signals.boundary && mixedPath.blockedReason === "non-canonical-path", message: "跨路径拼接必须按非 canonical 路径阻断。" },
+    { key: "variant-path-binding", passed: riskOnFixed.blockedReason === "variant-path-mismatch" && defenseOnVuln.blockedReason === "variant-path-mismatch", message: "风险与防御 canonical 路径必须绑定正确变体。" },
+    { key: "automation-evidence", passed: metadata.verification.automation.apiTest?.enabled === true && metadata.verification.automation.scriptVerification?.enabled === true, message: "新增实验应登记 API 测试与只读脚本两类自动化证据。" },
     { key: "files", passed: expectedFiles.every((file) => existsSync(path.join(config.repositoryRoot, file))), message: "标准文档和验证入口应全部存在。" },
     { key: "case-study-automation", passed: config.mode !== "case-study" || metadata.variants.every((variant) => variant.supportsAutomation === false), message: "case-study 变体不得声明攻击脚本自动化。" },
     { key: "no-exploit", passed: config.mode !== "case-study" || !existsSync(path.join(config.repositoryRoot, `tools/lab-scripts/${config.category}/${config.scene}/exploit.py`)), message: "case-study 不应提供 exploit.py。" },

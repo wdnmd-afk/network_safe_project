@@ -59,6 +59,11 @@ const definition = {
   safeBoundaries: ["只匹配固定内嵌标记，不读取 .env、Git 历史、真实日志或构建产物。", "不生成、存储、校验或传输真实密钥材料。", "未知 key 会被脱敏阻断。"],
   notes: "该实验只提供固定秘密审计与生命周期决策，不提供秘密扫描器或密钥操作工具。",
   signals: { risk: secretLifecycleAuditRiskSignal, defense: secretLifecycleAuditDefenseSignal, normal: secretLifecycleAuditNormalSignal, boundary: secretLifecycleAuditBoundarySignal },
+  paths: {
+    risk: ["publish-without-secret-audit", "continue-with-exposed-static-key"],
+    defense: ["scan-fixed-artifacts-and-enforce-lifecycle", "revoke-rotate-and-inject-secret"],
+    normal: ["scan-fixed-artifacts-and-enforce-lifecycle", "publish-with-active-version-only"],
+  },
 } as const;
 
 export type SecretLifecycleAuditWorkbench = ReturnType<

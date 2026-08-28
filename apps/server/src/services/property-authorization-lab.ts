@@ -57,6 +57,11 @@ const definition = {
   safeBoundaries: ["只使用固定 DTO 字段快照，不接受真实用户 ID、角色、金额或自由 JSON。", "页面和 API 只接受固定 scenarioKey 与 optionKey。", "未知 key 会被脱敏阻断，不写入原始输入。"],
   notes: "该实验只模拟属性级授权与批量绑定，不修改真实用户或数据库字段。",
   signals: { risk: propertyAuthorizationRiskSignal, defense: propertyAuthorizationDefenseSignal, normal: propertyAuthorizationNormalSignal, boundary: propertyAuthorizationBoundarySignal },
+  paths: {
+    risk: ["bind-all-client-fields", "persist-server-owned-fields"],
+    defense: ["enforce-field-allowlist-and-server-ownership", "block-server-owned-field-update"],
+    normal: ["enforce-field-allowlist-and-server-ownership", "allow-display-name-update"],
+  },
 } as const;
 
 export type PropertyAuthorizationWorkbench = ReturnType<

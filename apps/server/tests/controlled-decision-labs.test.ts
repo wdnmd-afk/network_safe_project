@@ -60,12 +60,51 @@ test("controlled decision labs block unknown input without echoing it", () => {
   }
 });
 
+test("controlled decision labs reject mixed non-canonical paths", () => {
+  for (const scenario of scenarios) {
+    const result = scenario.service.evaluate({
+      variantKey: "fixed",
+      scenarioKey: scenario.scenarioKey,
+      decisions: [scenario.defensePath[0], scenario.riskPath[1]],
+    });
+
+    assert.equal(result.status, "blocked");
+    assert.equal(result.completed, false);
+    assert.equal(result.blockedReason, "non-canonical-path");
+  }
+});
+
+test("controlled decision labs reject canonical paths used by the wrong variant", () => {
+  for (const scenario of scenarios) {
+    const riskOnFixed = scenario.service.evaluate({
+      variantKey: "fixed",
+      scenarioKey: scenario.scenarioKey,
+      decisions: [...scenario.riskPath],
+    });
+    const defenseOnVuln = scenario.service.evaluate({
+      variantKey: "vuln",
+      scenarioKey: scenario.scenarioKey,
+      decisions: [...scenario.defensePath],
+    });
+
+    assert.equal(riskOnFixed.blockedReason, "variant-path-mismatch");
+    assert.equal(defenseOnVuln.blockedReason, "variant-path-mismatch");
+  }
+});
+
 test("controlled decision APIs expose workbenches and record only safe summaries", async () => {
   const events: LabEventInput[] = [];
   const app = createApp({
     authService: { login: async () => null, getCurrentUser: async () => demoUser },
     labEventLogsService: {
-      recordLabEvent: async (input) => { events.push(input); return { traceId: input.traceId ?? "trace" }; },
+      recordLabEvent: async (input) => {
+        events.push(input);
+        return {
+          traceId: input.traceId ?? "trace",
+          persisted: true,
+          labId: "1",
+        };
+      },
       listUserLabEventLogs: async () => [],
     },
   });

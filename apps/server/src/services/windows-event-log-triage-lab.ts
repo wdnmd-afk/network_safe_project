@@ -57,6 +57,11 @@ const definition = {
   safeBoundaries: ["只使用固定脱敏事件，不读取真实 Windows Event Log、注册表、服务或主机名。", "不执行隔离、冻结、提权或横向移动操作。", "case-study 只输出固定研判摘要，未知 key 会被脱敏阻断。"],
   notes: "该实验按 case-study ready 例外收口，不提供 exploit.py 或真实主机操作能力。",
   signals: { risk: windowsEventLogTriageRiskSignal, defense: windowsEventLogTriageDefenseSignal, normal: windowsEventLogTriageNormalSignal, boundary: windowsEventLogTriageBoundarySignal },
+  paths: {
+    risk: ["trust-single-event-in-isolation", "dismiss-identity-service-chain"],
+    defense: ["correlate-identity-and-service-events", "escalate-correlated-host-timeline"],
+    normal: ["correlate-identity-and-service-events", "close-registered-maintenance-baseline"],
+  },
 } as const;
 
 export type WindowsEventLogTriageWorkbench = ReturnType<

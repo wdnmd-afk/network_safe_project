@@ -57,6 +57,11 @@ const definition = {
   safeBoundaries: ["只使用固定库存、版本和请求摘要，不接受商品 ID、金额、库存或幂等值。", "不发起真实并发、不操作数据库事务或真实资金。", "未知 key 会被脱敏阻断。"],
   notes: "该实验只模拟竞态与幂等决策，不提供并发压测或重放工具。",
   signals: { risk: raceConditionRiskSignal, defense: raceConditionDefenseSignal, normal: raceConditionNormalSignal, boundary: raceConditionBoundarySignal },
+  paths: {
+    risk: ["read-then-write-without-version", "accept-both-stock-decrements"],
+    defense: ["enforce-idempotency-and-version-check", "block-duplicate-or-stale-request"],
+    normal: ["enforce-idempotency-and-version-check", "allow-single-unique-request"],
+  },
 } as const;
 
 export type RaceConditionWorkbench = ReturnType<
