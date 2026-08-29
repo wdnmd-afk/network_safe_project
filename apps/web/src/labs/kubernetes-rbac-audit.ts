@@ -16,7 +16,7 @@ export type KubernetesRbacAuditVariantConfig = {
 };
 
 export const kubernetesRbacAuditScenarioKey =
-  "fixed-kubernetes-rbac-binding-audit";
+  "fixed-kubernetes-rbac-audit";
 
 const kubernetesRbacAuditVariantConfigs: Record<
   KubernetesRbacAuditVariantKey,
@@ -33,8 +33,8 @@ const kubernetesRbacAuditVariantConfigs: Record<
     panelIntro:
       "页面只显示 virtual-* 虚构标识和四要素语义枚举，不连接真实集群，也不读取本机 kubeconfig。",
     recommendedPath: [
-      "accept-cluster-wide-wildcard-binding",
-      "approve-cluster-admin-binding",
+      "accept-cluster-admin-binding",
+      "approve-overbroad-binding",
     ],
   },
   fixed: {
@@ -49,7 +49,7 @@ const kubernetesRbacAuditVariantConfigs: Record<
       "修复版只验证固定最小权限摘要，不调用 kubectl、Kubernetes API、云 SDK 或 Terraform。",
     recommendedPath: [
       "scope-binding-to-namespace",
-      "block-cluster-admin-binding",
+      "block-overbroad-binding",
     ],
   },
 };
@@ -103,7 +103,7 @@ export function formatKubernetesRbacAuditSignal(signal: string) {
     "infrastructure-kubernetes-rbac-audit-defense-blocked": "过宽绑定已阻断",
     "infrastructure-kubernetes-rbac-audit-normal-verified":
       "命名空间基线通过",
-    "infrastructure-kubernetes-rbac-audit-wildcard-accepted":
+    "infrastructure-kubernetes-rbac-audit-cluster-wide-accepted":
       "通配符绑定被接受",
     "infrastructure-kubernetes-rbac-audit-controls-scoped": "绑定范围已收敛",
     "infrastructure-kubernetes-rbac-audit-boundary-blocked":

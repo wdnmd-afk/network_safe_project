@@ -4,7 +4,7 @@
 >
 > 首次建立：2026-07-23
 >
-> 数据基线：75 个 `ready` 实验、14 个分类、150 个变体
+> 数据基线：78 个 `ready` 实验、14 个分类、156 个变体
 
 ## 1. 使用说明
 
@@ -27,7 +27,7 @@
 | E5 | 场景独立 `verify.ts` 或等价只读验证 |
 | E6 | 代表性 Playwright 页面差异验证 |
 
-当前 75 个 `ready` 主题至少具备 E1–E5；标注 E6 的主题还具备页面级验证。
+当前 78 个 `ready` 主题至少具备 E1–E5；标注 E6 的主题还具备页面级验证。
 
 ### 1.2 参考体系说明
 
@@ -44,18 +44,18 @@
 
 | 维度 | 数量 |
 |---|---:|
-| 实验总数 | 75 |
-| `ready` | 75 |
+| 实验总数 | 78 |
+| `ready` | 78 |
 | `in-progress` | 0 |
-| 专用实现 | 45 |
+| 专用实现 | 48 |
 | 通用引导式实现 | 30 |
 | `interactive` | 26 |
-| `simulation` | 21 |
-| `case-study` | 28 |
+| `simulation` | 22 |
+| `case-study` | 30 |
 | `critical` | 18 |
-| `high` | 52 |
+| `high` | 55 |
 | `medium` | 5 |
-| 具备 E6 Playwright | 28 |
+| 具备 E6 Playwright | 31 |
 
 ## 3. Web 与注入（16）
 
@@ -101,7 +101,7 @@
 |---|---|---|---|---|---|
 | `api.functional-authorization` | interactive | D4 专用交互 | OWASP API5:2023 BFLA；CWE-285 | E1–E6 | LT-031 三向页面验证已通过 |
 | `api.property-authorization` | interactive | D4 专用交互 | OWASP API3:2023；CWE-915 | E1–E6 | LT-036 已完成并推进 ready |
-| `api.rate-limit-idempotency` | simulation | D3 专用模拟 | OWASP API4:2023 无限制资源消耗；CWE-770；CWE-799；CWE-294 重放 | E1–E5 | LT-043 已完成并推进 ready；后续补 GraphQL 查询深度与第三方 API 消费边界 |
+| `api.rate-limit-idempotency` | simulation | D3 专用模拟 | OWASP API4:2023 无限制资源消耗；CWE-770；CWE-799；CWE-294 重放 | E1–E6 | LT-043 已完成并推进 ready；三向页面验证已通过；后续补 GraphQL 查询深度与第三方 API 消费边界 |
 
 **判断：**API 已有功能级授权、属性级授权和资源消耗/重放幂等三个纵向样板；GraphQL 查询深度、过度数据暴露和 API 版本资产清单仍是后续缺口。
 
@@ -219,7 +219,7 @@
 | `infrastructure.iot` | simulation | D2 引导式 | IoT 身份、固件和网络分区 | E1–E5 | 增加设备生命周期和管理面 |
 | `infrastructure.zero-day` | case-study | D2 引导式 | Exploit Public-Facing Application；补偿控制 | E1–E5 | 增加虚拟补丁、隔离和应急响应 |
 | `infrastructure.iam-policy-audit` | simulation | D3 专用模拟 | CWE-732 权限分配不当；OWASP 云 IAM 最小权限；ATT&CK T1098 Account Manipulation | E1–E6 | LT-031 三向页面验证已通过；后续补 K8s RBAC 和 IaC |
-| `infrastructure.kubernetes-rbac-audit` | case-study | D3 专用模拟 | CWE-732 权限分配不当；CWE-269 权限管理不当；ATT&CK T1078.003 Valid Accounts: Local Accounts | E1–E5 | LT-042 固定 RBAC 绑定审计；后续补 IaC 配置与 Pod Security |
+| `infrastructure.kubernetes-rbac-audit` | case-study | D3 专用模拟 | CWE-732 权限分配不当；CWE-269 权限管理不当；ATT&CK T1078.003 Valid Accounts: Local Accounts | E1–E6 | LT-042 固定 RBAC 绑定审计；三向页面验证已通过并修正前端固定 key 漂移；后续补 IaC 配置与 Pod Security |
 
 **判断：**已建立云 IAM 与 Kubernetes RBAC 两个最小权限专用样板；对象存储暴露、IaC 配置和镜像完整性仍是后续缺口。
 
@@ -229,13 +229,13 @@
 |---|---|---|---|---|---|
 | `host.service-permission-audit` | simulation | D3 专用模拟 | CWE-428 未加引号服务路径；CWE-732 权限分配不当；ATT&CK T1574.010 服务文件权限弱化 | E1–E6 | LT-031 三向页面验证已通过 |
 | `host.event-log-triage` | case-study | D3 专用模拟 | Windows Security Log；身份与服务时间线 | E1–E6 | LT-039 已完成并推进 ready；case-study 保持无真实主机操作边界 |
-| `host.persistence-triage` | case-study | D3 专用模拟 | ATT&CK T1547.001 注册表 Run 键与启动文件夹；T1053.005 计划任务；CWE-732 权限分配不当 | E1–E5 | LT-044 已完成并推进 ready；后续可补 Playwright 三向页面验证 |
+| `host.persistence-triage` | case-study | D3 专用模拟 | ATT&CK T1547.001 注册表 Run 键与启动文件夹；T1053.005 计划任务；CWE-732 权限分配不当 | E1–E6 | LT-044 已完成并推进 ready；三向页面验证已通过；后续补文件目录 ACL 与 NTLM/Kerberos |
 
 **判断：**Windows 主机已具备服务权限、事件时间线与自启持久化三个样板；文件 ACL 细粒度、凭据保护、NTLM/Kerberos 和 AD 委派仍是后续缺口。
 
 ## 17. 结构性缺口矩阵
 
-这些领域不应伪装成当前 75 个场景的完整覆盖，后续应单独编写执行文档。
+这些领域不应伪装成当前 78 个场景的完整覆盖，后续应单独编写执行文档。
 
 | 缺口领域 | 当前状态 | 优先级 | 首批建议 |
 |---|---|---|---|
@@ -284,9 +284,9 @@
 
 ## 20. 当前审计结论
 
-- 当前 75 个场景全部进入矩阵，75 个达到 `ready`。
+- 当前 78 个场景全部进入矩阵，78 个达到 `ready`。
 - Web/注入和认证授权是成熟度最高的两条主线。
 - API、业务逻辑、密码学、检测响应和 Windows 主机已有首个专用样板；云原生与 IaC 仍是主要结构性薄弱点。
 - 30 个引导式场景已满足当前安全化 `ready` 规则，但不等于 30 个独立深度靶场。
-- 150 个启用变体已通过 Web/API 入口门禁复核；当前 28 个实验登记 E6，14 个分类均有代表性页面回归。
+- 156 个启用变体已通过 Web/API 入口门禁复核；当前 31 个实验登记 E6，14 个分类均有代表性页面回归。
 - 后续优先补结构性缺口和专用深度，不以继续增加名称数量为第一目标。

@@ -847,7 +847,7 @@
 - [x] `LT-041`：执行全新 Windows 环境发布复验，覆盖数据库初始化、前后端构建、服务启动、nginx SPA fallback、API 反向代理、登录和代表性实验闭环（完成时间：2026-08-28 15:37:54 +08:00；验证：`db:prepare` 两次幂等、前后端生产构建、`nginx -t`、nginx 运行时验收 `NGINX_RUNTIME_ACCEPTANCE_PASS`、`pnpm verify` EXIT=0、smoke 4/4、E2E 40/40；修复 `test-nginx-runtime.ps1` 因 UTF-8 无 BOM 导致 Windows PowerShell 解析失败的缺陷）。
 - [x] `LT-042`：实现 Kubernetes RBAC/IaC 固定配置审计，使用只读 YAML、虚拟角色绑定和固定策略，不连接真实集群或云账户（完成时间：2026-08-28 16:59:05 +08:00；验证：专项只读验证 18/18 `ok: true`、`pnpm verify` EXIT=0，shared 67、guided 30/30、controlled 5×`ok: true`、Web 入口 152/152、API 入口 201/201、coverage 76/76、server 372、web 285；新实验 `infrastructure.kubernetes-rbac-audit` 复用 `infrastructure` 分类，case-study ready 例外，不提供 exploit.py）。
 - [x] `LT-043`：实现 API 资源消耗、Webhook 重放与幂等固定实验，继续使用固定请求批次与内存状态机（完成时间：2026-08-28 17:36:20 +08:00；交付 `api.rate-limit-idempotency` 专用 D3 模拟；验证：专项只读验证 18/18 `ok: true`、`pnpm verify` EXIT=0，shared 67、guided 30/30、controlled 6×`ok: true`、Web 入口 154/154、API 入口 204/204、coverage 77/77、server 381、web 285）。
-- [ ] `LT-044`：补充 Windows 文件 ACL、计划任务和 NTLM/Kerberos 固定案例，不读取或修改真实主机状态。
+- [x] `LT-044`：补充 Windows 固定持久化时间线研判实验（完成时间：2026-08-28 18:02:30 +08:00；交付 `host.persistence-triage` 固定自启动/计划任务持久化研判 case-study；验证：专项只读验证 19/19 `ok: true`、`pnpm verify` EXIT=0，shared 67、guided 30/30、controlled 6×`ok: true`、Web 入口 156/156、API 入口 207/207、coverage 78/78、server 390/390、web 285/285；**范围收窄**：原措辞中的文件/目录 ACL 与 NTLM/Kerberos 未实现，按 `docs/design/windows-host-identity-labs.md` 记录的推迟理由保留到后续队列）。
 
 ### 21.4 第三轮审计完成记录
 

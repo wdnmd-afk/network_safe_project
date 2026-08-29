@@ -213,6 +213,43 @@ const categoryRepresentativeLabDifferences = [
     defenseSignal: "研判升级",
     normalSignal: "维护关闭",
   },
+  // LT-042～LT-044 的三个新实验使用各自专用视图，状态面板类名与按钮文案不同于受控决策视图
+  {
+    id: "infrastructure.kubernetes-rbac-audit",
+    path: "/labs/infrastructure/kubernetes-rbac-audit",
+    vulnTitle: "Kubernetes RBAC 风险观察版",
+    fixedTitle: "Kubernetes RBAC 防御复盘版",
+    statusPanel: ".audit-status-panel",
+    runButton: "运行固定审计",
+    normalButton: "命名空间基线",
+    riskSignal: "过宽绑定被批准",
+    defenseSignal: "过宽绑定已阻断",
+    normalSignal: "命名空间基线通过",
+  },
+  {
+    id: "api.rate-limit-idempotency",
+    path: "/labs/api/rate-limit-idempotency",
+    vulnTitle: "API 配额与重放风险观察版",
+    fixedTitle: "API 配额与幂等防御复盘版",
+    statusPanel: ".audit-status-panel",
+    runButton: "运行固定审计",
+    normalButton: "节流正常基线",
+    riskSignal: "超额与重放被接受",
+    defenseSignal: "超额与重放已阻断",
+    normalSignal: "节流基线通过",
+  },
+  {
+    id: "host.persistence-triage",
+    path: "/labs/host/persistence-triage",
+    vulnTitle: "持久化风险观察版",
+    fixedTitle: "持久化处置复盘版",
+    statusPanel: ".triage-status-panel",
+    runButton: "运行固定研判",
+    normalButton: "受控自启基线",
+    riskSignal: "可疑持久化被保留",
+    defenseSignal: "可疑持久化已阻断",
+    normalSignal: "受控自启基线通过",
+  },
 ];
 
 async function loginDemoUser(page) {
