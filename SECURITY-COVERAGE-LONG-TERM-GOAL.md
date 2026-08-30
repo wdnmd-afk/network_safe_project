@@ -6,7 +6,7 @@
 >
 > 当前基线：78 个安全学习实验（78 个 `ready`）
 >
-> 长期队列进度：44 / 44 已完成；`LT-044` Windows 持久化研判已收口，第三轮后续队列全部完成，下一轮需新建阶段目标
+> 长期队列进度：45 / 52 已完成；第四轮审计（`LT-045`）已收口并建立 `LT-046`～`LT-052` 队列（见第 21.5 节），本轮优先修验证体系盲区与工程治理，不以新增实验为目标
 
 ## 1. 文档定位
 
@@ -857,6 +857,40 @@
 - 自动化证据：四个 LT-036～LT-039 专项只读验证均 `ok: true`；`pnpm verify` EXIT=0（shared 67、guided 30/30、server 363、web 285）；`pnpm test:e2e` 40/40；`git diff --check` 通过。
 - 优先级结论：先执行 `LT-041` 全新 Windows 发布复验，再执行 `LT-042` Kubernetes RBAC/IaC 固定审计；本轮未执行生产 build/nginx 发布复验。
 
+### 21.5 第四轮审计后重排队列（LT-045 起）
+
+第四轮审计（`LT-045`）确认：78 个实验全部 `ready`，功能与内容侧已具备足够广度，但**验证体系存在一类系统性盲区**，且平台工程治理明显落后于实验建设。因此本轮队列优先修治理与验证质量，不以继续增加实验数量为目标。
+
+审计发现的核心问题：78 个专项 `verify.ts` 全部把前后端文件拼接后做"片段是否存在"检查，无一比对前端 `recommendedPath` 与服务端注册 optionKey 是否相等。`LT-042` 的 Kubernetes RBAC 前端四处 key 错误因此通过了全部门禁，直到补 E6 才暴露。该模式影响全部 48 个专用实验。
+
+- [x] `LT-045`：完成第四轮阶段审计，统一 78/78/156/48/30 与 E6 31 基线，建立本队列（完成时间：2026-08-31 00:30:06 +08:00；证据见 `docs/execution/2026-08-29-lt045-fourth-round-audit.md` 第 6 节）。
+- [ ] `LT-046`：为专项验证建立前后端固定契约一致性断言，逐一比对 scenarioKey、optionKey、recommendedPath 与信号常量，替换现有存在性检查，并在至少一个实验上验证其能捕获注入的不一致。
+- [ ] `LT-047`：将 `LT-046` 的契约断言推广到全部专用实验，纳入根级门禁，并记录推广过程中发现的既有不一致。
+- [ ] `LT-048`：补齐根 README 的从零安装与运行章节，提供环境变量示例与启动前校验，覆盖长期目标第 12.1 节三个未完成条目。
+- [ ] `LT-049`：建立数据库 schema、迁移与 Prisma 模型一致性检查，并补迁移状态检查与失败回滚说明（第 10.2、11 节）。
+- [ ] `LT-050`：建立依赖与版本治理基线，解决 `packageManager` 声明 10.0.0 与 `pnpm-lock.yaml` lockfileVersion 5.4 的矛盾，并建立版本检查与升级记录流程（第 12.3 节）。
+- [ ] `LT-051`：为平台状态页增加版本、构建信息、数据版本、目录一致性状态与最近验证摘要，禁止泄露秘密（第 7.5 节）。
+- [ ] `LT-052`：建立测试覆盖率基线与失败证据排障说明，先观察再决定门禁阈值（第 10.2 节）。
+
+优先级说明：
+
+- `LT-046`、`LT-047` 最高优先。验证体系有系统性盲区时，后续任何实验的"通过门禁"都不足以证明其可用。
+- `LT-048`～`LT-050` 属交付与治理基线，直接影响他人能否在全新环境重建平台。
+- `LT-051`、`LT-052` 属可观测性补强，可在治理基线稳定后推进。
+- 第 9 章的 81 项候选与第 8 章引导式第二版**不进入本轮队列**。前者是选题池，后者需先完成场景结构设计文档。
+- 本轮不新增安全实验；如需新增，必须先通过 `LT-046` 的契约断言。
+
+### 21.6 第四轮审计完成记录
+
+- 完成时间：2026-08-31 00:30:06 +08:00。
+- 当前事实基线（脚本实测，非手工推算）：78 个实验、78 个 `ready`、0 个 `in-progress`、156 个变体、14 个分类、48 个专用实现、30 个引导式实现；模式为 `interactive` 26、`simulation` 22、`case-study` 30；严重度 `critical` 18、`high` 55、`medium` 5；难度 `advanced` 21、`intermediate` 41、`beginner` 16。
+- 证据等级现状：E6 Playwright 31，未具备 E6 的实验 47；专用 API 测试 77；只读脚本验证 78。
+- 入口与门禁证据：`pnpm verify` EXIT=0（shared 67、guided 30/30、controlled 6×`ok: true`、Web 入口 156/156、API 入口 207/207、实验路由 72/72、coverage 78/78、server 390/390、web 285/285）；`pnpm test:e2e` 43/43。
+- 关键审计结论：78 个专项 `verify.ts` 均只做拼接后的存在性检查，无一比对前端 `recommendedPath` / `scenarioKey` 与服务端注册值是否相等；该盲区已导致 `LT-042` 带缺陷通过全部门禁，影响面为 48 个专用实验。
+- 次要审计结论：47 个实验（60%）缺 E6，使上述盲区缺少兜底防线；覆盖矩阵第 2 节统计表曾连续三个切片未同步；文档批量改写曾因基于陈旧副本回写造成同一文档内自相矛盾。
+- 优先级结论：先执行 `LT-046`、`LT-047` 建立并推广契约一致性断言，再执行 `LT-048`～`LT-050` 交付与治理基线，最后执行 `LT-051`、`LT-052` 可观测性补强；本轮不新增安全实验。
+- 本轮未执行 build、smoke、数据库集成与 Playwright；改动仅为 Markdown 文档，已由覆盖验证器单独确认与元数据一致。
+
 ## 22. 更新规则
 
 后续每完成一个长期任务，必须同步更新：
@@ -913,6 +947,6 @@
 | `LT-039` | 2026-08-27 09:55:53 +08:00 | `host.event-log-triage` 固定脱敏 Windows 事件时间线 case-study 及共享事件 schema 复用 | 专项 `ok: true`；根级 verify 和 E2E 通过；元数据 `ready`，保持无真实主机操作边界 |
 | `LT-040` | 2026-08-27 09:55:53 +08:00 | 第三轮事实审计、当前基线统一和后续队列排序 | 75/75 ready、150 变体、45 专用、30 引导式、14 分类、28 个 E6；`pnpm verify` EXIT=0、E2E 40/40、`git diff --check` 通过 |
 | `LT-041` | 2026-08-28 15:37:54 +08:00 | 75 实验基线的全新 Windows 发布复验：数据库幂等准备、前后端生产构建、构建产物秘密扫描、nginx 生成与运行时验收、认证与实验闭环、全量自动化复验；修复 `test-nginx-runtime.ps1` 在 Windows PowerShell 5.1 下因缺少 UTF-8 BOM 导致的解析失败 | `db:prepare` 两次输出一致（4 迁移幂等、2 账号、14 分类、75 实验、150 变体）；`build:web` 与 `build:server` EXIT=0，产物无硬编码秘密；`nginx -t` 通过；运行时验收 `NGINX_RUNTIME_ACCEPTANCE_PASS`，5 项 HTTP 检查全 200、`lab-count=75`、登录/当前用户/引导式三向/事件日志/复盘/注销全过；`pnpm verify` EXIT=0（shared 67、guided 30/30、controlled 4×`ok: true`、Web 入口 150/150、API 入口 198/198、coverage 75/75、server 363、web 285）；`test:smoke` 4/4；`test:e2e` 40/40；端口 6667/8080 已释放；`git diff --check` 通过 |
-| `LT-042` | 2026-08-28 16:59:05 +08:00 | `infrastructure.kubernetes-rbac-audit` 固定 RBAC 绑定审计 case-study：两份冻结虚构绑定快照与五要素语义枚举、确定性审计计数纯函数、两步状态机、专用工作台/评估 API、脱敏事件摘要、前端 API/配置/视图/路由、标准实验目录七份文档、脚本目录与只读验证器；纳入 `test:controlled` 门禁与覆盖矩阵第 15 节 | 专项只读验证 18/18 `ok: true`；`pnpm verify` EXIT=0（前后端类型检查、shared 67、guided 30/30、controlled 5×`ok: true`、Web 入口 152/152、API 入口 201/201、实验路由 68/68、coverage 76/76、server 372/372、web 285/285）；固定计数经运行时实测锁定（风险绑定 4 发现 / 3 关键风险 / 0 控制；加固绑定 0 / 0 / 5）；case-study 变体保持 `supportsAutomation: false` 且无 `exploit.py`；未运行 build、smoke、数据库集成或 Playwright |
+| `LT-042` | 2026-08-28 16:59:05 +08:00 | `infrastructure.kubernetes-rbac-audit` 固定 RBAC 绑定审计 case-study：两份冻结虚构绑定快照与五要素语义枚举、确定性审计计数纯函数、两步状态机、专用工作台/评估 API、脱敏事件摘要、前端 API/配置/视图/路由、标准实验目录七份文档、脚本目录与只读验证器；纳入 `test:controlled` 门禁与覆盖矩阵第 15 节 | 专项只读验证 18/18 `ok: true`；`pnpm verify` EXIT=0（前后端类型检查、shared 67、guided 30/30、controlled 5×`ok: true`、Web 入口 152/152、API 入口 201/201、实验路由 68/68、coverage 76/76、server 372/372、web 285/285）；固定计数经运行时实测锁定（风险绑定 4 发现 / 3 关键风险 / 0 控制；加固绑定 0 / 0 / 5）；case-study 变体保持 `supportsAutomation: false` 且无 `exploit.py`；未运行 build、smoke、数据库集成或 Playwright。**事后修正（2026-08-29，提交 `b73ec4a`）**：本切片交付的前端 `apps/web/src/labs/kubernetes-rbac-audit.ts` 有四处固定 key 与服务端不一致（scenarioKey 及三个 optionKey），导致页面提交一律被脱敏阻断，漏洞版与防御版实际不可用；缺陷由补充的 E6 Playwright 用例暴露，专项存在性检查未能捕获，根因分析见 `docs/execution/2026-08-29-lt045-fourth-round-audit.md` 第 6 节 |
 | `LT-043` | 2026-08-28 17:36:52 +08:00 | `api.rate-limit-idempotency` 固定 Webhook 批次配额与幂等审计 simulation：两份冻结虚构批次快照与配额/幂等/时间窗/降级四要素语义枚举、确定性审计计数纯函数、两步状态机、专用工作台/评估 API、脱敏事件摘要、前端 API/配置/视图/路由、标准实验目录七份文档、脚本目录与只读验证器；一个场景同时覆盖资源消耗与 Webhook 重放两个结构性缺口；纳入 `test:controlled` 门禁与覆盖矩阵第 5 节 | 专项只读验证 18/18 `ok: true`；`pnpm verify` EXIT=0（前后端类型检查、shared 67、guided 30/30、controlled 6×`ok: true`、Web 入口 154/154、API 入口 204/204、实验路由 70/70、coverage 77/77、server 381/381、web 285/285）；固定计数经运行时实测锁定（风险批次 4 发现 / 2 关键风险 / 0 控制；加固批次 0 / 0 / 4）；未知 scenarioKey/optionKey 脱敏阻断且不回显，事件日志不含端点、签名密钥或租户标识；无 `exploit.py` 与真实并发请求能力；未运行 build、smoke、数据库集成或 Playwright |
 | `LT-044` | 2026-08-28 18:02:30 +08:00 | `host.persistence-triage` 固定 Windows 自启动/计划任务持久化时间线研判 case-study：两份冻结虚构持久化条目快照与五要素语义枚举、确定性审计计数纯函数、两步状态机、专用工作台/评估 API、脱敏事件摘要、前端 API/配置/视图/路由、标准实验目录七份文档、脚本目录与只读验证器；纳入 `test:controlled` 门禁与覆盖矩阵第 16 节 | 专项只读验证 19/19 `ok: true`；`pnpm verify` EXIT=0（前后端类型检查、shared 67、guided 30/30、controlled 6×`ok: true`、Web 入口 156/156、API 入口 207/207、实验路由 72/72、coverage 78/78、server 390/390、web 285/285）；固定计数经运行时实测锁定（风险条目 4 发现 / 2 关键风险 / 0 控制；加固条目 0 / 0 / 5）；case-study 变体保持 `supportsAutomation: false` 且无 `exploit.py`；**范围收窄**：原措辞中的文件/目录 ACL 与 NTLM/Kerberos 未实现，按规划文档推迟理由保留到后续队列；未运行 build、smoke、数据库集成或 Playwright |
