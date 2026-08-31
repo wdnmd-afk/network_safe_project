@@ -99,7 +99,7 @@ export function formatRateLimitIdempotencySignal(signal: string) {
     "api-rate-limit-idempotency-risk-accepted": "超额与重放被接受",
     "api-rate-limit-idempotency-defense-blocked": "超额与重放已阻断",
     "api-rate-limit-idempotency-normal-verified": "节流基线通过",
-    "api-rate-limit-idempotency-batch-accepted": "无配额批次被接受",
+    "api-rate-limit-idempotency-unthrottled-accepted": "无配额批次被接受",
     "api-rate-limit-idempotency-controls-enforced": "资源控制已施加",
     "api-rate-limit-idempotency-boundary-blocked": "未登记输入被脱敏阻断",
   };

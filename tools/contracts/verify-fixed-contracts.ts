@@ -256,6 +256,43 @@ function collectRegisteredOptionKeys(workbench: unknown): Set<string> {
   return keys;
 }
 
+/**
+ * 收集服务端状态机中登记的全部信号，含中间步骤信号。
+ *
+ * 只看服务端导出的 *Signal 常量是不够的：那些只是三个 canonical 终止信号，
+ * 而中间步骤信号（如 -cluster-wide-accepted）只出现在 option.signal 上。
+ * LT-042 的第五处缺陷恰好在中间步骤信号的前端标签上，因此必须从工作台采集。
+ */
+function collectRegisteredSignals(workbench: unknown): Set<string> {
+  const signals = new Set<string>();
+  const cases = (workbench as { cases?: unknown })?.cases;
+
+  if (!Array.isArray(cases)) {
+    return signals;
+  }
+
+  for (const singleCase of cases) {
+    const steps = (singleCase as { steps?: unknown })?.steps;
+    if (!Array.isArray(steps)) {
+      continue;
+    }
+    for (const step of steps) {
+      const options = (step as { options?: unknown })?.options;
+      if (!Array.isArray(options)) {
+        continue;
+      }
+      for (const option of options) {
+        const signal = (option as { signal?: unknown })?.signal;
+        if (typeof signal === "string" && signal.length > 0) {
+          signals.add(signal);
+        }
+      }
+    }
+  }
+
+  return signals;
+}
+
 function readWebPaths(
   webMod: Record<string, unknown>,
   prefix: string,
@@ -342,6 +379,7 @@ export async function runFixedContractVerification(): Promise<ContractReport> {
       ),
     );
 
+
     if (!pairing.serviceFactory) {
       continue;
     }
@@ -365,6 +403,36 @@ export async function runFixedContractVerification(): Promise<ContractReport> {
     ).getWorkbench();
     const registered = collectRegisteredOptionKeys(workbench);
     const webPaths = readWebPaths(webMod, pairing.exportPrefix);
+
+    // 检查：服务端注册的每个信号（含中间步骤）都必须有前端中文标签。
+    //
+    // 覆盖 scenarioKey 与 optionKey 检查都抓不到的一类漂移：前端 formatSignal
+    // 的标签键写错时，页面会把原始信号串直接显示给学习者。LT-042 的第五处缺陷
+    // 正是此类——前端写 -wildcard-accepted，服务端注册 -cluster-wide-accepted。
+    //
+    // 判定方式是调用前端 formatSignal：约定未登记的信号原样返回，因此返回值
+    // 等于入参即说明标签缺失或拼错。不读取标签表内部形态，只依赖这一约定。
+    const formatSignalExport = `format${capitalize(pairing.exportPrefix)}Signal`;
+    const formatSignal = webMod[formatSignalExport];
+    const registeredSignals = [...collectRegisteredSignals(workbench)].sort();
+
+    if (typeof formatSignal === "function" && registeredSignals.length > 0) {
+      const unlabeled = registeredSignals.filter(
+        (signal) =>
+          (formatSignal as (value: string) => string)(signal) === signal,
+      );
+
+      checks.push(
+        createCheck(
+          pairing.labKey,
+          "registered-signals-labeled",
+          unlabeled.length === 0,
+          unlabeled.length === 0
+            ? `${registeredSignals.length} 个服务端注册信号均有前端标签。`
+            : `前端缺少标签（页面将显示原始信号串）：${unlabeled.join(", ")}`,
+        ),
+      );
+    }
 
     checks.push(
       createCheck(
