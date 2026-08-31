@@ -321,6 +321,106 @@ export function applyMigrations({
   };
 }
 
+/**
+ * 只读迁移状态查询（LT-049）。
+ *
+ * 与 applyMigrations 的关键区别：不创建数据库、不创建迁移记录表、不执行任何
+ * 迁移、不写入任何记录。仅查询并报告当前状态，因此可安全用于排障与发布前核对。
+ *
+ * 数据库或迁移记录表尚不存在时不视为错误，而是报告为「未初始化」，
+ * 这正是全新环境的正常状态。
+ */
+export function reportMigrationStatus({
+  databaseUrl = process.env.DATABASE_URL,
+  envPath = defaultEnvPath,
+  migrationsDirectory = defaultMigrationsDirectory,
+} = {}) {
+  loadEnvFile(envPath);
+  const config = parseDatabaseUrl(databaseUrl ?? process.env.DATABASE_URL);
+  const migrationFiles = listMigrationFiles(migrationsDirectory);
+
+  // 数据库是否存在——不创建
+  let databaseExists = false;
+  try {
+    const found = runMysql(
+      config,
+      `SELECT SCHEMA_NAME FROM information_schema.schemata WHERE SCHEMA_NAME = ${quoteString(config.database)};`,
+    );
+    databaseExists = Boolean(found && found.trim());
+  } catch (error) {
+    return {
+      database: config.database,
+      reachable: false,
+      databaseExists: false,
+      migrationTableExists: false,
+      total: migrationFiles.length,
+      applied: [],
+      pending: migrationFiles,
+      error: error instanceof Error ? error.message : String(error),
+    };
+  }
+
+  if (!databaseExists) {
+    return {
+      database: config.database,
+      reachable: true,
+      databaseExists: false,
+      migrationTableExists: false,
+      total: migrationFiles.length,
+      applied: [],
+      pending: migrationFiles,
+    };
+  }
+
+  // 迁移记录表是否存在——不创建
+  const tableFound = runMysql(
+    config,
+    `SELECT TABLE_NAME FROM information_schema.tables WHERE TABLE_SCHEMA = ${quoteString(config.database)} AND TABLE_NAME = ${quoteString(migrationTableName)};`,
+  );
+  const migrationTableExists = Boolean(tableFound && tableFound.trim());
+
+  if (!migrationTableExists) {
+    return {
+      database: config.database,
+      reachable: true,
+      databaseExists: true,
+      migrationTableExists: false,
+      total: migrationFiles.length,
+      applied: [],
+      pending: migrationFiles,
+    };
+  }
+
+  const applied = getAppliedMigrations(config);
+  const existingTables = getExistingTables(config);
+  const appliedList = migrationFiles.filter((name) => applied.has(name));
+  const pending = migrationFiles.filter((name) => !applied.has(name));
+
+  // 已记录为 applied 但其表实际缺失，说明库被手工改动过或迁移记录失真。
+  // 该情形比"有待应用迁移"更危险，因为 applyMigrations 会直接跳过它们。
+  const inconsistent = appliedList.filter((name) => {
+    const required = migrationObjects.get(name) ?? [];
+    return required.length > 0 && !required.every((table) => existingTables.has(table));
+  });
+
+  // 记录表中存在但仓库已无对应文件的迁移：通常是迁移被改名或删除
+  const orphanRecords = [...applied].filter(
+    (name) => !migrationFiles.includes(name),
+  );
+
+  return {
+    database: config.database,
+    reachable: true,
+    databaseExists: true,
+    migrationTableExists: true,
+    total: migrationFiles.length,
+    applied: appliedList,
+    pending,
+    inconsistent,
+    orphanRecords,
+  };
+}
+
 function isMainModule() {
   return process.argv[1]
     ? path.resolve(process.argv[1]) === path.resolve(fileURLToPath(import.meta.url))
@@ -328,16 +428,71 @@ function isMainModule() {
 }
 
 if (isMainModule()) {
-  try {
-    const result = applyMigrations({
-      baselineExisting: process.argv.includes("--baseline-existing"),
-    });
+  // --status 为只读模式：只报告状态，不创建库、不建表、不应用任何迁移
+  if (process.argv.includes("--status")) {
+    try {
+      const status = reportMigrationStatus();
 
-    console.log(
-      `database ready: ${result.database}; applied ${result.applied.length}; skipped ${result.skipped.length}; total ${result.total}`,
-    );
-  } catch (error) {
-    console.error(error instanceof Error ? error.message : error);
-    process.exitCode = 1;
+      console.log(`database: ${status.database}`);
+
+      if (!status.reachable) {
+        console.log("state: unreachable");
+        console.log(`reason: ${status.error ?? "unknown"}`);
+        console.log("hint: 检查 DATABASE_URL、MySQL 是否运行，或设置 MYSQL_CLI_PATH");
+        process.exitCode = 1;
+      } else if (!status.databaseExists) {
+        console.log("state: database-not-created");
+        console.log(`pending: ${status.total}`);
+        console.log("hint: 全新环境的正常状态；执行 pnpm db:prepare 初始化");
+      } else if (!status.migrationTableExists) {
+        console.log("state: migration-table-missing");
+        console.log(`pending: ${status.total}`);
+        console.log("hint: 库已存在但未记录迁移；若为既有库执行 node database/scripts/apply-migrations.mjs --baseline-existing");
+      } else {
+        const clean =
+          status.pending.length === 0 &&
+          status.inconsistent.length === 0 &&
+          status.orphanRecords.length === 0;
+
+        console.log(`state: ${clean ? "up-to-date" : "needs-attention"}`);
+        console.log(`applied: ${status.applied.length}/${status.total}`);
+
+        if (status.pending.length > 0) {
+          console.log(`pending: ${status.pending.join(", ")}`);
+          console.log("hint: 执行 pnpm db:migrate 应用待执行迁移");
+        }
+
+        if (status.inconsistent.length > 0) {
+          // 已记录为已应用但表实际缺失——applyMigrations 会跳过它们，需人工介入
+          console.log(`inconsistent: ${status.inconsistent.join(", ")}`);
+          console.log(
+            "hint: 上述迁移有记录但对应表缺失，pnpm db:migrate 会跳过；需先核对库结构再决定是否删除记录后重跑",
+          );
+          process.exitCode = 1;
+        }
+
+        if (status.orphanRecords.length > 0) {
+          console.log(`orphan-records: ${status.orphanRecords.join(", ")}`);
+          console.log("hint: 记录存在但仓库已无该迁移文件，通常因迁移被改名或删除");
+          process.exitCode = 1;
+        }
+      }
+    } catch (error) {
+      console.error(error instanceof Error ? error.message : error);
+      process.exitCode = 1;
+    }
+  } else {
+    try {
+      const result = applyMigrations({
+        baselineExisting: process.argv.includes("--baseline-existing"),
+      });
+
+      console.log(
+        `database ready: ${result.database}; applied ${result.applied.length}; skipped ${result.skipped.length}; total ${result.total}`,
+      );
+    } catch (error) {
+      console.error(error instanceof Error ? error.message : error);
+      process.exitCode = 1;
+    }
   }
 }

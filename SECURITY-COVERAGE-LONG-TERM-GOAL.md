@@ -6,7 +6,7 @@
 >
 > 当前基线：78 个安全学习实验（78 个 `ready`）
 >
-> 长期队列进度：48 / 52 已完成；`LT-046`／`LT-047` 已建立并扩展前后端固定契约一致性门禁（17 组配对 170 项断言，两次注入测试均验证有效，并借此发现并修复 `LT-043` 遗留的信号标签缺陷），`LT-048` 已补齐 README 从零安装章节与环境变量示例，后续队列 `LT-049`～`LT-052` 见第 21.5 节
+> 长期队列进度：49 / 52 已完成；`LT-046`～`LT-049` 已建立四道新门禁与文档基线（契约一致性 17 组配对 170 项断言、数据库 schema 一致性 15 项检查、README 从零安装章节、只读 `pnpm db:status`），全部经注入或实测验证，后续队列 `LT-050`～`LT-052` 见第 21.5 节
 
 ## 1. 文档定位
 
@@ -507,7 +507,7 @@
 - [x] 将 `test:guided` 纳入统一验证入口（完成时间：2026-07-23 15:05:00 +08:00）。
 - [x] 增加 142 个变体的页面路由和元数据入口一致性检查（完成时间：2026-08-25 09:25:37 +08:00；`LT-028`，142/142 匹配）。
 - [x] 增加 API 路由与 `meta.json` entrypoints 的反向检查（`LT-032`）。
-- [ ] 增加数据库 schema、迁移和代码模型一致性检查。
+- [x] 增加数据库 schema、迁移和代码模型一致性检查（`LT-049`；`pnpm test:db-schema` 比对 4 个迁移的 12 张表与 11 个 Prisma 模型的表名及列名，15 项检查，两类漂移经注入测试验证可捕获；只解析文本不连库，可在无 MySQL 环境运行）。
 - [x] 增加每个安全分类至少一条代表性端到端路径（`LT-031`）。
 - [x] 增加漏洞版、修复版和正常业务流程的三向回归（`LT-031`）。
 - [ ] 建立测试覆盖率基线，先观察再决定门禁阈值。
@@ -524,7 +524,7 @@
 - [x] 账户和实验元数据种子。
 - [x] 更新 `database/README.md`，替换当前占位说明（完成时间：2026-07-23 08:57:39 +08:00）。
 - [x] 建立明确的数据库创建、迁移、补齐和种子顺序（完成时间：2026-07-23 08:57:39 +08:00）。
-- [ ] 建立迁移状态检查和失败回滚说明。
+- [x] 建立迁移状态检查和失败回滚说明（`LT-049`；新增只读 `pnpm db:status`，识别 `pending` / `inconsistent` / `orphan-records` 三类状态，其中 `inconsistent`（有记录但表缺失）此前无法发现且会被 `db:migrate` 静默跳过；`database/README.md` 补迁移状态查询与失败回滚两节，明确不提供自动回滚及其理由）。
 - [ ] 建立本机数据备份、恢复和清理流程。
 - [ ] 建立演示数据和个人学习数据的边界。
 - [ ] 建立日志和复盘数据保留策略。
@@ -867,7 +867,7 @@
 - [x] `LT-046`：为专项验证建立前后端固定契约一致性断言，逐一比对 scenarioKey、optionKey、recommendedPath 与信号常量，替换现有存在性检查，并在至少一个实验上验证其能捕获注入的不一致（完成时间：2026-08-31；交付 `tools/contracts/verify-fixed-contracts.ts`，17 组配对 153 项断言全通过并纳入 `pnpm verify`；注入 `LT-042` 原始缺陷值时精确捕获 `option-keys-registered` 与 `path-reaches-terminal` 两项失败，证明其对既有存在性检查漏判的缺陷有效；证据见 `docs/execution/2026-08-31-lt046-fixed-contract-assertions.md` 第 9 节）。
 - [x] `LT-047`：扩展契约断言覆盖面并记录既有不一致（完成时间：2026-08-31 09:40:00 +08:00；新增 `registered-signals-labeled` 断言，从工作台 option 收集全部注册信号（含中间步骤）并要求前端 `formatSignal` 有对应标签；**发现并修复 `LT-043` 遗留的真实缺陷**：`api.rate-limit-idempotency` 前端标签写成 `-batch-accepted`、服务端注册 `-unthrottled-accepted`，页面会把原始信号串显示给学习者；注入 `LT-042` 第五处缺陷验证断言有效；`pnpm verify` EXIT=0，契约 17 组配对 170 项断言；**范围按实测收窄**：原措辞"推广到全部专用实验"不可行，48 个专用实验中 17 个持有 `recommendedPath` 可做路径断言，`web.xss` 无 API 入口不存在跨端契约，其余实验的固定值经服务端函数判定且方法签名各异（`fetchResource` / `readOrder` / `verifyToken` / `readDocument` …），逐一写适配器会制造超过其防护价值的维护负担；详见 `docs/execution/2026-08-31-lt047-contract-coverage-expansion.md` 第 3 节）。
 - [x] `LT-048`：补齐根 README 的从零安装与运行章节，提供环境变量示例与启动前校验，覆盖长期目标第 12.1 节三个未完成条目（完成时间：2026-08-31；README 新增第 2.1 节；补全 `.env.example` 缺失的 `MYSQL_CLI_PATH`——该变量缺失时 MySQL 未入 PATH 会导致迁移直接失败；文中 13 个命令、2 个健康检查端点与 2 处引用路径均经脚本核对存在；`db:prepare` 预期输出经实测逐字确认；如实标注 pnpm 声明版本与 lockfileVersion 5.4 的矛盾并指向 `LT-050`；未新建根 `.env.example`，理由见执行文档 3.1；详见 `docs/execution/2026-08-31-lt048-readme-install-guide.md`）。
-- [ ] `LT-049`：建立数据库 schema、迁移与 Prisma 模型一致性检查，并补迁移状态检查与失败回滚说明（第 10.2、11 节）。
+- [x] `LT-049`：建立数据库 schema、迁移与 Prisma 模型一致性检查，并补迁移状态检查与失败回滚说明（第 10.2、11 节）（完成时间：2026-08-31；交付 `tools/database/verify-schema-consistency.ts` 与只读 `pnpm db:status`；核实 12 表 vs 11 模型的差异为有意设计——`sql_injection_lab_products` 经 `$queryRaw` 直连以演示不安全拼接，已登记为例外而非放宽规则；两类漂移注入测试均精确捕获；只读性经实测确认（查询不存在的库后该库仍不存在）；详见 `docs/execution/2026-08-31-lt049-db-schema-consistency.md`）。
 - [ ] `LT-050`：建立依赖与版本治理基线，解决 `packageManager` 声明 10.0.0 与 `pnpm-lock.yaml` lockfileVersion 5.4 的矛盾，并建立版本检查与升级记录流程（第 12.3 节）。
 - [ ] `LT-051`：为平台状态页增加版本、构建信息、数据版本、目录一致性状态与最近验证摘要，禁止泄露秘密（第 7.5 节）。
 - [ ] `LT-052`：建立测试覆盖率基线与失败证据排障说明，先观察再决定门禁阈值（第 10.2 节）。
@@ -953,3 +953,4 @@
 | `LT-046` | 2026-08-31 09:00:00 +08:00 | 建立 `tools/contracts/verify-fixed-contracts.ts` 前后端固定契约一致性验证器：同时 import 前端 labs 模块与服务端服务模块比对真实运行时值，断言 scenarioKey 相等、recommendedPath/normalPath 的每个 optionKey 均在服务端注册、固定路径能走到终止步骤而不被脱敏阻断；纳入根级门禁 `pnpm test:contracts` | 17 组配对、153 项断言全通过；**注入测试验证有效性**：将 `LT-042` 原始缺陷值（`fixed-kubernetes-rbac-binding-audit` 等 4 处错误 key）注入前端后，验证器精确报出 `option-keys-registered` 与 `path-reaches-terminal` 两项失败并 exit 1，注入前后既有 78 个专项 `verify.ts` 均全绿（证实旧存在性检查对该类缺陷无效）；`pnpm verify` EXIT=0（含新增 contracts 阶段、server 390/390、web 285/285） |
 | `LT-047` | 2026-08-31 09:39:14 +08:00 | 按实测重新界定契约断言推广范围并扩展检查维度：新增 `registered-signals-labeled` 断言，从工作台 option 收集服务端全部注册信号（含中间步骤信号，非仅顶层导出常量），逐一验证前端 `formatSignal` 是否具备对应中文标签；同时移除一版冗余检查（同名字符串常量比对，实测 17 个同名常量全部即 scenarioKey 本身，与既有 `scenario-key-equal` 重复，会虚增检查数而无实际覆盖） | 断言数由 153 增至 170（17 组配对各 +1）；`pnpm verify` EXIT=0（含 `test:contracts`，server 390/390、web 285/285）；**注入测试**：注入 `LT-042` 第五处缺陷（前端标签 `-wildcard-accepted` vs 服务端 `-cluster-wide-accepted`）后检查器 `ok:false` 并精确定位，首版仅扫描顶层 `*Signal` 导出时漏判，修正为从 option 收集后捕获；**发现真实缺陷**：`api.rate-limit-idempotency` 前端标签写作 `-batch-accepted` 而服务端注册 `-unthrottled-accepted`（`LT-043` 遗留，页面会向学习者显示原始信号串），已修复；**范围说明**：未按队列原文推广到全部 48 个专用实验——实测 `web.xss` 无 API 入口无跨端契约，另 27 个实验固定值经服务端函数判定且方法签名各异（`fetchResource`／`readOrder`／`readDocument` 等），逐一编写适配器将制造超过其防护价值的维护负担，故仅覆盖 17 组具备统一可比对面的配对，其余保留说明不做假装覆盖 |
 | `LT-048` | 2026-08-31 10:05:00 +08:00 | README 新增第 2.1 节「从零安装与运行」八个小节（前置要求与端口、安装、环境配置、数据库初始化、启动、验证、生产构建、常见问题）；补全 `apps/server/.env.example` 缺失的 `MYSQL_CLI_PATH` 并为全部 6 项加用途注释 | 核实 README 原本确无安装运行章节（10 节全览）、服务端实际读取 6 个环境变量而示例只列 5 个；文中 13 个命令（根级 9 + 服务端 filtered 4）、2 个健康检查端点、2 处引用路径均经脚本核对存在；`db:prepare` 实测 EXIT=0 且输出与文档所写四行逐字一致（14 分类 / 78 实验 / 156 变体）；如实标注 `packageManager: pnpm@10.0.0` 与 `lockfileVersion: 5.4` 的矛盾并指向 `LT-050`，未掩盖；未新建根 `.env.example`（前端配置为源码常量不经环境变量，再建会产生需双向同步的副本）；未在真正空环境重跑全流程，该验证由 `LT-041` 承担 |
+| `LT-049` | 2026-08-31 10:45:00 +08:00 | 两部分交付：①`tools/database/verify-schema-consistency.ts` 比对迁移 DDL、Prisma 模型与 `schema:ensure` 三方结构，纳入 `pnpm test:db-schema`；②`apply-migrations.mjs` 新增 `reportMigrationStatus()` 与只读 `--status` 模式，注册为 `pnpm db:status`；`database/README.md` 补迁移状态查询与失败回滚两节 | 一致性检查 15 项全通过（4 迁移 / 12 迁移表 / 11 Prisma 模型）；**两类注入测试均精确捕获**：模型增列而迁移无该列 → `columns-exist:users` 报 `last_login_ip`；新增模型无建表迁移 → `prisma-models-have-migration` 报 `UserNote(user_notes)`；恢复后全绿；12 表 vs 11 模型的差异经核实为有意设计（`sql_injection_lab_products` 经 `$queryRawUnsafe`/`$queryRaw` 直连以演示不安全拼接，原生查询无需 Prisma 模型），已登记为例外并写明理由；`db:status` 实测：真实库 `up-to-date` 4/4、真实凭据+不存在库名 `databaseExists: false`、**只读性确认**（查询后该库仍不存在）；`pnpm verify` EXIT=0（含新 `test:db-schema` 阶段、server 390/390、web 285/285）；局限：只校验表与列存在性，不校验列类型、长度与索引，类型漂移仍需人工复核 |
