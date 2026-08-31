@@ -56,18 +56,16 @@
 
 需要空闲的端口：**6667**（后端）、**6670**（前端开发服务器）、**8080**（nginx 验收，仅发布时）。
 
-pnpm 版本说明：根 `package.json` 声明 `packageManager: pnpm@10.0.0`，但当前 `pnpm-lock.yaml` 为 `lockfileVersion: 5.4`（pnpm 7 生成）。二者不一致是已知遗留项，将由 `LT-050` 处理。当前推荐用 corepack 按声明版本执行，实测可正常解析该 lockfile 且不会改写它：
+pnpm 版本说明：根 `package.json` 声明 `packageManager: pnpm@10.0.0`，`pnpm-lock.yaml` 为对应的 `lockfileVersion: '9.0'`。若本机 pnpm 版本与之不同，用 corepack 按声明版本执行，避免 lockfile 被改写：
 
 ```powershell
 corepack pnpm@10.0.0 install
 ```
 
-若直接使用本机 pnpm，请确认其能读取 v5.4 lockfile。
-
 ### 2.1.2 安装依赖
 
 ```powershell
-corepack pnpm@10.0.0 install
+pnpm install
 ```
 
 工作区包含 `apps/*` 与 `packages/*`（见 `pnpm-workspace.yaml`）。
@@ -85,7 +83,7 @@ Copy-Item apps\server\.env.example apps\server\.env
 ### 2.1.4 初始化数据库
 
 ```powershell
-corepack pnpm@10.0.0 db:prepare
+pnpm db:prepare
 ```
 
 该命令按顺序执行四步：建库与迁移、补齐缺失表、写入认证账号、同步实验元数据。命令是幂等的，重复执行输出一致。预期输出形如：
@@ -100,10 +98,10 @@ synced 14 categories, 78 labs, 156 variants
 也可分步执行（用于排查具体环节）：
 
 ```powershell
-corepack pnpm@10.0.0 db:migrate                                      # 建库与迁移
-corepack pnpm@10.0.0 --filter @network-safe/server schema:ensure     # 补齐缺失表
-corepack pnpm@10.0.0 --filter @network-safe/server seed:auth         # 认证账号
-corepack pnpm@10.0.0 --filter @network-safe/server seed:labs         # 实验元数据
+pnpm db:migrate                                      # 建库与迁移
+pnpm --filter @network-safe/server schema:ensure     # 补齐缺失表
+pnpm --filter @network-safe/server seed:auth         # 认证账号
+pnpm --filter @network-safe/server seed:labs         # 实验元数据
 ```
 
 种子写入两个本机演示账号，凭据在 `apps/server/scripts/seed-auth-users.mjs` 中可查，仅用于本机学习。
@@ -113,8 +111,8 @@ corepack pnpm@10.0.0 --filter @network-safe/server seed:labs         # 实验元
 需要两个终端：
 
 ```powershell
-corepack pnpm@10.0.0 dev:server    # 后端，http://localhost:6667
-corepack pnpm@10.0.0 dev:web       # 前端，http://localhost:6670
+pnpm dev:server    # 后端，http://localhost:6667
+pnpm dev:web       # 前端，http://localhost:6670
 ```
 
 前端开发服务器已把 `/api` 代理到 6667（见 `apps/web/src/config/runtime.ts`），无需额外配置。
@@ -135,22 +133,22 @@ curl http://localhost:6667/api/labs
 不依赖数据库的静态与单元验证：
 
 ```powershell
-corepack pnpm@10.0.0 verify
+pnpm verify
 ```
 
 依赖本机服务的验证：
 
 ```powershell
-corepack pnpm@10.0.0 test:smoke     # 需前后端已启动
-corepack pnpm@10.0.0 test:e2e       # Playwright，会自行拉起服务
+pnpm test:smoke     # 需前后端已启动
+pnpm test:e2e       # Playwright，会自行拉起服务
 ```
 
 ### 2.1.7 生产构建与 nginx 托管（可选）
 
 ```powershell
-corepack pnpm@10.0.0 build:web
-corepack pnpm@10.0.0 build:server
-corepack pnpm@10.0.0 --filter @network-safe/server start   # 启动构建产物
+pnpm build:web
+pnpm build:server
+pnpm --filter @network-safe/server start   # 启动构建产物
 ```
 
 nginx 静态托管与 `/api` 反向代理的配置生成、校验与运行时验收，见 `nginx/README.md` 与 `tools/release/`。

@@ -6,7 +6,7 @@
 >
 > 当前基线：78 个安全学习实验（78 个 `ready`）
 >
-> 长期队列进度：49 / 52 已完成；`LT-046`～`LT-049` 已建立四道新门禁与文档基线（契约一致性 17 组配对 170 项断言、数据库 schema 一致性 15 项检查、README 从零安装章节、只读 `pnpm db:status`），全部经注入或实测验证，后续队列 `LT-050`～`LT-052` 见第 21.5 节
+> 长期队列进度：50 / 52 已完成；`LT-046`～`LT-050` 已建立五项治理基线（契约一致性 170 项断言、数据库 schema 一致性 15 项检查、README 从零安装章节、只读 `pnpm db:status`、lockfile 与 pnpm 声明对齐）；`LT-050` 期间发现全新克隆此前根本无法安装依赖、CI 对全新运行已损坏，均已修复，后续队列 `LT-051`～`LT-052` 见第 21.5 节
 
 ## 1. 文档定位
 
@@ -559,10 +559,10 @@
 
 ### 12.3 依赖和版本治理
 
-- [ ] 建立 Node、pnpm、Vue、Express、Prisma 和测试工具版本检查。
-- [ ] 建立依赖升级记录和兼容性验证流程。
+- [x] 建立 Node、pnpm、Vue、Express、Prisma 和测试工具版本检查（`LT-050` 部分完成；Node 由 `engines` 约束、pnpm 由 `packageManager` 与 lockfileVersion 共同约束且 CI 显式指定 10.0.0；Vue／Express／Prisma 仍只由 `package.json` 版本范围与 lockfile 锁定，无独立检查）。
+- [x] 建立依赖升级记录和兼容性验证流程（`LT-050`；`docs/execution/2026-08-31-lt050-dependency-governance.md` 记录 lockfile 重建的完整过程、验证命令与回归口径，可作为后续升级参照；未建立独立的升级记录文件）。
 - [ ] 建立依赖风险审计和误报处置记录。
-- [ ] 非必要不引入新依赖，优先复用现有能力。
+- [x] 非必要不引入新依赖，优先复用现有能力（既有规则，见 `AGENTS.md` 第 11 节；`LT-050` 未引入新依赖，lockfile 重建未改动任何版本范围）。
 - [ ] 定期清理无用脚本、旧生成产物和失效文档入口。
 
 ## 13. 分阶段路线图
@@ -868,7 +868,7 @@
 - [x] `LT-047`：扩展契约断言覆盖面并记录既有不一致（完成时间：2026-08-31 09:40:00 +08:00；新增 `registered-signals-labeled` 断言，从工作台 option 收集全部注册信号（含中间步骤）并要求前端 `formatSignal` 有对应标签；**发现并修复 `LT-043` 遗留的真实缺陷**：`api.rate-limit-idempotency` 前端标签写成 `-batch-accepted`、服务端注册 `-unthrottled-accepted`，页面会把原始信号串显示给学习者；注入 `LT-042` 第五处缺陷验证断言有效；`pnpm verify` EXIT=0，契约 17 组配对 170 项断言；**范围按实测收窄**：原措辞"推广到全部专用实验"不可行，48 个专用实验中 17 个持有 `recommendedPath` 可做路径断言，`web.xss` 无 API 入口不存在跨端契约，其余实验的固定值经服务端函数判定且方法签名各异（`fetchResource` / `readOrder` / `verifyToken` / `readDocument` …），逐一写适配器会制造超过其防护价值的维护负担；详见 `docs/execution/2026-08-31-lt047-contract-coverage-expansion.md` 第 3 节）。
 - [x] `LT-048`：补齐根 README 的从零安装与运行章节，提供环境变量示例与启动前校验，覆盖长期目标第 12.1 节三个未完成条目（完成时间：2026-08-31；README 新增第 2.1 节；补全 `.env.example` 缺失的 `MYSQL_CLI_PATH`——该变量缺失时 MySQL 未入 PATH 会导致迁移直接失败；文中 13 个命令、2 个健康检查端点与 2 处引用路径均经脚本核对存在；`db:prepare` 预期输出经实测逐字确认；如实标注 pnpm 声明版本与 lockfileVersion 5.4 的矛盾并指向 `LT-050`；未新建根 `.env.example`，理由见执行文档 3.1；详见 `docs/execution/2026-08-31-lt048-readme-install-guide.md`）。
 - [x] `LT-049`：建立数据库 schema、迁移与 Prisma 模型一致性检查，并补迁移状态检查与失败回滚说明（第 10.2、11 节）（完成时间：2026-08-31；交付 `tools/database/verify-schema-consistency.ts` 与只读 `pnpm db:status`；核实 12 表 vs 11 模型的差异为有意设计——`sql_injection_lab_products` 经 `$queryRaw` 直连以演示不安全拼接，已登记为例外而非放宽规则；两类漂移注入测试均精确捕获；只读性经实测确认（查询不存在的库后该库仍不存在）；详见 `docs/execution/2026-08-31-lt049-db-schema-consistency.md`）。
-- [ ] `LT-050`：建立依赖与版本治理基线，解决 `packageManager` 声明 10.0.0 与 `pnpm-lock.yaml` lockfileVersion 5.4 的矛盾，并建立版本检查与升级记录流程（第 12.3 节）。
+- [x] `LT-050`：建立依赖与版本治理基线，解决 `packageManager` 声明 10.0.0 与 `pnpm-lock.yaml` lockfileVersion 5.4 的矛盾，并建立版本检查与升级记录流程（第 12.3 节）（完成时间：2026-08-31；**该矛盾的严重性此前被低估**：实测 pnpm 10 直接以 `ERR_PNPM_LOCKFILE_BREAKING_CHANGE` 拒绝 v5.4 lockfile，全新克隆无法安装、CI 对全新运行本已损坏；此前「corepack 可正常解析」的结论错误，只因 `node_modules` 已由 pnpm 7 装好而未暴露；已重建 lockfile 为 v9 并用 CI 相同命令验证全新安装成功（完整重建 252 个包）；处理 pnpm 10 构建脚本策略变更并显式登记 `onlyBuiltDependencies`；补齐 CI 缺失的 `test:contracts` 与 `test:db-schema` 两道门禁——此前 `LT-046`／`LT-047`／`LT-049` 的检查只在本地生效；纠正 `LT-048` 写入 README 的错误说明；详见 `docs/execution/2026-08-31-lt050-dependency-governance.md`）。
 - [ ] `LT-051`：为平台状态页增加版本、构建信息、数据版本、目录一致性状态与最近验证摘要，禁止泄露秘密（第 7.5 节）。
 - [ ] `LT-052`：建立测试覆盖率基线与失败证据排障说明，先观察再决定门禁阈值（第 10.2 节）。
 
@@ -954,3 +954,4 @@
 | `LT-047` | 2026-08-31 09:39:14 +08:00 | 按实测重新界定契约断言推广范围并扩展检查维度：新增 `registered-signals-labeled` 断言，从工作台 option 收集服务端全部注册信号（含中间步骤信号，非仅顶层导出常量），逐一验证前端 `formatSignal` 是否具备对应中文标签；同时移除一版冗余检查（同名字符串常量比对，实测 17 个同名常量全部即 scenarioKey 本身，与既有 `scenario-key-equal` 重复，会虚增检查数而无实际覆盖） | 断言数由 153 增至 170（17 组配对各 +1）；`pnpm verify` EXIT=0（含 `test:contracts`，server 390/390、web 285/285）；**注入测试**：注入 `LT-042` 第五处缺陷（前端标签 `-wildcard-accepted` vs 服务端 `-cluster-wide-accepted`）后检查器 `ok:false` 并精确定位，首版仅扫描顶层 `*Signal` 导出时漏判，修正为从 option 收集后捕获；**发现真实缺陷**：`api.rate-limit-idempotency` 前端标签写作 `-batch-accepted` 而服务端注册 `-unthrottled-accepted`（`LT-043` 遗留，页面会向学习者显示原始信号串），已修复；**范围说明**：未按队列原文推广到全部 48 个专用实验——实测 `web.xss` 无 API 入口无跨端契约，另 27 个实验固定值经服务端函数判定且方法签名各异（`fetchResource`／`readOrder`／`readDocument` 等），逐一编写适配器将制造超过其防护价值的维护负担，故仅覆盖 17 组具备统一可比对面的配对，其余保留说明不做假装覆盖 |
 | `LT-048` | 2026-08-31 10:05:00 +08:00 | README 新增第 2.1 节「从零安装与运行」八个小节（前置要求与端口、安装、环境配置、数据库初始化、启动、验证、生产构建、常见问题）；补全 `apps/server/.env.example` 缺失的 `MYSQL_CLI_PATH` 并为全部 6 项加用途注释 | 核实 README 原本确无安装运行章节（10 节全览）、服务端实际读取 6 个环境变量而示例只列 5 个；文中 13 个命令（根级 9 + 服务端 filtered 4）、2 个健康检查端点、2 处引用路径均经脚本核对存在；`db:prepare` 实测 EXIT=0 且输出与文档所写四行逐字一致（14 分类 / 78 实验 / 156 变体）；如实标注 `packageManager: pnpm@10.0.0` 与 `lockfileVersion: 5.4` 的矛盾并指向 `LT-050`，未掩盖；未新建根 `.env.example`（前端配置为源码常量不经环境变量，再建会产生需双向同步的副本）；未在真正空环境重跑全流程，该验证由 `LT-041` 承担 |
 | `LT-049` | 2026-08-31 10:45:00 +08:00 | 两部分交付：①`tools/database/verify-schema-consistency.ts` 比对迁移 DDL、Prisma 模型与 `schema:ensure` 三方结构，纳入 `pnpm test:db-schema`；②`apply-migrations.mjs` 新增 `reportMigrationStatus()` 与只读 `--status` 模式，注册为 `pnpm db:status`；`database/README.md` 补迁移状态查询与失败回滚两节 | 一致性检查 15 项全通过（4 迁移 / 12 迁移表 / 11 Prisma 模型）；**两类注入测试均精确捕获**：模型增列而迁移无该列 → `columns-exist:users` 报 `last_login_ip`；新增模型无建表迁移 → `prisma-models-have-migration` 报 `UserNote(user_notes)`；恢复后全绿；12 表 vs 11 模型的差异经核实为有意设计（`sql_injection_lab_products` 经 `$queryRawUnsafe`/`$queryRaw` 直连以演示不安全拼接，原生查询无需 Prisma 模型），已登记为例外并写明理由；`db:status` 实测：真实库 `up-to-date` 4/4、真实凭据+不存在库名 `databaseExists: false`、**只读性确认**（查询后该库仍不存在）；`pnpm verify` EXIT=0（含新 `test:db-schema` 阶段、server 390/390、web 285/285）；局限：只校验表与列存在性，不校验列类型、长度与索引，类型漂移仍需人工复核 |
+| `LT-050` | 2026-08-31 11:00:00 +08:00 | 重建 `pnpm-lock.yaml` 为 `lockfileVersion: '9.0'` 与 `packageManager: pnpm@10.0.0` 对齐；`package.json` 新增 `pnpm.onlyBuiltDependencies` 显式登记 4 个需构建脚本的依赖；CI 补入 `test:contracts` 与 `test:db-schema` 两道门禁；纠正 `LT-048` 写入 README 的错误 pnpm 说明并简化 15 处命令前缀 | **修正此前的错误判断**：`LT-041`～`LT-049` 多次记录该矛盾不影响交付，依据是 corepack 可正常解析该 lockfile——实测为错，pnpm 10 以 `ERR_PNPM_LOCKFILE_BREAKING_CHANGE` 直接拒绝 v5.4，看起来正常只因 `node_modules` 早由 pnpm 7 装好；真实影响是全新克隆无法安装、CI（`pnpm/action-setup` 指定 10.0.0 后跑 `--frozen-lockfile`）对全新运行本已损坏；重建后用 CI 相同命令实测 `--frozen-lockfile` 成功（完整重建 252 个包，结论不受旧 node_modules 影响）；pnpm 10 默认跳过构建脚本，实测 tsx／esbuild 与 `prisma:generate` 均正常（Prisma 客户端由显式脚本生成、不依赖 postinstall）；依赖重建后 `pnpm verify` EXIT=0（含 contracts 170 断言、db-schema 15 项、server 390/390、web 285/285）；未改动任何依赖版本范围（`--lockfile-only` 按现有声明重解析，非升级） |

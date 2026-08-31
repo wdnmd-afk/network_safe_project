@@ -1,13 +1,34 @@
 # 长期目标执行进度
 
 - 总队列：52 项
-- 已完成：49 / 52
-- 当前状态：`LT-049` 已建立数据库 schema／迁移／Prisma 三方一致性检查与只读 `pnpm db:status`；本轮四道新门禁（契约一致性、数据库一致性、README 安装基线、迁移状态）全部经注入或实测验证；78 个实验全部 `ready`
-- 待验证：无（`LT-049` 两类漂移注入测试均捕获，只读性经实测确认）
-- 下一轮队列：`LT-050` 依赖与版本治理（含 pnpm 声明 10.0.0 与 lockfileVersion 5.4 矛盾），随后 `LT-051` 平台状态页、`LT-052` 覆盖率基线
+- 已完成：50 / 52
+- 当前状态：`LT-050` 已重建 lockfile 为 v9 与 `packageManager` 对齐，修复了「全新克隆无法安装依赖、CI 对全新运行已损坏」这一此前被低估的问题；并补齐 CI 缺失的两道新门禁；78 个实验全部 `ready`
+- 待验证：无（用 CI 相同命令实测 `--frozen-lockfile` 成功，依赖完整重建后 `pnpm verify` EXIT=0）
+- 下一轮队列：`LT-051` 平台状态页版本与一致性信息，随后 `LT-052` 测试覆盖率基线
 - 计数规则：只有实现、文档及约定验证全部完成并回填证据后，任务才计入已完成。
 
-# 2026-08-31 最新进展：LT-049 数据库一致性检查与迁移状态查询
+# 2026-08-31 最新进展：LT-050 依赖与版本治理
+
+## 修正一个被我低估了九个切片的问题
+
+- [x] `LT-041`～`LT-049` 期间我反复记录 pnpm 版本矛盾为「已知遗留项、不影响交付」，依据是「corepack pnpm@10 实测可正常解析该 lockfile 且不改写它」。**该结论是错的。**
+- [x] 本切片实测：`pnpm install --frozen-lockfile` 直接失败，报 `ERR_PNPM_LOCKFILE_BREAKING_CHANGE  Lockfile pnpm-lock.yaml not compatible with current pnpm`。pnpm 10 是**拒绝**而非「可以解析」v5.4 lockfile。
+- [x] 之所以一直看起来正常，是因为 `node_modules` 早已由 pnpm 7 装好——脚本能跑，但那不代表能安装。**我用「脚本能跑」验证了「依赖可用」，却把它当成了「安装可复现」的证据**；二者在已有 `node_modules` 的机器上无法区分，必须显式测 `--frozen-lockfile`。
+- [x] 真实影响面：① **全新克隆无法安装依赖**，交付链第一步即断；② **CI 对全新运行本已是坏的**——`.github/workflows/verify.yml` 用 `pnpm/action-setup@v4` 指定 10.0.0 后执行 `pnpm install --frozen-lockfile`，与本地复现路径完全一致，且 CI 每次从干净环境开始，不存在掩盖条件；③ `LT-048` 据此写入 README 的说明同样是错的。
+- [x] 另一处观察：`LT-041` 记录本机 pnpm 为 7.33.7，本切片实测已是 10.0.0，环境在此期间变过。沿用旧结论而不重新验证正是错误延续的原因之一。
+
+## 处置
+
+- [x] 重建 lockfile 为 `lockfileVersion: '9.0'`（`pnpm install --lockfile-only`）。选择重建而非降级声明：本机与 CI 都已是 pnpm 10，降级会让两侧都需额外装旧版本；v5.4 意味着长期锁定在已不使用的版本上。
+- [x] 用 CI 完全相同的命令验证：`pnpm install --frozen-lockfile` 成功，**完整重建了 252 个包**，因此结论不受旧 `node_modules` 影响。
+- [x] 处理 pnpm 10 的构建脚本策略变更：重装时报告 `@prisma/client`、`@prisma/engines`、`esbuild`、`prisma` 四个包的构建脚本被跳过。实测不影响本项目——`tsx` 可用、`prisma:generate` 正常（Prisma 客户端由显式脚本生成、不依赖 postinstall）。仍在 `package.json` 显式登记 `pnpm.onlyBuiltDependencies`，避免将来 pnpm 行为再变时静默失败；实测该字段不进入 lockfile `settings` 段。
+- [x] **补齐 CI 缺失的门禁**：CI 未包含本轮新增的 `test:contracts` 与 `test:db-schema`，意味着 `LT-046`／`LT-047`／`LT-049` 建立的检查此前只在本地生效。已补入，位置与 `pnpm verify` 链一致。
+- [x] 纠正 README：把「实测可正常解析该 lockfile 且不会改写它」改为准确描述；命令块中 15 处 `corepack pnpm@10.0.0` 前缀简化为 `pnpm`（变通已无必要），仅在版本不符的兜底说明处保留 corepack。
+- 验证证据：`--frozen-lockfile` 实测成功（252 包重建）；依赖重建后 `pnpm verify` EXIT=0（contracts 170 断言、db-schema 15 项、server 390/390、web 285/285）；tsx 与 `prisma:generate` 实测可用；`git diff --check` 通过。
+- 未改动任何依赖版本范围：`--lockfile-only` 按现有 `package.json` 声明重解析，不做升级。
+- 遗留（已写入执行文档）：依赖风险审计（`pnpm audit`）与误报处置记录未建立，需先定义「本机学习项目语境下哪些告警可接受」的判定口径否则会产生无法处置的噪声；无用脚本与失效文档入口清理未做；Vue／Express／Prisma 无独立版本检查。
+
+# 2026-08-31 历史进展：LT-049 数据库一致性检查与迁移状态查询
 
 ## 第一部分：schema / 迁移 / Prisma 三方一致性检查
 

@@ -51,6 +51,12 @@ jobs:
       - name: Controlled decision lab verification
         run: pnpm test:controlled
 
+      - name: Fixed contract consistency (web vs server)
+        run: pnpm test:contracts
+
+      - name: Database schema and migration consistency
+        run: pnpm test:db-schema
+
       - name: Web entrypoint consistency
         run: pnpm test:entrypoints
 
