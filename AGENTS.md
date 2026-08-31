@@ -201,9 +201,11 @@ chore(root): 同步 pnpm 工作区依赖锁文件
 
 ## 13. 当前阶段说明
 
-当前仓库处于 78 个 `ready` 安全学习实验持续维护阶段；`LT-001`～`LT-044` 已完成，其中 `LT-040` 收口第三轮阶段审计、`LT-041` 完成 75 实验基线的生产构建与 nginx 发布复验、`LT-042` 新增 Kubernetes RBAC 固定绑定审计实验、`LT-043` 新增 API 配额与 Webhook 幂等固定审计实验、`LT-044` 新增 Windows 固定持久化时间线研判实验；第四轮审计（`LT-045`）已建立 `LT-045`～`LT-052` 队列，本轮以验证体系与工程治理为主，不以新增实验为目标。
+当前仓库处于 78 个 `ready` 安全学习实验持续维护阶段；`LT-001`～`LT-046` 已完成，其中 `LT-040` 收口第三轮阶段审计、`LT-041` 完成 75 实验基线的生产构建与 nginx 发布复验、`LT-042`～`LT-044` 分别新增 Kubernetes RBAC、API 配额与 Webhook 幂等、Windows 持久化研判三个固定审计实验、`LT-045` 收口第四轮阶段审计并建立 `LT-045`～`LT-052` 队列、`LT-046` 建立前后端固定契约一致性门禁；本轮以验证体系与工程治理为主，不以新增实验为目标。
 
-第四轮审计确认的一类系统性问题：78 个专项 `verify.ts` 均把前后端源码拼成单个字符串做「片段是否出现」检查，无一比对前端 `recommendedPath` / `scenarioKey` 与服务端注册值是否相等。`LT-042` 曾因此带着四处前后端 key 不一致通过全部门禁（浏览器中漏洞版始终被脱敏阻断），由后补的 Playwright 用例暴露。新增或修改专用实验时，必须确认前端固定契约常量与服务端注册值逐一相等，不能只依赖专项验证通过。
+前后端固定契约一致性由 `pnpm test:contracts` 强制（`tools/contracts/verify-fixed-contracts.ts`，已纳入 `pnpm verify`）。该门禁同时导入前端 `labs/<slug>.ts` 与服务端 `services/<slug>-lab.ts`，比对 `scenarioKey`、`recommendedPath`、`normalPath` 与信号常量的**真实运行时值**，并实际驱动状态机确认固定路径可走到终止步骤。
+
+背景：78 个专项 `verify.ts` 均把前后端源码拼成单个字符串做「片段是否出现」检查，对前后端取值不一致天生无效。`LT-042` 曾因此带着四处前后端 key 不一致通过全部门禁（浏览器中漏洞版始终被脱敏阻断），由后补的 Playwright 用例暴露。新增或修改专用实验后必须运行 `pnpm test:contracts`；若新实验在前端 labs 模块导出 `recommendedPath`，还须在该门禁的 `contractPairings` 中登记，否则不受保护。
 
 当前已完成：
 
