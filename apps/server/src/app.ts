@@ -199,6 +199,7 @@ import {
   createLabRecapQuestionCompletionsService,
   type LabRecapQuestionCompletionsService,
 } from "./services/lab-recap-question-completions.js";
+import { getBuildInfo } from "./config/build-info.js";
 import { createLabRegistry } from "./services/lab-registry.js";
 import {
   createLabRecordsService,
@@ -505,6 +506,86 @@ export function createApp(options: CreateAppOptions = {}) {
         },
         timestamp: getTimestamp(),
       });
+    }
+  });
+
+  // 平台运行与数据状态（LT-051）。
+  //
+  // 只返回可安全公开的运行元信息与由元数据现算的统计，严格不含：
+  // DATABASE_URL、AUTH_TOKEN_SECRET、任何环境变量取值（APP_ENV 标识除外）、
+  // 本机绝对路径、凭据、token。
+  //
+  // 「最近验证摘要」不由本接口伪造时间戳——服务端无法得知谁在何时跑过
+  // pnpm verify。改为返回服务端此刻能真实计算的元数据一致性状态：
+  // 每个实验是否都登记了 Web 与 API 入口、状态分布是否符合预期。
+  app.get("/api/platform-info", async (_req, res, next) => {
+    try {
+      const labs = await labRegistry.listLabs();
+
+      const statusCounts: Record<string, number> = {};
+      const modeCounts: Record<string, number> = {};
+      const categories = new Set<string>();
+      let enabledVariants = 0;
+      let webEntrypoints = 0;
+      let apiEntrypoints = 0;
+      const labsMissingWebEntrypoint: string[] = [];
+
+      for (const lab of labs) {
+        statusCounts[lab.status] = (statusCounts[lab.status] ?? 0) + 1;
+        modeCounts[lab.mode] = (modeCounts[lab.mode] ?? 0) + 1;
+        categories.add(lab.category);
+
+        const variants = lab.variants ?? [];
+        enabledVariants += variants.filter((variant) => variant.enabled).length;
+
+        const web = lab.entrypoints?.web ?? [];
+        const api = lab.entrypoints?.api ?? [];
+        webEntrypoints += web.length;
+        apiEntrypoints += api.length;
+
+        // 启用了变体却没有对应 Web 入口，说明目录与入口登记脱节
+        if (variants.some((variant) => variant.enabled) && web.length === 0) {
+          labsMissingWebEntrypoint.push(lab.id);
+        }
+      }
+
+      const enabledVariantsWithoutEntry = labs.reduce((total, lab) => {
+        const web = lab.entrypoints?.web ?? [];
+        const entryKeys = new Set(web.map((entry) => entry.key));
+        const enabled = (lab.variants ?? []).filter((variant) => variant.enabled);
+        return (
+          total +
+          enabled.filter((variant) => !entryKeys.has(variant.entryKey)).length
+        );
+      }, 0);
+
+      const consistent =
+        labsMissingWebEntrypoint.length === 0 &&
+        enabledVariantsWithoutEntry === 0 &&
+        (statusCounts["in-progress"] ?? 0) === 0;
+
+      res.status(200).json({
+        status: "ok",
+        build: getBuildInfo(),
+        data: {
+          labs: labs.length,
+          categories: categories.size,
+          enabledVariants,
+          webEntrypoints,
+          apiEntrypoints,
+          statusCounts,
+          modeCounts,
+        },
+        consistency: {
+          status: consistent ? "consistent" : "needs-attention",
+          labsMissingWebEntrypoint,
+          enabledVariantsWithoutEntry,
+          inProgressLabs: statusCounts["in-progress"] ?? 0,
+        },
+        timestamp: getTimestamp(),
+      });
+    } catch (error) {
+      next(error);
     }
   });
 

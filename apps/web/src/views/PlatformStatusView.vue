@@ -5,6 +5,7 @@ import { storeToRefs } from "pinia";
 
 import { fetchLabs, type LabMetadata } from "../api/labs";
 import type { LabEventLogFilters } from "../api/lab-records";
+import { fetchPlatformInfo, type PlatformInfo } from "../api/platform-info";
 import {
   buildLabReadinessRows,
   getStatusLabel,
@@ -28,6 +29,10 @@ const {
 const labs = ref<LabMetadata[]>([]);
 const isLoadingLabs = ref(true);
 const labsErrorMessage = ref("");
+
+// 平台运行与数据状态（LT-051）。加载失败不阻断实验状态展示。
+const platformInfo = ref<PlatformInfo | null>(null);
+const platformInfoErrorMessage = ref("");
 
 const eventPhaseFilter = ref<"" | NonNullable<LabEventLogFilters["phase"]>>("");
 const eventRiskFilter = ref<
@@ -177,6 +182,32 @@ async function loadLabs() {
   }
 }
 
+async function loadPlatformInfo() {
+  platformInfoErrorMessage.value = "";
+
+  try {
+    platformInfo.value = await fetchPlatformInfo();
+  } catch (error) {
+    platformInfoErrorMessage.value =
+      error instanceof Error ? error.message : "平台运行信息加载失败";
+  }
+}
+
+function formatUptime(seconds: number) {
+  if (seconds < 60) {
+    return `${seconds} 秒`;
+  }
+
+  const minutes = Math.floor(seconds / 60);
+  if (minutes < 60) {
+    return `${minutes} 分钟`;
+  }
+
+  const hours = Math.floor(minutes / 60);
+  const restMinutes = minutes % 60;
+  return restMinutes > 0 ? `${hours} 小时 ${restMinutes} 分钟` : `${hours} 小时`;
+}
+
 async function refreshEventLogs() {
   await session.loadLabEventLogs(eventLogFilters.value);
 }
@@ -187,7 +218,7 @@ function resetLabFilters() {
 }
 
 onMounted(async () => {
-  await loadLabs();
+  await Promise.all([loadLabs(), loadPlatformInfo()]);
 
   if (!user.value) {
     await session.loadCurrentUser();
@@ -209,6 +240,95 @@ onMounted(async () => {
         本页只做本机可视化聚合，不发起任何外部请求。
       </p>
     </div>
+
+    <!-- 平台运行与数据状态（LT-051）：版本、构建、数据版本与目录一致性 -->
+    <section
+      v-if="platformInfo"
+      class="platform-info-section"
+      aria-labelledby="platform-info-heading"
+    >
+      <div class="panel-heading">
+        <div>
+          <p class="eyebrow">runtime</p>
+          <h2 id="platform-info-heading">平台运行与数据状态</h2>
+        </div>
+        <span
+          class="consistency-badge"
+          :class="
+            platformInfo.consistency.status === 'consistent'
+              ? 'badge-ok'
+              : 'badge-warn'
+          "
+        >
+          {{
+            platformInfo.consistency.status === "consistent"
+              ? "目录一致"
+              : "需要关注"
+          }}
+        </span>
+      </div>
+
+      <dl class="platform-info-grid">
+        <div>
+          <dt>服务版本</dt>
+          <dd>{{ platformInfo.build.service }} {{ platformInfo.build.version }}</dd>
+        </div>
+        <div>
+          <dt>Node 版本</dt>
+          <dd>{{ platformInfo.build.nodeVersion }}</dd>
+        </div>
+        <div>
+          <dt>运行环境</dt>
+          <dd>{{ platformInfo.build.appEnv }}</dd>
+        </div>
+        <div>
+          <dt>已运行</dt>
+          <dd>{{ formatUptime(platformInfo.build.uptimeSeconds) }}</dd>
+        </div>
+        <div>
+          <dt>数据版本</dt>
+          <dd>
+            {{ platformInfo.data.labs }} 实验 /
+            {{ platformInfo.data.categories }} 分类 /
+            {{ platformInfo.data.enabledVariants }} 启用变体
+          </dd>
+        </div>
+        <div>
+          <dt>入口登记</dt>
+          <dd>
+            Web {{ platformInfo.data.webEntrypoints }} /
+            API {{ platformInfo.data.apiEntrypoints }}
+          </dd>
+        </div>
+      </dl>
+
+      <ul
+        v-if="platformInfo.consistency.status !== 'consistent'"
+        class="consistency-detail"
+      >
+        <li v-if="platformInfo.consistency.enabledVariantsWithoutEntry > 0">
+          有 {{ platformInfo.consistency.enabledVariantsWithoutEntry }}
+          个启用变体的 entryKey 未在 Web 入口中登记
+        </li>
+        <li v-if="platformInfo.consistency.labsMissingWebEntrypoint.length > 0">
+          缺少 Web 入口的实验：
+          {{ platformInfo.consistency.labsMissingWebEntrypoint.join("、") }}
+        </li>
+        <li v-if="platformInfo.consistency.inProgressLabs > 0">
+          仍有 {{ platformInfo.consistency.inProgressLabs }} 个实验处于
+          in-progress 状态
+        </li>
+      </ul>
+
+      <p class="platform-info-note">
+        本节只展示可公开的运行元信息与由元数据现算的统计，不含环境变量取值、
+        凭据或本机路径。一致性状态由服务端此刻实时计算，不是历史验证记录。
+      </p>
+    </section>
+
+    <p v-else-if="platformInfoErrorMessage" class="state-text error-text">
+      {{ platformInfoErrorMessage }}
+    </p>
 
     <p v-if="isLoadingLabs" class="state-text">正在加载实验状态...</p>
     <p v-else-if="labsErrorMessage" class="state-text error-text">
@@ -588,6 +708,86 @@ onMounted(async () => {
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
+}
+
+/* 平台运行与数据状态（LT-051） */
+.platform-info-section {
+  display: grid;
+  gap: 1rem;
+  padding: 1rem;
+  border: 1px solid rgba(248, 250, 252, 0.14);
+  border-radius: 8px;
+  background: rgba(15, 23, 42, 0.58);
+}
+
+.platform-info-section .panel-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1rem;
+}
+
+.platform-info-section .panel-heading h2,
+.platform-info-section .panel-heading p {
+  margin: 0;
+}
+
+.consistency-badge {
+  padding: 0.2rem 0.6rem;
+  border-radius: 999px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.consistency-badge.badge-ok {
+  color: #86efac;
+  background: rgba(134, 239, 172, 0.12);
+}
+
+.consistency-badge.badge-warn {
+  color: #fca5a5;
+  background: rgba(252, 165, 165, 0.12);
+}
+
+.platform-info-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(11rem, 1fr));
+  gap: 0.85rem 1.25rem;
+  margin: 0;
+}
+
+.platform-info-grid > div {
+  display: grid;
+  gap: 0.25rem;
+  min-width: 0;
+}
+
+.platform-info-grid dt {
+  color: #94a3b8;
+  font-size: 0.78rem;
+}
+
+.platform-info-grid dd {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+
+.consistency-detail {
+  display: grid;
+  gap: 0.4rem;
+  margin: 0;
+  padding-left: 1.1rem;
+  color: #fca5a5;
+}
+
+.platform-info-note {
+  margin: 0;
+  padding-top: 0.75rem;
+  border-top: 1px solid rgba(248, 250, 252, 0.1);
+  color: #94a3b8;
+  font-size: 0.82rem;
+  line-height: 1.6;
 }
 
 .status-metric-grid {
