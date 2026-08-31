@@ -41,6 +41,130 @@
 - 前端部署：允许 `build` 后交由 `nginx` 托管
 - 后端部署：Node 服务独立常驻运行
 
+## 2.1 从零安装与运行
+
+以下顺序在全新 Windows 环境验证过（见 `docs/execution/2026-08-28-lt041-windows-release-reverification.md`）。全过程只连接本机，不访问外部目标。
+
+### 2.1.1 前置要求
+
+| 依赖 | 要求 | 校验命令 |
+|---|---|---|
+| Node.js | `>=22 <23`（根 `package.json` 的 `engines`） | `node -v` |
+| pnpm | 见下方版本说明 | `pnpm -v` |
+| MySQL | 本机实例，默认 3306 | `netstat -ano \| findstr :3306` |
+| nginx | 仅生产托管需要，开发不需要 | `nginx -v` |
+
+需要空闲的端口：**6667**（后端）、**6670**（前端开发服务器）、**8080**（nginx 验收，仅发布时）。
+
+pnpm 版本说明：根 `package.json` 声明 `packageManager: pnpm@10.0.0`，但当前 `pnpm-lock.yaml` 为 `lockfileVersion: 5.4`（pnpm 7 生成）。二者不一致是已知遗留项，将由 `LT-050` 处理。当前推荐用 corepack 按声明版本执行，实测可正常解析该 lockfile 且不会改写它：
+
+```powershell
+corepack pnpm@10.0.0 install
+```
+
+若直接使用本机 pnpm，请确认其能读取 v5.4 lockfile。
+
+### 2.1.2 安装依赖
+
+```powershell
+corepack pnpm@10.0.0 install
+```
+
+工作区包含 `apps/*` 与 `packages/*`（见 `pnpm-workspace.yaml`）。
+
+### 2.1.3 配置环境变量
+
+```powershell
+Copy-Item apps\server\.env.example apps\server\.env
+```
+
+然后按本机实际情况修改 `apps/server/.env` 中的 `DATABASE_URL`。各变量用途见该示例文件内注释。`.env` 已被 `.gitignore` 忽略，不会进入提交。
+
+若 MySQL 未加入 `PATH`，另需设置 `MYSQL_CLI_PATH` 指向 `mysql.exe`，否则迁移脚本找不到它。
+
+### 2.1.4 初始化数据库
+
+```powershell
+corepack pnpm@10.0.0 db:prepare
+```
+
+该命令按顺序执行四步：建库与迁移、补齐缺失表、写入认证账号、同步实验元数据。命令是幂等的，重复执行输出一致。预期输出形如：
+
+```
+database ready: network_safe_project; applied 0; skipped 4; total 4
+lab_recap_question_completions already exists
+seeded 2 auth users
+synced 14 categories, 78 labs, 156 variants
+```
+
+也可分步执行（用于排查具体环节）：
+
+```powershell
+corepack pnpm@10.0.0 db:migrate                                      # 建库与迁移
+corepack pnpm@10.0.0 --filter @network-safe/server schema:ensure     # 补齐缺失表
+corepack pnpm@10.0.0 --filter @network-safe/server seed:auth         # 认证账号
+corepack pnpm@10.0.0 --filter @network-safe/server seed:labs         # 实验元数据
+```
+
+种子写入两个本机演示账号，凭据在 `apps/server/scripts/seed-auth-users.mjs` 中可查，仅用于本机学习。
+
+### 2.1.5 启动开发环境
+
+需要两个终端：
+
+```powershell
+corepack pnpm@10.0.0 dev:server    # 后端，http://localhost:6667
+corepack pnpm@10.0.0 dev:web       # 前端，http://localhost:6670
+```
+
+前端开发服务器已把 `/api` 代理到 6667（见 `apps/web/src/config/runtime.ts`），无需额外配置。
+
+### 2.1.6 验证安装
+
+```powershell
+# 健康检查
+curl http://localhost:6667/api/health
+curl http://localhost:6667/api/health/db
+
+# 实验目录（应返回 78）
+curl http://localhost:6667/api/labs
+```
+
+浏览器访问 `http://localhost:6670`，用演示账号登录后即可进入实验目录。
+
+不依赖数据库的静态与单元验证：
+
+```powershell
+corepack pnpm@10.0.0 verify
+```
+
+依赖本机服务的验证：
+
+```powershell
+corepack pnpm@10.0.0 test:smoke     # 需前后端已启动
+corepack pnpm@10.0.0 test:e2e       # Playwright，会自行拉起服务
+```
+
+### 2.1.7 生产构建与 nginx 托管（可选）
+
+```powershell
+corepack pnpm@10.0.0 build:web
+corepack pnpm@10.0.0 build:server
+corepack pnpm@10.0.0 --filter @network-safe/server start   # 启动构建产物
+```
+
+nginx 静态托管与 `/api` 反向代理的配置生成、校验与运行时验收，见 `nginx/README.md` 与 `tools/release/`。
+
+### 2.1.8 常见问题
+
+| 现象 | 原因与处理 |
+|---|---|
+| 迁移脚本报找不到 mysql | MySQL 未在 `PATH`；设置 `MYSQL_CLI_PATH` 指向 `mysql.exe` |
+| 后端启动即退出 | 检查 `apps/server/.env` 是否存在、`DATABASE_URL` 是否可连通 |
+| 前端能打开但接口 404 | 后端未启动或未监听 6667 |
+| 端口被占用 | 用 `netstat -ano \| findstr :6667` 找到并结束占用进程 |
+| `db:prepare` 中途失败 | 用 2.1.4 的分步命令定位具体环节 |
+
 ## 3. 架构思路
 
 项目采用“平台核心分层 + 实验模块分层”的组织方式。

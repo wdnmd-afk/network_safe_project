@@ -6,7 +6,7 @@
 >
 > 当前基线：78 个安全学习实验（78 个 `ready`）
 >
-> 长期队列进度：47 / 52 已完成；`LT-046`／`LT-047` 已建立并扩展前后端固定契约一致性门禁（`pnpm test:contracts`，17 组配对 170 项断言，两次注入测试均验证有效，并借此发现并修复 `LT-043` 遗留的信号标签缺陷），后续队列 `LT-048`～`LT-052` 见第 21.5 节
+> 长期队列进度：48 / 52 已完成；`LT-046`／`LT-047` 已建立并扩展前后端固定契约一致性门禁（17 组配对 170 项断言，两次注入测试均验证有效，并借此发现并修复 `LT-043` 遗留的信号标签缺陷），`LT-048` 已补齐 README 从零安装章节与环境变量示例，后续队列 `LT-049`～`LT-052` 见第 21.5 节
 
 ## 1. 文档定位
 
@@ -534,9 +534,9 @@
 
 ### 12.1 Windows 本机交付
 
-- [ ] 更新根 README，提供从零安装和运行顺序。
-- [ ] 提供环境变量示例和启动前校验。
-- [ ] 提供数据库初始化、迁移、种子和健康检查命令。
+- [x] 更新根 README，提供从零安装和运行顺序（`LT-048`；README 第 2.1 节八个小节，含前置要求、安装、环境配置、数据库初始化、启动、验证、生产构建与常见问题）。
+- [x] 提供环境变量示例和启动前校验（`LT-048`；补全 `apps/server/.env.example` 缺失的 `MYSQL_CLI_PATH` 并为 6 项加用途注释；前置校验命令与端口占用检查写入 README 第 2.1.1 节）。
+- [x] 提供数据库初始化、迁移、种子和健康检查命令（`LT-048`；README 第 2.1.4 与 2.1.6 节，含一条式 `db:prepare`、四步分解命令与实测预期输出）。
 - [x] 完成前端生产构建验证（完成时间：2026-07-23 09:34:45 +08:00）。
 - [x] 完成后端生产构建和 `start` 验证（完成时间：2026-07-23 09:34:45 +08:00）。
 - [x] 提供实际 nginx 配置模板和生成入口（完成时间：2026-07-23 09:16:45 +08:00）。
@@ -866,7 +866,7 @@
 - [x] `LT-045`：完成第四轮阶段审计，统一 78/78/156/48/30 与 E6 31 基线，建立本队列（完成时间：2026-08-31 00:30:06 +08:00；证据见 `docs/execution/2026-08-29-lt045-fourth-round-audit.md` 第 6 节）。
 - [x] `LT-046`：为专项验证建立前后端固定契约一致性断言，逐一比对 scenarioKey、optionKey、recommendedPath 与信号常量，替换现有存在性检查，并在至少一个实验上验证其能捕获注入的不一致（完成时间：2026-08-31；交付 `tools/contracts/verify-fixed-contracts.ts`，17 组配对 153 项断言全通过并纳入 `pnpm verify`；注入 `LT-042` 原始缺陷值时精确捕获 `option-keys-registered` 与 `path-reaches-terminal` 两项失败，证明其对既有存在性检查漏判的缺陷有效；证据见 `docs/execution/2026-08-31-lt046-fixed-contract-assertions.md` 第 9 节）。
 - [x] `LT-047`：扩展契约断言覆盖面并记录既有不一致（完成时间：2026-08-31 09:40:00 +08:00；新增 `registered-signals-labeled` 断言，从工作台 option 收集全部注册信号（含中间步骤）并要求前端 `formatSignal` 有对应标签；**发现并修复 `LT-043` 遗留的真实缺陷**：`api.rate-limit-idempotency` 前端标签写成 `-batch-accepted`、服务端注册 `-unthrottled-accepted`，页面会把原始信号串显示给学习者；注入 `LT-042` 第五处缺陷验证断言有效；`pnpm verify` EXIT=0，契约 17 组配对 170 项断言；**范围按实测收窄**：原措辞"推广到全部专用实验"不可行，48 个专用实验中 17 个持有 `recommendedPath` 可做路径断言，`web.xss` 无 API 入口不存在跨端契约，其余实验的固定值经服务端函数判定且方法签名各异（`fetchResource` / `readOrder` / `verifyToken` / `readDocument` …），逐一写适配器会制造超过其防护价值的维护负担；详见 `docs/execution/2026-08-31-lt047-contract-coverage-expansion.md` 第 3 节）。
-- [ ] `LT-048`：补齐根 README 的从零安装与运行章节，提供环境变量示例与启动前校验，覆盖长期目标第 12.1 节三个未完成条目。
+- [x] `LT-048`：补齐根 README 的从零安装与运行章节，提供环境变量示例与启动前校验，覆盖长期目标第 12.1 节三个未完成条目（完成时间：2026-08-31；README 新增第 2.1 节；补全 `.env.example` 缺失的 `MYSQL_CLI_PATH`——该变量缺失时 MySQL 未入 PATH 会导致迁移直接失败；文中 13 个命令、2 个健康检查端点与 2 处引用路径均经脚本核对存在；`db:prepare` 预期输出经实测逐字确认；如实标注 pnpm 声明版本与 lockfileVersion 5.4 的矛盾并指向 `LT-050`；未新建根 `.env.example`，理由见执行文档 3.1；详见 `docs/execution/2026-08-31-lt048-readme-install-guide.md`）。
 - [ ] `LT-049`：建立数据库 schema、迁移与 Prisma 模型一致性检查，并补迁移状态检查与失败回滚说明（第 10.2、11 节）。
 - [ ] `LT-050`：建立依赖与版本治理基线，解决 `packageManager` 声明 10.0.0 与 `pnpm-lock.yaml` lockfileVersion 5.4 的矛盾，并建立版本检查与升级记录流程（第 12.3 节）。
 - [ ] `LT-051`：为平台状态页增加版本、构建信息、数据版本、目录一致性状态与最近验证摘要，禁止泄露秘密（第 7.5 节）。
@@ -952,3 +952,4 @@
 | `LT-044` | 2026-08-28 18:02:30 +08:00 | `host.persistence-triage` 固定 Windows 自启动/计划任务持久化时间线研判 case-study：两份冻结虚构持久化条目快照与五要素语义枚举、确定性审计计数纯函数、两步状态机、专用工作台/评估 API、脱敏事件摘要、前端 API/配置/视图/路由、标准实验目录七份文档、脚本目录与只读验证器；纳入 `test:controlled` 门禁与覆盖矩阵第 16 节 | 专项只读验证 19/19 `ok: true`；`pnpm verify` EXIT=0（前后端类型检查、shared 67、guided 30/30、controlled 6×`ok: true`、Web 入口 156/156、API 入口 207/207、实验路由 72/72、coverage 78/78、server 390/390、web 285/285）；固定计数经运行时实测锁定（风险条目 4 发现 / 2 关键风险 / 0 控制；加固条目 0 / 0 / 5）；case-study 变体保持 `supportsAutomation: false` 且无 `exploit.py`；**范围收窄**：原措辞中的文件/目录 ACL 与 NTLM/Kerberos 未实现，按规划文档推迟理由保留到后续队列；未运行 build、smoke、数据库集成或 Playwright |
 | `LT-046` | 2026-08-31 09:00:00 +08:00 | 建立 `tools/contracts/verify-fixed-contracts.ts` 前后端固定契约一致性验证器：同时 import 前端 labs 模块与服务端服务模块比对真实运行时值，断言 scenarioKey 相等、recommendedPath/normalPath 的每个 optionKey 均在服务端注册、固定路径能走到终止步骤而不被脱敏阻断；纳入根级门禁 `pnpm test:contracts` | 17 组配对、153 项断言全通过；**注入测试验证有效性**：将 `LT-042` 原始缺陷值（`fixed-kubernetes-rbac-binding-audit` 等 4 处错误 key）注入前端后，验证器精确报出 `option-keys-registered` 与 `path-reaches-terminal` 两项失败并 exit 1，注入前后既有 78 个专项 `verify.ts` 均全绿（证实旧存在性检查对该类缺陷无效）；`pnpm verify` EXIT=0（含新增 contracts 阶段、server 390/390、web 285/285） |
 | `LT-047` | 2026-08-31 09:39:14 +08:00 | 按实测重新界定契约断言推广范围并扩展检查维度：新增 `registered-signals-labeled` 断言，从工作台 option 收集服务端全部注册信号（含中间步骤信号，非仅顶层导出常量），逐一验证前端 `formatSignal` 是否具备对应中文标签；同时移除一版冗余检查（同名字符串常量比对，实测 17 个同名常量全部即 scenarioKey 本身，与既有 `scenario-key-equal` 重复，会虚增检查数而无实际覆盖） | 断言数由 153 增至 170（17 组配对各 +1）；`pnpm verify` EXIT=0（含 `test:contracts`，server 390/390、web 285/285）；**注入测试**：注入 `LT-042` 第五处缺陷（前端标签 `-wildcard-accepted` vs 服务端 `-cluster-wide-accepted`）后检查器 `ok:false` 并精确定位，首版仅扫描顶层 `*Signal` 导出时漏判，修正为从 option 收集后捕获；**发现真实缺陷**：`api.rate-limit-idempotency` 前端标签写作 `-batch-accepted` 而服务端注册 `-unthrottled-accepted`（`LT-043` 遗留，页面会向学习者显示原始信号串），已修复；**范围说明**：未按队列原文推广到全部 48 个专用实验——实测 `web.xss` 无 API 入口无跨端契约，另 27 个实验固定值经服务端函数判定且方法签名各异（`fetchResource`／`readOrder`／`readDocument` 等），逐一编写适配器将制造超过其防护价值的维护负担，故仅覆盖 17 组具备统一可比对面的配对，其余保留说明不做假装覆盖 |
+| `LT-048` | 2026-08-31 10:05:00 +08:00 | README 新增第 2.1 节「从零安装与运行」八个小节（前置要求与端口、安装、环境配置、数据库初始化、启动、验证、生产构建、常见问题）；补全 `apps/server/.env.example` 缺失的 `MYSQL_CLI_PATH` 并为全部 6 项加用途注释 | 核实 README 原本确无安装运行章节（10 节全览）、服务端实际读取 6 个环境变量而示例只列 5 个；文中 13 个命令（根级 9 + 服务端 filtered 4）、2 个健康检查端点、2 处引用路径均经脚本核对存在；`db:prepare` 实测 EXIT=0 且输出与文档所写四行逐字一致（14 分类 / 78 实验 / 156 变体）；如实标注 `packageManager: pnpm@10.0.0` 与 `lockfileVersion: 5.4` 的矛盾并指向 `LT-050`，未掩盖；未新建根 `.env.example`（前端配置为源码常量不经环境变量，再建会产生需双向同步的副本）；未在真正空环境重跑全流程，该验证由 `LT-041` 承担 |
