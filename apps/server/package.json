@@ -12,7 +12,8 @@
     "prisma:validate": "node ./scripts/prisma-validate.mjs",
     "schema:ensure": "node ./scripts/ensure-local-schema.mjs",
     "seed:auth": "node ./scripts/seed-auth-users.mjs",
-    "seed:labs": "tsx ./scripts/seed-lab-metadata.ts"
+    "seed:labs": "tsx ./scripts/seed-lab-metadata.ts",
+    "test:coverage": "node --import tsx --test --experimental-test-coverage --test-concurrency=4 tests/**/*.test.ts"
   },
   "dependencies": {
     "@network-safe/shared": "workspace:*",

@@ -6,7 +6,7 @@
 >
 > 当前基线：78 个安全学习实验（78 个 `ready`）
 >
-> 长期队列进度：51 / 52 已完成；`LT-046`～`LT-051` 已建立六项治理基线（契约一致性 170 项断言、数据库 schema 一致性 15 项检查、README 从零安装章节、只读 `pnpm db:status`、lockfile 与 pnpm 声明对齐、平台运行与目录一致性接口）；仅余 `LT-052` 测试覆盖率基线，见第 21.5 节
+> 长期队列进度：52 / 52 已完成；第四轮队列（`LT-045`～`LT-052`）全部收口，建立了契约一致性 170 项断言、数据库 schema 一致性 15 项检查、README 从零安装章节、只读 `pnpm db:status`、lockfile 与 pnpm 声明对齐、平台运行与目录一致性接口、覆盖率基线七项治理成果；下一轮需新建阶段目标
 
 ## 1. 文档定位
 
@@ -510,10 +510,10 @@
 - [x] 增加数据库 schema、迁移和代码模型一致性检查（`LT-049`；`pnpm test:db-schema` 比对 4 个迁移的 12 张表与 11 个 Prisma 模型的表名及列名，15 项检查，两类漂移经注入测试验证可捕获；只解析文本不连库，可在无 MySQL 环境运行）。
 - [x] 增加每个安全分类至少一条代表性端到端路径（`LT-031`）。
 - [x] 增加漏洞版、修复版和正常业务流程的三向回归（`LT-031`）。
-- [ ] 建立测试覆盖率基线，先观察再决定门禁阈值。
+- [x] 建立测试覆盖率基线，先观察再决定门禁阈值（`LT-052`；新增 `pnpm coverage:server`／`coverage:web`／`coverage`；首次基线为服务端 行 72.65%／分支 81.11%／函数 70.52%（394 测试），前端 行 31.01%／分支 79.11%／函数 58.94%（285 测试）；**按原文不设阈值**，并列出设阈值前需先回答的四个问题；不纳入 `pnpm verify`——无阈值时纳入只会拖慢验证而不产生判据）。
 - [ ] 增加依赖风险和秘密泄露检查。
 - [x] 增加 Windows 全新环境的可重复验收脚本（`LT-041`；`tools/release/test-nginx-runtime.ps1` 已改为动态实验计数，不再随基线变化腐化）。
-- [ ] 建立失败证据、日志位置和排障说明。
+- [x] 建立失败证据、日志位置和排障说明（`LT-052`；`docs/testing/coverage-baseline.md` 第 6 节列出 9 类验证的失败证据位置、四步排障顺序与 5 种已知环境类失败模式，含本切片实际踩到的 Prisma 客户端路径失效）。
 
 ## 11. 数据库和数据治理
 
@@ -870,7 +870,7 @@
 - [x] `LT-049`：建立数据库 schema、迁移与 Prisma 模型一致性检查，并补迁移状态检查与失败回滚说明（第 10.2、11 节）（完成时间：2026-08-31；交付 `tools/database/verify-schema-consistency.ts` 与只读 `pnpm db:status`；核实 12 表 vs 11 模型的差异为有意设计——`sql_injection_lab_products` 经 `$queryRaw` 直连以演示不安全拼接，已登记为例外而非放宽规则；两类漂移注入测试均精确捕获；只读性经实测确认（查询不存在的库后该库仍不存在）；详见 `docs/execution/2026-08-31-lt049-db-schema-consistency.md`）。
 - [x] `LT-050`：建立依赖与版本治理基线，解决 `packageManager` 声明 10.0.0 与 `pnpm-lock.yaml` lockfileVersion 5.4 的矛盾，并建立版本检查与升级记录流程（第 12.3 节）（完成时间：2026-08-31；**该矛盾的严重性此前被低估**：实测 pnpm 10 直接以 `ERR_PNPM_LOCKFILE_BREAKING_CHANGE` 拒绝 v5.4 lockfile，全新克隆无法安装、CI 对全新运行本已损坏；此前「corepack 可正常解析」的结论错误，只因 `node_modules` 已由 pnpm 7 装好而未暴露；已重建 lockfile 为 v9 并用 CI 相同命令验证全新安装成功（完整重建 252 个包）；处理 pnpm 10 构建脚本策略变更并显式登记 `onlyBuiltDependencies`；补齐 CI 缺失的 `test:contracts` 与 `test:db-schema` 两道门禁——此前 `LT-046`／`LT-047`／`LT-049` 的检查只在本地生效；纠正 `LT-048` 写入 README 的错误说明；详见 `docs/execution/2026-08-31-lt050-dependency-governance.md`）。
 - [x] `LT-051`：为平台状态页增加版本、构建信息、数据版本、目录一致性状态与最近验证摘要，禁止泄露秘密（第 7.5 节）（完成时间：2026-08-31；新增 `build-info.ts`、`GET /api/platform-info`、前端 API 客户端与状态页章节；服务端测试 390→394；「最近验证摘要」有意改为实时一致性状态，理由见执行文档第 3 节；迁移与种子状态未接入状态页——`pnpm db:status` 已提供该能力，但接入未登录可访问的 HTTP 端点需先决定是否加鉴权，留待单独评估；详见 `docs/execution/2026-08-31-lt051-platform-status-info.md`）。
-- [ ] `LT-052`：建立测试覆盖率基线与失败证据排障说明，先观察再决定门禁阈值（第 10.2 节）。
+- [x] `LT-052`：建立测试覆盖率基线与失败证据排障说明，先观察再决定门禁阈值（第 10.2 节）（完成时间：2026-08-31；交付 `docs/testing/coverage-baseline.md` 与三个覆盖率命令；服务端用 Node 22 内置 `--experimental-test-coverage` 无需新依赖，前端新增 `@vitest/coverage-v8@2.1.9`——本轮七个切片唯一新增依赖，仅开发期使用且版本与 vitest 精确对齐；**说明前端行覆盖率 31% 的真实原因**是约 50 个 `.vue` 组件文件为 0%（组件行为由 Playwright E6 覆盖但不计入 vitest 统计），避免被误读为前端测试质量差；详见 `docs/execution/2026-08-31-lt052-coverage-baseline.md`）。
 
 优先级说明：
 
@@ -956,3 +956,4 @@
 | `LT-049` | 2026-08-31 10:45:00 +08:00 | 两部分交付：①`tools/database/verify-schema-consistency.ts` 比对迁移 DDL、Prisma 模型与 `schema:ensure` 三方结构，纳入 `pnpm test:db-schema`；②`apply-migrations.mjs` 新增 `reportMigrationStatus()` 与只读 `--status` 模式，注册为 `pnpm db:status`；`database/README.md` 补迁移状态查询与失败回滚两节 | 一致性检查 15 项全通过（4 迁移 / 12 迁移表 / 11 Prisma 模型）；**两类注入测试均精确捕获**：模型增列而迁移无该列 → `columns-exist:users` 报 `last_login_ip`；新增模型无建表迁移 → `prisma-models-have-migration` 报 `UserNote(user_notes)`；恢复后全绿；12 表 vs 11 模型的差异经核实为有意设计（`sql_injection_lab_products` 经 `$queryRawUnsafe`/`$queryRaw` 直连以演示不安全拼接，原生查询无需 Prisma 模型），已登记为例外并写明理由；`db:status` 实测：真实库 `up-to-date` 4/4、真实凭据+不存在库名 `databaseExists: false`、**只读性确认**（查询后该库仍不存在）；`pnpm verify` EXIT=0（含新 `test:db-schema` 阶段、server 390/390、web 285/285）；局限：只校验表与列存在性，不校验列类型、长度与索引，类型漂移仍需人工复核 |
 | `LT-050` | 2026-08-31 11:00:00 +08:00 | 重建 `pnpm-lock.yaml` 为 `lockfileVersion: '9.0'` 与 `packageManager: pnpm@10.0.0` 对齐；`package.json` 新增 `pnpm.onlyBuiltDependencies` 显式登记 4 个需构建脚本的依赖；CI 补入 `test:contracts` 与 `test:db-schema` 两道门禁；纠正 `LT-048` 写入 README 的错误 pnpm 说明并简化 15 处命令前缀 | **修正此前的错误判断**：`LT-041`～`LT-049` 多次记录该矛盾不影响交付，依据是 corepack 可正常解析该 lockfile——实测为错，pnpm 10 以 `ERR_PNPM_LOCKFILE_BREAKING_CHANGE` 直接拒绝 v5.4，看起来正常只因 `node_modules` 早由 pnpm 7 装好；真实影响是全新克隆无法安装、CI（`pnpm/action-setup` 指定 10.0.0 后跑 `--frozen-lockfile`）对全新运行本已损坏；重建后用 CI 相同命令实测 `--frozen-lockfile` 成功（完整重建 252 个包，结论不受旧 node_modules 影响）；pnpm 10 默认跳过构建脚本，实测 tsx／esbuild 与 `prisma:generate` 均正常（Prisma 客户端由显式脚本生成、不依赖 postinstall）；依赖重建后 `pnpm verify` EXIT=0（含 contracts 170 断言、db-schema 15 项、server 390/390、web 285/285）；未改动任何依赖版本范围（`--lockfile-only` 按现有声明重解析，非升级） |
 | `LT-051` | 2026-08-31 11:05:00 +08:00 | 新增 `apps/server/src/config/build-info.ts`（只暴露版本／Node 版本／`APP_ENV` 标识／启动时间，兼容 `src` 与 `dist` 两种运行形态）；新增 `GET /api/platform-info` 三段返回 build／data／consistency；新增前端 `api/platform-info.ts` 与状态页「平台运行与数据状态」章节（含一致性徽标与异常明细）；新增 `apps/server/tests/platform-info.test.ts` | 端点实测 200，计数与其他门禁同源（78 实验／14 分类／156 变体／156 Web 入口／207 API 入口）；**一致性检查经注入测试验证**：把某启用变体 `entryKey` 改为未登记值后返回 `needs-attention` 且 `enabledVariantsWithoutEntry: 1`，恢复后回到 `consistent`；专用测试 4/4，其中一项专门扫描 8 类禁止模式并逐一确认真实环境变量取值未进入响应（该端点无需登录，秘密不泄露为硬性要求）；服务端测试 390→394，`pnpm verify` EXIT=0；**有意偏离**：原措辞的「最近验证时间」改为实时一致性状态——服务端无法诚实得知谁何时跑过 verify，伪造时间戳比不显示更糟 |
+| `LT-052` | 2026-08-31 11:15:00 +08:00 | 新增 `pnpm coverage:server`（Node 22 内置 `--experimental-test-coverage`，无新依赖）、`coverage:web`（新增 `@vitest/coverage-v8@2.1.9`）与 `coverage`；新增 `docs/testing/coverage-baseline.md` 记录测量方式、观测基线、阈值前置问题与失败排障说明 | 首次基线：服务端 394/394，行 72.65%／分支 81.11%／函数 70.52%；前端 285/285，行 31.01%／分支 79.11%／函数 58.94%；**按队列原文不设阈值**，并列出设阈值前需先回答的四个问题（其中关键一项是统计范围是否排除 `src/views/*.vue`——否则阈值实质由视图代码行数决定而非测试质量）；**说明前端 31% 的真实原因**：约 50 个 `.vue` 组件文件全部 0%，组件行为实际由 31 个实验的 Playwright E6 覆盖但不计入 vitest 统计，故分支 79.11% 与函数 58.94% 更能反映被测代码质量；覆盖率命令**不纳入 `pnpm verify`**（无阈值时纳入只拖慢验证不产生判据）；过程中新增依赖触发重装导致 Prisma 客户端路径哈希失效、服务端测试大面积失败，一度误判为覆盖率标志所致，经对照实验排除后以 `prisma:generate` 修复，该模式已写入排障文档；依赖新增后 `pnpm verify` EXIT=0 |
