@@ -206,6 +206,11 @@ model LabRecapQuestionCompletion {
   labKey        String    @map("lab_key") @db.VarChar(128)
   questionKey   String    @map("question_key") @db.VarChar(100)
   questionIndex Int       @map("question_index")
+  // LT-055 新增三列均可空：既有行保持 NULL，表示旧记录无知识点级作答语义。
+  // LT-056 聚合掌握度时只纳入 knowledgePoint 非空的行，避免旧位置态记录污染判定。
+  knowledgePoint    String?  @map("knowledge_point") @db.VarChar(120)
+  selectedOptionKey String?  @map("selected_option_key") @db.VarChar(100)
+  isCorrect         Boolean? @map("is_correct")
   isCompleted   Boolean   @default(true) @map("is_completed")
   completedAt   DateTime? @map("completed_at") @db.DateTime(0)
   createdAt     DateTime  @default(now()) @map("created_at") @db.DateTime(0)
@@ -214,5 +219,6 @@ model LabRecapQuestionCompletion {
 
   @@unique([userId, traceId, questionKey])
   @@index([userId, labKey, updatedAt])
+  @@index([userId, labKey, knowledgePoint], map: "lab_recap_question_completions_user_id_lab_key_knowledge_point_idx")
   @@map("lab_recap_question_completions")
 }

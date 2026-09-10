@@ -1,12 +1,21 @@
 # 长期目标执行进度
 
 - 总队列：100 项
-- 已完成：54 / 100（`LT-001`～`LT-054`）
-- 当前状态：第五轮 A 组进行中。`LT-054` 已定稿知识点级复盘模型五项口径（见 `docs/design/knowledge-point-recap-model.md`），下一项为 `LT-055` 数据库迁移。本轮主题是**验证学习是否真的发生**，分 A～E 五组：A 学习效果可验证、B 引导式第二版迁移、C 学习闭环补齐、D 深度证据体系、E 可维护性与第五轮审计。78 个实验全部 `ready`
-- 待验证：无（第四轮各项均经注入测试或实测验证，证据回填各自执行文档）
+- 已完成：55 / 100（`LT-001`～`LT-055`）
+- 当前状态：第五轮 A 组进行中。`LT-054` 定稿知识点级复盘模型（见 `docs/design/knowledge-point-recap-model.md`），`LT-055` 已落地三列迁移、Prisma、`schema:ensure` 补列与共享题目模型，下一项为 `LT-056` 掌握度判定服务与 API。本轮主题是**验证学习是否真的发生**，分 A～E 五组：A 学习效果可验证、B 引导式第二版迁移、C 学习闭环补齐、D 深度证据体系、E 可维护性与第五轮审计。78 个实验全部 `ready`
+- 待验证：`LT-055` 的数据库实跑（`pnpm db:migrate`、`schema:ensure` 旧库补列路径）与 `pnpm test:db-schema`、`typecheck` 均未执行，需用户授权后补做
 - 计数规则：只有实现、文档及约定验证全部完成并回填证据后，任务才计入已完成。
 
-# 2026-09-10 最新进展：LT-054 知识点级复盘模型定稿
+# 2026-09-10 最新进展：LT-055 复盘作答字段迁移
+
+- [x] 先写 `docs/execution/2026-09-10-lt055-recap-answer-migration.md`，记录目标、范围、步骤、风险、优化与验证方式后再实施。
+- [x] 新增幂等迁移 `20260910_add_recap_answer_fields.sql`：追加可空 `knowledge_point`／`selected_option_key`／`is_correct` 三列及掌握度聚合索引；不更新任何既有行。
+- [x] 同步 Prisma 模型与 `schema:ensure`。后者新建表时包含新列，既有表逐列、逐索引判存补齐，修复原脚本「表存在即跳过、无法补列」的结构缺口。
+- [x] 新增 `@network-safe/shared/recap-questions`：落地固定单选题、三态、稳定题目 key、恰好一个正确选项及提示不泄题的结构校验；题库内容仍留给 `LT-057`／`LT-059`。
+- [x] 静态核对迁移／Prisma／ensure 三方列名、空值、长度与索引一致；旧迁移未改写；`git diff --check` 通过。
+- [ ] **未执行**数据库迁移、`schema:ensure`、`test:db-schema`、`typecheck`、单元测试、E2E 与 build。当前完成结论限于实现与静态核对，数据库实跑待用户授权。
+
+# 2026-09-10 进展：LT-054 知识点级复盘模型定稿
 
 - [x] 完成 `docs/design/knowledge-point-recap-model.md`，定下五项口径：知识点标识复用 `meta.json` 原文（附完全相等判据）、题目为固定单选且恰好一个正确选项、一题恰好绑定一个知识点、掌握度三态按知识点跨 trace 取最新作答、`hint` 不得包含任一选项完整文案或正确选项 key。
 - [x] 识别并处理队列未写明的结构冲突：现有 `question_key` 是 `question-{index}`（位置绑定，服务端忽略前端 key，`lab-recap-question-completions.ts:67,183`），与新的题目身份 key 会混存同列。决策为既有行 `knowledge_point` 写 `NULL`、`LT-056` 聚合只纳入非 `NULL` 行，两条写入路径共表不共列语义。该决策须由 `LT-055` 执行文档显式承接。

@@ -6,7 +6,7 @@
 >
 > 当前基线：78 个安全学习实验（78 个 `ready`）
 >
-> 长期队列进度：54 / 100 已完成（`LT-001`～`LT-054`）；第四轮队列（`LT-045`～`LT-052`）全部收口，建立了契约一致性 170 项断言、数据库 schema 一致性 15 项检查、README 从零安装章节、只读 `pnpm db:status`、lockfile 与 pnpm 声明对齐、平台运行与目录一致性接口、覆盖率基线七项治理成果；`LT-053` 完成第五轮规划与队列建立，`LT-054` 定稿知识点级复盘模型五项口径
+> 长期队列进度：55 / 100 已完成（`LT-001`～`LT-055`）；第四轮队列（`LT-045`～`LT-052`）全部收口，建立了契约一致性 170 项断言、数据库 schema 一致性 15 项检查、README 从零安装章节、只读 `pnpm db:status`、lockfile 与 pnpm 声明对齐、平台运行与目录一致性接口、覆盖率基线七项治理成果；`LT-053` 完成第五轮规划与队列建立，`LT-054` 定稿知识点级复盘模型五项口径，`LT-055` 落地三列迁移与共享题目模型
 >
 > 当前进行中：第五轮队列（`LT-053`～`LT-100`，共 48 项，见第 21.7 节），主题为**验证学习是否真的发生**。四项实测发现：零个实验达到 D5、复盘题为 78 个实验共用的四道通用题且无正确答案、57 个实验（73%）不在任何学习路径中、30 个存量引导式场景未迁移至已在用的第二版模型
 
@@ -909,7 +909,7 @@
 #### A 组：学习效果可验证（LT-054～LT-060）
 
 - [x] `LT-054`：设计知识点级复盘模型（完成时间：2026-09-10；五项口径全部定稿，另识别并处理队列未写明的新旧 `question_key` 混存冲突；证据见 `docs/design/knowledge-point-recap-model.md` 第 10、11 节）。原口径：现有题目是无选项、无正确答案的纯字符串，因此本项是**从零建立可判对错的题目模型**，不是改进既有题库。须确定：知识点标识形式（复用 `meta.json` 的 `knowledgePoints` 原文而非另编 slug 体系——避免产生需双向同步的映射副本，`LT-042` 的缺陷正是此类漂移）、选项与正确答案的表示、题目与知识点的绑定结构、掌握度三态判定口径（`mastered`／`attempted`／`untouched`）。若引入提示字段，须同时定义「不得指向答案所在字段」的判据；该字段目前不存在，属新增而非修复。
-- [ ] `LT-055`：先写数据库迁移执行文档，再扩展 `lab_recap_question_completions`。现有表缺 `knowledge_point`、`selected_option_key`、`is_correct` 三列，`is_completed` 只能表示「点过」而无法区分答对与答错，掌握度因此无从判定。`is_correct` 对既有行须为 `NULL` 而非默认值——用 `NULL` 诚实表达「既有记录的正确性未知」，不用虚假的「答对」或「答错」掩盖。
+- [x] `LT-055`：扩展 `lab_recap_question_completions` 并同步 Prisma、`schema:ensure` 与共享复盘模型类型（完成时间：2026-09-10；三列均可空、既有行保持 `NULL`，迁移用 `information_schema` 守卫做成幂等，另补 `(user_id, lab_key, knowledge_point)` 掌握度聚合索引；**未连接数据库实跑迁移，未运行 `test:db-schema`、`typecheck` 与测试**；证据见 `docs/execution/2026-09-10-lt055-recap-answer-migration.md` 第 10 节）。原口径：现有表缺 `knowledge_point`、`selected_option_key`、`is_correct` 三列，`is_completed` 只能表示「点过」而无法区分答对与答错，掌握度因此无从判定。`is_correct` 对既有行须为 `NULL` 而非默认值——用 `NULL` 诚实表达「既有记录的正确性未知」，不用虚假的「答对」或「答错」掩盖。
 - [ ] `LT-056`：实现掌握度判定服务与 API。须处理跨 trace 归并：现有唯一键是 `(user_id, trace_id, question_key)`，同一知识点会在多次实验运行中重复作答，掌握度必须按知识点跨 trace 聚合而非按 trace 计数，并明确「先答错后答对」的口径。**验收硬性要求是「答错时确实判为未掌握」，不是「接口返回 200」**——这条来自 `LT-050` 用「脚本能跑」误判为「安装可复现」的教训。
 - [ ] `LT-057`：为首批 7 个同时满足「D4」与「已用第二版状态机」的专用实验建定制题库：`web.clickjacking`、`web.open-redirect`、`auth.credential-stuffing`、`auth.session-hijacking`、`auth.oauth`、`api.functional-authorization`、`business-logic.workflow-bypass`。选这批是因为它们已有完整三向路径与多步状态，出题素材充分；D2 场景的素材须等 B 组迁移后才具备。每道题须绑定该实验 `meta.json` 中真实存在的知识点。
 - [ ] `LT-058`：实现错误尝试后的防御性解释。只说明「为何危险」与「为何修复有效」，不输出可迁移的危险 payload。
