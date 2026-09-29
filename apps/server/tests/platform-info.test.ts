@@ -2,6 +2,10 @@ import assert from "node:assert/strict";
 import { after, test } from "node:test";
 
 import { createApp } from "../src/app.js";
+import {
+  createLabAvailabilityService,
+  type LabAvailabilityService,
+} from "../src/services/lab-availability.js";
 
 type PlatformInfoResponse = {
   status: string;
@@ -27,12 +31,32 @@ type PlatformInfoResponse = {
     labsMissingWebEntrypoint: string[];
     enabledVariantsWithoutEntry: number;
     inProgressLabs: number;
+    availabilitySource: string;
   };
   timestamp: string;
 };
 
-async function fetchPlatformInfo() {
-  const app = createApp();
+// 启停状态来源必须固定，否则本机数据库可用与否会改变一致性状态，
+// 让「目录一致」这条断言变成环境依赖。
+const databaseBackedAvailability: LabAvailabilityService =
+  createLabAvailabilityService(
+    { findLabAvailability: async () => [] },
+    { warn: () => {} },
+  );
+
+const fallbackAvailability: LabAvailabilityService = createLabAvailabilityService(
+  {
+    findLabAvailability: async () => {
+      throw new Error("database unavailable");
+    },
+  },
+  { warn: () => {} },
+);
+
+async function fetchPlatformInfo(
+  labAvailabilityService: LabAvailabilityService = databaseBackedAvailability,
+) {
+  const app = createApp({ labAvailabilityService });
   const server = app.listen(0);
   after(() => {
     server.close();
@@ -102,6 +126,7 @@ test("GET /api/platform-info reports directory consistency status", async () => 
   assert.ok(Array.isArray(body.consistency.labsMissingWebEntrypoint));
   assert.ok(Number.isInteger(body.consistency.enabledVariantsWithoutEntry));
   assert.ok(Number.isInteger(body.consistency.inProgressLabs));
+  assert.equal(body.consistency.availabilitySource, "database");
 
   // 当前仓库应为一致状态；若此断言失败说明真的出现了入口或状态漂移
   assert.equal(
@@ -109,6 +134,14 @@ test("GET /api/platform-info reports directory consistency status", async () => 
     "consistent",
     `目录一致性异常：${JSON.stringify(body.consistency)}`,
   );
+});
+
+test("GET /api/platform-info 在启停状态退化为元数据时标记 needs-attention", async () => {
+  const { body } = await fetchPlatformInfo(fallbackAvailability);
+
+  // 数据库不可用时启停配置失去强制力，必须显性暴露而不是静默放行
+  assert.equal(body.consistency.availabilitySource, "metadata-fallback");
+  assert.equal(body.consistency.status, "needs-attention");
 });
 
 test("GET /api/platform-info never leaks secrets or local paths", async () => {

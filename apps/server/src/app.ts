@@ -202,6 +202,13 @@ import {
 import { getBuildInfo } from "./config/build-info.js";
 import { createLabRegistry } from "./services/lab-registry.js";
 import {
+  buildLabAvailabilityView,
+  createLabAvailabilityService,
+  isLabEnabled,
+  isVariantEnabled,
+  type LabAvailabilityService,
+} from "./services/lab-availability.js";
+import {
   createLabRecordsService,
   LabRecordError,
   type LabRecordsService,
@@ -276,6 +283,7 @@ type DatabaseHealth = {
 type CreateAppOptions = {
   checkDatabaseHealth?: () => Promise<DatabaseHealth>;
   labRegistry?: ReturnType<typeof createLabRegistry>;
+  labAvailabilityService?: LabAvailabilityService;
   authService?: AuthService;
   labRecordsService?: LabRecordsService;
   bruteForceLabService?: BruteForceLabService;
@@ -368,6 +376,8 @@ function getErrorMessage(error: unknown) {
 export function createApp(options: CreateAppOptions = {}) {
   const app = express();
   const labRegistry = options.labRegistry ?? createLabRegistry();
+  const labAvailabilityService =
+    options.labAvailabilityService ?? createLabAvailabilityService();
   const authService = options.authService ?? createAuthService();
   const labRecordsService =
     options.labRecordsService ?? createLabRecordsService();
@@ -476,6 +486,60 @@ export function createApp(options: CreateAppOptions = {}) {
 
   app.use(express.json());
 
+  /**
+   * 变体停用拦截（管理端启停全链路生效的接口层）。
+   *
+   * Express 5 的 path-to-regexp 不支持 `:variant(vuln|fixed)` 这类参数内联正则，
+   * 因此按前缀挂载后在处理函数内判断取值，与既有兜底路由的写法一致。
+   *
+   * 只有 variant 为 vuln / fixed（变体接口）或 workbench（引导式工作台）才查库；
+   * learning-progress、verification-records、csrf/state 等路径会因取值不符直接放行，
+   * 不会被误拦。
+   */
+  app.use("/api/labs/:category/:scene/:variant", async (req, res, next) => {
+    try {
+      const variantKey = req.params.variant;
+
+      if (
+        variantKey !== "vuln" &&
+        variantKey !== "fixed" &&
+        variantKey !== "workbench"
+      ) {
+        next();
+        return;
+      }
+
+      const labKey = `${req.params.category}.${req.params.scene}`;
+      const snapshot = await labAvailabilityService.getSnapshot();
+
+      // 实验级停用需要连工作台一起拦，否则停用的实验仍能打开引导式页面
+      if (variantKey === "workbench") {
+        if (!isLabEnabled(snapshot, labKey)) {
+          res.status(403).json({
+            status: "error",
+            message: "lab disabled",
+          });
+          return;
+        }
+
+        next();
+        return;
+      }
+
+      if (!isVariantEnabled(snapshot, labKey, variantKey)) {
+        res.status(403).json({
+          status: "error",
+          message: "lab variant disabled",
+        });
+        return;
+      }
+
+      next();
+    } catch (error) {
+      next(error);
+    }
+  });
+
   app.get("/api/health", (_req, res) => {
     res.status(200).json({
       status: "ok",
@@ -564,6 +628,12 @@ export function createApp(options: CreateAppOptions = {}) {
         enabledVariantsWithoutEntry === 0 &&
         (statusCounts["in-progress"] ?? 0) === 0;
 
+      // 数据库不可用时启停状态退化为按元数据放行，这会削弱管理端配置的强制力，
+      // 因此必须在一致性状态里显性暴露，而不是静默放行。
+      const availabilitySnapshot = await labAvailabilityService.getSnapshot();
+      const availabilityDegraded =
+        availabilitySnapshot.source === "metadata-fallback";
+
       res.status(200).json({
         status: "ok",
         build: getBuildInfo(),
@@ -577,10 +647,14 @@ export function createApp(options: CreateAppOptions = {}) {
           modeCounts,
         },
         consistency: {
-          status: consistent ? "consistent" : "needs-attention",
+          status:
+            consistent && !availabilityDegraded
+              ? "consistent"
+              : "needs-attention",
           labsMissingWebEntrypoint,
           enabledVariantsWithoutEntry,
           inProgressLabs: statusCounts["in-progress"] ?? 0,
+          availabilitySource: availabilitySnapshot.source,
         },
         timestamp: getTimestamp(),
       });
@@ -6315,9 +6389,13 @@ export function createApp(options: CreateAppOptions = {}) {
   app.get("/api/labs", async (_req, res, next) => {
     try {
       const items = await labRegistry.listLabs();
+      const snapshot = await labAvailabilityService.getSnapshot();
 
       res.status(200).json({
-        items,
+        items: items.map((lab) => ({
+          ...lab,
+          availability: buildLabAvailabilityView(lab, snapshot),
+        })),
         total: items.length,
       });
     } catch (error) {
@@ -6337,7 +6415,12 @@ export function createApp(options: CreateAppOptions = {}) {
         return;
       }
 
-      res.status(200).json(lab);
+      const snapshot = await labAvailabilityService.getSnapshot();
+
+      res.status(200).json({
+        ...lab,
+        availability: buildLabAvailabilityView(lab, snapshot),
+      });
     } catch (error) {
       next(error);
     }
