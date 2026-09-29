@@ -5,8 +5,36 @@
 - 当前状态：第五轮 A 组进行中。`LT-054` 定稿知识点级复盘模型（见 `docs/design/knowledge-point-recap-model.md`），`LT-055` 已落地三列迁移、Prisma、`schema:ensure` 补列与共享题目模型，下一项为 `LT-056` 掌握度判定服务与 API。本轮主题是**验证学习是否真的发生**，分 A～E 五组：A 学习效果可验证、B 引导式第二版迁移、C 学习闭环补齐、D 深度证据体系、E 可维护性与第五轮审计。78 个实验全部 `ready`
 - 待验证：`LT-055` 的数据库实跑（`pnpm db:migrate`、`schema:ensure` 旧库补列路径）与 `pnpm test:db-schema`、`typecheck` 均未执行，需用户授权后补做
 - 计数规则：只有实现、文档及约定验证全部完成并回填证据后，任务才计入已完成。
+- 插队切片：独立管理端重建（不占 `LT` 编号），排在 `LT-056` 之前，执行文档见 `docs/execution/2026-09-16-admin-management-rebuild.md`。
 
-# 2026-09-10 最新进展：LT-055 复盘作答字段迁移
+# 2026-09-16 进展：插队切片 独立管理端重建（主项目侧 P1～P2 完成）
+
+- [x] P1 撤除旧 `/admin`：`AdminView.vue` 与旧执行文档删除；`App.vue`、`routes.ts`、`main.css`、`router.test.ts` 还原到 HEAD（四者 diff 均为纯新增，还原即精确撤除），`main.css` 回到 1165 行。`api/labs.ts` 中共享规范已确认的三个可选字段按文档保留。
+- [x] P2 主项目启停链路：新增 `services/lab-availability.ts`（快照 + 与元数据取与运算的可用性视图）；`/api/labs` 与 `/api/labs/:category/:scene` 返回 `availability`；新增变体拦截中间件（`:variant` 取值为 `vuln`/`fixed` 时按变体拦、为 `workbench` 时按实验拦，其余路径直接放行）；`/api/platform-info` 新增 `consistency.availabilitySource`，退化为 `metadata-fallback` 时置 `needs-attention`。
+- [x] 中间件按项目既有写法内联在 `app.ts`（与 `readLab`、`readCurrentUser` 同构），未新建 middleware 目录；执行文档原写的独立文件属规划期设想，实际以仓库惯例为准。
+- [x] 前台守卫：`router/lab-availability.ts` 提供纯函数与守卫工厂，`router/index.ts` 注册 `beforeEach`；停用变体重定向回详情页并带 `disabled` 查询参数；目录页不再给停用变体入口。**未新增路由**，`router.test.ts` 快照与 156 个入口门禁不受影响。
+- [x] 偏离说明（守卫数据来源）：执行文档 M8 原计划用 Pinia store 缓存可用性；实际改为每次进入变体页实时请求该实验的可用性，理由是缓存会让管理端停用延迟到下次刷新才生效。守卫失败时放行，与服务端 `metadata-fallback` 语义一致。
+- [x] 偏离说明（前端类型）：执行文档 M3 原计划在 `LabMetadata` 上新增必选的 `availability`。实际改为新增独立类型 `LabCatalogItem = LabMetadata & { availability }`，字段仍为必选；这样元数据类型保持纯粹，且不必改动三个构造 `LabMetadata` 夹具的既有测试。
+- [x] M6 种子语义：`lab-metadata-sync.ts` 的 `upsertLab`／`upsertVariant` 在 update 分支不再写 `isEnabled`，create 分支保留；仓储支持注入 Prisma 客户端，使该行为可被测试证明。
+- [x] M7 账号：`seed-auth-users.mjs` 的 admin 密码改为 `123456`；`docs/execution/2026-06-09-mysql-auth-account-flow.md` 同步；`2026-07-23-v1-windows-local-release-acceptance.md` 的扫描清单属历史证据，保留原文并加补注。
+- [x] 测试：新增 `apps/server/tests/lab-availability.test.ts`（15 例，含反向用例：`csrf/state`、`learning-progress`、`verification-records` 不被误拦）、`apps/web/tests/lab-availability.test.ts`（14 例，守卫与目录判定）、`lab-metadata-sync.test.ts` 增补 update 分支断言、`platform-info.test.ts` 新增降级用例并改为注入确定性快照。
+- [x] 验证证据：`pnpm typecheck:server` 通过，`test:server` 411/411；`pnpm typecheck:web` 退出码 0，`test:web:run` 299/299；`test:entrypoints`、`test:api-entrypoints`、`test:contracts`、`test:db-schema` 四项退出码均为 0；改完后重跑 `pnpm verify` 仍为退出码 0。
+- [x] **实跑中发现并修复主项目阻断级缺陷**：`LT-055` 的掌握度索引名 66 字符超过 MySQL 上限 64，导致 `pnpm db:migrate` 与 `schema:ensure` 双双失败。该缺陷因 `LT-055` 从未实跑数据库而被长期掩盖。已改名 `recap_completions_user_lab_knowledge_point_idx`（46 字符）并同步迁移／`schema:ensure`／Prisma 三处；随后 `db:migrate` 成功、`db:status` 为 `up-to-date`（5/5）、`schema:ensure` 与 `test:db-schema` 通过。
+- [x] 数据库实跑（原「待验证」项）：`pnpm db:migrate`、`schema:ensure`、`seed:auth`、`seed:labs` 均已执行成功，`LT-055` 的数据库实跑欠账已还清。
+- [x] P3～P6 新仓库 `E:\github\network-safe-management`：已完成，收口文档在新仓库 `docs/execution/2026-09-16-admin-management-closeout.md`。新仓库 `pnpm verify` 退出码 0（共享 3/3、服务端 36/36、前端 24/24、schema 漂移门禁含变异自检通过）；跨仓库 E2E 4/4 通过，实测停用后主站目录、前台入口、实验接口三层同时生效，重新启用后三层恢复。
+- [x] 实施中共发现两处阻断级问题并修掉：主项目索引名超长（见上）；Node `fetch` 按 Fetch 规范拦截坏端口，主站端口 6667 正在名单内，导致 E2E 探测与管理端「主站可达性」判断失效（后者是真实功能缺陷）。两处均已改为基于 `node:http` 的实现，并补测试锁定该约束。
+
+# 2026-09-16 进展：插队切片 独立管理端重建（规划阶段）
+
+- [x] 完成 `docs/execution/2026-09-16-admin-management-rebuild.md`：记录 13 项已确认决策、已读代码核实的事实基线、主项目 M1～M8 改动清单、新仓库结构与接口契约、设计系统、P0～P6 阶段步骤、风险、优化与验证方式。
+- [x] 核实过程中修正了两处先前的假设：`LabVariant` 没有 `slug` 与 `category`，管理端按 `labKey` + `variantKey` 定位；`/api/labs/web/csrf/fixed/token` 含字面量 `fixed` 段，会被变体中间件匹配，这是期望行为并已写入测试设计。
+- [x] 设计取舍：目录响应新增独立的 `availability` 字段，不覆写 `variant.enabled`，避免运行期启停污染元数据一致性判断。
+- [ ] P1 撤除旧 `/admin`：待实施。
+- [ ] P2 主项目启停链路（M2～M8）：待实施。
+- [ ] P3～P6 新仓库 `E:\github\network-safe-management`：待实施。
+- 验证方式：本阶段只有 Markdown 改动，**未执行 lint、类型检查、测试与 build**。
+
+# 2026-09-10 进展：LT-055 复盘作答字段迁移
 
 - [x] 先写 `docs/execution/2026-09-10-lt055-recap-answer-migration.md`，记录目标、范围、步骤、风险、优化与验证方式后再实施。
 - [x] 新增幂等迁移 `20260910_add_recap_answer_fields.sql`：追加可空 `knowledge_point`／`selected_option_key`／`is_correct` 三列及掌握度聚合索引；不更新任何既有行。
