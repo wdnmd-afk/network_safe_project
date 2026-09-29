@@ -1,0 +1,27 @@
+{
+  "name": "@nsm/admin-web",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "test": "vitest"
+  },
+  "dependencies": {
+    "@nsm/shared": "workspace:*",
+    "pinia": "3.0.4",
+    "vue": "3.5.42",
+    "vue-router": "4.6.4"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-vue": "5.2.4",
+    "@vitest/coverage-v8": "2.1.9",
+    "jsdom": "25.0.1",
+    "typescript": "5.9.3",
+    "vite": "5.4.21",
+    "vitest": "2.1.9",
+    "vue-tsc": "2.2.12"
+  }
+}

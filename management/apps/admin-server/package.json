@@ -1,0 +1,27 @@
+{
+  "name": "@nsm/admin-server",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "tsx watch src/index.ts",
+    "start": "tsx src/index.ts",
+    "build": "pnpm run prisma:generate && tsc --noEmit -p tsconfig.json",
+    "prisma:generate": "prisma generate --schema prisma/schema.prisma",
+    "prisma:validate": "prisma validate --schema prisma/schema.prisma",
+    "test": "node --import tsx --test --test-concurrency=1 tests/*.test.ts"
+  },
+  "dependencies": {
+    "@nsm/shared": "workspace:*",
+    "@prisma/client": "6.19.3",
+    "dotenv": "16.6.1",
+    "express": "5.2.1"
+  },
+  "devDependencies": {
+    "@types/express": "5.0.6",
+    "@types/node": "24.13.3",
+    "prisma": "6.19.3",
+    "tsx": "4.23.13",
+    "typescript": "5.9.3"
+  }
+}

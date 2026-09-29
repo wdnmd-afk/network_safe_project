@@ -1,0 +1,84 @@
+/**
+ * 管理端设计 token。
+ *
+ * 与主项目最大的区别：所有颜色只在这里定义一次，组件内禁止写死色值。
+ * 主项目 main.css 的教训是硬编码 hex 满地都是、且 --admin-* 定义在 .admin-page
+ * 作用域内却被外部类引用，因此这里统一挂在 :root。
+ *
+ * 配色来源：ui-ux-pro-max 推荐的 Data-Dense Dashboard 风格，
+ * 按需求把浅底反转为高级黑底 + 白字，强调色取冷银蓝。
+ *
+ * 字体：Fira Sans / Fira Code 仅在系统已安装时生效，否则回退到系统 UI 字体。
+ * 本仓库不内置字体文件二进制，如需固定字形请把 woff2 放进 public/fonts 并在此声明。
+ */
+
+:root {
+  /* 背景与层次 */
+  --bg: #0a0a0a;
+  --surface: #111111;
+  --surface-raised: #1a1a1a;
+  --border: #262626;
+  --border-strong: #333333;
+
+  /* 文字 */
+  --text: #fafafa;
+  --text-muted: #a3a3a3;
+  --text-faint: #737373;
+
+  /* 强调色：冷银蓝，只用于选中、链接与焦点环 */
+  --accent: #93c5fd;
+  --accent-soft: rgba(147, 197, 253, 0.14);
+
+  /* 主按钮：白底黑字 */
+  --primary-bg: #ffffff;
+  --primary-fg: #0a0a0a;
+
+  /* 语义色：只用于风险与结果状态，不作装饰 */
+  --danger: #f87171;
+  --danger-soft: rgba(248, 113, 113, 0.14);
+  --success: #4ade80;
+  --success-soft: rgba(74, 222, 128, 0.14);
+  --warning: #fbbf24;
+  --warning-soft: rgba(251, 191, 36, 0.14);
+
+  /* 间距 */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 24px;
+  --space-6: 32px;
+  --space-7: 48px;
+
+  /* 圆角 */
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+
+  /* 字体 */
+  --font-sans:
+    "Fira Sans", "Segoe UI", "Microsoft YaHei UI", "PingFang SC", system-ui,
+    sans-serif;
+  --font-mono: "Fira Code", "Cascadia Mono", Consolas, monospace;
+
+  /* 字号 */
+  --text-xs: 12px;
+  --text-sm: 13px;
+  --text-base: 14px;
+  --text-lg: 16px;
+  --text-xl: 20px;
+  --text-2xl: 26px;
+
+  /* 层叠顺序固定档位，避免出现 9999 之类的临时值 */
+  --z-sticky: 10;
+  --z-drawer: 20;
+  --z-dialog: 30;
+
+  --transition: 180ms ease;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --transition: 0ms;
+  }
+}

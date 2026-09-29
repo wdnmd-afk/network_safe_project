@@ -1,0 +1,208 @@
+// 管理端 Prisma schema。
+//
+// 这是主项目 database/schema/platform/schema.prisma 的**子集**，逐列复制，
+// 只保留管理端实际用到的模型，外加自有的 AdminAuditLog。
+//
+// 两个仓库共用同一个 MySQL 库，因此：
+//   1. 共享模型的字段定义必须与主项目逐列一致，由 tools/schema-drift 强制；
+//   2. 两个仓库各自维护独立的迁移记录表（主项目 network_safe_schema_migrations，
+//      本仓库 nsm_schema_migrations）；
+//   3. 管理端对主项目业务表只读，唯一写入例外是 labs.is_enabled 与
+//      lab_variants.is_enabled 两列。
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id                          BigInt                        @id @default(autoincrement()) @db.UnsignedBigInt
+  username                    String                        @unique @db.VarChar(64)
+  passwordHash                String                        @map("password_hash") @db.VarChar(255)
+  displayName                 String                        @map("display_name") @db.VarChar(100)
+  role                        String                        @db.VarChar(32)
+  status                      String                        @db.VarChar(32)
+  createdAt                   DateTime                      @default(now()) @map("created_at") @db.DateTime(0)
+  updatedAt                   DateTime                      @updatedAt @map("updated_at") @db.DateTime(0)
+  learningProgresses          LearningProgress[]
+  verificationRecords         VerificationRecord[]
+  labEventLogs                LabEventLog[]
+  labRecapQuestionCompletions LabRecapQuestionCompletion[]
+
+  @@map("users")
+}
+
+model LabCategory {
+  id          BigInt    @id @default(autoincrement()) @db.UnsignedBigInt
+  code        String    @unique @db.VarChar(64)
+  name        String    @db.VarChar(100)
+  description String    @db.VarChar(255)
+  sortOrder   Int       @default(0) @map("sort_order")
+  createdAt   DateTime  @default(now()) @map("created_at") @db.DateTime(0)
+  updatedAt   DateTime  @updatedAt @map("updated_at") @db.DateTime(0)
+  labs        Lab[]
+
+  @@map("lab_categories")
+}
+
+model Lab {
+  id                  BigInt               @id @default(autoincrement()) @db.UnsignedBigInt
+  labKey              String               @unique @map("lab_key") @db.VarChar(128)
+  slug                String               @unique @db.VarChar(128)
+  title               String               @db.VarChar(255)
+  categoryId          BigInt               @map("category_id") @db.UnsignedBigInt
+  subcategoryCode     String               @map("subcategory_code") @db.VarChar(128)
+  mode                String               @db.VarChar(32)
+  severity            String               @db.VarChar(32)
+  difficulty          String               @db.VarChar(32)
+  summary             String               @db.VarChar(500)
+  status              String               @db.VarChar(32)
+  phase               String               @db.VarChar(32)
+  sortOrder           Int                  @default(0) @map("sort_order")
+  estimatedMinutes    Int                  @default(0) @map("estimated_minutes")
+  metaVersion         Int                  @default(1) @map("meta_version")
+  metaPath            String               @map("meta_path") @db.VarChar(255)
+  readmePath          String               @map("readme_path") @db.VarChar(255)
+  rootPath            String               @map("root_path") @db.VarChar(255)
+  isEnabled           Boolean              @default(true) @map("is_enabled")
+  createdAt           DateTime             @default(now()) @map("created_at") @db.DateTime(0)
+  updatedAt           DateTime             @updatedAt @map("updated_at") @db.DateTime(0)
+  category            LabCategory          @relation(fields: [categoryId], references: [id], onUpdate: Cascade)
+  variants            LabVariant[]
+  learningProgresses  LearningProgress[]
+  verificationRecords VerificationRecord[]
+  labEventLogs        LabEventLog[]
+
+  @@index([categoryId, sortOrder])
+  @@index([status, isEnabled])
+  @@map("labs")
+}
+
+model LabVariant {
+  id                 BigInt   @id @default(autoincrement()) @db.UnsignedBigInt
+  labId              BigInt   @map("lab_id") @db.UnsignedBigInt
+  variantKey         String   @map("variant_key") @db.VarChar(32)
+  title              String   @db.VarChar(100)
+  description        String   @db.VarChar(255)
+  entryKey           String   @map("entry_key") @db.VarChar(100)
+  expectedOutcome    String   @map("expected_outcome") @db.VarChar(255)
+  supportsAutomation Boolean  @default(false) @map("supports_automation")
+  isEnabled          Boolean  @default(true) @map("is_enabled")
+  createdAt          DateTime @default(now()) @map("created_at") @db.DateTime(0)
+  updatedAt          DateTime @updatedAt @map("updated_at") @db.DateTime(0)
+  lab                Lab      @relation(fields: [labId], references: [id], onUpdate: Cascade)
+
+  @@unique([labId, variantKey])
+  @@map("lab_variants")
+}
+
+model LearningProgress {
+  id                BigInt    @id @default(autoincrement()) @db.UnsignedBigInt
+  userId            BigInt    @map("user_id") @db.UnsignedBigInt
+  labId             BigInt    @map("lab_id") @db.UnsignedBigInt
+  currentVariantKey String    @map("current_variant_key") @db.VarChar(32)
+  status            String    @db.VarChar(32)
+  startedAt         DateTime? @map("started_at") @db.DateTime(0)
+  lastViewedAt      DateTime? @map("last_viewed_at") @db.DateTime(0)
+  completedAt       DateTime? @map("completed_at") @db.DateTime(0)
+  notes             String?   @db.Text
+  createdAt         DateTime  @default(now()) @map("created_at") @db.DateTime(0)
+  updatedAt         DateTime  @updatedAt @map("updated_at") @db.DateTime(0)
+  user              User      @relation(fields: [userId], references: [id], onUpdate: Cascade)
+  lab               Lab       @relation(fields: [labId], references: [id], onUpdate: Cascade)
+
+  @@unique([userId, labId])
+  @@index([userId, status])
+  @@map("learning_progress")
+}
+
+model VerificationRecord {
+  id               BigInt    @id @default(autoincrement()) @db.UnsignedBigInt
+  userId           BigInt?   @map("user_id") @db.UnsignedBigInt
+  labId            BigInt    @map("lab_id") @db.UnsignedBigInt
+  variantKey       String    @map("variant_key") @db.VarChar(32)
+  verificationType String    @map("verification_type") @db.VarChar(32)
+  result           String    @db.VarChar(32)
+  summary          String    @db.VarChar(255)
+  detailsJson      Json?     @map("details_json")
+  triggeredBy      String    @map("triggered_by") @db.VarChar(32)
+  createdAt        DateTime  @default(now()) @map("created_at") @db.DateTime(0)
+  user             User?     @relation(fields: [userId], references: [id], onUpdate: Cascade)
+  lab              Lab       @relation(fields: [labId], references: [id], onUpdate: Cascade)
+
+  @@index([labId, variantKey, verificationType, createdAt])
+  @@index([userId, createdAt])
+  @@map("verification_records")
+}
+
+model LabEventLog {
+  id               BigInt   @id @default(autoincrement()) @db.UnsignedBigInt
+  traceId          String   @map("trace_id") @db.VarChar(64)
+  userId           BigInt?  @map("user_id") @db.UnsignedBigInt
+  labId            BigInt?  @map("lab_id") @db.UnsignedBigInt
+  labKey           String   @map("lab_key") @db.VarChar(128)
+  variantKey       String   @map("variant_key") @db.VarChar(32)
+  phase            String   @db.VarChar(32)
+  eventType        String   @map("event_type") @db.VarChar(64)
+  actorPerspective String   @map("actor_perspective") @db.VarChar(32)
+  method           String   @db.VarChar(16)
+  path             String   @db.VarChar(255)
+  inputSummaryJson Json?    @map("input_summary_json")
+  decision         String   @db.VarChar(32)
+  signal           String   @db.VarChar(100)
+  statusCode       Int      @map("status_code")
+  message          String   @db.VarChar(500)
+  riskLevel        String   @map("risk_level") @db.VarChar(32)
+  createdAt        DateTime @default(now()) @map("created_at") @db.DateTime(0)
+  user             User?    @relation(fields: [userId], references: [id], onDelete: SetNull, onUpdate: Cascade)
+  lab              Lab?     @relation(fields: [labId], references: [id], onDelete: SetNull, onUpdate: Cascade)
+
+  @@index([traceId])
+  @@index([userId, createdAt])
+  @@index([labKey, variantKey, createdAt])
+  @@map("lab_event_logs")
+}
+
+model LabRecapQuestionCompletion {
+  id                BigInt    @id @default(autoincrement()) @db.UnsignedBigInt
+  userId            BigInt    @map("user_id") @db.UnsignedBigInt
+  traceId           String    @map("trace_id") @db.VarChar(64)
+  labKey            String    @map("lab_key") @db.VarChar(128)
+  questionKey       String    @map("question_key") @db.VarChar(100)
+  questionIndex     Int       @map("question_index")
+  knowledgePoint    String?   @map("knowledge_point") @db.VarChar(120)
+  selectedOptionKey String?   @map("selected_option_key") @db.VarChar(100)
+  isCorrect         Boolean?  @map("is_correct")
+  isCompleted       Boolean   @default(true) @map("is_completed")
+  completedAt       DateTime? @map("completed_at") @db.DateTime(0)
+  createdAt         DateTime  @default(now()) @map("created_at") @db.DateTime(0)
+  updatedAt         DateTime  @updatedAt @map("updated_at") @db.DateTime(0)
+  user              User      @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+
+  @@unique([userId, traceId, questionKey])
+  @@index([userId, labKey, updatedAt])
+  // 索引名 46 字符：MySQL 标识符上限 64，原 66 字符名会让建表直接失败
+  @@index([userId, labKey, knowledgePoint], map: "recap_completions_user_lab_knowledge_point_idx")
+  @@map("lab_recap_question_completions")
+}
+
+/// 管理端自有表，不由主项目读写。
+/// 刻意不对 users 建外键：登录失败时没有确定的用户，且不让管理端反向约束主项目表。
+model AdminAuditLog {
+  id          BigInt   @id @default(autoincrement()) @db.UnsignedBigInt
+  adminUserId BigInt?  @map("admin_user_id") @db.UnsignedBigInt
+  action      String   @db.VarChar(64)
+  targetType  String   @map("target_type") @db.VarChar(32)
+  targetKey   String   @map("target_key") @db.VarChar(160)
+  beforeJson  Json?    @map("before_json")
+  afterJson   Json?    @map("after_json")
+  createdAt   DateTime @default(now()) @map("created_at") @db.DateTime(0)
+
+  @@index([createdAt])
+  @@index([action, createdAt])
+  @@map("admin_audit_logs")
+}
