@@ -33,7 +33,10 @@
 - `tools/lab-scripts/`：按场景组织的实验脚本与验证资源
 - `database/`：数据库结构、种子与场景数据
 - `docs/`：设计、执行、测试、场景文档
+- `management/`：管理端（嵌套的独立 pnpm workspace），用于配置实验启停与查看学习过程
 - `nginx/`：本机部署配置
+
+`management/` 的特殊约定：它不是本仓库 workspace 的成员，自带 `pnpm-workspace.yaml` 与锁文件，依赖在该子目录下单独安装；它对主项目业务表只读（唯一写入例外是 `labs.is_enabled` 与 `lab_variants.is_enabled`），并且**禁止**在其下执行 `prisma migrate dev` 或 `prisma db push`（会按子集 schema 改动主项目结构）。详细边界见 `management/AGENTS.md`。
 
 禁止将实验脚本、样本文件、自动化验证文件随意散落在业务目录中。
 
@@ -182,6 +185,7 @@ tools/lab-scripts/<category>/<scene>/
   - `scripts`
   - `database`
   - `docs`
+  - `management`
   - `nginx`
 - `subject` 使用中文，简短说明本次提交做了什么，不以句号结尾。
 - 单次提交应尽量保持主题单一；跨模块提交必须是同一条完整链路，不得混入无关修改。

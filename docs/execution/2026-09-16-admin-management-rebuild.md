@@ -1,6 +1,6 @@
 # 独立管理端重建执行文档
 
-> 文档状态：P0～P6 全部完成，三层测试与跨仓库 E2E 均已实跑通过（证据见第 10.6 节与新仓库 `docs/execution/2026-09-16-admin-management-closeout.md`）
+> 文档状态：P0～P6 全部完成，三层测试与全链路 E2E 均已实跑通过（证据见第 10.6 节，管理端收口文档见 `management/docs/execution/2026-09-16-admin-management-closeout.md`）
 >
 > 建立时间：2026-09-16
 >
@@ -8,11 +8,11 @@
 >
 > 队列位置：插队到 `LT-056` 之前，不重排 `LT-053`～`LT-100` 既有编号
 >
-> 涉及仓库：主项目 `E:\github\network_safe_project` + 新建 `E:\github\network-safe-management`
+> 代码位置：主仓库 `E:\github\network_safe_project` + 其子目录 `management/`（决策在实施后发生过变更，见 10.7 节）
 
 ## 1. 目标
 
-建立独立仓库 `network-safe-management`（monorepo），作为本机学习平台的真管理端，具备权限边界与写操作能力：
+在主仓库的子目录 `management/` 下建立一个独立 pnpm workspace（monorepo），作为本机学习平台的真管理端，具备权限边界与写操作能力：
 
 - 管理员可查看跨用户的攻防事件日志，并按 `traceId` 还原完整攻防链路。
 - 管理员可启停实验与变体，停用后主站**目录、实验接口、前台页面三层同时生效**。
@@ -25,7 +25,7 @@
 | 决策项 | 结论 | 来源 |
 |---|---|---|
 | 定位 | 真管理端，有权限边界，有写操作 | 用户选择 |
-| 仓库 | 新建 `E:\github\network-safe-management`，不嵌入主项目 | 用户明确要求 |
+| 代码位置 | 主仓库子目录 `management/`，自带 `pnpm-workspace.yaml`，与主仓库 workspace 互不包含 | 规划期为「新建独立仓库」，实施后由用户改为子目录，见 10.7 |
 | 数据 | `admin-server` 直连主项目同一 MySQL；主项目 server 不新增任何 `/admin` 接口 | 用户选择「独立后端直连同库」 |
 | 功能 | 总览、事件审计、实验目录配置、用户学习过程（只读） | 用户选择 |
 | 账号 | 仅一个 `admin`，密码 `123456`，由主项目 `seed-auth-users.mjs` 维护；管理端对 `users` 表只读 | 用户明确要求 |
@@ -76,7 +76,7 @@
 
 ### 3.4 版本基线（取自 `pnpm-lock.yaml` 实际解析版本）
 
-新仓库依赖**逐一对齐**下列版本，使用精确版本号，不用 `^`：
+管理端依赖**逐一对齐**下列版本，使用精确版本号，不用 `^`：
 
 | 包 | 版本 |
 |---|---|
@@ -207,11 +207,11 @@ availability: {
 - **不新增任何路由**，因此 `router.test.ts` 快照与 156 个入口门禁均不受影响。
 - 实施前需先读 `LabsView.vue` 与 `LabDetailView.vue` 的变体渲染位置，确认目录层禁用态的准确插入点，不得凭猜测改模板。
 
-### 4.3 新仓库结构
+### 4.3 管理端结构（主仓库 `management/` 子目录）
 
 ```text
-network-safe-management/
-├─ AGENTS.md                      项目级协作规则，声明「对主项目表只读，唯一例外是两列 is_enabled」
+management/
+├─ AGENTS.md                      子目录级协作规则，声明「对主项目表只读，唯一例外是两列 is_enabled」
 ├─ README.md                      安装、启动、端口、账号、与主项目的关系
 ├─ package.json                   根脚本：dev / build / test / typecheck / verify / db:migrate
 ├─ pnpm-workspace.yaml            packages: apps/*, packages/*
@@ -221,21 +221,21 @@ network-safe-management/
 │  │  ├─ src/{api,components,modules,router,stores,styles,views}/
 │  │  └─ tests/
 │  └─ admin-server/               Express + Prisma，端口 6681，仅监听 127.0.0.1
-│     ├─ src/{lib,middleware,services,routes}/
+│     ├─ src/{lib,services}/
 │     ├─ prisma/schema.prisma
 │     └─ tests/
 ├─ packages/
-│  └─ shared/                     接口契约类型、枚举、分页结构（前后端同一份）
+│  ├─ shared/                     接口契约类型、枚举、分页结构（前后端同一份）
+│  └─ testing/                    Playwright E2E，自动拉起两侧四个进程
 ├─ database/
 │  ├─ migrations/20260916_add_admin_audit_logs.sql
 │  └─ scripts/apply-migrations.mjs     迁移记录表 nsm_schema_migrations
 ├─ tools/
 │  └─ schema-drift/verify-schema-drift.ts
-├─ tests/e2e/                     Playwright
 └─ docs/{execution,design,testing}/
 ```
 
-`pnpm-workspace.yaml` 只声明 `apps/*` 与 `packages/*`；`tools/` 与 `database/` 不是 workspace 包，脚本由根 `package.json` 用 `tsx` / `node` 直接执行，与主项目 `tools/` 的做法一致。
+`pnpm-workspace.yaml` 只声明 `apps/*` 与 `packages/*`；`tools/` 与 `database/` 不是 workspace 包，脚本由根 `package.json` 用 `tsx` / `node` 直接执行，与主项目 `tools/` 的做法一致。该子目录自带 lock 文件，依赖需在 `management/` 下单独 `pnpm install`。
 
 ### 4.4 权限模型
 
@@ -356,9 +356,9 @@ CREATE TABLE admin_audit_logs (
 | P2b | M4 变体中间件 + M5 platform-info 告警 + 测试 | 主项目 | `feat(server): 新增变体停用拦截与可用性告警` |
 | P2c | M6 种子 + M7 密码 + 文档同步 | 主项目 | `chore(server): 种子不再覆盖启停状态并调整管理员密码` |
 | P2d | M8 前台守卫 + 前端测试 | 主项目 | `feat(web): 停用变体的前台入口拦截` |
-| P3 | 新仓库骨架、`AGENTS.md`、shared 契约、`admin_audit_logs` 迁移、漂移门禁 | 新仓库 | `chore(root): 初始化管理端 monorepo 骨架` |
-| P4 | admin-server 全部接口 + API 测试 | 新仓库 | `feat(admin-server): 落地管理端接口与权限门禁` |
-| P5 | admin-web token、布局壳、组件、页面、模块单测 | 新仓库 | `feat(admin-web): 落地管理端工作台页面` |
+| P3 | 管理端骨架、`AGENTS.md`、shared 契约、`admin_audit_logs` 迁移、漂移门禁 | 管理端 | `chore(root): 初始化管理端 monorepo 骨架` |
+| P4 | admin-server 全部接口 + API 测试 | 管理端 | `feat(admin-server): 落地管理端接口与权限门禁` |
+| P5 | admin-web token、布局壳、组件、页面、模块单测 | 管理端 | `feat(admin-web): 落地管理端工作台页面` |
 | P6 | E2E 全链路；收口文档回填验证证据 | 两侧 | `test(root): 补齐管理端全链路验证证据` |
 
 每阶段单独提交，遵循 Conventional Commits。P2 四个子阶段可分别验证，避免一次性改动过大难以定位问题。
@@ -367,7 +367,7 @@ CREATE TABLE admin_audit_logs (
 
 - P2a 与 P2b 之间不要合并提交：目录合并是只读改动，中间件是拦截改动，风险等级不同。
 - M8 实施前必须先读 `LabsView.vue`、`LabDetailView.vue` 的变体渲染代码，确认禁用态插入点。按字段规则，不得凭猜测改模板。
-- 新仓库的 Prisma 模型逐列复制主项目，复制完立刻写漂移门禁，先让门禁跑通再写接口，避免先写一堆接口才发现字段名对不上。
+- 管理端的 Prisma 模型逐列复制主项目，复制完立刻写漂移门禁，先让门禁跑通再写接口，避免先写一堆接口才发现字段名对不上。
 - 漂移门禁写完后必须做一次**注入测试**：故意改一个列名或可空性，确认门禁失败；然后改回。这条是 `LT-046` 首版门禁漏判留下的纪律。
 - 管理端服务端每个接口先写 401 / 403 / 200 三条测试再写实现，权限是这轮的核心边界。
 - 脱敏断言不要写成「检查某个字段不等于某值」，要写成「响应体 JSON 序列化后不包含 `inputSummaryJson`、`passwordHash`、`method`、`path` 这些 key」，这样新增字段时也能兜住。
@@ -376,7 +376,7 @@ CREATE TABLE admin_audit_logs (
 
 | 风险 | 影响 | 处理 |
 |---|---|---|
-| 两仓库共库，schema 漂移导致管理端读写错误 | 高 | 漂移门禁逐列比对并做注入测试；管理端对主项目表只读，唯一例外是两列 `is_enabled` |
+| 管理端与主项目共库，schema 漂移导致管理端读写错误 | 高 | 漂移门禁逐列比对并做注入测试；管理端对主项目表只读，唯一例外是两列 `is_enabled` |
 | admin 密码 `123456` 且可读全部事件日志 | 高 | `admin-server` 仅监听 `127.0.0.1`，host 不是回环地址则拒绝启动；独立 token 密钥；README 写明该账号不得用于任何非本机环境 |
 | 主项目 `/api/labs` 从纯磁盘改为依赖数据库 | 中 | 库不可用时按 `meta.json` 放行并告警，学习平台保持可用；`platform-info` 标记 `needs-attention` 让状态可见 |
 | 每个实验请求多一次查库 | 低 | 本机单用户；查询走 `labKey` 唯一索引；本轮不加缓存以保证停用立即生效 |
@@ -387,7 +387,7 @@ CREATE TABLE admin_audit_logs (
 | 主项目 `LT-055` 迁移尚未实跑 | 中 | P3 前需用户授权执行 `pnpm db:migrate`、`schema:ensure`、`seed:auth`、`seed:labs` |
 | 撤除 `main.css` 中 `.decision-*` 影响 `PlatformStatusView` | 低 | 该视图有 scoped 覆盖；删除后逐项确认渲染不变 |
 | `Admin@123456` 出现在发布验收文档的凭据扫描清单中 | 低 | M7 同步更新该清单的扫描目标，否则清单失效 |
-| `learning-paths-search-statistics.md` 的「不另起入口」原则 | 低 | 本轮管理端是独立仓库，未在主站另起入口；在该设计文档补一条说明 |
+| `learning-paths-search-statistics.md` 的「不另起入口」原则 | 低 | 本轮管理端是主仓库子目录，未在主站另起入口；在该设计文档补一条说明 |
 | 旧 `/admin` 撤除后用户已有书签失效 | 低 | 本机个人平台，无需重定向兼容 |
 
 ## 8. 优化方案（本轮不做，记录以便后续）
@@ -412,7 +412,7 @@ CREATE TABLE admin_audit_logs (
 | 前台守卫纯逻辑 | 启用放行；停用重定向并带 `disabled` query；非实验路由不处理；可用性数据缺失时放行 |
 | 既有门禁 | `router.test.ts` 恢复原快照；`test:entrypoints`、`test:api-entrypoints`、`test:contracts` 全部通过 |
 
-### 9.2 新仓库测试设计
+### 9.2 管理端测试设计
 
 | 层 | 用例 |
 |---|---|
@@ -430,8 +430,8 @@ CREATE TABLE admin_audit_logs (
 | P1 / P2 各子阶段 | `pnpm typecheck`、`pnpm test:server`、`pnpm test:web:run` | 主项目回归 |
 | P2 收尾 | `pnpm test:entrypoints`、`pnpm test:api-entrypoints`、`pnpm test:contracts` | 确认未破坏既有门禁 |
 | P3 前 | `pnpm db:migrate`、`pnpm --filter @network-safe/server schema:ensure`、`seed:auth`、`seed:labs`、`pnpm test:db-schema` | **写数据库**，含 `LT-055` 未实跑的迁移 |
-| P3 | 新仓库 `pnpm install`、`pnpm db:migrate` | 安装依赖与建 `admin_audit_logs` 表 |
-| P4 / P5 | 新仓库 `pnpm typecheck`、`pnpm test` | — |
+| P3 | 管理端 `pnpm install`、`pnpm db:migrate` | 安装依赖与建 `admin_audit_logs` 表 |
+| P4 / P5 | 管理端 `pnpm typecheck`、`pnpm test` | — |
 | P6 | 两侧 `pnpm test:e2e` | 需同时启动主站与管理端 |
 
 ## 10. 实施实录与偏离说明
@@ -495,14 +495,36 @@ MySQL 执行失败：ERROR 1059 (42000) at line 76: Identifier name
 | 迁移结构一致性 | `pnpm test:db-schema` | 退出码 0 |
 | 主项目全量门禁 | `pnpm verify` | 退出码 0 |
 | 数据库准备 | `pnpm db:migrate` + `schema:ensure` + `seed:auth` + `seed:labs` | 全部成功，`db:status` 为 up-to-date |
+| 管理端全量门禁 | `management/` 下 `pnpm verify` | 退出码 0（共享 3/3、服务端 36/36、前端 24/24、漂移门禁含变异自检） |
+| 全链路 E2E | `management/` 下 `pnpm test:e2e` | 4/4 通过 |
+
+### 10.7 决策变更：独立仓库改为主仓库子目录
+
+**变更时间**：2026-09-16，P0～P6 全部实施完成之后。
+
+**原决策**：新建独立仓库 `E:\github\network-safe-management`，规划期用户明确要求「不要嵌入当前项目」。
+
+**变更后**：管理端代码放在主仓库子目录 `management/`，不单独建 GitHub 仓库。触发原因来自用户的新指示：「直接在这个文件夹下创建 management 文件夹就可以了啊 不用另外建立仓库」——主仓库已有远端，子目录随主仓库一起推送即可，省掉一个仓库。
+
+**影响与处理**：
+
+| 影响 | 处理 |
+|---|---|
+| 原独立仓库的 7 个提交历史 | 删除其 `.git`，管理端作为主仓库的一次提交进入历史。**提交粒度这一项不再保留**，内容与全部测试证据不受影响 |
+| 跨目录路径解析 | 三处改为指向上级目录：`tools/schema-drift`、`packages/shared/tests/contract.test.ts`、`packages/testing/src/runtime.mjs`。均保留 `NSP_ROOT` 覆盖入口 |
+| 嵌套 workspace | `management/` 自带 `pnpm-workspace.yaml` 与 lock；主仓库 workspace 的 globs（`apps/*`、`packages/*`）不含它，因此依赖必须在 `management/` 下单独 `pnpm install` |
+| 文档表述 | README、AGENTS.md、收口文档与本文件同步改为「主仓库子目录」；「跨仓库」改为「全链路」 |
+| 原决策理由 | 「不嵌入主项目」的初衷（避免管理端污染学习平台）仍由别的机制保证：管理端是嵌套 workspace、独立进程、独立端口，主项目 server 不新增任何 `/admin` 接口，且对主项目表只读 |
+
+**验证**：移动后重装依赖、重新 `prisma:generate`、`management/` 下 `pnpm verify` 退出码 0；schema 漂移门禁已正确解析到 `../database/schema/platform/schema.prisma`（即主项目 schema）。
 
 ## 11. 完成标准
 
 - [x] 主项目旧 `/admin` 已完全撤除，`router.test.ts` 恢复原快照，`main.css` 净增量接近 0（回到 1165 行）。
-- [x] 停用一个变体后，目录、接口、前台三层同时生效；重新启用后三层同时恢复（由新仓库 E2E 实测，见收口文档 2.2 节）。
+- [x] 停用一个变体后，目录、接口、前台三层同时生效；重新启用后三层同时恢复（由管理端 E2E 实测，见收口文档 2.2 节）。
 - [x] 数据库不可用时主站仍可用，平台状态页显示 `needs-attention` 与 `availabilitySource`（由 `platform-info.test.ts` 降级用例覆盖）。
 - [x] `seed:labs` 重跑不覆盖管理端配置（由 `lab-metadata-sync.test.ts` 的 update 分支断言覆盖）。
-- [x] 新仓库四个模块可用；只有 `admin` 能访问；每次写操作都有审计记录。
+- [x] 管理端四个模块可用；只有 `admin` 能访问；每次写操作都有审计记录。
 - [x] 三层测试与 schema 漂移门禁通过，漂移门禁已完成变异自检。
 - [x] 主项目既有门禁（`test:entrypoints`、`test:api-entrypoints`、`test:contracts`、`test:db-schema`）全部通过，`pnpm verify` 退出码 0。
 - [x] 验证证据回填到本文档第 10.6 节与收口文档，未执行的命令如实列出。

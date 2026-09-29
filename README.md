@@ -106,7 +106,7 @@ pnpm --filter @network-safe/server seed:labs         # 实验元数据
 
 种子写入两个本机演示账号，凭据在 `apps/server/scripts/seed-auth-users.mjs` 中可查，仅用于本机学习。
 
-实验启停状态（`labs.is_enabled`、`lab_variants.is_enabled`）：**首次入库以 `meta.json` 为准，之后以独立管理端 `network-safe-management` 的配置为准**。`seed:labs` 重跑只更新标题、描述等元数据，不会把管理端停用的实验或变体重新打开。
+实验启停状态（`labs.is_enabled`、`lab_variants.is_enabled`）：**首次入库以 `meta.json` 为准，之后以管理端（`management/`）的配置为准**。`seed:labs` 重跑只更新标题、描述等元数据，不会把管理端停用的实验或变体重新打开。
 
 ### 2.1.5 启动开发环境
 
@@ -229,8 +229,16 @@ network-safe-project/
 │  ├─ seeds/
 │  └─ migrations/
 ├─ nginx/
+├─ management/              管理端（嵌套的独立 pnpm workspace，自带 lock 与 workspace 配置）
+│  ├─ apps/admin-web/       管理端前端，127.0.0.1:6680
+│  ├─ apps/admin-server/    管理端后端，127.0.0.1:6681
+│  ├─ packages/{shared,testing}/
+│  ├─ database/             仅管理端自有表 admin_audit_logs 的迁移
+│  └─ tools/schema-drift/   与主项目 schema.prisma 的一致性门禁
 └─ pnpm-workspace.yaml
 ```
+
+`management/` 不是本仓库 workspace 的成员（根 `pnpm-workspace.yaml` 只声明 `apps/*` 与 `packages/*`），它自带 `pnpm-workspace.yaml` 与锁文件，依赖需在该子目录下单独 `pnpm install`。用途与边界见 `management/README.md`。
 
 当前仓库已经完成：
 

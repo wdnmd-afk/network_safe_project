@@ -21,17 +21,18 @@
 - [x] 验证证据：`pnpm typecheck:server` 通过，`test:server` 411/411；`pnpm typecheck:web` 退出码 0，`test:web:run` 299/299；`test:entrypoints`、`test:api-entrypoints`、`test:contracts`、`test:db-schema` 四项退出码均为 0；改完后重跑 `pnpm verify` 仍为退出码 0。
 - [x] **实跑中发现并修复主项目阻断级缺陷**：`LT-055` 的掌握度索引名 66 字符超过 MySQL 上限 64，导致 `pnpm db:migrate` 与 `schema:ensure` 双双失败。该缺陷因 `LT-055` 从未实跑数据库而被长期掩盖。已改名 `recap_completions_user_lab_knowledge_point_idx`（46 字符）并同步迁移／`schema:ensure`／Prisma 三处；随后 `db:migrate` 成功、`db:status` 为 `up-to-date`（5/5）、`schema:ensure` 与 `test:db-schema` 通过。
 - [x] 数据库实跑（原「待验证」项）：`pnpm db:migrate`、`schema:ensure`、`seed:auth`、`seed:labs` 均已执行成功，`LT-055` 的数据库实跑欠账已还清。
-- [x] P3～P6 新仓库 `E:\github\network-safe-management`：已完成，收口文档在新仓库 `docs/execution/2026-09-16-admin-management-closeout.md`。新仓库 `pnpm verify` 退出码 0（共享 3/3、服务端 36/36、前端 24/24、schema 漂移门禁含变异自检通过）；跨仓库 E2E 4/4 通过，实测停用后主站目录、前台入口、实验接口三层同时生效，重新启用后三层恢复。
+- [x] P3～P6 管理端 `E:\github\network_safe_project\management`：已完成，收口文档在管理端 `docs/execution/2026-09-16-admin-management-closeout.md`。管理端 `pnpm verify` 退出码 0（共享 3/3、服务端 36/36、前端 24/24、schema 漂移门禁含变异自检通过）；全链路 E2E 4/4 通过，实测停用后主站目录、前台入口、实验接口三层同时生效，重新启用后三层恢复。
 - [x] 实施中共发现两处阻断级问题并修掉：主项目索引名超长（见上）；Node `fetch` 按 Fetch 规范拦截坏端口，主站端口 6667 正在名单内，导致 E2E 探测与管理端「主站可达性」判断失效（后者是真实功能缺陷）。两处均已改为基于 `node:http` 的实现，并补测试锁定该约束。
+- [x] **决策变更（实施后）**：管理端位置由「新建独立仓库」改为主仓库子目录 `management/`，不单独建 GitHub 仓库（用户指示：主仓库已有远端，子目录随主仓库推送即可）。处理见执行文档 10.7 节：删除原独立仓库的 `.git`，其 7 个提交历史未保留，管理端代码作为主仓库的一次提交进入历史；三处跨目录路径解析改为指向上级目录；`management/` 为嵌套 workspace，依赖需在该目录下单独安装。移动后重装依赖并重跑 `pnpm verify` 与 E2E 均通过。
 
 # 2026-09-16 进展：插队切片 独立管理端重建（规划阶段）
 
-- [x] 完成 `docs/execution/2026-09-16-admin-management-rebuild.md`：记录 13 项已确认决策、已读代码核实的事实基线、主项目 M1～M8 改动清单、新仓库结构与接口契约、设计系统、P0～P6 阶段步骤、风险、优化与验证方式。
+- [x] 完成 `docs/execution/2026-09-16-admin-management-rebuild.md`：记录 13 项已确认决策、已读代码核实的事实基线、主项目 M1～M8 改动清单、管理端结构与接口契约、设计系统、P0～P6 阶段步骤、风险、优化与验证方式。
 - [x] 核实过程中修正了两处先前的假设：`LabVariant` 没有 `slug` 与 `category`，管理端按 `labKey` + `variantKey` 定位；`/api/labs/web/csrf/fixed/token` 含字面量 `fixed` 段，会被变体中间件匹配，这是期望行为并已写入测试设计。
 - [x] 设计取舍：目录响应新增独立的 `availability` 字段，不覆写 `variant.enabled`，避免运行期启停污染元数据一致性判断。
 - [ ] P1 撤除旧 `/admin`：待实施。
 - [ ] P2 主项目启停链路（M2～M8）：待实施。
-- [ ] P3～P6 新仓库 `E:\github\network-safe-management`：待实施。
+- [ ] P3～P6 管理端 `E:\github\network_safe_project\management`：待实施。
 - 验证方式：本阶段只有 Markdown 改动，**未执行 lint、类型检查、测试与 build**。
 
 # 2026-09-10 进展：LT-055 复盘作答字段迁移
