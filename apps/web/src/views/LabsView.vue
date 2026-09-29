@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import { computed, onMounted, ref } from "vue";
 
-import { fetchLabs, type LabMetadata } from "../api/labs";
+import { fetchLabs, type LabCatalogItem, type LabMetadata } from "../api/labs";
+import { isCatalogVariantEnabled } from "../router/lab-availability";
 import {
   createDefaultLabDirectoryFilters,
   deriveLabDepth,
@@ -12,7 +13,7 @@ import {
   type LabDirectoryFilters,
 } from "../utils/lab-directory";
 
-const labs = ref<LabMetadata[]>([]);
+const labs = ref<LabCatalogItem[]>([]);
 const isLoading = ref(true);
 const errorMessage = ref("");
 const filters = ref<LabDirectoryFilters>(createDefaultLabDirectoryFilters());
@@ -39,7 +40,7 @@ function formatCategoryTitle(category: string) {
 }
 
 const groupedLabs = computed(() => {
-  return filterLabs(labs.value, filters.value).reduce<Record<string, LabMetadata[]>>((groups, lab) => {
+  return filterLabs(labs.value, filters.value).reduce<Record<string, LabCatalogItem[]>>((groups, lab) => {
     groups[lab.category] ??= [];
     groups[lab.category].push(lab);
     return groups;
@@ -55,7 +56,7 @@ const learningPathRows = computed(() =>
     ...path,
     labs: path.labIds
       .map((labId) => labById.value.get(labId))
-      .filter((lab): lab is LabMetadata => Boolean(lab)),
+      .filter((lab): lab is LabCatalogItem => Boolean(lab)),
   })),
 );
 
@@ -222,13 +223,16 @@ onMounted(async () => {
               <RouterLink :to="`/labs/${lab.category}/${lab.subcategory}`">
                 查看详情
               </RouterLink>
-              <RouterLink
-                v-for="variant in lab.variants"
-                :key="variant.key"
-                :to="`/labs/${lab.category}/${lab.subcategory}/${variant.key}`"
-              >
-                {{ variant.title }}
-              </RouterLink>
+              <template v-for="variant in lab.variants" :key="variant.key">
+                <RouterLink
+                  v-if="isCatalogVariantEnabled(lab.availability, variant.key)"
+                  :to="`/labs/${lab.category}/${lab.subcategory}/${variant.key}`"
+                >
+                  {{ variant.title }}
+                </RouterLink>
+                <!-- 管理端停用的变体不给入口，文字标注原因，不只靠颜色区分 -->
+                <span v-else class="state-text">{{ variant.title }}（已停用）</span>
+              </template>
             </div>
           </article>
         </div>

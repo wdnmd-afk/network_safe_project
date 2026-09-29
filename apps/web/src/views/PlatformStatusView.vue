@@ -318,6 +318,9 @@ onMounted(async () => {
           仍有 {{ platformInfo.consistency.inProgressLabs }} 个实验处于
           in-progress 状态
         </li>
+        <li v-if="platformInfo.consistency.availabilitySource === 'metadata-fallback'">
+          数据库不可用，实验启停状态已退化为按元数据放行，管理端停用配置暂未生效
+        </li>
       </ul>
 
       <p class="platform-info-note">

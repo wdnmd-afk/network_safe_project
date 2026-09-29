@@ -52,6 +52,7 @@ export type LabMetadata = {
   summary: string;
   status: string;
   phase?: string;
+  estimatedMinutes?: number;
   tags: string[];
   knowledgePoints: string[];
   variants: LabVariant[];
@@ -63,6 +64,8 @@ export type LabMetadata = {
   };
   verification: LabVerification;
   prerequisites: unknown[];
+  safeBoundaries?: string[];
+  notes?: string;
   paths: {
     root: string;
     readme: string;
@@ -74,8 +77,29 @@ export type LabMetadata = {
   };
 };
 
+/**
+ * 管理端在数据库中配置的运行期启停状态，由服务端目录接口附带返回。
+ *
+ * 与 `LabVariant.enabled` 语义不同：后者是 meta.json 的登记事实，
+ * 入口一致性门禁与平台状态页依赖它，不得被运行期开关覆写。
+ */
+export type LabAvailability = {
+  source: "database" | "metadata-fallback";
+  labEnabled: boolean;
+  variants: {
+    key: string;
+    /** 元数据启用 && 实验级启用 && 变体级启用 */
+    enabled: boolean;
+  }[];
+};
+
+/** 目录接口返回的实验：元数据 + 运行期可用性。单独成型，避免把运行期状态混进元数据类型 */
+export type LabCatalogItem = LabMetadata & {
+  availability: LabAvailability;
+};
+
 export type LabListResponse = {
-  items: LabMetadata[];
+  items: LabCatalogItem[];
   total: number;
 };
 
@@ -94,5 +118,5 @@ export async function fetchLabs() {
 
 export async function fetchLab(category: string, scene: string) {
   const response = await fetch(`/api/labs/${category}/${scene}`);
-  return readJson<LabMetadata>(response);
+  return readJson<LabCatalogItem>(response);
 }

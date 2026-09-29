@@ -138,10 +138,11 @@ function searchableLabText(lab: LabMetadata) {
     .toLocaleLowerCase();
 }
 
-export function filterLabs(
-  labs: readonly LabMetadata[],
+// 泛型保留调用方的具体类型，目录页传入带 availability 的实验时筛选后不丢字段
+export function filterLabs<T extends LabMetadata>(
+  labs: readonly T[],
   filters: LabDirectoryFilters,
-) {
+): T[] {
   const query = filters.query.trim().toLocaleLowerCase();
 
   return labs.filter((lab) => {

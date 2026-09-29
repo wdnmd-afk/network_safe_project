@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, ref, watch } from "vue";
-import { RouterLink } from "vue-router";
+import { RouterLink, useRoute } from "vue-router";
 
 import {
   fetchCurrentUserLabEventLogs,
@@ -8,7 +8,12 @@ import {
   setCurrentUserRecapQuestionCompletion,
   type CurrentUserLabEventLogSummary,
 } from "../api/lab-records";
-import { fetchLab, fetchLabs, type LabMetadata } from "../api/labs";
+import {
+  fetchLab,
+  fetchLabs,
+  type LabCatalogItem,
+  type LabMetadata,
+} from "../api/labs";
 import EventRecapCard from "../components/EventRecapCard.vue";
 import {
   createCompletedEventRecapQuestionKeys,
@@ -22,6 +27,7 @@ import {
   filterLabRecordsForLab,
   findVariantWebEntrypoint,
 } from "../labs/lab-detail";
+import { isCatalogVariantEnabled } from "../router/lab-availability";
 import { useSessionStore } from "../stores/session";
 import {
   deriveLabDepth,
@@ -34,8 +40,9 @@ const props = defineProps<{
   scene: string;
 }>();
 
+const route = useRoute();
 const session = useSessionStore();
-const lab = ref<LabMetadata | null>(null);
+const lab = ref<LabCatalogItem | null>(null);
 const allLabs = ref<LabMetadata[]>([]);
 const labEventLogs = ref<CurrentUserLabEventLogSummary[]>([]);
 const isLoading = ref(true);
@@ -51,10 +58,28 @@ const variantEntries = computed(() => {
     return [];
   }
 
+  const availability = lab.value.availability;
+
   return lab.value.variants.map((variant) => ({
     variant,
     entrypoint: findVariantWebEntrypoint(lab.value as LabMetadata, variant),
+    // 运行期启停来自管理端配置；与目录页共用同一判定，避免两处语义漂移
+    available: isCatalogVariantEnabled(availability, variant.key),
   }));
+});
+
+// 守卫重定向带回的停用变体 key，只接受 vuln / fixed，避免把任意 query 渲染进页面
+const disabledVariantTitle = computed(() => {
+  const disabled = route.query.disabled;
+
+  if (disabled !== "vuln" && disabled !== "fixed") {
+    return "";
+  }
+
+  return (
+    lab.value?.variants.find((variant) => variant.key === disabled)?.title ??
+    disabled
+  );
 });
 
 const currentLabRecords = computed(() => {
@@ -281,6 +306,10 @@ watch(() => [props.category, props.scene], () => void loadLabDetail(), {
         </div>
       </div>
 
+      <p v-if="disabledVariantTitle" class="state-text error-text" role="status">
+        {{ disabledVariantTitle }}已由管理端停用，暂时无法进入。
+      </p>
+
       <div class="detail-layout">
         <section class="detail-panel">
           <h2>实验变体</h2>
@@ -295,8 +324,9 @@ watch(() => [props.category, props.scene], () => void loadLabDetail(), {
                 <p>{{ item.variant.description }}</p>
                 <small>{{ item.variant.expectedOutcome }}</small>
               </div>
+              <span v-if="!item.available" class="state-text">已停用</span>
               <RouterLink
-                v-if="item.entrypoint"
+                v-else-if="item.entrypoint"
                 class="secondary-action"
                 :to="item.entrypoint.path"
               >

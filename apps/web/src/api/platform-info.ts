@@ -29,6 +29,8 @@ export type PlatformConsistencyInfo = {
   labsMissingWebEntrypoint: string[];
   enabledVariantsWithoutEntry: number;
   inProgressLabs: number;
+  /** 启停状态来源；metadata-fallback 表示数据库不可用，管理端停用暂不生效 */
+  availabilitySource: "database" | "metadata-fallback";
 };
 
 export type PlatformInfo = {
