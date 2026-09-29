@@ -142,10 +142,18 @@ function getMetadataNumber(value: number | undefined) {
   return typeof value === "number" && Number.isFinite(value) ? value : 0;
 }
 
-export function createPrismaLabMetadataSyncRepository(): LabMetadataSyncRepository {
+/**
+ * 默认 Prisma 仓储。
+ *
+ * 客户端可注入，只为让「update 分支不写 isEnabled」这条行为可被测试证明——
+ * 该行为决定了管理端配置的启停状态能否活过下一次 seed:labs 重跑。
+ */
+export function createPrismaLabMetadataSyncRepository(
+  client: typeof prisma = prisma,
+): LabMetadataSyncRepository {
   return {
     async upsertCategory(input) {
-      const category = await prisma.labCategory.upsert({
+      const category = await client.labCategory.upsert({
         where: {
           code: input.code,
         },
@@ -169,7 +177,7 @@ export function createPrismaLabMetadataSyncRepository(): LabMetadataSyncReposito
     },
 
     async upsertLab(input) {
-      const lab = await prisma.lab.upsert({
+      const lab = await client.lab.upsert({
         where: {
           labKey: input.labKey,
         },
@@ -189,7 +197,7 @@ export function createPrismaLabMetadataSyncRepository(): LabMetadataSyncReposito
           metaPath: input.metaPath,
           readmePath: input.readmePath,
           rootPath: input.rootPath,
-          isEnabled: input.isEnabled,
+          // 不写 isEnabled：启停以管理端在数据库中的配置为准，重跑种子不得覆盖
         },
         create: {
           labKey: input.labKey,
@@ -219,7 +227,7 @@ export function createPrismaLabMetadataSyncRepository(): LabMetadataSyncReposito
     },
 
     async upsertVariant(input) {
-      await prisma.labVariant.upsert({
+      await client.labVariant.upsert({
         where: {
           labId_variantKey: {
             labId: input.labId,
@@ -232,7 +240,7 @@ export function createPrismaLabMetadataSyncRepository(): LabMetadataSyncReposito
           entryKey: input.entryKey,
           expectedOutcome: input.expectedOutcome,
           supportsAutomation: input.supportsAutomation,
-          isEnabled: input.isEnabled,
+          // 同上：变体启停只在首次入库时取 meta.json，之后以管理端为准
         },
         create: {
           labId: input.labId,

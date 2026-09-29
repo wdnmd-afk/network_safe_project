@@ -200,6 +200,7 @@
 - 完整自动化：服务端、前端、共享包、Smoke 和 Playwright 19/19 通过。
 - 类型检查：服务端 `tsc` 和前端 `vue-tsc` 通过。
 - 构建产物固定凭据扫描：`Demo@123456`、`Admin@123456`、旧 token fallback 均 0 命中。
+  - 2026-09-16 补注：`admin` 种子密码已改为 `123456`（见 `docs/execution/2026-09-16-admin-management-rebuild.md`）。上一行是当时的真实扫描结果，保留原文；后续复验时扫描目标应为 `Demo@123456`、`123456`（须限定为凭据上下文，避免误命中普通数字）与旧 token fallback。
 - 验收 Node 和 nginx 进程、6667 和 8080 端口已清理。
 
 ## 10. 交付物

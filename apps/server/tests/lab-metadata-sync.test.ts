@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import test from "node:test";
 
 import {
+  createPrismaLabMetadataSyncRepository,
   getLabCategoryProfile,
   syncLabMetadataToDatabase,
   type LabMetadataSyncRepository,
@@ -209,4 +210,77 @@ test("syncLabMetadataToDatabase upserts category, lab and variants from metadata
       },
     },
   ]);
+});
+
+test("Prisma 仓储只在创建时写入 isEnabled，更新时保留管理端配置", async () => {
+  const labUpsertArgs: unknown[] = [];
+  const variantUpsertArgs: unknown[] = [];
+
+  // 只替身到需要断言的两个模型；其余模型本用例不会触及
+  const stubClient = {
+    labCategory: {
+      upsert: async () => ({ id: 1n }),
+    },
+    lab: {
+      upsert: async (args: unknown) => {
+        labUpsertArgs.push(args);
+        return { id: 2n };
+      },
+    },
+    labVariant: {
+      upsert: async (args: unknown) => {
+        variantUpsertArgs.push(args);
+      },
+    },
+  } as unknown as Parameters<typeof createPrismaLabMetadataSyncRepository>[0];
+
+  const repository = createPrismaLabMetadataSyncRepository(stubClient);
+
+  await repository.upsertLab({
+    labKey: "web.xss",
+    slug: "xss",
+    title: "XSS",
+    categoryId: 1n,
+    subcategoryCode: "xss",
+    mode: "interactive",
+    severity: "high",
+    difficulty: "beginner",
+    summary: "摘要",
+    status: "ready",
+    phase: "phase-1",
+    sortOrder: 10,
+    estimatedMinutes: 25,
+    metaPath: "labs/web/xss/meta.json",
+    readmePath: "labs/web/xss/README.md",
+    rootPath: "labs/web/xss",
+    isEnabled: false,
+  });
+
+  await repository.upsertVariant({
+    labId: 2n,
+    variantKey: "vuln",
+    title: "漏洞版",
+    description: "描述",
+    entryKey: "vuln-entry",
+    expectedOutcome: "预期",
+    supportsAutomation: true,
+    isEnabled: false,
+  });
+
+  const labArgs = labUpsertArgs[0] as {
+    update: Record<string, unknown>;
+    create: Record<string, unknown>;
+  };
+  const variantArgs = variantUpsertArgs[0] as {
+    update: Record<string, unknown>;
+    create: Record<string, unknown>;
+  };
+
+  // 重跑种子不得把管理端停用的实验重新打开
+  assert.equal("isEnabled" in labArgs.update, false);
+  assert.equal("isEnabled" in variantArgs.update, false);
+
+  // 首次入库仍以 meta.json 为准
+  assert.equal(labArgs.create.isEnabled, false);
+  assert.equal(variantArgs.create.isEnabled, false);
 });

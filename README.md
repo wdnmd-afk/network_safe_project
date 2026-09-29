@@ -106,6 +106,8 @@ pnpm --filter @network-safe/server seed:labs         # 实验元数据
 
 种子写入两个本机演示账号，凭据在 `apps/server/scripts/seed-auth-users.mjs` 中可查，仅用于本机学习。
 
+实验启停状态（`labs.is_enabled`、`lab_variants.is_enabled`）：**首次入库以 `meta.json` 为准，之后以独立管理端 `network-safe-management` 的配置为准**。`seed:labs` 重跑只更新标题、描述等元数据，不会把管理端停用的实验或变体重新打开。
+
 ### 2.1.5 启动开发环境
 
 需要两个终端：

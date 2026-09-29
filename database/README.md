@@ -39,6 +39,8 @@ pnpm --filter @network-safe/server seed:auth
 pnpm --filter @network-safe/server seed:labs
 ```
 
+`seed:labs` 对 `labs.is_enabled` 与 `lab_variants.is_enabled` 只在新建行时写入（取 `meta.json`），更新已有行时不覆盖：启停状态之后由独立管理端维护。
+
 ## 迁移规则
 
 - 迁移文件使用 `YYYYMMDD_description.sql` 命名，并按字典序执行。

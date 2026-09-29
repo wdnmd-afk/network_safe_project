@@ -16,7 +16,7 @@ function hashPassword(password) {
 const users = [
   {
     username: "admin",
-    password: "Admin@123456",
+    password: "123456",
     displayName: "平台管理员",
     role: "admin",
     status: "active",

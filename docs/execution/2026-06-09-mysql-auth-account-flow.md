@@ -94,6 +94,10 @@ Invoke-WebRequest -Uri http://127.0.0.1:6667/api/health/db -UseBasicParsing
 登录账号：
 
 ```text
-admin / Admin@123456
+admin / 123456
 demo_user / Demo@123456
 ```
+
+> 2026-09-16 更新：为对齐独立管理端（见 `docs/execution/2026-09-16-admin-management-rebuild.md`），
+> `admin` 密码由 `Admin@123456` 改为 `123456`。该账号仅用于本机学习环境，
+> 不得用于任何对外可访问的部署。
