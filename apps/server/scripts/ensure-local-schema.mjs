@@ -33,7 +33,7 @@ try {
         \`updated_at\` DATETIME(0) NOT NULL,
         UNIQUE INDEX \`lab_recap_question_completions_user_id_trace_id_question_key_key\` (\`user_id\`, \`trace_id\`, \`question_key\`),
         INDEX \`lab_recap_question_completions_user_id_lab_key_updated_at_idx\` (\`user_id\`, \`lab_key\`, \`updated_at\`),
-        INDEX \`lab_recap_question_completions_user_id_lab_key_knowledge_point_idx\` (\`user_id\`, \`lab_key\`, \`knowledge_point\`),
+        INDEX \`recap_completions_user_lab_knowledge_point_idx\` (\`user_id\`, \`lab_key\`, \`knowledge_point\`),
         PRIMARY KEY (\`id\`),
         CONSTRAINT \`lab_recap_question_completions_user_id_fkey\`
           FOREIGN KEY (\`user_id\`) REFERENCES \`users\` (\`id\`)
@@ -74,7 +74,7 @@ try {
 
     // 掌握度聚合索引同样按需补齐
     const masteryIndexName =
-      "lab_recap_question_completions_user_id_lab_key_knowledge_point_idx";
+      "recap_completions_user_lab_knowledge_point_idx";
     const indexRows = await prisma.$queryRaw`
       SELECT COUNT(*) AS index_count
       FROM information_schema.statistics

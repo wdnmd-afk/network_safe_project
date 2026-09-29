@@ -64,13 +64,13 @@ DEALLOCATE PREPARE stmt;
 SET @add_mastery_index := (
   SELECT IF(
     COUNT(*) = 0,
-    'CREATE INDEX `lab_recap_question_completions_user_id_lab_key_knowledge_point_idx` ON `lab_recap_question_completions` (`user_id`, `lab_key`, `knowledge_point`)',
+    'CREATE INDEX `recap_completions_user_lab_knowledge_point_idx` ON `lab_recap_question_completions` (`user_id`, `lab_key`, `knowledge_point`)',
     'DO 0'
   )
   FROM information_schema.statistics
   WHERE table_schema = DATABASE()
     AND table_name = 'lab_recap_question_completions'
-    AND index_name = 'lab_recap_question_completions_user_id_lab_key_knowledge_point_idx'
+    AND index_name = 'recap_completions_user_lab_knowledge_point_idx'
 );
 PREPARE stmt FROM @add_mastery_index;
 EXECUTE stmt;

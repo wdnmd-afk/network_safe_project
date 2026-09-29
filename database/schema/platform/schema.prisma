@@ -219,6 +219,6 @@ model LabRecapQuestionCompletion {
 
   @@unique([userId, traceId, questionKey])
   @@index([userId, labKey, updatedAt])
-  @@index([userId, labKey, knowledgePoint], map: "lab_recap_question_completions_user_id_lab_key_knowledge_point_idx")
+  @@index([userId, labKey, knowledgePoint], map: "recap_completions_user_lab_knowledge_point_idx")
   @@map("lab_recap_question_completions")
 }
